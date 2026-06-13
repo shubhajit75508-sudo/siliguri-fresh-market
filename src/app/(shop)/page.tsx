@@ -1,7 +1,7 @@
 "use client";
 
 import { useAdminStore } from "@/store/admin-store";
-import { useProductsByCategory } from "@/lib/hooks/use-products";
+import { useProductsByCategory, useCategories } from "@/lib/hooks/use-products";
 import { HeroSection } from "@/components/home/hero-section";
 import { CategoriesSection } from "@/components/home/categories-section";
 import { ProductSection } from "@/components/home/product-section";
@@ -24,9 +24,36 @@ function SectionRenderer({ category, title, subtitle }: { category: string; titl
   );
 }
 
+const defaultNames: Record<string, string> = {
+  fish: "Fresh Fish",
+  chicken: "Chicken",
+  mutton: "Mutton",
+  seafood: "Seafood",
+  vegetables: "Vegetables",
+  fruits: "Fruits",
+  eggs: "Eggs",
+  dairy: "Dairy",
+  grocery: "Grocery",
+  essentials: "Daily Essentials",
+};
+
+const defaultSubs: Record<string, string> = {
+  fish: "River & sea catch daily",
+  chicken: "Farm-fresh poultry",
+  mutton: "Premium cuts",
+  seafood: "Prawns, crabs & more",
+  vegetables: "Farm to table",
+  fruits: "Seasonal picks",
+  eggs: "Free-range & farm",
+  dairy: "Milk, paneer & more",
+  grocery: "Pantry staples",
+  essentials: "Household must-haves",
+};
+
 export default function HomePage() {
   const { settings } = useAdminStore();
   const hydrated = useHydrated();
+  const { data: allCategories = [] } = useCategories();
   const sections = settings?.sections ?? [];
   const enabledSections = hydrated ? sections.filter((s) => s.enabled) : [];
 
@@ -45,6 +72,7 @@ export default function HomePage() {
   }
 
   const rendered = new Set<string>();
+  const enabledCategories = new Set(enabledSections.map((s) => s.category));
 
   return (
     <>
@@ -62,6 +90,19 @@ export default function HomePage() {
             category={sec.category}
             title={sec.title}
             subtitle={sec.subtitle}
+          />
+        );
+      })}
+
+      {allCategories.map((cat) => {
+        if (enabledCategories.has(cat.slug) || rendered.has(`auto-${cat.slug}`)) return null;
+        rendered.add(`auto-${cat.slug}`);
+        return (
+          <SectionRenderer
+            key={`auto-${cat.slug}`}
+            category={cat.slug}
+            title={defaultNames[cat.slug] ?? cat.name}
+            subtitle={defaultSubs[cat.slug] ?? cat.description}
           />
         );
       })}
