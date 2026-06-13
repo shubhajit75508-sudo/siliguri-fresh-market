@@ -123,6 +123,6 @@ export const useUserStore = create<UserState>()(
 
       setDeliveryPincode: (pincode) => set({ deliveryPincode: pincode }),
     }),
-    { name: "sfm-user", skipHydration: true }
+    { name: "sfm-user" }
   )
 );
