@@ -7,9 +7,10 @@ import { useAdminStore } from "@/store/admin-store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { insertProduct, updateProductBySlug, deleteProductBySlug } from "@/lib/supabase/queries";
 import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
+
+const API_BASE = "/api/admin/products";
 
 export default function AdminProductsPage() {
   const { products: storeProducts, addProduct, updateProduct, deleteProduct } = useAdminStore();
@@ -48,7 +49,15 @@ export default function AdminProductsPage() {
       updateProduct(editingId, form);
       if (supabaseAvailable) {
         const slug = createSlug(form.name ?? "");
-        await updateProductBySlug(slug, form);
+        const res = await fetch(API_BASE, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingId, ...form, slug }),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Update failed");
+        }
         invalidateProducts();
       }
     } catch (e) {
@@ -72,7 +81,7 @@ export default function AdminProductsPage() {
   };
 
   const saveAdd = async () => {
-    if (!form.name || !form.price || !form.image) return;
+    if (!form.name || form.price === undefined || form.price === null || form.price < 0 || !form.image) return;
     setSaving(true);
     const id = crypto.randomUUID();
     const slug = createSlug(form.name);
@@ -80,7 +89,15 @@ export default function AdminProductsPage() {
     try {
       addProduct(product);
       if (supabaseAvailable) {
-        await insertProduct(product);
+        const res = await fetch(API_BASE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(product),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Insert failed");
+        }
         invalidateProducts();
       }
     } catch (e) {
@@ -95,10 +112,13 @@ export default function AdminProductsPage() {
   const remove = async (id: string) => {
     if (!confirm("Delete this product?")) return;
     try {
-      const p = products.find((x) => x.id === id);
       deleteProduct(id);
-      if (supabaseAvailable && p?.slug) {
-        await deleteProductBySlug(p.slug);
+      if (supabaseAvailable) {
+        const res = await fetch(`${API_BASE}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Delete failed");
+        }
         invalidateProducts();
       }
     } catch (e) {

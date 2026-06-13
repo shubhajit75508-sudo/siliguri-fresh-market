@@ -10,9 +10,11 @@ interface ProductRow {
   category: string;
   price: number;
   original_price: number | null;
+  discount: number | null;
   image: string | null;
   images: string[] | null;
   unit: string;
+  stock: number | null;
   weights: string[] | null;
   cuts: string[] | null;
   cleaning_options: string[] | null;
@@ -93,9 +95,11 @@ function mapProduct(row: ProductRow): Product {
     category: row.category as Product["category"],
     price: row.price,
     originalPrice: row.original_price ?? undefined,
+    discount: row.discount ?? undefined,
     image: row.image ?? "",
     images: row.images ?? undefined,
     unit: row.unit,
+    stock: row.stock ?? undefined,
     weight: row.weights ?? undefined,
     cuts: row.cuts ?? undefined,
     cleaningOptions: row.cleaning_options ?? undefined,

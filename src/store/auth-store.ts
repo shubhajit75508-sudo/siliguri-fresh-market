@@ -55,8 +55,17 @@ export const useAuthStore = create<AuthState>()(
       signup: async (data) => {
         const { users } = get();
 
-        if (data.role === "admin" && users.some((u) => u.role === "admin")) {
-          return { success: false, error: "Only one admin account is allowed. An admin already exists." };
+        if (data.role === "admin") {
+          let adminExists = users.some((u) => u.role === "admin");
+          if (!adminExists && isSupabaseConfigured() && supabase) {
+            try {
+              const { count } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "admin");
+              if (count && count > 0) adminExists = true;
+            } catch {}
+          }
+          if (adminExists) {
+            return { success: false, error: "Only one admin account is allowed. An admin already exists." };
+          }
         }
 
         if (users.find((u) => u.email === data.email)) {
@@ -125,10 +134,7 @@ export const useAuthStore = create<AuthState>()(
           });
           if (error) return { success: false, error: error.message };
           const user = authData.user;
-          // Fall back to local user record for role/metadata when Supabase
-          // user_metadata is empty (e.g. accounts created before metadata was added).
           const localUser = get().users.find((u) => u.email === email);
-          // As a last resort, check the Supabase "users" table for the role.
           let dbRole: string | null = null;
           try {
             const { data: profile } = await supabase
@@ -137,7 +143,10 @@ export const useAuthStore = create<AuthState>()(
               .eq("id", user.id)
               .single();
             if (profile) dbRole = profile.role as string;
-          } catch {}
+          } catch (e) {
+            console.warn("Failed to fetch user role from Supabase:", e);
+          }
+          const resolvedRole = (localUser?.role ?? dbRole ?? user.user_metadata?.role ?? "customer") as UserRole;
           const newUser: AuthUser = {
             id: user.id,
             email: user.email ?? email,
@@ -145,7 +154,7 @@ export const useAuthStore = create<AuthState>()(
             name: user.user_metadata?.name ?? localUser?.name ?? email.split("@")[0],
             phone: user.user_metadata?.phone ?? localUser?.phone ?? "",
             address: user.user_metadata?.address ?? localUser?.address ?? "",
-            role: (localUser?.role ?? dbRole ?? user.user_metadata?.role ?? "customer") as UserRole,
+            role: resolvedRole,
             location: localUser?.location ?? null,
             createdAt: user.created_at ?? localUser?.createdAt ?? new Date().toISOString(),
           };
@@ -179,7 +188,10 @@ export const useAuthStore = create<AuthState>()(
           currentUser: state.currentUser?.id === id ? null : state.currentUser,
         })),
 
-      adminExists: () => get().users.some((u) => u.role === "admin"),
+      adminExists: () => {
+        const localAdmin = get().users.some((u) => u.role === "admin");
+        return localAdmin;
+      },
     }),
     { name: "sfm-auth" }
   )
