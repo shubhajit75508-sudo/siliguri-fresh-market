@@ -178,12 +178,13 @@ export const useAuthStore = create<AuthState>()(
           });
           document.cookie = `sfm-auth-session=${newUser.id}|${newUser.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
           const phone = newUser.phone || newUser.email;
+          const existingUser = useUserStore.getState().user;
           useUserStore.getState().setUser({
             id: "user-" + phone.replace(/\D/g, ""),
             name: newUser.name,
             email: newUser.email,
             phone: phone,
-            loyaltyPoints: 0,
+            loyaltyPoints: existingUser?.loyaltyPoints ?? 0,
           });
           return { success: true, user: newUser };
         }
@@ -199,12 +200,13 @@ export const useAuthStore = create<AuthState>()(
         }
           set({ currentUser: user });
           document.cookie = `sfm-auth-session=${user.id}|${user.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+          const existingLocalUser = useUserStore.getState().user;
           useUserStore.getState().setUser({
             id: "user-" + user.phone.replace(/\D/g, ""),
             name: user.name,
             email: user.email,
             phone: user.phone,
-            loyaltyPoints: 0,
+            loyaltyPoints: existingLocalUser?.loyaltyPoints ?? 0,
           });
           return { success: true, user };
         },
