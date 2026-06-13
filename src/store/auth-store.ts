@@ -35,6 +35,7 @@ interface AuthState {
   logout: () => Promise<void>;
   deleteAccountSync: (id: string) => void;
   adminExists: () => boolean;
+  checkAdminRemote: () => Promise<boolean>;
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -56,19 +57,20 @@ export const useAuthStore = create<AuthState>()(
         const { users } = get();
 
         if (data.role === "admin") {
-          let adminExists = users.some((u) => u.role === "admin");
-          if (!adminExists && isSupabaseConfigured() && supabase) {
-            try {
-              const { count, error } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "admin");
-              if (error) throw error;
-              if (count && count > 0) adminExists = true;
-            } catch (e) {
-              console.error("Admin check query failed:", e);
-              adminExists = true;
-            }
-          }
-          if (adminExists) {
+          if (users.some((u) => u.role === "admin")) {
             return { success: false, error: "Only one admin account is allowed. An admin already exists." };
+          }
+          if (isSupabaseConfigured()) {
+            try {
+              const res = await fetch("/api/admin/exists");
+              const json = await res.json();
+              if (json.exists) {
+                return { success: false, error: "Only one admin account is allowed. An admin already exists." };
+              }
+            } catch (e) {
+              console.error("Admin remote check failed:", e);
+              return { success: false, error: "Could not verify admin status. Please check your Supabase setup." };
+            }
           }
         }
 
@@ -96,13 +98,17 @@ export const useAuthStore = create<AuthState>()(
           if (authData?.user) {
             supabaseUserId = authData.user.id;
             try {
-              await supabase.from("users").upsert({
-                id: authData.user.id,
-                name: data.name,
-                email: data.email,
-                phone: data.phone,
-                role: data.role,
-                loyalty_points: 0,
+              await fetch("/api/admin/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  id: authData.user.id,
+                  name: data.name,
+                  email: data.email,
+                  phone: data.phone,
+                  role: data.role,
+                  loyalty_points: 0,
+                }),
               });
             } catch (e) { console.error("User upsert failed:", e); }
           }
@@ -202,8 +208,18 @@ export const useAuthStore = create<AuthState>()(
         })),
 
       adminExists: () => {
-        const localAdmin = get().users.some((u) => u.role === "admin");
-        return localAdmin;
+        return get().users.some((u) => u.role === "admin");
+      },
+
+      checkAdminRemote: async () => {
+        if (!isSupabaseConfigured()) return get().users.some((u) => u.role === "admin");
+        try {
+          const res = await fetch("/api/admin/exists");
+          const json = await res.json();
+          return json.exists;
+        } catch {
+          return true;
+        }
       },
     }),
     { name: "sfm-auth" }
