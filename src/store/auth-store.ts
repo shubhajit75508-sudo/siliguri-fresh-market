@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
+import { useUserStore } from "@/store/user-store";
 
 export type UserRole = "admin" | "delivery" | "customer";
 
@@ -176,6 +177,14 @@ export const useAuthStore = create<AuthState>()(
             };
           });
           document.cookie = `sfm-auth-session=${newUser.id}|${newUser.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+          const phone = newUser.phone || newUser.email;
+          useUserStore.getState().setUser({
+            id: "user-" + phone.replace(/\D/g, ""),
+            name: newUser.name,
+            email: newUser.email,
+            phone: phone,
+            loyaltyPoints: 0,
+          });
           return { success: true, user: newUser };
         }
 
@@ -190,6 +199,13 @@ export const useAuthStore = create<AuthState>()(
         }
           set({ currentUser: user });
           document.cookie = `sfm-auth-session=${user.id}|${user.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+          useUserStore.getState().setUser({
+            id: "user-" + user.phone.replace(/\D/g, ""),
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            loyaltyPoints: 0,
+          });
           return { success: true, user };
         },
 

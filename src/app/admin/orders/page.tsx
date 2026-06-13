@@ -233,10 +233,18 @@ function AssignModal({ order, onAssign, onClose }: {
   const [boys, setBoys] = useState<{ id: string; name: string; phone: string; area: string; isActive: boolean }[]>([]);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("sfm-delivery-boys");
-      if (raw) setBoys(JSON.parse(raw));
-    } catch {}
+    fetch("/api/admin/delivery-boys")
+      .then((r) => r.json())
+      .then((json) => {
+        setBoys((json.boys ?? []).map((b: { id: string; name: string; phone: string }) => ({
+          id: b.id,
+          name: b.name,
+          phone: b.phone ?? "",
+          area: "",
+          isActive: true,
+        })));
+      })
+      .catch(() => {});
   }, []);
 
   const allBoys = boys.filter((b: { isActive: boolean }) => b.isActive !== false);

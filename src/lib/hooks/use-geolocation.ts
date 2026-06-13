@@ -37,7 +37,7 @@ export function useGeolocation(): UseGeolocationReturn {
           setResolvedAddress(data.display_name);
         }
       })
-      .catch(() => {});
+      .catch(() => setError("Could not resolve address from your location. Try entering pincode manually."));
   }, [location]);
 
   const getLocation = useCallback(() => {

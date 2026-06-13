@@ -46,32 +46,41 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   useEffect(() => {
     if (!storesReady || !boy) return;
     const interval = setInterval(() => {
-      const raw = localStorage.getItem("sfm-orders");
-      if (!raw) return;
-      try {
-        const parsed = JSON.parse(raw);
-        const allOrders = parsed?.state?.orders ?? [];
-        const currentAssignments = useDeliveryStore.getState().assignments;
-        const assignedIds = new Set(currentAssignments.map((a) => a.orderId));
-        const newOrders = allOrders.filter(
-          (o: { deliveryBoyId?: string; id: string }) =>
-            o.deliveryBoyId === boy.id && !assignedIds.has(o.id)
-        );
-        if (newOrders.length > 0) {
-          const newAssignments = newOrders.map((o: { id: string; customerName: string; customerPhone: string; address: { line1: string; line2?: string; city: string; pincode: string; lat?: number; lng?: number }; items: { product: { name: string }; quantity: number }[]; total: number }) => ({
-            id: "da-" + Date.now() + Math.random().toString(36).slice(2, 6),
-            orderId: o.id,
-            customerName: o.customerName,
-            customerPhone: o.customerPhone,
-            address: o.address,
-            items: o.items.map((i: { product: { name: string }; quantity: number }) => ({ name: i.product.name, quantity: i.quantity })),
-            total: o.total,
-            status: "assigned" as const,
-            assignedAt: new Date().toISOString(),
-          }));
-          useDeliveryStore.getState().setAssignments([...currentAssignments, ...newAssignments]);
-        }
-      } catch {}
+      fetch("/api/admin/orders")
+        .then((r) => r.json())
+        .then((json) => {
+          const allOrders: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number }[] = json.orders ?? [];
+          const currentAssignments = useDeliveryStore.getState().assignments;
+          const assignedIds = new Set(currentAssignments.map((a) => a.orderId));
+          const newOrders = allOrders.filter(
+            (o) => o.delivery_boy_id === boy.id && !assignedIds.has(o.id)
+          );
+          if (newOrders.length > 0) {
+            const newAssignments = newOrders.map((o) => ({
+              id: "da-" + Date.now() + Math.random().toString(36).slice(2, 6),
+              orderId: o.id,
+              customerName: o.customer_name,
+              customerPhone: o.customer_phone,
+              address: {
+                id: o.id + "-addr",
+                label: "Delivery",
+                line1: (o.address_snapshot?.line1 as string) ?? "",
+                line2: (o.address_snapshot?.line2 as string) ?? "",
+                city: (o.address_snapshot?.city as string) ?? "",
+                pincode: (o.address_snapshot?.pincode as string) ?? "",
+                lat: o.address_snapshot?.lat as number | undefined,
+                lng: o.address_snapshot?.lng as number | undefined,
+                isDefault: false,
+              },
+              items: o.items?.map((i: { product: { name: string }; quantity: number }) => ({ name: i.product.name, quantity: i.quantity })) ?? [],
+              total: o.total,
+              status: "assigned" as const,
+              assignedAt: new Date().toISOString(),
+            }));
+            useDeliveryStore.getState().setAssignments([...currentAssignments, ...newAssignments]);
+          }
+        })
+        .catch(() => {});
     }, 15000);
     return () => clearInterval(interval);
   }, [storesReady, boy]);

@@ -111,6 +111,7 @@ export interface DeliveryBoy {
   id: string;
   name: string;
   phone: string;
+  email?: string;
   code: string;
   isActive: boolean;
   area: string;

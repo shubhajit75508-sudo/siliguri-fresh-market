@@ -199,6 +199,10 @@ export default function CheckoutPage() {
       toast.add("Live location is required", "error");
       return;
     }
+    if (!selectedAddress) {
+      toast.add("Please add a delivery address in your account first", "error");
+      return;
+    }
 
     setConfirmingOrder(true);
 
