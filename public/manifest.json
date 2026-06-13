@@ -1,0 +1,26 @@
+{
+  "name": "Siliguri Fresh Mart",
+  "short_name": "SFM",
+  "description": "Fresh market delivered to your doorstep in minutes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#003D2B",
+  "theme_color": "#003D2B",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "food"],
+  "lang": "en-IN"
+}
