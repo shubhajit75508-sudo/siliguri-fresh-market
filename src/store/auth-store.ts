@@ -59,9 +59,13 @@ export const useAuthStore = create<AuthState>()(
           let adminExists = users.some((u) => u.role === "admin");
           if (!adminExists && isSupabaseConfigured() && supabase) {
             try {
-              const { count } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "admin");
+              const { count, error } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "admin");
+              if (error) throw error;
               if (count && count > 0) adminExists = true;
-            } catch (e) { console.error("Admin check query failed:", e); }
+            } catch (e) {
+              console.error("Admin check query failed:", e);
+              adminExists = true;
+            }
           }
           if (adminExists) {
             return { success: false, error: "Only one admin account is allowed. An admin already exists." };

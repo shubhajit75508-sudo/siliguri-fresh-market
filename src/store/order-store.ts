@@ -2,8 +2,16 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Order, CartItem, Address, DeliveryStatus } from "@/types";
 import { useDeliveryStore } from "./delivery-store";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
-import { syncOrderToSupabase } from "@/lib/supabase/queries";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+
+const API = "/api/admin/orders";
+
+async function apiPut(data: Record<string, unknown>) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    await fetch(API, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  } catch (e) { console.error("Order sync failed:", e); }
+}
 
 interface OrderStats {
   totalOrders: number;
@@ -15,6 +23,8 @@ interface OrderStats {
 
 interface OrderState {
   orders: Order[];
+  loaded: boolean;
+  loadOrders: () => Promise<void>;
   createOrder: (data: {
     items: CartItem[];
     total: number;
@@ -38,6 +48,41 @@ export const useOrderStore = create<OrderState>()(
   persist(
     (set, get) => ({
       orders: [],
+      loaded: false,
+
+      loadOrders: async () => {
+        if (!isSupabaseConfigured()) return;
+        try {
+          const res = await fetch("/api/admin/orders");
+          if (!res.ok) throw new Error("Failed to fetch orders");
+          const json = await res.json();
+          const remoteOrders: Order[] = (json.orders ?? []).map((r: Record<string, unknown>) => ({
+            id: r.id as string,
+            items: (r.items as Order["items"]) ?? [],
+            status: (r.status as Order["status"]) ?? "received",
+            total: Number(r.total),
+            createdAt: (r.created_at as string) ?? new Date().toISOString(),
+            address: (r.address_snapshot as Order["address"]) ?? { id: "", label: "", line1: "", city: "", pincode: "", isDefault: false },
+            eta: 30,
+            customerName: (r.customer_name as string) ?? "",
+            customerPhone: (r.customer_phone as string) ?? "",
+            customerEmail: (r.customer_email as string) ?? "",
+            paymentMethod: (r.payment_method as string) ?? "cod",
+            deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
+            deliveryBoyId: r.delivery_boy_id as string | undefined,
+            returnRequested: Boolean(r.return_requested),
+            returnApproved: Boolean(r.return_approved),
+          }));
+          set((state) => {
+            const local = state.orders;
+            const remoteMap = new Map(remoteOrders.map((o) => [o.id, o]));
+            for (const o of local) {
+              if (!remoteMap.has(o.id)) remoteMap.set(o.id, o);
+            }
+            return { orders: Array.from(remoteMap.values()), loaded: true };
+          });
+        } catch (e) { console.error("loadOrders failed:", e); set({ loaded: true }); }
+      },
 
       createOrder: async (data) => {
         const id = "SFM-" + Date.now().toString(36).toUpperCase();
@@ -58,16 +103,21 @@ export const useOrderStore = create<OrderState>()(
         set((state) => ({ orders: [...state.orders, order] }));
         if (isSupabaseConfigured()) {
           try {
-            await syncOrderToSupabase({
-              id,
-              items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity })),
-              total: data.total,
-              status: "received",
-              payment_method: data.paymentMethod,
-              customer_name: data.customerName,
-              customer_phone: data.customerPhone,
-              customer_email: data.customerEmail,
-              address_snapshot: data.address as unknown as Record<string, unknown>,
+            await fetch("/api/admin/orders", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id,
+                items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity })),
+                total: data.total,
+                status: "received",
+                payment_method: data.paymentMethod,
+                customer_name: data.customerName,
+                customer_phone: data.customerPhone,
+                customer_email: data.customerEmail,
+                address_snapshot: data.address as unknown as Record<string, unknown>,
+                created_at: order.createdAt,
+              }),
             });
           } catch (e) { console.error("Order sync failed:", e); }
         }
@@ -80,11 +130,7 @@ export const useOrderStore = create<OrderState>()(
             o.id === id ? { ...o, status } : o
           ),
         }));
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ status }).eq("id", id);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id, status });
       },
 
       assignDeliveryBoy: async (orderId, boyId, boyName) => {
@@ -115,11 +161,7 @@ export const useOrderStore = create<OrderState>()(
           },
         ]);
 
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ delivery_boy_id: boyId, delivery_status: "assigned", status: "out_for_delivery" }).eq("id", orderId);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_status: "assigned", status: "out_for_delivery" });
       },
 
       acceptDelivery: async (orderId) => {
@@ -128,11 +170,7 @@ export const useOrderStore = create<OrderState>()(
             o.id === orderId ? { ...o, deliveryStatus: "accepted" as DeliveryStatus } : o
           ),
         }));
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ delivery_status: "accepted" }).eq("id", orderId);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id: orderId, delivery_status: "accepted" });
       },
 
       pickUpDelivery: async (orderId) => {
@@ -141,11 +179,7 @@ export const useOrderStore = create<OrderState>()(
             o.id === orderId ? { ...o, deliveryStatus: "picked_up" as DeliveryStatus } : o
           ),
         }));
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ delivery_status: "picked_up" }).eq("id", orderId);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id: orderId, delivery_status: "picked_up" });
       },
 
       confirmDelivery: async (orderId) => {
@@ -156,11 +190,7 @@ export const useOrderStore = create<OrderState>()(
               : o
           ),
         }));
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ delivery_status: "delivered", status: "delivered" }).eq("id", orderId);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id: orderId, delivery_status: "delivered", status: "delivered" });
       },
 
       requestReturn: async (orderId) => {
@@ -169,11 +199,7 @@ export const useOrderStore = create<OrderState>()(
             o.id === orderId ? { ...o, returnRequested: true } : o
           ),
         }));
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ return_requested: true }).eq("id", orderId);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id: orderId, return_requested: true });
       },
 
       approveReturn: async (orderId) => {
@@ -182,11 +208,7 @@ export const useOrderStore = create<OrderState>()(
             o.id === orderId ? { ...o, returnApproved: true } : o
           ),
         }));
-        if (isSupabaseConfigured()) {
-          try {
-            await supabase!.from("orders").update({ return_approved: true }).eq("id", orderId);
-          } catch (e) { console.error("Order sync failed:", e); }
-        }
+        await apiPut({ id: orderId, return_approved: true });
       },
 
       getStats: () => {

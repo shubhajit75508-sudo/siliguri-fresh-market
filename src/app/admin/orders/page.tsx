@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
-import { Navigation, Eye, X, RotateCcw, Truck } from "lucide-react";
+import { Navigation, Eye, X, RotateCcw, Truck, Loader2 } from "lucide-react";
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange"> = {
   received: "default",
@@ -15,7 +15,7 @@ const statusColors: Record<string, "default" | "blue" | "fresh" | "orange"> = {
 };
 
 export default function AdminOrdersPage() {
-  const { orders, updateStatus, assignDeliveryBoy, approveReturn } = useOrderStore();
+  const { orders, loaded, loadOrders, updateStatus, assignDeliveryBoy, approveReturn } = useOrderStore();
   const { assignments } = useDeliveryStore();
   const deliveryBoys = useDeliveryStore((s) => {
     const state = s as { boy: unknown; assignments: unknown[]; loginWithCode: unknown; loginAsBoy: unknown; logout: unknown; confirmDelivery: unknown; setAssignments: unknown };
@@ -24,6 +24,16 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<typeof orders[number] | null>(null);
   const [returnModal, setReturnModal] = useState<typeof orders[number] | null>(null);
   const [assignModal, setAssignModal] = useState<typeof orders[number] | null>(null);
+
+  useEffect(() => { loadOrders(); }, []);
+
+  if (!loaded) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
 
   return (
     <div>

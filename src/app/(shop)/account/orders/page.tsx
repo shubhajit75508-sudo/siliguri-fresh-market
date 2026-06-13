@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag } from "lucide-react";
+import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
+import { useOrderStore } from "@/store/order-store";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 
 interface OrderSummary {
@@ -18,14 +19,33 @@ interface OrderSummary {
 }
 
 export default function OrdersPage() {
-  const [orders] = useState<OrderSummary[]>([]);
+  const { orders: allOrders, loaded, loadOrders } = useOrderStore();
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
   const [returnDeliveredAt, setReturnDeliveredAt] = useState<string | undefined>();
+
+  useEffect(() => { loadOrders(); }, []);
+
+  const orders: OrderSummary[] = allOrders.map((o) => ({
+    id: o.id,
+    date: new Date(o.createdAt).toLocaleDateString(),
+    total: o.total,
+    items: o.items.length,
+    status: o.status.replace(/_/g, " "),
+    deliveredAt: o.status === "delivered" ? o.createdAt : undefined,
+  }));
 
   const handleReturn = (order: OrderSummary) => {
     setReturnOrderId(order.id);
     setReturnDeliveredAt(order.deliveredAt);
   };
+
+  if (!loaded) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
 
   return (
     <div>

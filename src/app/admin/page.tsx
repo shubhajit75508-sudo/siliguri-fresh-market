@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import {
   IndianRupee,
   ShoppingCart,
@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Package,
   Truck,
+  Loader2,
 } from "lucide-react";
 import { StatCard } from "@/components/admin/stat-card";
 import { RevenueChart } from "@/components/admin/revenue-chart";
@@ -16,7 +17,9 @@ import { useAuthStore } from "@/store/auth-store";
 import { formatPrice } from "@/lib/utils";
 
 export default function AdminDashboard() {
-  const { getStats, orders } = useOrderStore();
+  const { getStats, orders, loaded, loadOrders } = useOrderStore();
+
+  useEffect(() => { loadOrders(); }, []);
   const { users } = useAuthStore();
 
   const stats = useMemo(() => getStats(), [orders.length]);
