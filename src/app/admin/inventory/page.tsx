@@ -3,35 +3,58 @@
 import { useState } from "react";
 import { Package } from "lucide-react";
 import { useAdminStore } from "@/store/admin-store";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toaster";
+
+const API_BASE = "/api/admin/products";
 
 export default function AdminInventoryPage() {
   const { products: storeProducts, updateProduct } = useAdminStore();
   const [editingStock, setEditingStock] = useState<Record<string, number>>({});
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const supabaseAvailable = isSupabaseConfigured();
 
   const { data: liveProducts } = useQuery({
     queryKey: ["products", "all"],
     queryFn: getAllProducts,
-    enabled: isSupabaseConfigured(),
+    enabled: supabaseAvailable,
   });
 
-  const products = isSupabaseConfigured() && liveProducts ? liveProducts : storeProducts;
+  const products = supabaseAvailable && liveProducts ? liveProducts : storeProducts;
 
   const setStock = (id: string, val: number) => {
     setEditingStock((prev) => ({ ...prev, [id]: val }));
   };
 
-  const saveStock = (id: string) => {
+  const saveStock = async (id: string) => {
     const stock = editingStock[id];
     if (stock === undefined) return;
-    updateProduct(id, { stock });
-    setEditingStock((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
+    try {
+      if (supabaseAvailable) {
+        const res = await fetch(API_BASE, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, stock, inStock: stock > 0 }),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Update failed");
+        }
+      }
+      updateProduct(id, { stock });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setEditingStock((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    } catch (e) {
+      console.error("Stock update failed:", e);
+      toast.add(e instanceof Error ? e.message : "Failed to update stock", "error");
+    }
   };
 
   return (

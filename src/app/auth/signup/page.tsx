@@ -15,7 +15,7 @@ function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signup, login, adminExists } = useAuthStore();
-  const { setUser } = useUserStore();
+  const { setUser, addAddress } = useUserStore();
   const toast = useToast();
   const [form, setForm] = useState({
     name: "",
@@ -69,6 +69,16 @@ function SignupForm() {
     });
 
     if (result.success) {
+      if (form.address) {
+        addAddress({
+          id: "addr-" + crypto.randomUUID().slice(0, 8),
+          label: "Home",
+          line1: form.address,
+          city: "",
+          pincode: "",
+          isDefault: true,
+        });
+      }
       if (form.role === "customer") {
         const loginResult = await login(form.email, form.password);
         if (loginResult.success) {

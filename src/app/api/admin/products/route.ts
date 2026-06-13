@@ -63,9 +63,25 @@ export async function PUT(req: NextRequest) {
   if (updates.originalPrice !== undefined) dbUpdates.original_price = updates.originalPrice;
   if (updates.discount !== undefined) dbUpdates.discount = updates.discount;
   if (updates.image !== undefined) dbUpdates.image = updates.image;
+  if (updates.images !== undefined) dbUpdates.images = updates.images;
   if (updates.inStock !== undefined) dbUpdates.in_stock = updates.inStock;
   if (updates.stock !== undefined) dbUpdates.stock = updates.stock;
   if (updates.unit !== undefined) dbUpdates.unit = updates.unit;
+  if (updates.freshnessScore !== undefined) dbUpdates.freshness_score = updates.freshnessScore;
+  if (updates.deliveryEta !== undefined) dbUpdates.delivery_eta = updates.deliveryEta;
+  if (updates.rating !== undefined) dbUpdates.rating = updates.rating;
+  if (updates.reviewCount !== undefined) dbUpdates.review_count = updates.reviewCount;
+  if (updates.isFlashDeal !== undefined) dbUpdates.is_flash_deal = updates.isFlashDeal;
+  if (updates.isTrending !== undefined) dbUpdates.is_trending = updates.isTrending;
+  if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+  if (updates.weight !== undefined) dbUpdates.weight = updates.weight;
+  if (updates.cuts !== undefined) dbUpdates.cuts = updates.cuts;
+  if (updates.cleaningOptions !== undefined) dbUpdates.cleaning_options = updates.cleaningOptions;
+  if (updates.nutrition !== undefined) dbUpdates.nutrition = updates.nutrition;
+  if (updates.source !== undefined) dbUpdates.source = updates.source;
+  if (updates.species !== undefined) dbUpdates.species = updates.species;
+  if (updates.river !== undefined) dbUpdates.river = updates.river;
+  if (updates.catchDate !== undefined) dbUpdates.catch_date = updates.catchDate;
 
   const { error } = await supabaseAdmin.from("products").update(dbUpdates).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

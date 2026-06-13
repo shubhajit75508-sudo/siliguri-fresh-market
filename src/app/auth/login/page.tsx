@@ -36,8 +36,6 @@ export default function LoginPage() {
 
     if (result.success && result.user) {
       toast.add(`Welcome, ${result.user.name}!`);
-      const cookieValue = `${result.user.email}|${result.user.role}`;
-      document.cookie = `sfm-auth-session=${cookieValue}; path=/; max-age=86400; SameSite=Lax`;
 
       if (result.user.role === "admin") {
         adminStore.loginDirect();

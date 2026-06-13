@@ -57,25 +57,27 @@ export default function AdminProductsPage() {
     if (!editingId || !form.name) return;
     setSaving(true);
     try {
-      const slug = form.name ? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : undefined;
-      const res = await fetch(API_BASE, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: editingId, ...form, slug }),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Update failed");
+      if (supabaseAvailable) {
+        const slug = form.name ? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : undefined;
+        const res = await fetch(API_BASE, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingId, ...form, slug }),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Update failed");
+        }
       }
       updateProduct(editingId, form);
       invalidateProducts();
+      setEditingId(null);
+      setForm({});
     } catch (e) {
       console.error("Product update failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to update product", "error");
     }
     setSaving(false);
-    setEditingId(null);
-    setForm({});
   };
 
   const openAdd = () => {
@@ -96,34 +98,38 @@ export default function AdminProductsPage() {
     const slug = createUniqueSlug(form.name);
     const product = { ...form, id, slug } as Product;
     try {
-      const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Insert failed");
+      if (supabaseAvailable) {
+        const res = await fetch(API_BASE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(product),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Insert failed");
+        }
       }
       addProduct(product);
       invalidateProducts();
+      setAdding(false);
+      setForm({});
     } catch (e) {
       console.error("Product insert failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to save product", "error");
       existingSlugs.delete(slug);
     }
     setSaving(false);
-    setAdding(false);
-    setForm({});
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this product?")) return;
     try {
-      const res = await fetch(`${API_BASE}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Delete failed");
+      if (supabaseAvailable) {
+        const res = await fetch(`${API_BASE}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Delete failed");
+        }
       }
       deleteProduct(id);
       invalidateProducts();
