@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
@@ -220,13 +220,14 @@ function AssignModal({ order, onAssign, onClose }: {
   onClose: () => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [boys, setBoys] = useState(() => {
+  const [boys, setBoys] = useState<{ id: string; name: string; phone: string; area: string; isActive: boolean }[]>([]);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem("sfm-delivery-boys");
-      if (raw) return JSON.parse(raw);
+      if (raw) setBoys(JSON.parse(raw));
     } catch {}
-    return [];
-  });
+  }, []);
 
   const allBoys = boys.filter((b: { isActive: boolean }) => b.isActive !== false);
 

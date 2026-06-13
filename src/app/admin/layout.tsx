@@ -82,11 +82,13 @@ export default function AdminLayout({
     checked.current = true;
   }, [isLoggedIn, currentUser, pathname, router, storesReady]);
 
-  if (!storesReady) return null;
+  if (!storesReady) {
+    return <div className="flex min-h-screen items-center justify-center bg-gray-50"><p className="text-sm text-muted">Loading...</p></div>;
+  }
 
   if (!isLoggedIn || currentUser?.role !== "admin") {
     if (pathname === "/admin/login") return <>{children}</>;
-    return null;
+    return <div className="flex min-h-screen items-center justify-center bg-gray-50"><p className="text-sm text-muted">Redirecting...</p></div>;
   }
 
   return (

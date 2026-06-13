@@ -158,7 +158,14 @@ export const useAuthStore = create<AuthState>()(
             location: localUser?.location ?? null,
             createdAt: user.created_at ?? localUser?.createdAt ?? new Date().toISOString(),
           };
-          set({ currentUser: newUser });
+          set((state) => {
+            const exists = state.users.some((u) => u.id === newUser.id);
+            return {
+              currentUser: newUser,
+              users: exists ? state.users : [...state.users, newUser],
+            };
+          });
+          document.cookie = `sfm-auth-session=${newUser.id}|${newUser.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
           return { success: true, user: newUser };
         }
 
@@ -171,16 +178,18 @@ export const useAuthStore = create<AuthState>()(
         if (user.password !== hashed) {
           return { success: false, error: "Incorrect password" };
         }
-        set({ currentUser: user });
-        return { success: true, user };
-      },
+          set({ currentUser: user });
+          document.cookie = `sfm-auth-session=${user.id}|${user.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+          return { success: true, user };
+        },
 
-      logout: async () => {
-        if (isSupabaseConfigured() && supabase) {
-          await supabase.auth.signOut();
-        }
-        set({ currentUser: null });
-      },
+        logout: async () => {
+          if (isSupabaseConfigured() && supabase) {
+            await supabase.auth.signOut();
+          }
+          document.cookie = "sfm-auth-session=; path=/; max-age=0";
+          set({ currentUser: null });
+        },
 
       deleteAccountSync: (id) =>
         set((state) => ({

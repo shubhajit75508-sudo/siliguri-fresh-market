@@ -69,7 +69,7 @@ export const useOrderStore = create<OrderState>()(
               customer_email: data.customerEmail,
               address_snapshot: data.address as unknown as Record<string, unknown>,
             });
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
         return id;
       },
@@ -83,7 +83,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ status }).eq("id", id);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 
@@ -118,7 +118,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ delivery_boy_id: boyId, delivery_status: "assigned", status: "out_for_delivery" }).eq("id", orderId);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 
@@ -131,7 +131,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ delivery_status: "accepted" }).eq("id", orderId);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 
@@ -144,7 +144,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ delivery_status: "picked_up" }).eq("id", orderId);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 
@@ -159,7 +159,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ delivery_status: "delivered", status: "delivered" }).eq("id", orderId);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 
@@ -172,7 +172,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ return_requested: true }).eq("id", orderId);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 
@@ -185,7 +185,7 @@ export const useOrderStore = create<OrderState>()(
         if (isSupabaseConfigured()) {
           try {
             await supabase!.from("orders").update({ return_approved: true }).eq("id", orderId);
-          } catch {}
+          } catch (e) { console.error("Order sync failed:", e); }
         }
       },
 

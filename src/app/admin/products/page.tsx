@@ -30,8 +30,19 @@ export default function AdminProductsPage() {
 
   const products = supabaseAvailable && liveProducts ? liveProducts : storeProducts;
 
-  const createSlug = (name: string) =>
-    name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const existingSlugs = new Set(products.map((p) => p.slug));
+
+  const createUniqueSlug = (name: string) => {
+    const base = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    let slug = base;
+    let i = 1;
+    while (existingSlugs.has(slug)) {
+      slug = `${base}-${i}`;
+      i++;
+    }
+    existingSlugs.add(slug);
+    return slug;
+  };
 
   const invalidateProducts = () => {
     queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -46,20 +57,18 @@ export default function AdminProductsPage() {
     if (!editingId || !form.name) return;
     setSaving(true);
     try {
-      updateProduct(editingId, form);
-      if (supabaseAvailable) {
-        const slug = createSlug(form.name ?? "");
-        const res = await fetch(API_BASE, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: editingId, ...form, slug }),
-        });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || "Update failed");
-        }
-        invalidateProducts();
+      const slug = form.name ? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : undefined;
+      const res = await fetch(API_BASE, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingId, ...form, slug }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Update failed");
       }
+      updateProduct(editingId, form);
+      invalidateProducts();
     } catch (e) {
       console.error("Product update failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to update product", "error");
@@ -84,25 +93,24 @@ export default function AdminProductsPage() {
     if (!form.name || form.price === undefined || form.price === null || form.price < 0 || !form.image) return;
     setSaving(true);
     const id = crypto.randomUUID();
-    const slug = createSlug(form.name);
+    const slug = createUniqueSlug(form.name);
     const product = { ...form, id, slug } as Product;
     try {
-      addProduct(product);
-      if (supabaseAvailable) {
-        const res = await fetch(API_BASE, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(product),
-        });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || "Insert failed");
-        }
-        invalidateProducts();
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Insert failed");
       }
+      addProduct(product);
+      invalidateProducts();
     } catch (e) {
       console.error("Product insert failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to save product", "error");
+      existingSlugs.delete(slug);
     }
     setSaving(false);
     setAdding(false);
@@ -112,15 +120,13 @@ export default function AdminProductsPage() {
   const remove = async (id: string) => {
     if (!confirm("Delete this product?")) return;
     try {
-      deleteProduct(id);
-      if (supabaseAvailable) {
-        const res = await fetch(`${API_BASE}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || "Delete failed");
-        }
-        invalidateProducts();
+      const res = await fetch(`${API_BASE}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Delete failed");
       }
+      deleteProduct(id);
+      invalidateProducts();
     } catch (e) {
       console.error("Product delete failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to delete product", "error");
