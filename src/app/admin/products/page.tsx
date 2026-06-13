@@ -52,7 +52,8 @@ export default function AdminProductsPage() {
         invalidateProducts();
       }
     } catch (e) {
-      toast.add("Failed to update product", "error");
+      console.error("Product update failed:", e);
+      toast.add(e instanceof Error ? e.message : "Failed to update product", "error");
     }
     setSaving(false);
     setEditingId(null);
@@ -83,7 +84,8 @@ export default function AdminProductsPage() {
         invalidateProducts();
       }
     } catch (e) {
-      toast.add("Failed to save product", "error");
+      console.error("Product insert failed:", e);
+      toast.add(e instanceof Error ? e.message : "Failed to save product", "error");
     }
     setSaving(false);
     setAdding(false);
@@ -100,7 +102,8 @@ export default function AdminProductsPage() {
         invalidateProducts();
       }
     } catch (e) {
-      toast.add("Failed to delete product", "error");
+      console.error("Product delete failed:", e);
+      toast.add(e instanceof Error ? e.message : "Failed to delete product", "error");
     }
   };
 
