@@ -51,7 +51,11 @@ export const useOrderStore = create<OrderState>()(
       loaded: false,
 
       loadOrders: async () => {
-        if (!isSupabaseConfigured()) return;
+        if (!isSupabaseConfigured()) {
+          console.warn("[loadOrders] Supabase not configured, skipping remote fetch");
+          set({ loaded: true });
+          return;
+        }
         try {
           const res = await fetch("/api/admin/orders");
           if (!res.ok) throw new Error("Failed to fetch orders");

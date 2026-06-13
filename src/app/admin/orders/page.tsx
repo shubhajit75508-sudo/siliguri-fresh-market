@@ -25,7 +25,14 @@ export default function AdminOrdersPage() {
   const [returnModal, setReturnModal] = useState<typeof orders[number] | null>(null);
   const [assignModal, setAssignModal] = useState<typeof orders[number] | null>(null);
 
-  useEffect(() => { loadOrders(); }, []);
+  useEffect(() => {
+    console.log("[AdminOrders] Mounted, loaded:", loaded, "orders:", orders.length);
+    loadOrders();
+  }, []);
+
+  useEffect(() => {
+    console.log("[AdminOrders] State updated - loaded:", loaded, "orders:", orders.length);
+  }, [loaded, orders.length]);
 
   if (!loaded) {
     return (
