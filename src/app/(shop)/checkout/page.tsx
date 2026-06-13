@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,7 +47,7 @@ export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState("upi");
-  const { location: locationCoords, locating: locationStatus, error: locationErrorMsg, getLocation: getLiveLocation } = useGeolocation();
+  const { location: locationCoords, locating: locationStatus, error: locationErrorMsg, resolvedAddress, getLocation: getLiveLocation } = useGeolocation();
   const [manualPincode, setManualPincode] = useState("");
   const [useManualPincode, setUseManualPincode] = useState(false);
   const [confirmingOrder, setConfirmingOrder] = useState(false);
@@ -66,6 +66,16 @@ export default function CheckoutPage() {
 
   const isAuthenticated = !!(currentUser && currentUser.role === "customer");
   const hasLocation = !!(locationCoords || (selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
+
+  useEffect(() => {
+    if (resolvedAddress && !manualPincode) {
+      const match = resolvedAddress.match(/\b\d{6}\b/);
+      if (match) {
+        setManualPincode(match[0]);
+        setUseManualPincode(true);
+      }
+    }
+  }, [resolvedAddress]);
 
   const handleToggleCoins = () => {
     if (coinsRedeemed > 0) {

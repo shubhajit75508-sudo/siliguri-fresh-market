@@ -22,7 +22,7 @@ export default function AddressesPage() {
     lat: "",
     lng: "",
   });
-  const { location, locating, getLocation: detectLocation } = useGeolocation();
+  const { location, locating, resolvedAddress, getLocation: detectLocation } = useGeolocation();
 
   useEffect(() => {
     if (location) {
@@ -31,9 +31,20 @@ export default function AddressesPage() {
         lat: location.lat.toFixed(6),
         lng: location.lng.toFixed(6),
       }));
-      toast.add("Location detected");
     }
   }, [location]);
+
+  useEffect(() => {
+    if (resolvedAddress && !form.line1) {
+      const match = resolvedAddress.match(/\b\d{6}\b/);
+      setForm((f) => ({
+        ...f,
+        line1: resolvedAddress,
+        pincode: match ? match[0] : f.pincode,
+      }));
+      toast.add("Address filled from live location");
+    }
+  }, [resolvedAddress]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
