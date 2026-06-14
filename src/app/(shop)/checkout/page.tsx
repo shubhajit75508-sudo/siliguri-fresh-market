@@ -132,7 +132,7 @@ export default function CheckoutPage() {
 
   const isAuthenticated = !!(currentUser && currentUser.role === "customer");
   const hasLocation = !!((selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
-  const requiredDetailsFilled = !!(detailForm.area.trim() || selectedAddress?.area) && !!(detailForm.landmark.trim() || selectedAddress?.landmark) && !!(detailForm.building.trim() || selectedAddress?.building);
+  const requiredDetailsFilled = !!(detailForm.area.trim()) && !!(detailForm.landmark.trim()) && !!(detailForm.building.trim());
 
   useEffect(() => {
     if (selectedAddress) {
@@ -331,11 +331,7 @@ export default function CheckoutPage() {
       return;
     }
     saveAddressDetails();
-    const area = detailForm.area.trim() || selectedAddress.area;
-    const landmark = detailForm.landmark.trim() || selectedAddress.landmark;
-    const building = detailForm.building.trim() || selectedAddress.building;
-    const floor = detailForm.floor.trim() || selectedAddress.floor || "";
-    if (!area || !landmark || !building) {
+    if (!requiredDetailsFilled) {
       toast.add("Please fill in Area, Landmark, and Building details", "error");
       setShowDetailForm(true);
       setCurrentStep(0);
@@ -354,7 +350,7 @@ export default function CheckoutPage() {
       const orderId = await createOrder({
         items,
         total,
-        address: { ...selectedAddress, area: area || undefined, landmark: landmark || undefined, building: building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: floor || undefined },
+        address: { ...selectedAddress, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined },
         paymentMethod: selectedPayment,
         customerName: currentUser?.name ?? "Guest",
         customerPhone: currentUser?.phone ?? "",
@@ -369,10 +365,10 @@ export default function CheckoutPage() {
   };
 
   const detailProgress = [
-    { key: "area", done: !!(detailForm.area.trim() || selectedAddress?.area), label: "Area" },
-    { key: "landmark", done: !!(detailForm.landmark.trim() || selectedAddress?.landmark), label: "Landmark" },
-    { key: "building", done: !!(detailForm.building.trim() || selectedAddress?.building), label: "Building" },
-    { key: "floor", done: !!(detailForm.floor.trim() || selectedAddress?.floor), label: "Floor", optional: true },
+    { key: "area", done: !!(detailForm.area.trim()), label: "Area" },
+    { key: "landmark", done: !!(detailForm.landmark.trim()), label: "Landmark" },
+    { key: "building", done: !!(detailForm.building.trim()), label: "Building" },
+    { key: "floor", done: !!(detailForm.floor.trim()), label: "Floor", optional: true },
   ];
 
   return (
