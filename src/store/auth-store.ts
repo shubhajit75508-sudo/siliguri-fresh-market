@@ -143,50 +143,51 @@ export const useAuthStore = create<AuthState>()(
             email,
             password,
           });
-          if (error) return { success: false, error: error.message };
-          const user = authData.user;
-          const localUser = get().users.find((u) => u.email === email);
-          let dbRole: string | null = null;
-          try {
-            const { data: profile } = await supabase
-              .from("users")
-              .select("role")
-              .eq("id", user.id)
-              .single();
-            if (profile) dbRole = profile.role as string;
-          } catch (e) {
-            console.warn("Failed to fetch user role from Supabase:", e);
-          }
-          const resolvedRole = (localUser?.role ?? dbRole ?? user.user_metadata?.role ?? "customer") as UserRole;
-          const newUser: AuthUser = {
-            id: user.id,
-            email: user.email ?? email,
-            password: "",
-            name: user.user_metadata?.name ?? localUser?.name ?? email.split("@")[0],
-            phone: user.user_metadata?.phone ?? localUser?.phone ?? "",
-            address: user.user_metadata?.address ?? localUser?.address ?? "",
-            role: resolvedRole,
-            location: localUser?.location ?? null,
-            createdAt: user.created_at ?? localUser?.createdAt ?? new Date().toISOString(),
-          };
-          set((state) => {
-            const exists = state.users.some((u) => u.id === newUser.id);
-            return {
-              currentUser: newUser,
-              users: exists ? state.users : [...state.users, newUser],
+          if (!error) {
+            const user = authData.user;
+            const localUser = get().users.find((u) => u.email === email);
+            let dbRole: string | null = null;
+            try {
+              const { data: profile } = await supabase
+                .from("users")
+                .select("role")
+                .eq("id", user.id)
+                .single();
+              if (profile) dbRole = profile.role as string;
+            } catch (e) {
+              console.warn("Failed to fetch user role from Supabase:", e);
+            }
+            const resolvedRole = (localUser?.role ?? dbRole ?? user.user_metadata?.role ?? "customer") as UserRole;
+            const newUser: AuthUser = {
+              id: user.id,
+              email: user.email ?? email,
+              password: "",
+              name: user.user_metadata?.name ?? localUser?.name ?? email.split("@")[0],
+              phone: user.user_metadata?.phone ?? localUser?.phone ?? "",
+              address: user.user_metadata?.address ?? localUser?.address ?? "",
+              role: resolvedRole,
+              location: localUser?.location ?? null,
+              createdAt: user.created_at ?? localUser?.createdAt ?? new Date().toISOString(),
             };
-          });
-          document.cookie = `sfm-auth-session=${newUser.id}|${newUser.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
-          const phone = newUser.phone || newUser.email;
-          const existingUser = useUserStore.getState().user;
-          useUserStore.getState().setUser({
-            id: "user-" + phone.replace(/\D/g, ""),
-            name: newUser.name,
-            email: newUser.email,
-            phone: phone,
-            loyaltyPoints: existingUser?.loyaltyPoints ?? 0,
-          });
-          return { success: true, user: newUser };
+            set((state) => {
+              const exists = state.users.some((u) => u.id === newUser.id);
+              return {
+                currentUser: newUser,
+                users: exists ? state.users : [...state.users, newUser],
+              };
+            });
+            document.cookie = `sfm-auth-session=${newUser.id}|${newUser.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+            const phone = newUser.phone || newUser.email;
+            const existingUser = useUserStore.getState().user;
+            useUserStore.getState().setUser({
+              id: "user-" + phone.replace(/\D/g, ""),
+              name: newUser.name,
+              email: newUser.email,
+              phone: phone,
+              loyaltyPoints: existingUser?.loyaltyPoints ?? 0,
+            });
+            return { success: true, user: newUser };
+          }
         }
 
         const { users } = get();
@@ -198,18 +199,18 @@ export const useAuthStore = create<AuthState>()(
         if (user.password !== hashed) {
           return { success: false, error: "Incorrect password" };
         }
-          set({ currentUser: user });
-          document.cookie = `sfm-auth-session=${user.id}|${user.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
-          const existingLocalUser = useUserStore.getState().user;
-          useUserStore.getState().setUser({
-            id: "user-" + user.phone.replace(/\D/g, ""),
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            loyaltyPoints: existingLocalUser?.loyaltyPoints ?? 0,
-          });
-          return { success: true, user };
-        },
+        set({ currentUser: user });
+        document.cookie = `sfm-auth-session=${user.id}|${user.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+        const existingLocalUser = useUserStore.getState().user;
+        useUserStore.getState().setUser({
+          id: "user-" + user.phone.replace(/\D/g, ""),
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          loyaltyPoints: existingLocalUser?.loyaltyPoints ?? 0,
+        });
+        return { success: true, user };
+      },
 
         logout: async () => {
           if (isSupabaseConfigured() && supabase) {
