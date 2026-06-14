@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
-import { Navigation, Eye, X, RotateCcw, Truck, Loader2 } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2 } from "lucide-react";
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange"> = {
   received: "default",
@@ -158,11 +158,32 @@ export default function AdminOrdersPage() {
             <div className="mt-4 space-y-3 text-sm">
               <p><span className="text-muted">Customer:</span> {selectedOrder.customerName}</p>
               <p><span className="text-muted">Phone:</span> {selectedOrder.customerPhone}</p>
-              <p><span className="text-muted">Address:</span> {selectedOrder.address.line1}, {selectedOrder.address.city} — {selectedOrder.address.pincode}</p>
+              <div>
+                <span className="text-muted">Address:</span>
+                <div className="mt-1 rounded-lg bg-surface p-3 text-xs space-y-0.5">
+                  <p>{selectedOrder.address.line1}</p>
+                  {selectedOrder.address.area && <p>Area: {selectedOrder.address.area}</p>}
+                  {selectedOrder.address.landmark && <p>Landmark: {selectedOrder.address.landmark}</p>}
+                  {selectedOrder.address.building && <p>Building: {selectedOrder.address.building}</p>}
+                  {selectedOrder.address.flat && <p>Flat: {selectedOrder.address.flat}</p>}
+                  {selectedOrder.address.floor && <p>Floor: {selectedOrder.address.floor}</p>}
+                  <p>{selectedOrder.address.city} — {selectedOrder.address.pincode}</p>
+                </div>
+              </div>
               <p>
                 <span className="text-muted">Location:</span>{" "}
                 {selectedOrder.address.lat && selectedOrder.address.lng ? (
-                  <span className="text-blue-600">{selectedOrder.address.lat}, {selectedOrder.address.lng}</span>
+                  <>
+                    <span className="text-blue-600">{selectedOrder.address.lat}, {selectedOrder.address.lng}</span>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${selectedOrder.address.lat},${selectedOrder.address.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-blue-600 underline"
+                    >
+                      Open in Maps
+                    </a>
+                  </>
                 ) : (
                   <span className="text-gray-400">No coordinates</span>
                 )}
@@ -219,6 +240,10 @@ export default function AdminOrdersPage() {
               <p className="font-medium">{returnModal.customerName}</p>
               <p className="mt-1 text-muted">{returnModal.customerPhone}</p>
               <p className="text-muted">{returnModal.address.line1}</p>
+              {returnModal.address.area && <p className="text-muted">Area: {returnModal.address.area}</p>}
+              {returnModal.address.landmark && <p className="text-muted">Near: {returnModal.address.landmark}</p>}
+              {returnModal.address.building && <p className="text-muted">{returnModal.address.building}{returnModal.address.flat ? `, Flat ${returnModal.address.flat}` : ""}{returnModal.address.floor ? `, Floor ${returnModal.address.floor}` : ""}</p>}
+              <p className="text-muted">{returnModal.address.city} — {returnModal.address.pincode}</p>
             </div>
             <div className="mt-4 flex gap-3">
               <Button variant="default" onClick={() => { approveReturn(returnModal.id); setReturnModal(null); }}>

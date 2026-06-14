@@ -53,6 +53,11 @@ export interface Address {
   label: string;
   line1: string;
   line2?: string;
+  area?: string;
+  landmark?: string;
+  building?: string;
+  flat?: string;
+  floor?: string;
   city: string;
   pincode: string;
   lat?: number;

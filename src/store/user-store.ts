@@ -20,6 +20,7 @@ interface UserState {
   setUser: (user: User | null) => void;
   updateUser: (partial: Partial<User>) => void;
   addAddress: (address: Address) => void;
+  updateAddress: (address: Address) => void;
   addToRecentlyViewed: (productId: string) => void;
   addToSearchHistory: (query: string) => void;
   clearSearchHistory: () => void;
@@ -48,13 +49,17 @@ export const useUserStore = create<UserState>()(
       deliveryPincode: "",
       activityLog: [],
 
-      setUser: (user) => set({ user }),
-      updateUser: (partial) =>
-        set((state) => ({
-          user: state.user ? { ...state.user, ...partial } : state.user,
-        })),
-      addAddress: (address) =>
-        set((state) => ({ addresses: [...state.addresses, address] })),
+  setUser: (user) => set({ user }),
+  updateUser: (partial) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, ...partial } : state.user,
+    })),
+  addAddress: (address) =>
+    set((state) => ({ addresses: [...state.addresses, address] })),
+  updateAddress: (address) =>
+    set((state) => ({
+      addresses: state.addresses.map((a) => (a.id === address.id ? address : a)),
+    })),
 
       addToRecentlyViewed: (productId) =>
         set((state) => ({

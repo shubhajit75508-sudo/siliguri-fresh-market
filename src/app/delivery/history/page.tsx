@@ -34,8 +34,11 @@ export default function DeliveryHistoryPage() {
             </div>
             <p className="text-sm font-bold">{formatPrice(a.total)}</p>
           </div>
-          <div className="mt-2 flex items-center gap-1 text-xs text-muted">
-            <MapPin className="h-3 w-3" /> {a.address.line1}, {a.address.city}
+          <div className="mt-2 text-xs text-muted space-y-0.5">
+            <p className="flex items-center gap-1"><MapPin className="h-3 w-3 shrink-0" /> {a.address.line1}</p>
+            {a.address.area && <p className="ml-4">Area: {a.address.area}</p>}
+            {a.address.building && <p className="ml-4">{a.address.building}{a.address.flat ? `, Flat ${a.address.flat}` : ""}{a.address.floor ? `, Floor ${a.address.floor}` : ""}</p>}
+            <p className="ml-4">{a.address.city} — {a.address.pincode}</p>
           </div>
           {a.deliveredAt && (
             <p className="mt-1 text-xs text-muted">

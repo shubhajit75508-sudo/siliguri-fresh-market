@@ -10,13 +10,19 @@ import { useToast } from "@/components/ui/toaster";
 import type { Address } from "@/types";
 
 export default function AddressesPage() {
-  const { addresses, addAddress } = useUserStore();
+  const { addresses, addAddress, updateAddress } = useUserStore();
   const toast = useToast();
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     label: "Home",
     line1: "",
     line2: "",
+    area: "",
+    landmark: "",
+    building: "",
+    flat: "",
+    floor: "",
     city: "Siliguri",
     pincode: "",
     lat: "",
@@ -46,6 +52,31 @@ export default function AddressesPage() {
     }
   }, [resolvedAddress]);
 
+  const openAddForm = () => {
+    setEditingId(null);
+    setForm({ label: "Home", line1: "", line2: "", area: "", landmark: "", building: "", flat: "", floor: "", city: "Siliguri", pincode: "", lat: "", lng: "" });
+    setShowForm(true);
+  };
+
+  const openEditForm = (addr: Address) => {
+    setEditingId(addr.id);
+    setForm({
+      label: addr.label,
+      line1: addr.line1,
+      line2: addr.line2 ?? "",
+      area: addr.area ?? "",
+      landmark: addr.landmark ?? "",
+      building: addr.building ?? "",
+      flat: addr.flat ?? "",
+      floor: addr.floor ?? "",
+      city: addr.city,
+      pincode: addr.pincode,
+      lat: addr.lat?.toString() ?? "",
+      lng: addr.lng?.toString() ?? "",
+    });
+    setShowForm(true);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.line1.trim() || !form.pincode.trim()) {
@@ -53,29 +84,52 @@ export default function AddressesPage() {
       return;
     }
 
-    const newAddress: Address = {
-      id: Date.now().toString(),
+    const addrData: Address = {
+      id: editingId ?? (Date.now().toString()),
       label: form.label.trim() || "Home",
       line1: form.line1.trim(),
       line2: form.line2.trim() || undefined,
+      area: form.area.trim() || undefined,
+      landmark: form.landmark.trim() || undefined,
+      building: form.building.trim() || undefined,
+      flat: form.flat.trim() || undefined,
+      floor: form.floor.trim() || undefined,
       city: form.city.trim() || "Siliguri",
       pincode: form.pincode.trim(),
       lat: form.lat ? parseFloat(form.lat) : undefined,
       lng: form.lng ? parseFloat(form.lng) : undefined,
-      isDefault: addresses.length === 0,
+      isDefault: editingId ? (addresses.find((a) => a.id === editingId)?.isDefault ?? addresses.length === 0) : addresses.length === 0,
     };
 
-    addAddress(newAddress);
-    setForm({ label: "Home", line1: "", line2: "", city: "Siliguri", pincode: "", lat: "", lng: "" });
+    if (editingId) {
+      updateAddress(addrData);
+      toast.add("Address updated");
+    } else {
+      addAddress(addrData);
+      toast.add("Address saved");
+    }
     setShowForm(false);
-    toast.add("Address saved");
+    setEditingId(null);
+  };
+
+  const formatAddress = (addr: Address) => {
+    const parts = [addr.line1];
+    if (addr.area) parts.push(addr.area);
+    if (addr.building) {
+      let b = addr.building;
+      if (addr.flat) b += `, Flat ${addr.flat}`;
+      if (addr.floor) b += `, Floor ${addr.floor}`;
+      parts.push(b);
+    }
+    if (addr.landmark) parts.push(`Near ${addr.landmark}`);
+    return parts.join(", ");
   };
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold">Saved Addresses</h2>
-        <Button variant="outline" size="sm" onClick={() => setShowForm((v) => !v)}>
+        <Button variant="outline" size="sm" onClick={openAddForm}>
           <Plus className="h-4 w-4" /> Add New
         </Button>
       </div>
@@ -91,14 +145,48 @@ export default function AddressesPage() {
           <input
             value={form.line1}
             onChange={(e) => setForm((f) => ({ ...f, line1: e.target.value }))}
-            placeholder="Address line 1"
+            placeholder="Street / Road / Colony"
             required
             className="w-full rounded-xl border border-border px-3 py-2 text-sm"
           />
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              value={form.area}
+              onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
+              placeholder="Area / Locality"
+              className="rounded-xl border border-border px-3 py-2 text-sm"
+            />
+            <input
+              value={form.building}
+              onChange={(e) => setForm((f) => ({ ...f, building: e.target.value }))}
+              placeholder="Building / House Name"
+              className="rounded-xl border border-border px-3 py-2 text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <input
+              value={form.flat}
+              onChange={(e) => setForm((f) => ({ ...f, flat: e.target.value }))}
+              placeholder="Flat / Door No."
+              className="rounded-xl border border-border px-3 py-2 text-sm"
+            />
+            <input
+              value={form.floor}
+              onChange={(e) => setForm((f) => ({ ...f, floor: e.target.value }))}
+              placeholder="Floor"
+              className="rounded-xl border border-border px-3 py-2 text-sm"
+            />
+            <input
+              value={form.landmark}
+              onChange={(e) => setForm((f) => ({ ...f, landmark: e.target.value }))}
+              placeholder="Landmark"
+              className="rounded-xl border border-border px-3 py-2 text-sm"
+            />
+          </div>
           <input
             value={form.line2}
             onChange={(e) => setForm((f) => ({ ...f, line2: e.target.value }))}
-            placeholder="Address line 2 (optional)"
+            placeholder="Additional info (optional)"
             className="w-full rounded-xl border border-border px-3 py-2 text-sm"
           />
           <div className="grid grid-cols-2 gap-3">
@@ -136,8 +224,8 @@ export default function AddressesPage() {
           </Button>
           {locationError && <p className="text-xs text-brand-red">{locationError}</p>}
           <div className="flex gap-2">
-            <Button type="submit" variant="fresh" size="sm">Save Address</Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
+            <Button type="submit" variant="fresh" size="sm">{editingId ? "Update Address" : "Save Address"}</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => { setShowForm(false); setEditingId(null); }}>Cancel</Button>
           </div>
         </form>
       )}
@@ -147,15 +235,12 @@ export default function AddressesPage() {
           <div key={addr.id} className="glass-card rounded-2xl p-4">
             <div className="flex items-start gap-3">
               <MapPin className="mt-0.5 h-5 w-5 text-brand-fresh" />
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-semibold">{addr.label}</p>
                   {addr.isDefault && <Badge variant="fresh">Default</Badge>}
                 </div>
-                <p className="mt-1 text-sm text-muted">
-                  {addr.line1}
-                  {addr.line2 && `, ${addr.line2}`}
-                </p>
+                <p className="mt-1 text-sm text-muted">{formatAddress(addr)}</p>
                 <p className="text-sm text-muted">
                   {addr.city} — {addr.pincode}
                 </p>
@@ -165,6 +250,7 @@ export default function AddressesPage() {
                   </p>
                 )}
               </div>
+              <Button variant="ghost" size="sm" onClick={() => openEditForm(addr)}>Edit</Button>
             </div>
           </div>
         ))}

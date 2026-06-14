@@ -62,6 +62,15 @@ export default function DeliveryDashboard() {
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
               <div>
                 <p className="font-medium">{a.address.line1}</p>
+                {a.address.area && <p className="text-muted">Area: {a.address.area}</p>}
+                {a.address.landmark && <p className="text-muted">Landmark: {a.address.landmark}</p>}
+                {a.address.building && (
+                  <p className="text-muted">
+                    {a.address.building}
+                    {a.address.flat ? `, Flat ${a.address.flat}` : ""}
+                    {a.address.floor ? `, Floor ${a.address.floor}` : ""}
+                  </p>
+                )}
                 {a.address.line2 && <p className="text-muted">{a.address.line2}</p>}
                 <p className="text-muted">{a.address.city} — {a.address.pincode}</p>
               </div>

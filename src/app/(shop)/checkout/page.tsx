@@ -30,6 +30,7 @@ import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
 import { ReturnPolicyBanner } from "@/components/ui/return-policy";
+import type { Address } from "@/types";
 
 const steps = [
   { id: "address", label: "Address", icon: MapPin },
@@ -52,6 +53,8 @@ export default function CheckoutPage() {
   const [useManualPincode, setUseManualPincode] = useState(false);
   const [confirmingOrder, setConfirmingOrder] = useState(false);
   const [editingLocation, setEditingLocation] = useState(false);
+  const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "" });
+  const [showDetailForm, setShowDetailForm] = useState(false);
   const { items, getSubtotal, getTotal, getDeliveryFee, getCoinsDiscount, couponDiscount, clearCart, setCoinsDiscount } = useCartStore();
   const { addresses, user, coinsRedeemed, applyCoinsRedemption, removeCoinsRedemption, earnCoins, redeemCoins } = useUserStore();
   const { currentUser } = useAuthStore();
@@ -67,6 +70,19 @@ export default function CheckoutPage() {
 
   const isAuthenticated = !!(currentUser && currentUser.role === "customer");
   const hasLocation = !!((selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
+
+  useEffect(() => {
+    if (selectedAddress) {
+      setDetailForm({
+        area: selectedAddress.area ?? "",
+        landmark: selectedAddress.landmark ?? "",
+        building: selectedAddress.building ?? "",
+        flat: selectedAddress.flat ?? "",
+        floor: selectedAddress.floor ?? "",
+      });
+      setShowDetailForm(!selectedAddress.area || !selectedAddress.building || !selectedAddress.flat || !selectedAddress.floor);
+    }
+  }, [selectedAddressId]);
 
   useEffect(() => {
     if (resolvedAddress && !manualPincode) {
@@ -205,6 +221,19 @@ export default function CheckoutPage() {
     );
   }
 
+  const saveAddressDetails = () => {
+    if (!selectedAddress) return;
+    const updated: Address = {
+      ...selectedAddress,
+      area: detailForm.area.trim() || selectedAddress.area || undefined,
+      landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined,
+      building: detailForm.building.trim() || selectedAddress.building || undefined,
+      flat: detailForm.flat.trim() || selectedAddress.flat || undefined,
+      floor: detailForm.floor.trim() || selectedAddress.floor || undefined,
+    };
+    useUserStore.getState().updateAddress(updated);
+  };
+
   const handlePlaceOrder = () => {
     if (!isAuthenticated) {
       toast.add("Sign up required to place orders", "error");
@@ -216,6 +245,17 @@ export default function CheckoutPage() {
     }
     if (!selectedAddress) {
       toast.add("Please add a delivery address in your account first", "error");
+      return;
+    }
+    saveAddressDetails();
+    const area = detailForm.area.trim() || selectedAddress.area;
+    const building = detailForm.building.trim() || selectedAddress.building;
+    const flat = detailForm.flat.trim() || selectedAddress.flat;
+    const floor = detailForm.floor.trim() || selectedAddress.floor;
+    if (!area || !building || !flat || !floor) {
+      toast.add("Please fill in Area, Building, Flat, and Floor details", "error");
+      setShowDetailForm(true);
+      setCurrentStep(0);
       return;
     }
 
@@ -345,6 +385,11 @@ export default function CheckoutPage() {
                           <p className="text-sm text-muted">
                             {addr.city} — {addr.pincode}
                           </p>
+                          {(addr.area || addr.building) && (
+                            <p className="mt-1 text-xs text-muted">
+                              {[addr.area, addr.building, addr.flat && `Flat ${addr.flat}`, addr.floor && `Floor ${addr.floor}`].filter(Boolean).join(", ")}
+                            </p>
+                          )}
                           {addr.lat && addr.lng && (
                             <p className="mt-1 text-xs text-muted flex items-center gap-1">
                               <Navigation className="h-3 w-3" />
@@ -353,6 +398,87 @@ export default function CheckoutPage() {
                           )}
                         </button>
                       ))}
+                    </div>
+                  )}
+
+                  {selectedAddress && (
+                    <div className="mt-4">
+                      <button
+                        onClick={() => setShowDetailForm(!showDetailForm)}
+                        className="flex items-center gap-2 text-sm font-medium text-brand-dark underline"
+                      >
+                        {showDetailForm ? "Hide" : selectedAddress.area && selectedAddress.building ? "Edit" : "Add"} delivery details
+                      </button>
+
+                      {showDetailForm && (
+                        <div className="mt-3 space-y-3 rounded-xl border border-border bg-surface/50 p-4">
+                          <p className="text-xs font-medium text-muted">Tell us exactly where to deliver</p>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-xs text-muted">Area / Locality *</label>
+                              <input
+                                value={detailForm.area}
+                                onChange={(e) => setDetailForm((f) => ({ ...f, area: e.target.value }))}
+                                placeholder="e.g. Salbari, Hakimpara"
+                                className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-muted">Landmark</label>
+                              <input
+                                value={detailForm.landmark}
+                                onChange={(e) => setDetailForm((f) => ({ ...f, landmark: e.target.value }))}
+                                placeholder="e.g. Near City Centre"
+                                className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-3">
+                            <div>
+                              <label className="text-xs text-muted">Building / House *</label>
+                              <input
+                                value={detailForm.building}
+                                onChange={(e) => setDetailForm((f) => ({ ...f, building: e.target.value }))}
+                                placeholder="e.g. Green Tower"
+                                className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-muted">Flat / Door No. *</label>
+                              <input
+                                value={detailForm.flat}
+                                onChange={(e) => setDetailForm((f) => ({ ...f, flat: e.target.value }))}
+                                placeholder="e.g. 3B"
+                                className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-muted">Floor *</label>
+                              <input
+                                value={detailForm.floor}
+                                onChange={(e) => setDetailForm((f) => ({ ...f, floor: e.target.value }))}
+                                placeholder="e.g. 2nd"
+                                className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm"
+                              />
+                            </div>
+                          </div>
+                          <Button
+                            variant="fresh"
+                            size="sm"
+                            onClick={() => {
+                              if (!detailForm.area.trim() || !detailForm.building.trim() || !detailForm.flat.trim() || !detailForm.floor.trim()) {
+                                toast.add("Please fill Area, Building, Flat and Floor", "error");
+                                return;
+                              }
+                              saveAddressDetails();
+                              setShowDetailForm(false);
+                              toast.add("Delivery details saved");
+                            }}
+                          >
+                            Save Details
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -434,7 +560,26 @@ export default function CheckoutPage() {
                   )}
 
                   <div className="mt-4 border-t pt-4 text-sm text-muted space-y-1">
-                    <p>Delivering to: {selectedAddress ? selectedAddress.line1 : "No address set"}</p>
+                    <p>
+                      <span className="font-medium">Delivering to:</span>{" "}
+                      {selectedAddress ? (
+                        <>
+                          {selectedAddress.line1}
+                          {detailForm.area.trim() || selectedAddress.area ? `, ${detailForm.area.trim() || selectedAddress.area}` : ""}
+                          {detailForm.landmark.trim() || selectedAddress.landmark ? ` (Near ${detailForm.landmark.trim() || selectedAddress.landmark})` : ""}
+                          <br />
+                          {[detailForm.building.trim() || selectedAddress.building, detailForm.flat.trim() || selectedAddress.flat, detailForm.floor.trim() || selectedAddress.floor].filter(Boolean).join(", ")}
+                          <br />
+                          {selectedAddress.city} — {selectedAddress.pincode}
+                        </>
+                      ) : "No address set"}
+                    </p>
+                    {selectedAddress?.lat && selectedAddress?.lng && (
+                      <p className="flex items-center gap-1 text-brand-fresh">
+                        <CheckCircle className="h-3 w-3" />
+                        GPS coordinates — {selectedAddress.lat.toFixed(4)}, {selectedAddress.lng.toFixed(4)}
+                      </p>
+                    )}
                     <p>Delivery time: 30 min — 1 hour</p>
                     <p>
                       Payment:{" "}
