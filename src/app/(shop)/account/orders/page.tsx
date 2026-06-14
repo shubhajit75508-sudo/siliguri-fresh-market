@@ -2,12 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2 } from "lucide-react";
+import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
+
+const statusBadge: Record<string, "default" | "fresh" | "blue" | "red" | "orange"> = {
+  received: "default",
+  "out for delivery": "blue",
+  delivered: "fresh",
+  cancelled: "red",
+};
 
 interface OrderSummary {
   id: string;
@@ -71,8 +78,12 @@ export default function OrdersPage() {
                   href={`/track/${order.id}`}
                   className="flex items-center gap-4"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-fresh/10">
-                    <Package className="h-5 w-5 text-brand-fresh" />
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${order.status === "cancelled" ? "bg-brand-red/10" : "bg-brand-fresh/10"}`}>
+                    {order.status === "cancelled" ? (
+                      <XCircle className="h-5 w-5 text-brand-red" />
+                    ) : (
+                      <Package className="h-5 w-5 text-brand-fresh" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-bold">{order.id}</p>
@@ -82,12 +93,18 @@ export default function OrdersPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold">{formatPrice(order.total)}</p>
-                    <Badge variant="fresh" className="mt-1">
+                    <Badge variant={statusBadge[order.status] ?? "default"} className="mt-1">
                       {order.status}
                     </Badge>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted" />
                 </Link>
+                {order.status === "cancelled" && (
+                  <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red/5 py-2 text-xs text-brand-red">
+                    <XCircle className="h-3.5 w-3.5" />
+                    This order was cancelled
+                  </div>
+                )}
                 {order.status === "delivered" && (
                   inWindow ? (
                     <button
