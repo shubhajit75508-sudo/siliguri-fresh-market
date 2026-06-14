@@ -132,7 +132,7 @@ export default function CheckoutPage() {
 
   const isAuthenticated = !!(currentUser && currentUser.role === "customer");
   const hasLocation = !!((selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
-  const requiredDetailsFilled = !!(detailForm.area.trim() || selectedAddress?.area) && !!(detailForm.landmark.trim() || selectedAddress?.landmark) && !!(detailForm.building.trim() || selectedAddress?.building) && !!(detailForm.floor.trim() || selectedAddress?.floor);
+  const requiredDetailsFilled = !!(detailForm.area.trim() || selectedAddress?.area) && !!(detailForm.landmark.trim() || selectedAddress?.landmark) && !!(detailForm.building.trim() || selectedAddress?.building);
 
   useEffect(() => {
     if (selectedAddress) {
@@ -334,9 +334,9 @@ export default function CheckoutPage() {
     const area = detailForm.area.trim() || selectedAddress.area;
     const landmark = detailForm.landmark.trim() || selectedAddress.landmark;
     const building = detailForm.building.trim() || selectedAddress.building;
-    const floor = detailForm.floor.trim() || selectedAddress.floor;
-    if (!area || !landmark || !building || !floor) {
-      toast.add("Please fill in Area, Landmark, Building, and Floor details", "error");
+    const floor = detailForm.floor.trim() || selectedAddress.floor || "";
+    if (!area || !landmark || !building) {
+      toast.add("Please fill in Area, Landmark, and Building details", "error");
       setShowDetailForm(true);
       setCurrentStep(0);
       return;
@@ -372,7 +372,7 @@ export default function CheckoutPage() {
     { key: "area", done: !!(detailForm.area.trim() || selectedAddress?.area), label: "Area" },
     { key: "landmark", done: !!(detailForm.landmark.trim() || selectedAddress?.landmark), label: "Landmark" },
     { key: "building", done: !!(detailForm.building.trim() || selectedAddress?.building), label: "Building" },
-    { key: "floor", done: !!(detailForm.floor.trim() || selectedAddress?.floor), label: "Floor" },
+    { key: "floor", done: !!(detailForm.floor.trim() || selectedAddress?.floor), label: "Floor", optional: true },
   ];
 
   return (
@@ -534,7 +534,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div>
                                       <label className="flex items-center gap-1 text-[10px] font-medium text-muted mb-1">
-                                        <Layers className="h-3 w-3" /> Floor <span className="text-brand-red">*</span>
+                                        <Layers className="h-3 w-3" /> Floor
                                       </label>
                                       <input
                                         value={detailForm.floor}

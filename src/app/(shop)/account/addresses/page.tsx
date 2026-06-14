@@ -89,8 +89,8 @@ export default function AddressesPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.line1.trim() || !form.pincode.trim() || !form.area.trim() || !form.landmark.trim() || !form.building.trim() || !form.floor.trim()) {
-      toast.add("Please fill in Street, Area, Landmark, Building, Floor, and Pincode", "error");
+    if (!form.line1.trim() || !form.pincode.trim() || !form.area.trim() || !form.landmark.trim() || !form.building.trim()) {
+      toast.add("Please fill in Street, Area, Landmark, Building, and Pincode", "error");
       return;
     }
 
@@ -202,7 +202,7 @@ export default function AddressesPage() {
               <input
                 value={form.floor}
                 onChange={(e) => setForm((f) => ({ ...f, floor: e.target.value }))}
-                placeholder="Floor *"
+                placeholder="Floor (optional)"
                 className="rounded-xl border border-border bg-white px-3 py-2.5 text-sm"
               />
             </div>
