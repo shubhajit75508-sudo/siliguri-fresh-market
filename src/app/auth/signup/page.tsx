@@ -76,6 +76,8 @@ function SignupForm() {
           line1: form.address,
           city: "",
           pincode: "",
+          lat: location?.lat,
+          lng: location?.lng,
           isDefault: true,
         });
       }

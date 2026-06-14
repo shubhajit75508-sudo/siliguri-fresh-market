@@ -51,6 +51,7 @@ export default function CheckoutPage() {
   const [manualPincode, setManualPincode] = useState("");
   const [useManualPincode, setUseManualPincode] = useState(false);
   const [confirmingOrder, setConfirmingOrder] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(false);
   const { items, getSubtotal, getTotal, getDeliveryFee, getCoinsDiscount, couponDiscount, clearCart, setCoinsDiscount } = useCartStore();
   const { addresses, user, coinsRedeemed, applyCoinsRedemption, removeCoinsRedemption, earnCoins, redeemCoins } = useUserStore();
   const { currentUser } = useAuthStore();
@@ -136,7 +137,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (hydrated && isAuthenticated && !hasLocation) {
+  if (hydrated && isAuthenticated && (!hasLocation || editingLocation)) {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-orange/10">
@@ -186,6 +187,14 @@ export default function CheckoutPage() {
             )}
           </Button>
         </div>
+        {editingLocation && (
+          <button
+            onClick={() => setEditingLocation(false)}
+            className="mt-4 text-sm text-muted underline hover:text-foreground"
+          >
+            Back to checkout
+          </button>
+        )}
       </div>
     );
   }
@@ -196,7 +205,7 @@ export default function CheckoutPage() {
       return;
     }
     if (!hasLocation) {
-      toast.add("Live location is required", "error");
+      toast.add("Delivery location is required", "error");
       return;
     }
     if (!selectedAddress) {
@@ -236,7 +245,13 @@ export default function CheckoutPage() {
       <div className="mb-4 flex items-center gap-2 rounded-xl bg-brand-fresh/10 px-4 py-2 text-xs font-medium text-brand-fresh-dim">
         <Shield className="h-3.5 w-3.5" />
         Verified account · {hasLocation ? "Delivery location set" : "Delivery location needed"}
-        {hasLocation && <CheckCircle className="ml-auto h-3.5 w-3.5 text-brand-fresh" />}
+        {hasLocation ? (
+          <button onClick={() => setEditingLocation(true)} className="ml-auto text-xs font-semibold text-brand-fresh-dim underline">
+            Change
+          </button>
+        ) : (
+          <CheckCircle className="ml-auto h-3.5 w-3.5 text-brand-fresh" />
+        )}
       </div>
 
       <h1 className="text-2xl font-extrabold">Checkout</h1>

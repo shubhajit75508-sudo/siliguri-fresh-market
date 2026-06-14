@@ -159,12 +159,14 @@ export default function AdminOrdersPage() {
               <p><span className="text-muted">Customer:</span> {selectedOrder.customerName}</p>
               <p><span className="text-muted">Phone:</span> {selectedOrder.customerPhone}</p>
               <p><span className="text-muted">Address:</span> {selectedOrder.address.line1}, {selectedOrder.address.city} — {selectedOrder.address.pincode}</p>
-              {selectedOrder.address.lat && selectedOrder.address.lng && (
-                <p>
-                  <span className="text-muted">Live Location:</span>{" "}
+              <p>
+                <span className="text-muted">Location:</span>{" "}
+                {selectedOrder.address.lat && selectedOrder.address.lng ? (
                   <span className="text-blue-600">{selectedOrder.address.lat}, {selectedOrder.address.lng}</span>
-                </p>
-              )}
+                ) : (
+                  <span className="text-gray-400">No coordinates</span>
+                )}
+              </p>
               <p><span className="text-muted">Payment:</span> {selectedOrder.paymentMethod}</p>
               <p><span className="text-muted">Status:</span> {selectedOrder.status.replace(/_/g, " ")}</p>
               <p><span className="text-muted">Delivery:</span> {selectedOrder.deliveryStatus?.replace(/_/g, " ") ?? "Not assigned"}</p>

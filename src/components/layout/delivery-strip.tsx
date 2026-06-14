@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MapPin, Clock, ChevronDown } from "lucide-react";
+import { MapPin, Clock, ChevronDown, Navigation, Loader2 } from "lucide-react";
 import { useUserStore } from "@/store/user-store";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
 
 const PINCODE_REGEX = /^\d{6}$/;
 
@@ -10,6 +11,7 @@ export function DeliveryStrip() {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const { deliveryPincode, setDeliveryPincode, addresses } = useUserStore();
+  const { location, locating, error: locationError, resolvedAddress, getLocation } = useGeolocation();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,6 +23,16 @@ export function DeliveryStrip() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    if (resolvedAddress) {
+      const match = resolvedAddress.match(/\b\d{6}\b/);
+      if (match) {
+        setDeliveryPincode(match[0]);
+        setOpen(false);
+      }
+    }
+  }, [resolvedAddress]);
 
   const handleSave = () => {
     const trimmed = inputValue.trim();
@@ -76,6 +88,21 @@ export function DeliveryStrip() {
                   <hr className="my-2 border-border" />
                 </div>
               )}
+
+              {/* Live location */}
+              <button
+                onClick={getLocation}
+                disabled={locating}
+                className="mb-3 flex w-full items-center gap-2 rounded-xl bg-brand-fresh/5 px-3 py-2.5 text-sm font-medium text-brand-fresh-dim transition-colors hover:bg-brand-fresh/10 disabled:opacity-50"
+              >
+                {locating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Navigation className="h-4 w-4" />
+                )}
+                {locating ? "Detecting location..." : "Use Live Location"}
+              </button>
+              {locationError && <p className="mb-2 text-xs text-brand-red">{locationError}</p>}
 
               {/* Custom pincode input */}
               <p className="mb-2 text-xs font-medium text-muted">Enter a pincode</p>

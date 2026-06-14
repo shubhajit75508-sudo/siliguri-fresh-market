@@ -28,9 +28,10 @@ export function useGeolocation(): UseGeolocationReturn {
       return;
     }
     console.log("[useGeolocation] Reverse geocoding...");
+    const controller = new AbortController();
     fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}`,
-      { headers: { "User-Agent": "SiliguriFreshMart/1.0" } }
+      { headers: { "User-Agent": "SiliguriFreshMart/1.0" }, signal: controller.signal }
     )
       .then((r) => r.json())
       .then((data) => {
@@ -42,9 +43,12 @@ export function useGeolocation(): UseGeolocationReturn {
         }
       })
       .catch((err) => {
-        console.warn("[useGeolocation] Reverse geocode failed:", err);
-        setError("Could not resolve address from your location. Try entering pincode manually.");
+        if (err.name !== "AbortError") {
+          console.warn("[useGeolocation] Reverse geocode failed:", err);
+          setError("Could not resolve address from your location. Try entering pincode manually.");
+        }
       });
+    return () => controller.abort();
   }, [location]);
 
   const getLocation = useCallback(() => {

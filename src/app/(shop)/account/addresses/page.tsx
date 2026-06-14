@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Plus, Navigation } from "lucide-react";
+import { MapPin, Plus, Navigation, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserStore } from "@/store/user-store";
@@ -22,7 +22,7 @@ export default function AddressesPage() {
     lat: "",
     lng: "",
   });
-  const { location, locating, resolvedAddress, getLocation: detectLocation } = useGeolocation();
+  const { location, locating, error: locationError, resolvedAddress, getLocation: detectLocation } = useGeolocation();
 
   useEffect(() => {
     if (location) {
@@ -130,9 +130,11 @@ export default function AddressesPage() {
               className="rounded-xl border border-border px-3 py-2 text-sm"
             />
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={detectLocation}>
-            <Navigation className="h-4 w-4" /> Detect Current Location
+          <Button type="button" variant="outline" size="sm" onClick={detectLocation} disabled={locating}>
+            {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+            {locating ? "Detecting..." : "Detect Current Location"}
           </Button>
+          {locationError && <p className="text-xs text-brand-red">{locationError}</p>}
           <div className="flex gap-2">
             <Button type="submit" variant="fresh" size="sm">Save Address</Button>
             <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
