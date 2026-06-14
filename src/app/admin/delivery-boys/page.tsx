@@ -18,7 +18,11 @@ export default function AdminDeliveryBoysPage() {
   const toast = useToast();
 
   useEffect(() => {
-    if (migrated.current) return;
+    if (migrated.current) {
+      setBoys(deliveryBoys);
+      setLoading(false);
+      return;
+    }
     const authUsers = useAuthStore.getState().users;
     let changed = false;
     const migratedBoys = deliveryBoys.map((b) => {
