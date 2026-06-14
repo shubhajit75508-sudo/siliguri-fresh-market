@@ -6,7 +6,7 @@ import { Truck, LogOut, Package, History } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const navLinks = [
   { href: "/delivery", icon: Package, label: "Deliveries" },
@@ -18,7 +18,6 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   const router = useRouter();
   const { boy, logout } = useDeliveryStore();
   const { logout: authLogout, currentUser } = useAuthStore();
-  const checked = useRef(false);
 
   // Wait for persisted stores to rehydrate before checking auth
   const [storesReady, setStoresReady] = useState(false);
@@ -46,6 +45,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     if (!storesReady) return;
     if (boy) return;
     if (currentUser?.role === "delivery") {
+      console.debug("[delivery] auto-setting boy from currentUser", currentUser.id);
       useDeliveryStore.getState().loginAsBoy(currentUser.name, currentUser.phone);
     }
   }, [storesReady, boy, currentUser]);
@@ -55,7 +55,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     if (!storesReady || !boy) return;
     const interval = setInterval(() => {
       fetch("/api/admin/orders")
-        .then((r) => r.json())
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then((json) => {
           const allOrders: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number }[] = json.orders ?? [];
           const currentAssignments = useDeliveryStore.getState().assignments;
@@ -93,28 +93,31 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
             useDeliveryStore.getState().setAssignments([...currentAssignments, ...newAssignments]);
           }
         })
-        .catch(() => {});
+        .catch((e) => { console.warn("[delivery] poll error:", e); });
     }, 15000);
     return () => clearInterval(interval);
   }, [storesReady, boy]);
 
   useEffect(() => {
     if (!storesReady) return;
-    if (checked.current) return;
     if (!boy && pathname !== "/delivery/login") {
       const user = useAuthStore.getState().currentUser;
       if (user?.role !== "delivery") {
         router.push("/auth/login");
       }
     }
-    checked.current = true;
   }, [boy, pathname, router, storesReady]);
 
   if (!storesReady) return null;
 
   if (!boy) {
     if (pathname === "/delivery/login") return <>{children}</>;
-    return null;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-fresh border-t-transparent" />
+        <p className="mt-4 text-sm text-muted">Loading your deliveries...</p>
+      </div>
+    );
   }
 
   return (

@@ -9,8 +9,9 @@ const API = "/api/admin/orders";
 async function apiPut(data: Record<string, unknown>) {
   if (!isSupabaseConfigured()) return;
   try {
-    await fetch(API, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-  } catch (e) { console.error("Order sync failed:", e); }
+    const res = await fetch(API, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    if (!res.ok) console.warn("[apiPut] PUT %s returned %d", data.id, res.status);
+  } catch (e) { console.error("[apiPut] network error:", e); }
 }
 
 interface OrderStats {
