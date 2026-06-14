@@ -134,9 +134,14 @@ export default function AdminOrdersPage() {
                         </>
                       )}
                       {order.status === "out_for_delivery" && (
-                        <Button variant="default" size="sm" onClick={() => updateStatus(order.id, "delivered")}>
-                          <CheckCircle className="mr-1 h-3 w-3" /> Delivered
-                        </Button>
+                        <>
+                          <Button variant="default" size="sm" onClick={() => updateStatus(order.id, "delivered")}>
+                            <CheckCircle className="mr-1 h-3 w-3" /> Delivered
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => setConfirmCancel(order.id)} className="text-brand-red border-brand-red/30 hover:bg-brand-red/5">
+                            <XCircle className="mr-1 h-3 w-3" /> Cancel
+                          </Button>
+                        </>
                       )}
                       {order.status === "delivered" && !order.returnRequested && (
                         <Button variant="outline" size="sm" onClick={() => setReturnModal(order)} className="text-xs">
@@ -245,6 +250,16 @@ export default function AdminOrdersPage() {
                 <>
                   <Button variant="default" onClick={() => { setAssignModal(selectedOrder); setSelectedOrder(null); }}>
                     <Truck className="mr-1 h-3 w-3" /> Assign Delivery
+                  </Button>
+                  <Button variant="outline" onClick={() => { setConfirmCancel(selectedOrder.id); setSelectedOrder(null); }} className="text-brand-red border-brand-red/30">
+                    <XCircle className="mr-1 h-3 w-3" /> Cancel Order
+                  </Button>
+                </>
+              )}
+              {selectedOrder.status === "out_for_delivery" && (
+                <>
+                  <Button variant="default" onClick={() => { updateStatus(selectedOrder.id, "delivered"); setSelectedOrder(null); }}>
+                    <CheckCircle className="mr-1 h-3 w-3" /> Mark Delivered
                   </Button>
                   <Button variant="outline" onClick={() => { setConfirmCancel(selectedOrder.id); setSelectedOrder(null); }} className="text-brand-red border-brand-red/30">
                     <XCircle className="mr-1 h-3 w-3" /> Cancel Order
