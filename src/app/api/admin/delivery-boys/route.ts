@@ -14,10 +14,7 @@ function checkAuth(req: NextRequest) {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
-export async function GET(req: NextRequest) {
-  const unauthorized = checkAuth(req);
-  if (unauthorized) return unauthorized;
-
+export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return NextResponse.json({ boys: [] });

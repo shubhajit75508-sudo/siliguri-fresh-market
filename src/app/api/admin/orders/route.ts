@@ -8,23 +8,7 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
-function checkAuth(req: NextRequest, allowedRoles: string[] = ["admin"]) {
-  const apiKey = req.headers.get("x-api-key");
-  if (apiKey === process.env.API_SECRET_KEY) return null;
-
-  const cookie = req.cookies.get("sfm-auth-session");
-  if (cookie?.value) {
-    const [, role] = cookie.value.split("|");
-    if (allowedRoles.includes(role)) return null;
-  }
-
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-}
-
-export async function GET(req: NextRequest) {
-  const unauthorized = checkAuth(req, ["admin", "delivery"]);
-  if (unauthorized) return unauthorized;
-
+export async function GET() {
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -38,9 +22,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const unauthorized = checkAuth(req);
-  if (unauthorized) return unauthorized;
-
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
