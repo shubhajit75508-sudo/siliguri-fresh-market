@@ -149,9 +149,14 @@ export default function DeliveryDashboard() {
                 <Button
                   variant="fresh"
                   size="sm"
-                  onClick={() => {
-                    confirmDelivery(a.orderId);
-                    deliveryConfirm(a.id);
+                  onClick={async () => {
+                    const prevOrders = useOrderStore.getState().orders;
+                    try {
+                      await confirmDelivery(a.orderId);
+                      deliveryConfirm(a.id);
+                    } catch {
+                      useOrderStore.setState({ orders: prevOrders });
+                    }
                   }}
                 >
                   <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivery

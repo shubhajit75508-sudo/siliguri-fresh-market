@@ -20,7 +20,7 @@ export default function CategoryPage({
   const hydrated = useHydrated();
 
   const category = categories.find((c) => c.slug === slug);
-  if (!catsLoading && !category) notFound();
+  if (hydrated && !catsLoading && !category) notFound();
 
   if (!hydrated || catsLoading || prodsLoading) {
     return (

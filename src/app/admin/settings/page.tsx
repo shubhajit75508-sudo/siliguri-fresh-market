@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useAdminStore } from "@/store/admin-store";
 import { useToast } from "@/components/ui/toaster";
@@ -13,6 +13,13 @@ export default function SettingsPage() {
   const toast = useToast();
   const [tab, setTab] = useState<Tab>("general");
   const [form, setForm] = useState({ ...settings });
+  const edited = useRef(false);
+
+  useEffect(() => {
+    if (!edited.current) {
+      setForm({ ...settings });
+    }
+  }, [settings]);
 
   const handleSave = () => {
     updateSettings(form);
@@ -61,7 +68,7 @@ export default function SettingsPage() {
               <input
                 type={type}
                 value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                onChange={(e) => { setForm({ ...form, [key]: e.target.value }); edited.current = true; }}
                 className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
               />
             </div>
@@ -81,7 +88,7 @@ export default function SettingsPage() {
                 <input
                   type="text"
                   value={form.hero.image}
-                  onChange={(e) => setForm({ ...form, hero: { ...form.hero, image: e.target.value } })}
+                  onChange={(e) => { setForm({ ...form, hero: { ...form.hero, image: e.target.value } }); edited.current = true; }}
                   className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
                 />
               </div>
@@ -89,7 +96,7 @@ export default function SettingsPage() {
                 <label className="text-xs font-medium text-gray-500">Title (use \n for line break)</label>
                 <textarea
                   value={form.hero.title}
-                  onChange={(e) => setForm({ ...form, hero: { ...form.hero, title: e.target.value } })}
+                  onChange={(e) => { setForm({ ...form, hero: { ...form.hero, title: e.target.value } }); edited.current = true; }}
                   rows={2}
                   className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
                 />
@@ -98,7 +105,7 @@ export default function SettingsPage() {
                 <label className="text-xs font-medium text-gray-500">Subtitle</label>
                 <textarea
                   value={form.hero.subtitle}
-                  onChange={(e) => setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } })}
+                  onChange={(e) => { setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } }); edited.current = true; }}
                   rows={2}
                   className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
                 />

@@ -6,7 +6,6 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag, Menu, X, UserPlus, Shield, Truck } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
-import { useUserStore } from "@/store/user-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { SearchBar } from "@/components/search/search-bar";
@@ -14,7 +13,6 @@ import { SearchBar } from "@/components/search/search-bar";
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { getItemCount, openCart } = useCartStore();
-  const { user } = useUserStore();
   const { currentUser } = useAuthStore();
   const hydrated = useHydrated();
   const itemCount = hydrated ? getItemCount() : 0;
@@ -161,9 +159,9 @@ export function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.nav
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={{ maxHeight: 0, opacity: 0 }}
+            animate={{ maxHeight: 500, opacity: 1 }}
+            exit={{ maxHeight: 0, opacity: 0 }}
             className="overflow-hidden border-t border-border lg:hidden"
           >
             <div className="space-y-0.5 p-3">

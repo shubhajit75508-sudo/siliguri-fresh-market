@@ -158,7 +158,7 @@ export default function CheckoutPage() {
     if (hydrated && isAuthenticated && (!hasLocation || editingLocation) && !locationCoords && !locationStatus) {
       getLiveLocation();
     }
-  }, [hydrated, isAuthenticated, hasLocation, editingLocation]);
+  }, [hydrated, isAuthenticated, hasLocation, editingLocation, getLiveLocation, manualPincode]);
 
   useEffect(() => {
     if (resolvedAddress && !manualPincode) {
@@ -357,10 +357,6 @@ export default function CheckoutPage() {
     setConfirmingOrder(true);
 
     const total = getTotal();
-    if (coinsRedeemed > 0) {
-      redeemCoins(coinsRedeemed);
-    }
-    earnCoins(total);
 
     (async () => {
       const orderId = await createOrder({
@@ -374,13 +370,21 @@ export default function CheckoutPage() {
         customerEmail: currentUser?.email ?? "",
       });
 
+      if (coinsRedeemed > 0) {
+        redeemCoins(coinsRedeemed);
+      }
+      earnCoins(total);
+
       clearCart();
       setPaymentConfirmed(false);
       setShowPaymentModal(false);
       const earned = Math.floor(total / 100) * 10;
       toast.add(`Order placed! +${earned} coins earned. Delivery in 30 min - 1 hr.`);
       router.push(`/track/${orderId}`);
-    })();
+    })().catch(() => {
+      setConfirmingOrder(false);
+      toast.add("Failed to place order. Please try again.", "error");
+    });
   };
 
   const detailProgress = [
@@ -564,8 +568,8 @@ export default function CheckoutPage() {
                                     size="sm"
                                     className="rounded-full text-xs"
                                     onClick={() => {
-                                      if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim() || !detailForm.floor.trim()) {
-                                        toast.add("Please fill Area, Landmark, Building and Floor", "error");
+                                      if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim()) {
+                                        toast.add("Please fill Area, Landmark and Building", "error");
                                         return;
                                       }
                                       saveAddressDetails();
@@ -754,7 +758,7 @@ export default function CheckoutPage() {
                   variant="default"
                   className="rounded-full w-full sm:w-auto px-6"
                   onClick={() => setCurrentStep(currentStep + 1)}
-                  disabled={currentStep === 0 && addresses.length > 0 && (!selectedAddress || !requiredDetailsFilled)}
+                  disabled={currentStep === 0 && (!selectedAddress || !requiredDetailsFilled)}
                 >
                   Continue <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>

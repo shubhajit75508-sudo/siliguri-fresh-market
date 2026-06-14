@@ -1,20 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { MessageCircle, Phone, Mail, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toaster";
+import { MessageCircle, Phone, Mail } from "lucide-react";
 
 export default function SupportPage() {
-  const [message, setMessage] = useState("");
-  const toast = useToast();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.add("Message sent! We'll respond within 30 minutes.");
-    setMessage("");
-  };
-
   return (
     <div>
       <h2 className="mb-4 text-lg font-bold">Help & Support</h2>
@@ -33,20 +21,16 @@ export default function SupportPage() {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6">
+      <div className="glass-card rounded-2xl p-6">
         <h3 className="font-bold">Send us a message</h3>
         <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="How can we help you?"
+          disabled
+          placeholder="Coming soon"
           rows={4}
-          className="mt-3 w-full rounded-xl border border-brand-dark/10 bg-white/50 p-4 text-sm focus:border-brand-fresh/50 focus:outline-none focus:ring-2 focus:ring-brand-fresh/20"
-          required
+          className="mt-3 w-full rounded-xl border border-brand-dark/10 bg-white/50 p-4 text-sm opacity-60 cursor-not-allowed"
         />
-        <Button variant="fresh" type="submit" className="mt-3">
-          <Send className="h-4 w-4" /> Send Message
-        </Button>
-      </form>
+        <p className="mt-3 text-xs text-muted">Messaging support is coming soon. Please call or email us for now.</p>
+      </div>
     </div>
   );
 }

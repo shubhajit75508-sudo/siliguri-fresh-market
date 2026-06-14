@@ -8,7 +8,18 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
+function checkApiKey(req: NextRequest) {
+  const apiKey = req.headers.get("x-api-key");
+  if (apiKey !== process.env.API_SECRET_KEY) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
+  const unauthorized = checkApiKey(req);
+  if (unauthorized) return unauthorized;
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -48,6 +59,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const unauthorized = checkApiKey(req);
+  if (unauthorized) return unauthorized;
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -89,6 +103,9 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const unauthorized = checkApiKey(req);
+  if (unauthorized) return unauthorized;
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 

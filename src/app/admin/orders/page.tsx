@@ -30,7 +30,7 @@ export default function AdminOrdersPage() {
   const [assignModal, setAssignModal] = useState<typeof orders[number] | null>(null);
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
 
-  useEffect(() => { loadOrders(); }, []);
+  useEffect(() => { loadOrders(); }, [loadOrders]);
 
   const filtered = activeTab === "all" ? orders : orders.filter((o) => o.status === activeTab);
 
@@ -275,7 +275,14 @@ export default function AdminOrdersPage() {
       {assignModal && (
         <AssignModal
           order={assignModal}
-          onAssign={(boyId, boyName) => { assignDeliveryBoy(assignModal.id, boyId, boyName); setAssignModal(null); }}
+          onAssign={async (boyId, boyName) => {
+            const result = await assignDeliveryBoy(assignModal.id, boyId, boyName);
+            if (result?.assignment) {
+              const store = useDeliveryStore.getState();
+              store.setAssignments([...store.assignments, result.assignment]);
+            }
+            setAssignModal(null);
+          }}
           onClose={() => setAssignModal(null)}
         />
       )}

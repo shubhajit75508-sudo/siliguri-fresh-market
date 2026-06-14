@@ -46,7 +46,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     if (boy) return;
     if (currentUser?.role === "delivery") {
       console.debug("[delivery] auto-setting boy from currentUser", currentUser.id);
-      useDeliveryStore.getState().loginAsBoy(currentUser.name, currentUser.phone);
+      useDeliveryStore.getState().loginAsBoy({ id: currentUser.id, name: currentUser.name, phone: currentUser.phone }, currentUser.name, currentUser.phone);
     }
   }, [storesReady, boy, currentUser]);
 
@@ -65,7 +65,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
           );
           if (newOrders.length > 0) {
             const newAssignments = newOrders.map((o) => ({
-              id: "da-" + Date.now() + Math.random().toString(36).slice(2, 6),
+              id: "da-" + crypto.randomUUID(),
               orderId: o.id,
               customerName: o.customer_name,
               customerPhone: o.customer_phone,

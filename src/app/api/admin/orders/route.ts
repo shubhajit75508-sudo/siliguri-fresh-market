@@ -8,7 +8,18 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
-export async function GET() {
+function checkApiKey(req: NextRequest) {
+  const apiKey = req.headers.get("x-api-key");
+  if (apiKey !== process.env.API_SECRET_KEY) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return null;
+}
+
+export async function GET(req: NextRequest) {
+  const unauthorized = checkApiKey(req);
+  if (unauthorized) return unauthorized;
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -22,6 +33,9 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const unauthorized = checkApiKey(req);
+  if (unauthorized) return unauthorized;
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -41,6 +55,9 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const unauthorized = checkApiKey(req);
+  if (unauthorized) return unauthorized;
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 

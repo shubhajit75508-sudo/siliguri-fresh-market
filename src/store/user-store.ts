@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import type { Address, User } from "@/types";
 
 export interface CoinActivity {
@@ -40,104 +40,107 @@ interface UserState {
 const pendingCoinOps: { type: "earn" | "redeem"; coins: number }[] = [];
 
 export const useUserStore = create<UserState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      addresses: [],
-      recentlyViewed: [],
-      searchHistory: [],
-      wishlist: [],
-      coinsRedeemed: 0,
-      deliveryPincode: "",
-      activityLog: [],
+  devtools(
+    persist(
+      (set, get) => ({
+        user: null,
+        addresses: [],
+        recentlyViewed: [],
+        searchHistory: [],
+        wishlist: [],
+        coinsRedeemed: 0,
+        deliveryPincode: "",
+        activityLog: [],
 
-  setUser: (user) => set({ user }),
-  updateUser: (partial) =>
-    set((state) => ({
-      user: state.user ? { ...state.user, ...partial } : state.user,
-    })),
-  addAddress: (address) =>
-    set((state) => ({ addresses: [...state.addresses, address] })),
-  updateAddress: (address) =>
-    set((state) => ({
-      addresses: state.addresses.map((a) => (a.id === address.id ? address : a)),
-    })),
-  deleteAddress: (id) =>
-    set((state) => ({
-      addresses: state.addresses.filter((a) => a.id !== id),
-    })),
-  setDefaultAddress: (id) =>
-    set((state) => ({
-      addresses: state.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
-    })),
+    setUser: (user) => set({ user }),
+    updateUser: (partial) =>
+      set((state) => ({
+        user: state.user ? { ...state.user, ...partial } : state.user,
+      })),
+    addAddress: (address) =>
+      set((state) => ({ addresses: [...state.addresses, address] })),
+    updateAddress: (address) =>
+      set((state) => ({
+        addresses: state.addresses.map((a) => (a.id === address.id ? address : a)),
+      })),
+    deleteAddress: (id) =>
+      set((state) => ({
+        addresses: state.addresses.filter((a) => a.id !== id),
+      })),
+    setDefaultAddress: (id) =>
+      set((state) => ({
+        addresses: state.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
+      })),
 
-      addToRecentlyViewed: (productId) =>
-        set((state) => ({
-          recentlyViewed: [
-            productId,
-            ...state.recentlyViewed.filter((id) => id !== productId),
-          ].slice(0, 10),
-        })),
+        addToRecentlyViewed: (productId) =>
+          set((state) => ({
+            recentlyViewed: [
+              productId,
+              ...state.recentlyViewed.filter((id) => id !== productId),
+            ].slice(0, 10),
+          })),
 
-      addToSearchHistory: (query) =>
-        set((state) => ({
-          searchHistory: [
-            query,
-            ...state.searchHistory.filter((q) => q !== query),
-          ].slice(0, 8),
-        })),
+        addToSearchHistory: (query) =>
+          set((state) => ({
+            searchHistory: [
+              query,
+              ...state.searchHistory.filter((q) => q !== query),
+            ].slice(0, 8),
+          })),
 
-      clearSearchHistory: () => set({ searchHistory: [] }),
+        clearSearchHistory: () => set({ searchHistory: [] }),
 
-      toggleWishlist: (productId) =>
-        set((state) => ({
-          wishlist: state.wishlist.includes(productId)
-            ? state.wishlist.filter((id) => id !== productId)
-            : [...state.wishlist, productId],
-        })),
+        toggleWishlist: (productId) =>
+          set((state) => ({
+            wishlist: state.wishlist.includes(productId)
+              ? state.wishlist.filter((id) => id !== productId)
+              : [...state.wishlist, productId],
+          })),
 
-      isInWishlist: (productId) => get().wishlist.includes(productId),
+        isInWishlist: (productId) => get().wishlist.includes(productId),
 
-      earnCoins: (orderAmount) => {
-        const earned = Math.floor(orderAmount / 100) * 10;
-        if (earned <= 0) return;
-        const user = get().user;
-        if (!user) return;
-        pendingCoinOps.push({ type: "earn", coins: earned });
-        set((state) => ({
-          user: { ...user, loyaltyPoints: user.loyaltyPoints + earned },
-          activityLog: [
-            { action: `Order earned coins`, coins: earned, date: new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric" }) },
-            ...state.activityLog,
-          ].slice(0, 20),
-        }));
-      },
+        earnCoins: (orderAmount) => {
+          const earned = Math.floor(orderAmount / 100) * 10;
+          if (earned <= 0) return;
+          const user = get().user;
+          if (!user) return;
+          pendingCoinOps.push({ type: "earn", coins: earned });
+          set((state) => ({
+            user: { ...user, loyaltyPoints: user.loyaltyPoints + earned },
+            activityLog: [
+              { action: `Order earned coins`, coins: earned, date: new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric" }) },
+              ...state.activityLog,
+            ].slice(0, 20),
+          }));
+        },
 
-      redeemCoins: (coins) => {
-        const user = get().user;
-        if (!user || user.loyaltyPoints < coins || coins < 100) return 0;
-        const discount = Math.floor(coins / 100) * 50;
-        pendingCoinOps.push({ type: "redeem", coins });
-        set((state) => ({
-          user: { ...user, loyaltyPoints: user.loyaltyPoints - coins },
-          activityLog: [
-            { action: `Redeemed ${coins} coins`, coins: -coins, date: new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric" }) },
-            ...state.activityLog,
-          ].slice(0, 20),
-        }));
-        return discount;
-      },
+        redeemCoins: (coins) => {
+          const user = get().user;
+          if (!user || user.loyaltyPoints < coins || coins < 100) return 0;
+          const discount = Math.floor(coins / 100) * 50;
+          pendingCoinOps.push({ type: "redeem", coins });
+          set((state) => ({
+            user: { ...user, loyaltyPoints: user.loyaltyPoints - coins },
+            activityLog: [
+              { action: `Redeemed ${coins} coins`, coins: -coins, date: new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric" }) },
+              ...state.activityLog,
+            ].slice(0, 20),
+          }));
+          return discount;
+        },
 
-      applyCoinsRedemption: (coins) => {
-        const user = get().user;
-        if (!user || user.loyaltyPoints < coins) return;
-        set({ coinsRedeemed: coins });
-      },
+        applyCoinsRedemption: (coins) => {
+          const user = get().user;
+          if (!user || user.loyaltyPoints < coins) return;
+          set({ coinsRedeemed: coins });
+        },
 
-      removeCoinsRedemption: () => set({ coinsRedeemed: 0 }),
+        removeCoinsRedemption: () => set({ coinsRedeemed: 0 }),
 
-      setDeliveryPincode: (pincode) => set({ deliveryPincode: pincode }),
-    }),
-    { name: "sfm-user" }
+        setDeliveryPincode: (pincode) => set({ deliveryPincode: pincode }),
+      }),
+      { name: "sfm-user", version: 1 }
+    ),
+    { name: "UserStore" }
   )
 );

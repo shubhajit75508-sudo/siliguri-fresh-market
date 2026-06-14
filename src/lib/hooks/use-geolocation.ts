@@ -25,30 +25,25 @@ export function useGeolocation(): UseGeolocationReturn {
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError("Geolocation not supported by your browser");
-      console.warn("[useGeolocation] navigator.geolocation is null");
+      setLocating(false);
       return;
     }
     setLocating(true);
     setError("");
-    console.log("[useGeolocation] Requesting position...");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        console.log("[useGeolocation] Position received:", pos.coords.latitude, pos.coords.longitude);
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocating(false);
-        // Attempt reverse geocode via server proxy (silent failure)
         fetch(`/api/geocode?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
           .then((r) => r.json())
           .then((data) => {
             if (data?.display_name) {
-              console.log("[useGeolocation] Address resolved:", data.display_name.slice(0, 80));
               setResolvedAddress(data.display_name);
             }
           })
           .catch(() => {});
       },
       (err) => {
-        console.warn("[useGeolocation] Error:", err.code, err.message);
         setError(
           err.code === 1
             ? "Location access denied. Enable location in browser settings."

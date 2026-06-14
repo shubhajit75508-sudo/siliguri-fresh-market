@@ -30,7 +30,7 @@ export default function OrdersPage() {
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
   const [returnDeliveredAt, setReturnDeliveredAt] = useState<string | undefined>();
 
-  useEffect(() => { loadOrders(); }, []);
+  useEffect(() => { loadOrders(); }, [loadOrders]);
 
   const orders: OrderSummary[] = allOrders.map((o) => ({
     id: o.id,

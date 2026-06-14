@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 export interface NotificationItem {
   id: string;
@@ -19,27 +19,30 @@ interface NotificationState {
 }
 
 export const useNotificationStore = create<NotificationState>()(
-  persist(
-    (set) => ({
-      notifications: [],
-      addNotification: (n) =>
-        set((state) => ({
-          notifications: [
-            { ...n, id: Date.now().toString(), sentAt: new Date().toLocaleDateString(), read: false },
-            ...state.notifications,
-          ],
-        })),
-      markRead: (id) =>
-        set((state) => ({
-          notifications: state.notifications.map((n) =>
-            n.id === id ? { ...n, read: true } : n
-          ),
-        })),
-      deleteNotification: (id) =>
-        set((state) => ({
-          notifications: state.notifications.filter((n) => n.id !== id),
-        })),
-    }),
-    { name: "sfm-notifications" }
+  devtools(
+    persist(
+      (set) => ({
+        notifications: [],
+        addNotification: (n) =>
+          set((state) => ({
+            notifications: [
+              { ...n, id: crypto.randomUUID(), sentAt: new Date().toISOString(), read: false },
+              ...state.notifications,
+            ],
+          })),
+        markRead: (id) =>
+          set((state) => ({
+            notifications: state.notifications.map((n) =>
+              n.id === id ? { ...n, read: true } : n
+            ),
+          })),
+        deleteNotification: (id) =>
+          set((state) => ({
+            notifications: state.notifications.filter((n) => n.id !== id),
+          })),
+      }),
+      { name: "sfm-notifications", version: 1 }
+    ),
+    { name: "NotificationStore" }
   )
 );

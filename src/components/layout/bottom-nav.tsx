@@ -26,7 +26,7 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/80 bg-white/92 backdrop-blur-xl safe-bottom lg:hidden">
       <div className="flex items-end justify-around px-1 pb-2 pt-1">
         {items.map((item) => {
-          const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const active = item.href === "/" ? pathname === "/" : item.href === "/account" ? (pathname === "/account" || (pathname.startsWith("/account/") && !pathname.startsWith("/account/wishlist"))) : pathname.startsWith(item.href);
           const Icon = item.icon;
           return (
             <Link

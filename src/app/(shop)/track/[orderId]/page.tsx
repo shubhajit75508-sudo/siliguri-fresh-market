@@ -32,7 +32,7 @@ export default function TrackOrderPage({
   const { orders, loadOrders } = useOrderStore();
   const [showReturn, setShowReturn] = useState(false);
 
-  useEffect(() => { loadOrders(); }, []);
+  useEffect(() => { loadOrders(); }, [loadOrders]);
 
   const order = orders.find((o) => o.id === orderId);
   const isCancelled = order?.status === "cancelled";

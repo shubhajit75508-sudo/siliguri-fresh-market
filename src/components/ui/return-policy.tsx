@@ -89,7 +89,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
             </div>
             <h3 className="text-lg font-bold">Request Submitted</h3>
             <p className="mt-2 text-sm text-muted">
-              Our team will call you at {CUSTOMER_CARE} to arrange the replacement for order {orderId}.
+              Our team will reach out to you shortly to arrange the replacement for order {orderId}.
             </p>
             <button
               onClick={onClose}

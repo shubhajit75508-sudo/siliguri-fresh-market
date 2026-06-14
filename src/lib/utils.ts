@@ -14,6 +14,7 @@ export function formatPrice(price: number): string {
 }
 
 export function formatDiscount(original: number, current: number): number {
+  if (original === 0) return 0;
   return Math.round(((original - current) / original) * 100);
 }
 

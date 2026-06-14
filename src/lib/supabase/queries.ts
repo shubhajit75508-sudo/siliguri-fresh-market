@@ -1,5 +1,5 @@
 import { supabase } from "./client";
-import type { Product, CategoryInfo, Order, Coupon, User } from "@/types";
+import type { Product, CategoryInfo, Order, Coupon, User, CartItem, Address, DeliveryStatus } from "@/types";
 import type { NotificationItem } from "@/store/notification-store";
 
 interface ProductRow {
@@ -56,6 +56,36 @@ interface OrderRow {
   payment_method: string | null;
   payment_status: string;
   created_at: string;
+  customer_name?: string;
+  customer_phone?: string;
+  customer_email?: string;
+  items?: unknown;
+  address_snapshot?: Record<string, unknown>;
+  delivery_status?: string;
+  delivery_boy_id?: string;
+  return_requested?: boolean;
+  return_approved?: boolean;
+}
+
+interface OrderItemRow {
+  product_id: string;
+  product_name: string;
+  product_image: string | null;
+  quantity: number;
+  unit_price: number;
+  selected_weight?: string | null;
+}
+
+interface AddressRow {
+  id: string;
+  label: string | null;
+  line1: string;
+  line2: string | null;
+  city: string;
+  pincode: string;
+  lat: number | null;
+  lng: number | null;
+  is_default: boolean;
 }
 
 interface CouponRow {
@@ -84,6 +114,7 @@ interface NotificationRow {
   type: string;
   read: boolean;
   created_at: string;
+  sent_to?: number;
 }
 
 function mapProduct(row: ProductRow): Product {
@@ -169,7 +200,8 @@ export async function fetchTrendingProducts(): Promise<Product[]> {
 }
 
 export async function searchProductsByQuery(query: string): Promise<Product[]> {
-  const q = `%${query.toLowerCase()}%`;
+  const escaped = query.toLowerCase().replace(/%/g, "\\%").replace(/_/g, "\\_");
+  const q = `%${escaped}%`;
   const { data, error } = await supabase!
     .from("products")
     .select("*")
@@ -202,27 +234,97 @@ export async function fetchCategories(): Promise<CategoryInfo[]> {
 export async function fetchOrdersByUser(userId: string): Promise<Order[]> {
   const { data, error } = await supabase!
     .from("orders")
-    .select("*")
+    .select("*, order_items(*), addresses(*)")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map((row) => {
-    const r = row as OrderRow;
+  return (data ?? []).map((row: Record<string, unknown>) => {
+    const r = row as unknown as OrderRow;
+    const joinedOrderItems = (row.order_items ?? []) as OrderItemRow[];
+    const joinedAddress = row.addresses as AddressRow | null;
+
+    const items = buildOrderItems(joinedOrderItems, r.items);
+    const address = buildAddress(r, joinedAddress);
+
     return {
       id: r.id,
-      items: [],
+      items,
       status: r.status as Order["status"],
       total: r.total,
       createdAt: r.created_at,
-      address: { id: r.address_id ?? "", label: "", line1: "", city: "", pincode: "", isDefault: false },
+      address,
       eta: 0,
-      customerName: "",
-      customerPhone: "",
-      customerEmail: "",
-      paymentMethod: "cod",
-      paymentStatus: "unpaid" as const,
+      customerName: r.customer_name ?? "",
+      customerPhone: r.customer_phone ?? "",
+      customerEmail: r.customer_email ?? "",
+      paymentMethod: r.payment_method ?? "cod",
+      paymentStatus: (r.payment_status === "paid" ? "paid" : "unpaid") as "paid" | "unpaid",
+      deliveryBoyId: r.delivery_boy_id ?? undefined,
+      deliveryStatus: r.delivery_status as DeliveryStatus | undefined,
+      returnRequested: r.return_requested ?? undefined,
+      returnApproved: r.return_approved ?? undefined,
     };
   });
+}
+
+function buildOrderItems(joinedItems: OrderItemRow[], rawItems: unknown): CartItem[] {
+  if (joinedItems.length > 0) {
+    return joinedItems.map((i) => ({
+      product: {
+        id: i.product_id,
+        slug: i.product_id,
+        name: i.product_name,
+        price: i.unit_price,
+        image: i.product_image ?? "",
+        description: "",
+        category: "grocery" as const,
+        unit: "kg",
+        freshnessScore: 0,
+        deliveryEta: 0,
+        rating: 0,
+        reviewCount: 0,
+        inStock: true,
+      } satisfies Product,
+      quantity: i.quantity,
+    }));
+  }
+  if (rawItems) {
+    const parsed = rawItems as Array<{ product: Record<string, unknown>; quantity: number }>;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.map((i) => ({
+        product: i.product as unknown as Product,
+        quantity: i.quantity,
+      }));
+    }
+  }
+  return [];
+}
+
+function buildAddress(r: OrderRow, joined: AddressRow | null): Address {
+  if (joined) {
+    return {
+      id: joined.id,
+      label: joined.label ?? "",
+      line1: joined.line1,
+      line2: joined.line2 ?? undefined,
+      city: joined.city,
+      pincode: joined.pincode,
+      lat: joined.lat ?? undefined,
+      lng: joined.lng ?? undefined,
+      isDefault: joined.is_default,
+    };
+  }
+  if (r.address_snapshot) {
+    return r.address_snapshot as unknown as Address;
+  }
+  return {
+    id: r.address_id ?? "",
+    label: "",
+    line1: "",
+    city: "",
+    pincode: "",
+    isDefault: false,
+  };
 }
 
 export async function fetchNotificationsByUser(userId: string): Promise<NotificationItem[]> {
@@ -240,7 +342,7 @@ export async function fetchNotificationsByUser(userId: string): Promise<Notifica
       body: r.body ?? "",
       type: r.type as NotificationItem["type"],
       sentAt: r.created_at,
-      sentTo: 1,
+      sentTo: r.sent_to ?? 1,
       read: r.read,
     };
   });

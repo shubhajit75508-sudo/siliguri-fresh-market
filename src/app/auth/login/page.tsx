@@ -32,16 +32,23 @@ export default function LoginPage() {
     if (!password) { setError("Password is required"); return; }
 
     setSubmitting(true);
-    const result = await login(email, password);
+    let result;
+    try {
+      result = await login(email, password);
+    } catch {
+      setSubmitting(false);
+      setError("An unexpected error occurred");
+      return;
+    }
 
     if (result.success && result.user) {
       toast.add(`Welcome, ${result.user.name}!`);
 
       if (result.user.role === "admin") {
-        adminStore.loginDirect();
+        adminStore.loginDirect(result.user);
         setTimeout(() => router.push("/admin"), 100);
       } else if (result.user.role === "delivery") {
-        const ok = deliveryStore.loginAsBoy(result.user.name, result.user.phone);
+        const ok = deliveryStore.loginAsBoy(result.user, result.user.name, result.user.phone);
         if (!ok) { setError("Failed to set up delivery session. Try logging out first."); setSubmitting(false); return; }
         setTimeout(() => router.push("/delivery"), 100);
       } else {

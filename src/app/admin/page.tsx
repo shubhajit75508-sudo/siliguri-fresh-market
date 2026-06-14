@@ -19,10 +19,10 @@ import { formatPrice } from "@/lib/utils";
 export default function AdminDashboard() {
   const { getStats, orders, loaded, loadOrders } = useOrderStore();
 
-  useEffect(() => { loadOrders(); }, []);
+  useEffect(() => { loadOrders(); }, [loadOrders]);
   const { users } = useAuthStore();
 
-  const stats = useMemo(() => getStats(), [orders.length]);
+  const stats = useMemo(() => getStats(), [orders]);
 
   const today = new Date().toDateString();
   const newCustomersToday = users.filter(

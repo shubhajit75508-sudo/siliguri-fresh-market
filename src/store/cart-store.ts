@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import type { CartItem, Product } from "@/types";
 import { getWeightMultiplier } from "@/lib/utils";
 
@@ -56,105 +56,108 @@ interface CartState {
 }
 
 export const useCartStore = create<CartState>()(
-  persist(
-    (set, get) => ({
-      items: [],
-      couponCode: null,
-      couponDiscount: 0,
-      coinsDiscount: 0,
-      isOpen: false,
+  devtools(
+    persist(
+      (set, get) => ({
+        items: [],
+        couponCode: null,
+        couponDiscount: 0,
+        coinsDiscount: 0,
+        isOpen: false,
 
-      addItem: (product, quantity = 1, options) => {
-        if (!product.inStock) return;
+        addItem: (product, quantity = 1, options) => {
+          if (!product.inStock) return;
 
-        const key: CartLineKey = {
-          productId: product.id,
-          weight: options?.weight,
-        };
+          const key: CartLineKey = {
+            productId: product.id,
+            weight: options?.weight,
+          };
 
-        set((state) => {
-          const existing = state.items.find((i) => matchesCartLine(i, key));
-          if (existing) {
+          set((state) => {
+            const existing = state.items.find((i) => matchesCartLine(i, key));
+            if (existing) {
+              return {
+                items: state.items.map((i) =>
+                  matchesCartLine(i, key)
+                    ? { ...i, quantity: i.quantity + quantity }
+                    : i
+                ),
+                isOpen: true,
+              };
+            }
             return {
-              items: state.items.map((i) =>
-                matchesCartLine(i, key)
-                  ? { ...i, quantity: i.quantity + quantity }
-                  : i
-              ),
+              items: [
+                ...state.items,
+                {
+                  product,
+                  quantity,
+                  selectedWeight: options?.weight,
+                },
+              ],
               isOpen: true,
             };
-          }
-          return {
-            items: [
-              ...state.items,
-              {
-                product,
-                quantity,
-                selectedWeight: options?.weight,
-              },
-            ],
-            isOpen: true,
-          };
-        });
-      },
+          });
+        },
 
-      removeItem: (key) =>
-        set((state) => ({
-          items: state.items.filter((i) => !matchesCartLine(i, key)),
-        })),
+        removeItem: (key) =>
+          set((state) => ({
+            items: state.items.filter((i) => !matchesCartLine(i, key)),
+          })),
 
-      updateQuantity: (key, quantity) =>
-        set((state) => ({
-          items:
-            quantity <= 0
-              ? state.items.filter((i) => !matchesCartLine(i, key))
-              : state.items.map((i) =>
-                  matchesCartLine(i, key) ? { ...i, quantity } : i
-                ),
-        })),
+        updateQuantity: (key, quantity) =>
+          set((state) => ({
+            items:
+              quantity <= 0
+                ? state.items.filter((i) => !matchesCartLine(i, key))
+                : state.items.map((i) =>
+                    matchesCartLine(i, key) ? { ...i, quantity } : i
+                  ),
+          })),
 
-      clearCart: () => set({ items: [], couponCode: null, couponDiscount: 0, coinsDiscount: 0 }),
-      openCart: () => set({ isOpen: true }),
-      closeCart: () => set({ isOpen: false }),
+        clearCart: () => set({ items: [], couponCode: null, couponDiscount: 0, coinsDiscount: 0 }),
+        openCart: () => set({ isOpen: true }),
+        closeCart: () => set({ isOpen: false }),
 
-      applyCoupon: (code, discount) =>
-        set({ couponCode: code, couponDiscount: discount }),
+        applyCoupon: (code, discount) =>
+          set({ couponCode: code, couponDiscount: discount }),
 
-      removeCoupon: () => set({ couponCode: null, couponDiscount: 0 }),
+        removeCoupon: () => set({ couponCode: null, couponDiscount: 0 }),
 
-      setCoinsDiscount: (discount) => set({ coinsDiscount: discount }),
+        setCoinsDiscount: (discount) => set({ coinsDiscount: discount }),
 
-      getSubtotal: () =>
-        get().items.reduce(
-          (sum, i) =>
-            sum + i.product.price * getWeightMultiplier(i.selectedWeight) * i.quantity,
-          0
-        ),
+        getSubtotal: () =>
+          get().items.reduce(
+            (sum, i) =>
+              sum + i.product.price * getWeightMultiplier(i.selectedWeight) * i.quantity,
+            0
+          ),
 
-      getDeliveryFee: () => {
-        const subtotal = get().getSubtotal();
-        if (subtotal > 499) return 0;
-        return 29;
-      },
+        getDeliveryFee: () => {
+          const subtotal = get().getSubtotal();
+          if (subtotal > 499) return 0;
+          return 29;
+        },
 
-      getCoinsDiscount: () => get().coinsDiscount,
+        getCoinsDiscount: () => get().coinsDiscount,
 
-      getTotal: () => {
-        const subtotal = get().getSubtotal();
-        const discount = get().couponDiscount;
-        const coinsDiscount = get().coinsDiscount;
-        const delivery = get().getDeliveryFee();
-        return Math.max(0, subtotal - discount - coinsDiscount + delivery);
-      },
+        getTotal: () => {
+          const subtotal = get().getSubtotal();
+          const discount = get().couponDiscount;
+          const coinsDiscount = get().coinsDiscount;
+          const delivery = get().getDeliveryFee();
+          return Math.max(0, subtotal - discount - coinsDiscount + delivery);
+        },
 
-      getItemCount: () =>
-        get().items.reduce((sum, i) => sum + i.quantity, 0),
+        getItemCount: () =>
+          get().items.reduce((sum, i) => sum + i.quantity, 0),
 
-      getProductQuantity: (productId) =>
-        get()
-          .items.filter((i) => i.product.id === productId)
-          .reduce((sum, i) => sum + i.quantity, 0),
-    }),
-    { name: "sfm-cart" }
+        getProductQuantity: (productId) =>
+          get()
+            .items.filter((i) => i.product.id === productId)
+            .reduce((sum, i) => sum + i.quantity, 0),
+      }),
+      { name: "sfm-cart", version: 1 }
+    ),
+    { name: "CartStore" }
   )
 );

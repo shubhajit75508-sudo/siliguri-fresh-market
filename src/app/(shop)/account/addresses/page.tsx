@@ -95,7 +95,7 @@ export default function AddressesPage() {
     }
 
     const addrData: Address = {
-      id: editingId ?? (Date.now().toString()),
+      id: editingId ?? crypto.randomUUID(),
       label: form.label.trim() || "Home",
       line1: form.line1.trim(),
       line2: form.line2.trim() || undefined,

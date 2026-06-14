@@ -47,12 +47,13 @@ export default function AdminDeliveryBoysPage() {
       return;
     }
     const email = form.email || `${form.name.toLowerCase().replace(/\s+/g, ".")}@delivery.sfm`;
+    const generatedPassword = crypto.randomUUID().slice(0, 12);
 
     // Create auth user first
     try {
       await useAuthStore.getState().signup({
         email,
-        password: form.password || "delivery123",
+        password: form.password || generatedPassword,
         name: form.name,
         phone: form.phone,
         address: form.area || "Siliguri",
@@ -110,7 +111,7 @@ export default function AdminDeliveryBoysPage() {
             <input placeholder="Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <input placeholder="Phone *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <input placeholder="Email (auto-filled if blank)" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Password (default: delivery123)" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Password (auto-generated if blank)" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <input placeholder="Service Area" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
           </div>
           <div className="mt-4 flex gap-2">

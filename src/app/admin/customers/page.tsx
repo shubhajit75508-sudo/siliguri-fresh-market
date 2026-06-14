@@ -10,7 +10,7 @@ export default function CustomersPage() {
   const { orders, loadOrders } = useOrderStore();
   const [remoteCustomers, setRemoteCustomers] = useState<Record<string, unknown>[]>([]);
 
-  useEffect(() => { loadOrders(); }, []);
+  useEffect(() => { loadOrders(); }, [loadOrders]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -73,7 +73,11 @@ export default function CustomersPage() {
     }
 
     return result.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      }
     );
   }, [users, orders, remoteCustomers]);
 

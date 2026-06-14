@@ -19,7 +19,6 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const { addItem, items, updateQuantity, getProductQuantity } = useCartStore();
   const toast = useToast();
   const cartQuantity = getProductQuantity(product.id);
-  const anyCartItem = items.find((i) => i.product.id === product.id);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,16 +34,18 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const handleDecrement = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (anyCartItem) {
-      updateQuantity(cartLineKey(anyCartItem), anyCartItem.quantity - 1);
+    const item = items.find((i) => i.product.id === product.id);
+    if (item) {
+      updateQuantity(cartLineKey(item), item.quantity - 1);
     }
   };
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (anyCartItem) {
-      updateQuantity(cartLineKey(anyCartItem), anyCartItem.quantity + 1);
+    const item = items.find((i) => i.product.id === product.id);
+    if (item) {
+      updateQuantity(cartLineKey(item), item.quantity + 1);
     } else {
       handleAdd(e);
     }
@@ -84,7 +85,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   }
 
   return (
-    <Link href={`/product/${product.slug}`} className="block h-full">
+    <Link href={`/product/${product.slug}`} className="group block h-full">
       <motion.article
         whileHover={{ y: -5 }}
         whileTap={{ scale: 0.97 }}

@@ -58,15 +58,22 @@ function SignupForm() {
     if (!form.address.trim()) { setError("Address is required"); return; }
 
     setSubmitting(true);
-    const result = await signup({
-      email: form.email,
-      password: form.password,
-      name: form.name,
-      phone: form.phone,
-      address: form.address,
-      role: form.role,
-      location,
-    });
+    let result;
+    try {
+      result = await signup({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        phone: form.phone,
+        address: form.address,
+        role: form.role,
+        location,
+      });
+    } catch {
+      setSubmitting(false);
+      setError("An unexpected error occurred");
+      return;
+    }
 
     if (result.success) {
       if (form.address) {

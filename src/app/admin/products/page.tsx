@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Pencil, Plus, Trash2, Save, X, PackageOpen } from "lucide-react";
 import { useAdminStore } from "@/store/admin-store";
@@ -30,17 +30,21 @@ export default function AdminProductsPage() {
 
   const products = supabaseAvailable && liveProducts ? liveProducts : storeProducts;
 
-  const existingSlugs = new Set(products.map((p) => p.slug));
+  const existingSlugs = useRef(new Set<string>());
+
+  useEffect(() => {
+    existingSlugs.current = new Set(products.map((p) => p.slug));
+  }, [products]);
 
   const createUniqueSlug = (name: string) => {
     const base = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     let slug = base;
     let i = 1;
-    while (existingSlugs.has(slug)) {
+    while (existingSlugs.current.has(slug)) {
       slug = `${base}-${i}`;
       i++;
     }
-    existingSlugs.add(slug);
+    existingSlugs.current.add(slug);
     return slug;
   };
 
@@ -116,7 +120,7 @@ export default function AdminProductsPage() {
     } catch (e) {
       console.error("Product insert failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to save product", "error");
-      existingSlugs.delete(slug);
+      existingSlugs.current.delete(slug);
     }
     setSaving(false);
   };
@@ -163,7 +167,7 @@ export default function AdminProductsPage() {
           <h3 className="mb-4 font-bold">New Product</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Price (₹)" type="number" value={form.price || ""} onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Price (₹)" type="number" value={form.price ?? ""} onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <input placeholder="Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40">
               <option value="fish">Fish</option>
