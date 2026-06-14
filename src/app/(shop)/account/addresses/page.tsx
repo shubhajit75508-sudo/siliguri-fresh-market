@@ -31,6 +31,12 @@ export default function AddressesPage() {
   const { location, locating, error: locationError, resolvedAddress, getLocation: detectLocation } = useGeolocation();
 
   useEffect(() => {
+    if (showForm && !location && !locating) {
+      detectLocation();
+    }
+  }, [showForm]);
+
+  useEffect(() => {
     if (location) {
       setForm((f) => ({
         ...f,
@@ -79,8 +85,8 @@ export default function AddressesPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.line1.trim() || !form.pincode.trim()) {
-      toast.add("Please fill in address and pincode", "error");
+    if (!form.line1.trim() || !form.pincode.trim() || !form.area.trim() || !form.landmark.trim() || !form.building.trim() || !form.floor.trim()) {
+      toast.add("Please fill in Address, Area, Landmark, Building, Floor, and Pincode", "error");
       return;
     }
 
@@ -167,7 +173,7 @@ export default function AddressesPage() {
             <input
               value={form.flat}
               onChange={(e) => setForm((f) => ({ ...f, flat: e.target.value }))}
-              placeholder="Flat / Door No."
+              placeholder="Flat / Door No. (optional)"
               className="rounded-xl border border-border px-3 py-2 text-sm"
             />
             <input
@@ -179,7 +185,7 @@ export default function AddressesPage() {
             <input
               value={form.landmark}
               onChange={(e) => setForm((f) => ({ ...f, landmark: e.target.value }))}
-              placeholder="Landmark"
+              placeholder="Landmark (required)"
               className="rounded-xl border border-border px-3 py-2 text-sm"
             />
           </div>

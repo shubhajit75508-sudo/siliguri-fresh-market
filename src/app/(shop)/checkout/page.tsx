@@ -80,9 +80,16 @@ export default function CheckoutPage() {
         flat: selectedAddress.flat ?? "",
         floor: selectedAddress.floor ?? "",
       });
-      setShowDetailForm(!selectedAddress.area || !selectedAddress.building || !selectedAddress.flat || !selectedAddress.floor);
+      setShowDetailForm(!selectedAddress.area || !selectedAddress.building || !selectedAddress.floor);
     }
   }, [selectedAddressId]);
+
+  // Auto-fetch live location when the location screen is shown
+  useEffect(() => {
+    if (hydrated && isAuthenticated && (!hasLocation || editingLocation) && !locationCoords && !locationStatus) {
+      getLiveLocation();
+    }
+  }, [hydrated, isAuthenticated, hasLocation, editingLocation]);
 
   useEffect(() => {
     if (resolvedAddress && !manualPincode) {
@@ -249,11 +256,11 @@ export default function CheckoutPage() {
     }
     saveAddressDetails();
     const area = detailForm.area.trim() || selectedAddress.area;
+    const landmark = detailForm.landmark.trim() || selectedAddress.landmark;
     const building = detailForm.building.trim() || selectedAddress.building;
-    const flat = detailForm.flat.trim() || selectedAddress.flat;
     const floor = detailForm.floor.trim() || selectedAddress.floor;
-    if (!area || !building || !flat || !floor) {
-      toast.add("Please fill in Area, Building, Flat, and Floor details", "error");
+    if (!area || !landmark || !building || !floor) {
+      toast.add("Please fill in Area, Landmark, Building, and Floor details", "error");
       setShowDetailForm(true);
       setCurrentStep(0);
       return;
@@ -407,7 +414,7 @@ export default function CheckoutPage() {
                         onClick={() => setShowDetailForm(!showDetailForm)}
                         className="flex items-center gap-2 text-sm font-medium text-brand-dark underline"
                       >
-                        {showDetailForm ? "Hide" : selectedAddress.area && selectedAddress.building ? "Edit" : "Add"} delivery details
+                        {showDetailForm ? "Hide" : selectedAddress.area && selectedAddress.building && selectedAddress.floor && selectedAddress.landmark ? "Edit" : "Add"} delivery details
                       </button>
 
                       {showDetailForm && (
@@ -424,7 +431,7 @@ export default function CheckoutPage() {
                               />
                             </div>
                             <div>
-                              <label className="text-xs text-muted">Landmark</label>
+                              <label className="text-xs text-muted">Landmark *</label>
                               <input
                                 value={detailForm.landmark}
                                 onChange={(e) => setDetailForm((f) => ({ ...f, landmark: e.target.value }))}
@@ -444,7 +451,7 @@ export default function CheckoutPage() {
                               />
                             </div>
                             <div>
-                              <label className="text-xs text-muted">Flat / Door No. *</label>
+                              <label className="text-xs text-muted">Flat / Door No.</label>
                               <input
                                 value={detailForm.flat}
                                 onChange={(e) => setDetailForm((f) => ({ ...f, flat: e.target.value }))}
@@ -466,8 +473,8 @@ export default function CheckoutPage() {
                             variant="fresh"
                             size="sm"
                             onClick={() => {
-                              if (!detailForm.area.trim() || !detailForm.building.trim() || !detailForm.flat.trim() || !detailForm.floor.trim()) {
-                                toast.add("Please fill Area, Building, Flat and Floor", "error");
+                              if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim() || !detailForm.floor.trim()) {
+                                toast.add("Please fill Area, Landmark, Building and Floor", "error");
                                 return;
                               }
                               saveAddressDetails();
