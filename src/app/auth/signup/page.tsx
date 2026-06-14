@@ -9,12 +9,12 @@ import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import { useUserStore } from "@/store/user-store";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
-import { MapPin, Loader2, UserPlus, Shield, Truck, ShoppingBag } from "lucide-react";
+import { MapPin, Loader2, UserPlus, ShoppingBag } from "lucide-react";
 
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { signup, login, adminExists, checkAdminRemote } = useAuthStore();
+  const { signup, login } = useAuthStore();
   const { setUser, addAddress } = useUserStore();
   const toast = useToast();
   const [form, setForm] = useState({
@@ -29,16 +29,6 @@ function SignupForm() {
   const { location, locating, error: locationError, resolvedAddress, getLocation: getLiveLocation } = useGeolocation();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [showAdminOptions, setShowAdminOptions] = useState(false);
-  const [remoteAdminExists, setRemoteAdminExists] = useState(false);
-  const [remoteAdminLoading, setRemoteAdminLoading] = useState(true);
-
-  useEffect(() => {
-    checkAdminRemote().then((exists) => {
-      setRemoteAdminExists(exists);
-      setRemoteAdminLoading(false);
-    });
-  }, []);
 
   useEffect(() => {
     if (resolvedAddress && !form.address) {
@@ -46,14 +36,6 @@ function SignupForm() {
       toast.add("Address filled from live location");
     }
   }, [resolvedAddress]);
-
-  useEffect(() => {
-    const role = searchParams.get("role");
-    if (role === "admin" || role === "delivery") {
-      setShowAdminOptions(true);
-      setForm((prev) => ({ ...prev, role }));
-    }
-  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,15 +47,6 @@ function SignupForm() {
     if (form.password.length < 4) { setError("Password must be at least 4 characters"); return; }
     if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return; }
     if (!form.address.trim()) { setError("Address is required"); return; }
-
-    if (form.role === "admin") {
-      const remoteExists = await checkAdminRemote();
-      if (remoteExists) {
-        setSubmitting(false);
-        setError("Only one admin account is allowed. An admin already exists.");
-        return;
-      }
-    }
 
     setSubmitting(true);
     let result;
@@ -106,22 +79,17 @@ function SignupForm() {
           isDefault: true,
         });
       }
-      if (form.role === "customer") {
-        const loginResult = await login(form.email, form.password);
-        if (loginResult.success) {
-          setUser({
-            id: "user-" + form.phone,
-            name: form.name,
-            email: form.email,
-            phone: "+91 " + form.phone,
-            loyaltyPoints: 0,
-          });
-          toast.add("Welcome! Account created and signed in.");
-          router.push("/");
-        }
-      } else {
-        toast.add("Account created! Please sign in.");
-        router.push("/auth/login");
+      const loginResult = await login(form.email, form.password);
+      if (loginResult.success) {
+        setUser({
+          id: "user-" + form.phone,
+          name: form.name,
+          email: form.email,
+          phone: "+91 " + form.phone,
+          loyaltyPoints: 0,
+        });
+        toast.add("Welcome! Account created and signed in.");
+        router.push("/");
       }
     } else {
       setError(result.error ?? "Signup failed");
@@ -147,8 +115,7 @@ function SignupForm() {
         <div>
           <label className="text-xs font-medium text-muted">Full Name</label>
           <input
-            type="text"
-            placeholder="Your full name"
+            placeholder="Your name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
@@ -170,20 +137,14 @@ function SignupForm() {
 
         <div>
           <label className="text-xs font-medium text-muted">Phone</label>
-          <div className="mt-1 flex">
-            <span className="inline-flex items-center rounded-l-xl border border-r-0 border-border bg-surface px-3 text-sm text-muted">+91</span>
-            <input
-              type="tel"
-              inputMode="numeric"
-              pattern="[0-9]{10}"
-              maxLength={10}
-              placeholder="98765 43210"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
-              required
-              className="w-full rounded-r-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
-            />
-          </div>
+          <input
+            type="tel"
+            placeholder="9876543210"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            required
+            className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -195,12 +156,11 @@ function SignupForm() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
-              minLength={4}
               className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-muted">Confirm Password</label>
+            <label className="text-xs font-medium text-muted">Confirm</label>
             <input
               type="password"
               placeholder="Repeat password"
@@ -213,20 +173,15 @@ function SignupForm() {
         </div>
 
         <div>
-          <label className="text-xs font-medium text-muted">Address</label>
-          <textarea
-            placeholder="Your full address"
-            value={form.address}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
-            required
-            rows={2}
-            className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark resize-none"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-medium text-muted">Live Location</label>
-          <div className="mt-1 flex items-center gap-3">
+          <label className="text-xs font-medium text-muted">Delivery Address</label>
+          <div className="mt-1 flex gap-2">
+            <input
+              placeholder="Area, street, landmark"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+              required
+              className="flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+            />
             <button
               type="button"
               onClick={getLiveLocation}
@@ -238,14 +193,14 @@ function SignupForm() {
               ) : (
                 <MapPin className="h-4 w-4 text-brand-dark" />
               )}
-              {locating ? "Locating..." : "Get Live Location"}
+              {locating ? "Locating..." : "Live"}
             </button>
-            {location && (
-              <span className="text-xs text-brand-fresh">
-                {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-              </span>
-            )}
           </div>
+          {location && (
+            <span className="text-xs text-brand-fresh">
+              {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+            </span>
+          )}
           {locationError && <p className="mt-1 text-xs text-brand-red">{locationError}</p>}
         </div>
 
@@ -260,52 +215,6 @@ function SignupForm() {
               </div>
             </div>
           </div>
-
-          {/* Hidden admin/delivery options — tap title 5 times to reveal */}
-          {showAdminOptions && (
-            <div className="mt-1 grid grid-cols-2 gap-2">
-              {adminExists() || remoteAdminExists ? (
-                <div className="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 opacity-60">
-                  <Shield className="h-5 w-5 text-gray-300" />
-                  <div className="text-center">
-                    <p className="text-xs font-bold text-gray-400">Admin</p>
-                    <p className="text-[9px] text-muted">Already exists</p>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setForm({ ...form, role: "admin" })}
-                  className={`flex flex-col items-center gap-1 rounded-xl border-2 p-3 transition-all ${
-                    form.role === "admin"
-                      ? "border-brand-dark bg-brand-dark/5"
-                      : "border-border hover:border-gray-300"
-                  }`}
-                >
-                  <Shield className={`h-5 w-5 ${form.role === "admin" ? "text-brand-dark" : "text-gray-300"}`} />
-                  <div className="text-center">
-                    <p className={`text-xs font-bold ${form.role === "admin" ? "text-brand-dark" : "text-gray-500"}`}>Admin</p>
-                    <p className="text-[9px] text-muted">Manage store</p>
-                  </div>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, role: "delivery" })}
-                className={`flex flex-col items-center gap-1 rounded-xl border-2 p-3 transition-all ${
-                  form.role === "delivery"
-                    ? "border-brand-fresh bg-brand-fresh/5"
-                    : "border-border hover:border-gray-300"
-                }`}
-              >
-                <Truck className={`h-5 w-5 ${form.role === "delivery" ? "text-brand-fresh" : "text-gray-300"}`} />
-                <div className="text-center">
-                  <p className={`text-xs font-bold ${form.role === "delivery" ? "text-brand-fresh" : "text-gray-500"}`}>Delivery</p>
-                  <p className="text-[9px] text-muted">Deliver orders</p>
-                </div>
-              </button>
-            </div>
-          )}
         </div>
 
         <Button type="submit" variant="default" className="w-full" disabled={submitting}>
@@ -325,7 +234,7 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-md py-10 px-4"><div className="skeleton h-[600px] rounded-2xl" /></div>}>
+    <Suspense fallback={null}>
       <SignupForm />
     </Suspense>
   );

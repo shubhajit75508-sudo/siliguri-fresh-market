@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
+import { ADMIN_CREDS } from "@/lib/admin-creds";
 
 export type UserRole = "admin" | "delivery" | "customer";
 
@@ -34,7 +35,6 @@ interface AuthState {
   logout: () => Promise<void>;
   deleteAccountSync: (id: string) => void;
   adminExists: () => boolean;
-  checkAdminRemote: () => Promise<boolean>;
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -59,19 +59,7 @@ export const useAuthStore = create<AuthState>()(
           const { users } = get();
 
           if (data.role === "admin") {
-            if (users.some((u) => u.role === "admin")) {
-              return { success: false, error: "Only one admin account is allowed. An admin already exists." };
-            }
-            try {
-              const res = await fetch("/api/admin/exists");
-              const json = await res.json();
-              if (json.exists) {
-                return { success: false, error: "Only one admin account is allowed. An admin already exists." };
-              }
-            } catch (e) {
-              console.error("Admin remote check failed:", e);
-              return { success: false, error: "Could not verify admin status." };
-            }
+            return { success: false, error: "Admin accounts cannot be created via signup." };
           }
 
           if (users.find((u) => u.email === data.email)) {
@@ -136,6 +124,33 @@ export const useAuthStore = create<AuthState>()(
         },
 
         login: async (email, password) => {
+          const adminCred = ADMIN_CREDS.find((c) => c.email === email);
+          if (adminCred) {
+            if (adminCred.password !== password) {
+              return { success: false, error: "Incorrect password" };
+            }
+            const { users } = get();
+            let user = users.find((u) => u.email === email);
+            if (!user) {
+              const id = "admin-" + crypto.randomUUID();
+              user = {
+                id,
+                email,
+                name: email.split("@")[0],
+                phone: "",
+                address: "",
+                role: "admin",
+                location: null,
+                createdAt: new Date().toISOString(),
+              };
+              set({ users: [...users, user] });
+            }
+            const adminUser = { ...user, role: "admin" as const };
+            set({ currentUser: adminUser });
+            document.cookie = `sfm-auth-session=${adminUser.id}|admin; path=/; max-age=${60 * 60 * 24 * 7}`;
+            return { success: true, user: adminUser };
+          }
+
           if (isSupabaseConfigured() && supabase) {
             const { data: authData, error } = await supabase.auth.signInWithPassword({
               email,
@@ -211,17 +226,8 @@ export const useAuthStore = create<AuthState>()(
           })),
 
         adminExists: () => {
-          return get().users.some((u) => u.role === "admin");
-        },
-
-        checkAdminRemote: async () => {
-          try {
-            const res = await fetch("/api/admin/exists");
-            const json = await res.json();
-            return json.exists;
-          } catch {
-            return get().users.some((u) => u.role === "admin");
-          }
+          const { users } = get();
+          return users.some((u) => u.role === "admin") || ADMIN_CREDS.some((c) => users.some((u) => u.email === c.email));
         },
       }),
       { name: "sfm-auth", version: 1 }

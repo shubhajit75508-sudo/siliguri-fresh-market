@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,11 @@ import { useAuthStore } from "@/store/auth-store";
 import { useAdminStore } from "@/store/admin-store";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { useToast } from "@/components/ui/toaster";
-import { LogIn, Eye, EyeOff, Shield, Truck } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, adminExists } = useAuthStore();
+  const { login } = useAuthStore();
   const adminStore = useAdminStore();
   const deliveryStore = useDeliveryStore();
   const toast = useToast();
@@ -21,8 +21,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [showAdminOptions, setShowAdminOptions] = useState(false);
-  const titleClicksRef = useRef(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +64,7 @@ export default function LoginPage() {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-dark/10">
           <LogIn className="h-7 w-7 text-brand-dark" />
         </div>
-        <h1 className="cursor-pointer select-none text-2xl font-extrabold" onClick={() => { titleClicksRef.current += 1; if (titleClicksRef.current >= 56) { setShowAdminOptions(true); titleClicksRef.current = 0; } }}>Log In</h1>
+        <h1 className="text-2xl font-extrabold">Log In</h1>
         <p className="mt-1 text-sm text-muted">Log in to your account</p>
       </div>
 
@@ -126,35 +124,6 @@ export default function LoginPage() {
           Sign Up
         </Link>
       </p>
-
-      {showAdminOptions && (
-        <div className="mt-6 space-y-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-          <p className="text-center text-xs font-medium text-muted">Staff Access</p>
-          <div className="grid grid-cols-2 gap-2">
-            {adminExists() ? (
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-gray-100 p-3 text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed">
-                <Shield className="h-4 w-4" />
-                Admin Exists
-              </div>
-            ) : (
-              <Link
-                href="/auth/signup?role=admin"
-                className="flex items-center gap-2 rounded-lg border border-border bg-white p-3 text-sm font-medium hover:bg-surface"
-              >
-                <Shield className="h-4 w-4 text-brand-dark" />
-                Create Admin
-              </Link>
-            )}
-            <Link
-              href="/auth/signup?role=delivery"
-              className="flex items-center gap-2 rounded-lg border border-border bg-white p-3 text-sm font-medium hover:bg-surface"
-            >
-              <Truck className="h-4 w-4 text-brand-fresh-dim" />
-              Create Delivery
-            </Link>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
