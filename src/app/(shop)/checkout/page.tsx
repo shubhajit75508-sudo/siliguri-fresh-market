@@ -739,7 +739,7 @@ export default function CheckoutPage() {
                   variant="default"
                   className="rounded-full w-full sm:w-auto px-6"
                   onClick={() => setCurrentStep(currentStep + 1)}
-                  disabled={currentStep === 0 && addresses.length > 0 && !selectedAddress}
+                  disabled={currentStep === 0 && addresses.length > 0 && (!selectedAddress || !requiredDetailsFilled)}
                 >
                   Continue <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
@@ -748,7 +748,7 @@ export default function CheckoutPage() {
                   variant="fresh"
                   className="rounded-full w-full sm:w-auto px-6"
                   onClick={handlePlaceOrder}
-                  disabled={confirmingOrder}
+                  disabled={confirmingOrder || (currentStep === steps.length - 1 && !!selectedAddress && !requiredDetailsFilled)}
                 >
                   {confirmingOrder ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
