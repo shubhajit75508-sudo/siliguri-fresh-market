@@ -6,6 +6,10 @@ import { useAuthStore } from "./auth-store";
 interface DeliveryState {
   boy: DeliveryBoy | null;
   assignments: DeliveryAssignment[];
+  deliveryBoys: DeliveryBoy[];
+  addDeliveryBoy: (boy: DeliveryBoy) => void;
+  addBoy: (boy: DeliveryBoy) => void;
+  removeBoy: (id: string) => void;
   loginWithCode: (code: string) => boolean;
   loginAsBoy: (name: string, phone: string) => boolean;
   logout: () => void;
@@ -18,13 +22,26 @@ export const useDeliveryStore = create<DeliveryState>()(
     (set) => ({
       boy: null,
       assignments: [],
+      deliveryBoys: [],
+
+      addDeliveryBoy: (boy) =>
+        set((state) => ({ deliveryBoys: [...state.deliveryBoys.filter((b) => b.id !== boy.id), boy] })),
+
+      addBoy: (boy) =>
+        set((state) => ({
+          deliveryBoys: [...state.deliveryBoys.filter((b) => b.id !== boy.id), boy],
+        })),
+
+      removeBoy: (id) =>
+        set((state) => ({
+          deliveryBoys: state.deliveryBoys.filter((b) => b.id !== id),
+        })),
 
       loginWithCode: () => false,
 
       loginAsBoy: (name: string, phone: string) => {
         const currentUser = useAuthStore.getState().currentUser;
         if (currentUser?.role !== "delivery") return false;
-
         const newBoy: DeliveryBoy = {
           id: "db-" + crypto.randomUUID().slice(0, 6),
           name,
