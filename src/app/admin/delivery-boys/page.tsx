@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
@@ -10,6 +10,7 @@ import type { DeliveryBoy } from "@/types";
 
 export default function AdminDeliveryBoysPage() {
   const { deliveryBoys, addBoy, removeBoy } = useDeliveryStore();
+  const migrated = useRef(false);
   const [boys, setBoys] = useState<DeliveryBoy[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -17,7 +18,22 @@ export default function AdminDeliveryBoysPage() {
   const toast = useToast();
 
   useEffect(() => {
-    setBoys(deliveryBoys);
+    if (migrated.current) return;
+    const authUsers = useAuthStore.getState().users;
+    let changed = false;
+    const migratedBoys = deliveryBoys.map((b) => {
+      const authUser = authUsers.find((u) => u.email === b.email);
+      if (authUser && authUser.id !== b.id) {
+        changed = true;
+        return { ...b, id: authUser.id };
+      }
+      return b;
+    });
+    if (changed) {
+      migrated.current = true;
+      migratedBoys.forEach((b) => addBoy(b));
+    }
+    setBoys(migratedBoys);
     setLoading(false);
   }, [deliveryBoys]);
 
