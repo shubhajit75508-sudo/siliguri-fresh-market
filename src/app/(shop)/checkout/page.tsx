@@ -43,9 +43,10 @@ const steps = [
   { id: "review", label: "Review", icon: CheckCircle },
 ];
 
+const PAYMENT_UPI_ID = "shubhajit75508@okhdfcbank";
+
 const paymentMethods = [
-  { id: "upi", label: "UPI", desc: "GPay, PhonePe, Paytm", icon: Smartphone },
-  { id: "card", label: "Credit/Debit Card", desc: "Visa, Mastercard, RuPay", icon: CreditCard },
+  { id: "upi", label: "UPI", desc: PAYMENT_UPI_ID, icon: Smartphone },
   { id: "cod", label: "Cash on Delivery", desc: "Pay when you receive", icon: Package },
 ];
 
