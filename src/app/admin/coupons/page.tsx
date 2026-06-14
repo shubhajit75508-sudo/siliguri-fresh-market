@@ -61,7 +61,7 @@ export default function CouponsPage() {
       )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        {coupons.map((c) => (
+        {[...coupons].reverse().map((c) => (
           <div key={c.code} className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <code className="text-lg font-bold text-brand-dark">{c.code}</code>

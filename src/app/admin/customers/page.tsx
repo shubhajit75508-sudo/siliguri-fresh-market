@@ -72,7 +72,9 @@ export default function CustomersPage() {
       });
     }
 
-    return result;
+    return result.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }, [users, orders, remoteCustomers]);
 
   return (

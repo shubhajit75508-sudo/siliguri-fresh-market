@@ -82,7 +82,7 @@ export default function AdminInventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => {
+              {[...products].reverse().map((p) => {
                 const isEditing = editingStock[p.id] !== undefined;
                 return (
                   <tr key={p.id} className="border-b border-border last:border-0 hover:bg-surface/50">

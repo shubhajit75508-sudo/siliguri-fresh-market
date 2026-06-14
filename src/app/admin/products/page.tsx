@@ -205,7 +205,7 @@ export default function AdminProductsPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((p) =>
+              {[...products].reverse().map((p) =>
                 editingId === p.id ? (
                   <tr key={p.id} className="border-b border-border">
                     <td className="px-4 py-3" colSpan={5}>

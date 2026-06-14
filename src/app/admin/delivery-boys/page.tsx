@@ -136,7 +136,7 @@ export default function AdminDeliveryBoysPage() {
             {boys.length === 0 ? (
               <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">No delivery boys registered.</td></tr>
             ) : (
-              boys.map((b) => (
+              [...boys].reverse().map((b) => (
                 <tr key={b.id} className="border-b last:border-0 hover:bg-surface/50">
                   <td className="px-4 py-3 font-medium">{b.name}</td>
                   <td className="px-4 py-3 text-muted">{b.phone}</td>
