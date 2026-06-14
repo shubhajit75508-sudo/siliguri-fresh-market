@@ -27,25 +27,21 @@ export function useGeolocation(): UseGeolocationReturn {
       setResolvedAddress("");
       return;
     }
-    console.log("[useGeolocation] Reverse geocoding...");
+    console.log("[useGeolocation] Reverse geocoding via proxy...");
     const controller = new AbortController();
-    fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}`,
-      { headers: { "User-Agent": "SiliguriFreshMart/1.0" }, signal: controller.signal }
-    )
+    fetch(`/api/geocode?lat=${location.lat}&lng=${location.lng}`, { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => {
         if (data?.display_name) {
           console.log("[useGeolocation] Resolved address:", data.display_name.slice(0, 80));
           setResolvedAddress(data.display_name);
-        } else {
-          console.warn("[useGeolocation] No display_name in response");
+        } else if (data?.error) {
+          console.warn("[useGeolocation] Proxy geocode returned error:", data.error);
         }
       })
       .catch((err) => {
         if (err.name !== "AbortError") {
           console.warn("[useGeolocation] Reverse geocode failed:", err);
-          setError("Could not resolve address from your location. Try entering pincode manually.");
         }
       });
     return () => controller.abort();

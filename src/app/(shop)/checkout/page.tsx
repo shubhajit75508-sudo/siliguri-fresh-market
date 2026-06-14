@@ -186,6 +186,12 @@ export default function CheckoutPage() {
               <><Smartphone className="mr-2 h-4 w-4" /> Use Live Location</>
             )}
           </Button>
+          {locationCoords && (
+            <p className="text-xs text-brand-fresh flex items-center justify-center gap-1">
+              <CheckCircle className="h-3 w-3" />
+              Location obtained — enter pincode or wait for auto-fill
+            </p>
+          )}
         </div>
         {editingLocation && (
           <button
