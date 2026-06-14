@@ -5,20 +5,22 @@ import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrderStore } from "@/store/order-store";
-import { Loader2 } from "lucide-react";
-
 export default function CustomersPage() {
   const { users } = useAuthStore();
-  const { orders } = useOrderStore();
+  const { orders, loadOrders } = useOrderStore();
   const [remoteCustomers, setRemoteCustomers] = useState<Record<string, unknown>[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { loadOrders(); }, []);
 
   useEffect(() => {
-    fetch("/api/admin/customers")
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    fetch("/api/admin/customers", { signal: controller.signal })
       .then((r) => r.json())
       .then((json) => setRemoteCustomers(json.customers ?? []))
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => clearTimeout(timeout));
+    return () => { clearTimeout(timeout); controller.abort(); };
   }, []);
 
   const customers = useMemo(() => {
@@ -28,55 +30,55 @@ export default function CustomersPage() {
       orderCount: number; totalSpent: number; createdAt: string;
     }[] = [];
 
-    // Local users first
-    for (const u of users) {
-      if (u.role !== "customer") continue;
-      if (seen.has(u.email)) continue;
-      seen.add(u.email);
-      const customerOrders = orders.filter((o) => o.customerEmail === u.email);
-      result.push({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        phone: u.phone,
-        orderCount: customerOrders.length,
-        totalSpent: customerOrders.reduce((sum, o) => sum + o.total, 0),
-        createdAt: u.createdAt,
-      });
-    }
-
-    // Remote customers (from Supabase) not already in local
-    for (const r of remoteCustomers) {
-      const email = r.email as string;
-      if (seen.has(email)) continue;
+    const addIfNew = (email: string, data: { id: string; name: string; phone: string; createdAt: string }) => {
+      if (!email || seen.has(email)) return;
       seen.add(email);
       const customerOrders = orders.filter((o) => o.customerEmail === email);
       result.push({
-        id: r.id as string,
-        name: (r.name as string) ?? email.split("@")[0],
-        email: email,
-        phone: (r.phone as string) ?? "",
+        id: data.id,
+        name: data.name || email.split("@")[0],
+        email,
+        phone: data.phone || "",
         orderCount: customerOrders.length,
         totalSpent: customerOrders.reduce((sum, o) => sum + o.total, 0),
+        createdAt: data.createdAt || "",
+      });
+    };
+
+    // 1. Local auth users with customer role
+    for (const u of users) {
+      if (u.role !== "customer") continue;
+      addIfNew(u.email, { id: u.id, name: u.name, phone: u.phone, createdAt: u.createdAt });
+    }
+
+    // 2. Remote customers (from Supabase)
+    for (const r of remoteCustomers) {
+      const email = r.email as string;
+      addIfNew(email, {
+        id: r.id as string,
+        name: (r.name as string) ?? email?.split("@")[0] ?? "Unknown",
+        phone: (r.phone as string) ?? "",
         createdAt: (r.created_at as string) ?? "",
+      });
+    }
+
+    // 3. Customers extracted from orders (anyone who placed an order)
+    for (const o of orders) {
+      addIfNew(o.customerEmail, {
+        id: o.id,
+        name: o.customerName,
+        phone: o.customerPhone,
+        createdAt: o.createdAt,
       });
     }
 
     return result;
   }, [users, orders, remoteCustomers]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-      </div>
-    );
-  }
-
   return (
     <div>
       <h2 className="text-2xl font-bold">Customers</h2>
-      <p className="text-sm text-muted">{customers.length} registered customers</p>
+      <p className="text-sm text-muted">{customers.length} customers</p>
       <div className="mt-6 overflow-x-auto rounded-xl border bg-white shadow-sm">
         <table className="w-full text-sm">
           <thead>
@@ -91,11 +93,7 @@ export default function CustomersPage() {
           </thead>
           <tbody>
             {customers.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">
-                  No customers yet.
-                </td>
-              </tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">No customers yet.</td></tr>
             ) : (
               customers.map((c) => (
                 <tr key={c.id} className="border-b hover:bg-gray-50">
