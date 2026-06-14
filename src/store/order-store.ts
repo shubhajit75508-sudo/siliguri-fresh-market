@@ -83,11 +83,11 @@ export const useOrderStore = create<OrderState>()(
           }));
           set((state) => {
             const local = state.orders;
-            const localMap = new Map(local.map((o) => [o.id, o]));
+            const mergedMap = new Map(local.map((o) => [o.id, o]));
             for (const o of remoteOrders) {
-              if (!localMap.has(o.id)) localMap.set(o.id, o);
+              mergedMap.set(o.id, o);
             }
-            return { orders: Array.from(localMap.values()), loaded: true };
+            return { orders: Array.from(mergedMap.values()), loaded: true };
           });
         } catch (e) { console.error("loadOrders failed:", e); set({ loaded: true }); }
       },

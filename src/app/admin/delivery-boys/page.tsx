@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import type { DeliveryBoy } from "@/types";
 
@@ -37,6 +38,18 @@ export default function AdminDeliveryBoysPage() {
     };
 
     addBoy(newBoy);
+    // Create auth user so the delivery boy can log in
+    try {
+      await useAuthStore.getState().signup({
+        email: newBoy.email!,
+        password: form.password || "delivery123",
+        name: form.name,
+        phone: form.phone,
+        address: form.area || "Siliguri",
+        role: "delivery",
+        location: null,
+      });
+    } catch {}
     setForm({ name: "", phone: "", code: "", area: "", email: "", password: "" });
     setAdding(false);
     toast.add(`Delivery boy ${form.name} added`);
