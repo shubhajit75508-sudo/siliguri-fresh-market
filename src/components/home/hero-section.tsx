@@ -83,7 +83,7 @@ export function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[120px] sm:max-w-[300px] glass-dark rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 shrink-0"
+              className="hidden sm:block max-w-[120px] sm:max-w-[300px] glass-dark rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 shrink-0"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-fresh">
                 Today&apos;s Catch
