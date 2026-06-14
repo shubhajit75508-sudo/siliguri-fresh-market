@@ -60,7 +60,7 @@ function StepIndicator({ current }: { current: number }) {
           <div key={step.id} className="flex items-center">
             <div className="flex flex-col items-center gap-1">
               <div
-                className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+                className={`relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 transition-all duration-300 ${
                   isDone
                     ? "border-brand-fresh bg-brand-fresh text-white"
                     : isActive
@@ -69,16 +69,16 @@ function StepIndicator({ current }: { current: number }) {
                 }`}
               >
                 {isDone ? (
-                  <CheckCircle className="h-5 w-5" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                 ) : (
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 )}
                 {isActive && (
                   <span className="absolute -inset-1 animate-ping rounded-full bg-brand-dark/20" />
                 )}
               </div>
               <span
-                className={`hidden text-[10px] font-semibold sm:block ${
+                className={`text-[9px] sm:text-[10px] font-semibold ${
                   isDone ? "text-brand-fresh" : isActive ? "text-brand-dark" : "text-gray-300"
                 }`}
               >
@@ -86,7 +86,7 @@ function StepIndicator({ current }: { current: number }) {
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`mx-2 h-0.5 w-12 sm:w-20 rounded-full transition-colors duration-300 ${
+              <div className={`mx-1.5 sm:mx-2 h-0.5 w-8 sm:w-20 rounded-full transition-colors duration-300 ${
                 i < current ? "bg-brand-fresh" : "bg-gray-200"
               }`} />
             )}
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
         flat: selectedAddress.flat ?? "",
         floor: selectedAddress.floor ?? "",
       });
-      setShowDetailForm(!selectedAddress.area || !selectedAddress.building || !selectedAddress.floor);
+      setShowDetailForm(false);
     }
   }, [selectedAddressId]);
 
@@ -376,17 +376,17 @@ export default function CheckoutPage() {
   ];
 
   return (
-    <div className="py-6 max-w-6xl mx-auto">
+    <div className="px-3 sm:px-0 py-4 sm:py-6 max-w-6xl mx-auto">
       {/* Status bar */}
-      <div className="mb-5 flex items-center gap-2.5 rounded-full bg-brand-fresh/10 px-5 py-2.5 text-xs font-medium text-brand-fresh-dim shadow-sm">
-        <div className={`h-2 w-2 rounded-full ${hasLocation ? "bg-brand-fresh" : "bg-brand-orange animate-pulse"}`} />
-        <span>{hasLocation ? "Delivery location set" : "Delivery location needed"}</span>
+      <div className="mb-4 sm:mb-5 flex items-center gap-2 rounded-full bg-brand-fresh/10 px-4 sm:px-5 py-2 text-xs font-medium text-brand-fresh-dim shadow-sm">
+        <div className={`h-2 w-2 shrink-0 rounded-full ${hasLocation ? "bg-brand-fresh" : "bg-brand-orange animate-pulse"}`} />
+        <span className="truncate">{hasLocation ? "Location set" : "Location needed"}</span>
         {hasLocation ? (
-          <button onClick={() => setEditingLocation(true)} className="ml-auto rounded-full bg-white px-3 py-1 text-[10px] font-semibold text-brand-fresh-dim shadow-sm hover:bg-brand-fresh/10 transition-colors">
+          <button onClick={() => setEditingLocation(true)} className="ml-auto shrink-0 rounded-full bg-white px-2.5 sm:px-3 py-1 text-[10px] font-semibold text-brand-fresh-dim shadow-sm hover:bg-brand-fresh/10 transition-colors">
             Change
           </button>
         ) : (
-          <CheckCircle className="ml-auto h-3.5 w-3.5 text-brand-fresh" />
+          <CheckCircle className="ml-auto h-3.5 w-3.5 shrink-0 text-brand-fresh" />
         )}
       </div>
 
@@ -396,7 +396,7 @@ export default function CheckoutPage() {
         <StepIndicator current={currentStep} />
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-3">
+      <div className="mt-6 sm:mt-8 grid gap-6 sm:gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <AnimatePresence mode="wait">
             <motion.div
@@ -485,7 +485,7 @@ export default function CheckoutPage() {
                                   </span>
                                 </p>
                                 <div className="space-y-3">
-                                  <div className="grid grid-cols-2 gap-3">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                       <label className="flex items-center gap-1 text-[10px] font-medium text-muted mb-1">
                                         <MapPin className="h-3 w-3" /> Area / Locality <span className="text-brand-red">*</span>
@@ -494,7 +494,7 @@ export default function CheckoutPage() {
                                         value={detailForm.area}
                                         onChange={(e) => setDetailForm((f) => ({ ...f, area: e.target.value }))}
                                         placeholder="e.g. Salbari, Hakimpara"
-                                        className="w-full rounded-xl border border-border bg-white px-3 py-2 text-sm"
+                                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"
                                       />
                                     </div>
                                     <div>
@@ -505,11 +505,11 @@ export default function CheckoutPage() {
                                         value={detailForm.landmark}
                                         onChange={(e) => setDetailForm((f) => ({ ...f, landmark: e.target.value }))}
                                         placeholder="e.g. Near City Centre"
-                                        className="w-full rounded-xl border border-border bg-white px-3 py-2 text-sm"
+                                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"
                                       />
                                     </div>
                                   </div>
-                                  <div className="grid grid-cols-3 gap-3">
+                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div>
                                       <label className="flex items-center gap-1 text-[10px] font-medium text-muted mb-1">
                                         <Building2 className="h-3 w-3" /> Building / House <span className="text-brand-red">*</span>
@@ -518,7 +518,7 @@ export default function CheckoutPage() {
                                         value={detailForm.building}
                                         onChange={(e) => setDetailForm((f) => ({ ...f, building: e.target.value }))}
                                         placeholder="e.g. Green Tower"
-                                        className="w-full rounded-xl border border-border bg-white px-3 py-2 text-sm"
+                                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"
                                       />
                                     </div>
                                     <div>
@@ -529,7 +529,7 @@ export default function CheckoutPage() {
                                         value={detailForm.flat}
                                         onChange={(e) => setDetailForm((f) => ({ ...f, flat: e.target.value }))}
                                         placeholder="e.g. 3B"
-                                        className="w-full rounded-xl border border-border bg-white px-3 py-2 text-sm"
+                                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"
                                       />
                                     </div>
                                     <div>
@@ -540,7 +540,7 @@ export default function CheckoutPage() {
                                         value={detailForm.floor}
                                         onChange={(e) => setDetailForm((f) => ({ ...f, floor: e.target.value }))}
                                         placeholder="e.g. 2nd"
-                                        className="w-full rounded-xl border border-border bg-white px-3 py-2 text-sm"
+                                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm"
                                       />
                                     </div>
                                   </div>
@@ -569,12 +569,12 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  {selectedAddress && !showDetailForm && !requiredDetailsFilled && (
+                  {selectedAddress && !showDetailForm && (
                     <button
                       onClick={() => setShowDetailForm(true)}
                       className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-brand-dark underline underline-offset-2"
                     >
-                      <MapPin className="h-3.5 w-3.5" /> Add delivery details
+                      <MapPin className="h-3.5 w-3.5" /> {requiredDetailsFilled ? "Edit" : "Add"} delivery details
                     </button>
                   )}
                 </div>
@@ -718,24 +718,26 @@ export default function CheckoutPage() {
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-4 flex items-center gap-3">
-            {currentStep > 0 && (
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep(currentStep - 1)}
-                className="rounded-full"
-              >
-                <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
-              </Button>
-            )}
-            <div className="ml-auto flex items-center gap-3">
-              <span className="text-[10px] text-muted hidden sm:block">
+          <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2">
+              {currentStep > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  className="rounded-full flex-1 sm:flex-none"
+                >
+                  <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
+                </Button>
+              )}
+              <span className="text-[10px] text-muted ml-auto sm:ml-0">
                 {items.reduce((n, i) => n + i.quantity, 0)} items · {formatPrice(getTotal())}
               </span>
+            </div>
+            <div className="flex-1 sm:flex-none sm:ml-auto">
               {currentStep < steps.length - 1 ? (
                 <Button
                   variant="default"
-                  className="rounded-full px-6"
+                  className="rounded-full w-full sm:w-auto px-6"
                   onClick={() => setCurrentStep(currentStep + 1)}
                   disabled={currentStep === 0 && addresses.length > 0 && !selectedAddress}
                 >
@@ -744,7 +746,7 @@ export default function CheckoutPage() {
               ) : (
                 <Button
                   variant="fresh"
-                  className="rounded-full px-6"
+                  className="rounded-full w-full sm:w-auto px-6"
                   onClick={handlePlaceOrder}
                   disabled={confirmingOrder}
                 >
