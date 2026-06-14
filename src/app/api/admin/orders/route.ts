@@ -9,23 +9,15 @@ function getSupabaseAdmin() {
 }
 
 export async function GET() {
-  console.log("[API] GET /api/admin/orders called");
   const supabaseAdmin = getSupabaseAdmin();
-  if (!supabaseAdmin) {
-    console.error("[API] Supabase not configured (missing env vars)");
-    return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
-  }
+  if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("[API] Supabase query failed:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  console.log("[API] Returning", data?.length ?? 0, "orders");
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ orders: data ?? [] });
 }
 
@@ -61,7 +53,6 @@ export async function POST(req: NextRequest) {
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
-    payment_status: body.payment_status ?? "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
