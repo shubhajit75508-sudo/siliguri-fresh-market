@@ -314,26 +314,8 @@ function AssignModal({ order, onAssign, onClose }: {
   onClose: () => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [boys, setBoys] = useState<{ id: string; name: string; phone: string; area: string; isActive: boolean }[]>([]);
-  const localBoys = useDeliveryStore((s) => s.deliveryBoys);
-
-  useEffect(() => {
-    fetch("/api/admin/delivery-boys")
-      .then((r) => r.json())
-      .then((json) => {
-        const remote = (json.boys ?? []).map((b: { id: string; name: string; phone: string }) => ({
-          id: b.id, name: b.name, phone: b.phone ?? "", area: "", isActive: true,
-        }));
-        const merged = [...remote];
-        for (const l of localBoys) {
-          if (!merged.find((m) => m.id === l.id)) merged.push({ id: l.id, name: l.name, phone: l.phone, area: l.area || "", isActive: true });
-        }
-        setBoys(merged);
-      })
-      .catch(() => {
-        setBoys(localBoys.map((l) => ({ id: l.id, name: l.name, phone: l.phone, area: l.area || "", isActive: true })));
-      });
-  }, [localBoys]);
+  const deliveryBoys = useDeliveryStore((s) => s.deliveryBoys);
+  const boys = deliveryBoys.map((b) => ({ id: b.id, name: b.name, phone: b.phone ?? "", area: b.area || "", isActive: true }));
 
   const allBoys = boys.filter((b) => b.isActive !== false);
 

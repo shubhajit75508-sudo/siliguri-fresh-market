@@ -16,27 +16,8 @@ export default function AdminDeliveryBoysPage() {
   const toast = useToast();
 
   useEffect(() => {
-    const localBoys = deliveryBoys;
-    fetch("/api/admin/delivery-boys")
-      .then((r) => r.json())
-      .then((json) => {
-        const remote = (json.boys ?? []).map((b: { id: string; name: string; phone: string; email: string }) => ({
-          id: b.id,
-          name: b.name,
-          phone: b.phone ?? "",
-          email: b.email ?? "",
-          code: b.name.slice(0, 3).toUpperCase() + (b.phone?.slice(-3) ?? "000"),
-          isActive: true,
-          area: "",
-        }));
-        const merged = [...localBoys];
-        for (const r of remote) {
-          if (!merged.find((m) => m.id === r.id)) merged.push(r);
-        }
-        setBoys(merged);
-      })
-      .catch(() => setBoys(localBoys))
-      .finally(() => setLoading(false));
+    setBoys(deliveryBoys);
+    setLoading(false);
   }, [deliveryBoys]);
 
   const addBoyFn = async () => {
@@ -44,7 +25,7 @@ export default function AdminDeliveryBoysPage() {
       toast.add("Name and phone are required", "error");
       return;
     }
-    const id = "db-" + crypto.randomUUID().slice(0, 8);
+    const id = "db-" + Date.now().toString(36);
     const newBoy: DeliveryBoy = {
       id,
       name: form.name,
@@ -55,25 +36,14 @@ export default function AdminDeliveryBoysPage() {
       area: form.area || "Siliguri",
     };
 
-    // Try Supabase, always save locally
-    try {
-      await fetch("/api/admin/delivery-boys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, phone: form.phone, email: newBoy.email, password: form.password || "delivery123" }),
-      });
-    } catch {}
-
     addBoy(newBoy);
-    setBoys((prev) => [...prev.filter((b) => b.id !== id), newBoy]);
     setForm({ name: "", phone: "", code: "", area: "", email: "", password: "" });
     setAdding(false);
     toast.add(`Delivery boy ${form.name} added`);
   };
 
-  const removeBoyFn = async (id: string) => {
+  const removeBoyFn = (id: string) => {
     removeBoy(id);
-    setBoys((prev) => prev.filter((b) => b.id !== id));
   };
 
   if (loading) {
