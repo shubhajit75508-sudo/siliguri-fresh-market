@@ -41,7 +41,7 @@ export const useNotificationStore = create<NotificationState>()(
             notifications: state.notifications.filter((n) => n.id !== id),
           })),
       }),
-      { name: "sfm-notifications", version: 1 }
+      { name: "sfm-notifications" }
     ),
     { name: "NotificationStore" }
   )

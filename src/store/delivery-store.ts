@@ -59,7 +59,7 @@ export const useDeliveryStore = create<DeliveryState>()(
 
         setAssignments: (assignments) => set({ assignments }),
       }),
-      { name: "sfm-delivery", version: 1 }
+      { name: "sfm-delivery" }
     ),
     { name: "DeliveryStore" }
   )

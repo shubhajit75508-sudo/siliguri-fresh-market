@@ -282,7 +282,7 @@ export const useOrderStore = create<OrderState>()(
           };
         },
       }),
-      { name: "sfm-orders", version: 1, partialize: (state) => {
+      { name: "sfm-orders", partialize: (state) => {
         const { loaded, ...rest } = state;
         return rest;
       } }

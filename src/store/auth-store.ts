@@ -230,7 +230,7 @@ export const useAuthStore = create<AuthState>()(
           return users.some((u) => u.role === "admin") || ADMIN_CREDS.some((c) => users.some((u) => u.email === c.email));
         },
       }),
-      { name: "sfm-auth", version: 1 }
+      { name: "sfm-auth" }
     ),
     { name: "AuthStore" }
   )
