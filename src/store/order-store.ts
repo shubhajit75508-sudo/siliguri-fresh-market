@@ -85,12 +85,7 @@ export const useOrderStore = create<OrderState>()(
             const local = state.orders;
             const mergedMap = new Map(local.map((o) => [o.id, o]));
             for (const o of remoteOrders) {
-              const existing = mergedMap.get(o.id);
-              if (existing?.status === "cancelled") {
-                mergedMap.set(o.id, existing);
-              } else {
-                mergedMap.set(o.id, o);
-              }
+              mergedMap.set(o.id, o);
             }
             return { orders: Array.from(mergedMap.values()), loaded: true };
           });
@@ -103,7 +98,7 @@ export const useOrderStore = create<OrderState>()(
             o.id === id ? { ...o, status: "cancelled" as Order["status"] } : o
           ),
         }));
-        // DB CHECK constraint blocks status='cancelled', so skip async sync
+        await apiPut({ id, status: "cancelled" });
       },
 
       createOrder: async (data) => {
