@@ -8,16 +8,21 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
-function checkApiKey(req: NextRequest) {
+function checkAuth(req: NextRequest, allowedRoles: string[] = ["admin"]) {
   const apiKey = req.headers.get("x-api-key");
-  if (apiKey !== process.env.API_SECRET_KEY) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (apiKey === process.env.API_SECRET_KEY) return null;
+
+  const cookie = req.cookies.get("sfm-auth-session");
+  if (cookie?.value) {
+    const [, role] = cookie.value.split("|");
+    if (allowedRoles.includes(role)) return null;
   }
-  return null;
+
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 export async function GET(req: NextRequest) {
-  const unauthorized = checkApiKey(req);
+  const unauthorized = checkAuth(req, ["admin", "delivery"]);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -33,7 +38,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const unauthorized = checkApiKey(req);
+  const unauthorized = checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -55,9 +60,6 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const unauthorized = checkApiKey(req);
-  if (unauthorized) return unauthorized;
-
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -70,6 +72,7 @@ export async function POST(req: NextRequest) {
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
+    payment_status: body.payment_status ?? "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",

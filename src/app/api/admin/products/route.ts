@@ -8,16 +8,21 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
-function checkApiKey(req: NextRequest) {
+function checkAuth(req: NextRequest) {
   const apiKey = req.headers.get("x-api-key");
-  if (apiKey !== process.env.API_SECRET_KEY) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (apiKey === process.env.API_SECRET_KEY) return null;
+
+  const cookie = req.cookies.get("sfm-auth-session");
+  if (cookie?.value) {
+    const [, role] = cookie.value.split("|");
+    if (role === "admin") return null;
   }
-  return null;
+
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 export async function POST(req: NextRequest) {
-  const unauthorized = checkApiKey(req);
+  const unauthorized = checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -59,7 +64,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const unauthorized = checkApiKey(req);
+  const unauthorized = checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -103,7 +108,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const unauthorized = checkApiKey(req);
+  const unauthorized = checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();

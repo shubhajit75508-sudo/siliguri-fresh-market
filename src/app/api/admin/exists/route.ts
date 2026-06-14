@@ -1,13 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { localAdminExists } from "@/lib/local-db";
 
-export async function GET(req: NextRequest) {
-  const apiKey = req.headers.get("x-api-key");
-  if (apiKey !== process.env.API_SECRET_KEY) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export async function GET() {
   if (localAdminExists()) {
     return NextResponse.json({ exists: true });
   }
