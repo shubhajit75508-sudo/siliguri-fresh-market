@@ -39,14 +39,16 @@ export const useDeliveryStore = create<DeliveryState>()(
 
       loginWithCode: () => false,
 
+      setBoy: (boy: DeliveryBoy) => set({ boy }),
+
       loginAsBoy: (name: string, phone: string) => {
         const currentUser = useAuthStore.getState().currentUser;
         if (currentUser?.role !== "delivery") return false;
         const newBoy: DeliveryBoy = {
-          id: "db-" + crypto.randomUUID().slice(0, 6),
-          name,
-          phone,
-          code: "DEL" + phone.slice(-3),
+          id: currentUser.id,
+          name: currentUser.name || name,
+          phone: currentUser.phone || phone,
+          code: "DEL" + (currentUser.phone || phone).slice(-3),
           isActive: true,
           area: "Siliguri",
         };

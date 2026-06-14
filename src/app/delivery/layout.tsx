@@ -42,6 +42,16 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     return () => { unsub1(); unsub2(); };
   }, []);
 
+  // Auto-set boy from auth user after login
+  useEffect(() => {
+    if (!storesReady) return;
+    if (boy) return;
+    const user = useAuthStore.getState().currentUser;
+    if (user?.role === "delivery") {
+      useDeliveryStore.getState().loginAsBoy(user.name, user.phone);
+    }
+  }, [storesReady, boy]);
+
   // Poll for new assignments every 15 seconds
   useEffect(() => {
     if (!storesReady || !boy) return;

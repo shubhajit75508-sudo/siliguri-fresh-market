@@ -26,22 +26,12 @@ export default function AdminDeliveryBoysPage() {
       toast.add("Name and phone are required", "error");
       return;
     }
-    const id = "db-" + Date.now().toString(36);
-    const newBoy: DeliveryBoy = {
-      id,
-      name: form.name,
-      phone: form.phone,
-      email: form.email || `${form.name.toLowerCase().replace(/\s+/g, ".")}@delivery.sfm`,
-      code: form.name.slice(0, 3).toUpperCase() + form.phone.slice(-3),
-      isActive: true,
-      area: form.area || "Siliguri",
-    };
+    const email = form.email || `${form.name.toLowerCase().replace(/\s+/g, ".")}@delivery.sfm`;
 
-    addBoy(newBoy);
-    // Create auth user so the delivery boy can log in
+    // Create auth user first
     try {
       await useAuthStore.getState().signup({
-        email: newBoy.email!,
+        email,
         password: form.password || "delivery123",
         name: form.name,
         phone: form.phone,
@@ -50,6 +40,22 @@ export default function AdminDeliveryBoysPage() {
         location: null,
       });
     } catch {}
+
+    // Use the auth user's UUID as the delivery boy ID
+    const createdUser = useAuthStore.getState().users.find((u) => u.email === email);
+    const boyId = createdUser?.id || "auth-" + crypto.randomUUID();
+
+    const newBoy: DeliveryBoy = {
+      id: boyId,
+      name: form.name,
+      phone: form.phone,
+      email,
+      code: form.name.slice(0, 3).toUpperCase() + form.phone.slice(-3),
+      isActive: true,
+      area: form.area || "Siliguri",
+    };
+
+    addBoy(newBoy);
     setForm({ name: "", phone: "", code: "", area: "", email: "", password: "" });
     setAdding(false);
     toast.add(`Delivery boy ${form.name} added`);
