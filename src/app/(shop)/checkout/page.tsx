@@ -66,7 +66,7 @@ export default function CheckoutPage() {
   const coinsEarned = Math.floor(getTotal() / 100) * 10;
 
   const isAuthenticated = !!(currentUser && currentUser.role === "customer");
-  const hasLocation = !!(locationCoords || (selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
+  const hasLocation = !!((selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
 
   useEffect(() => {
     if (resolvedAddress && !manualPincode) {
