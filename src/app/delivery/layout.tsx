@@ -104,7 +104,10 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     if (!storesReady) return;
     if (checked.current) return;
     if (!boy && pathname !== "/delivery/login") {
-      router.push("/auth/login");
+      const user = useAuthStore.getState().currentUser;
+      if (user?.role !== "delivery") {
+        router.push("/auth/login");
+      }
     }
     checked.current = true;
   }, [boy, pathname, router, storesReady]);
