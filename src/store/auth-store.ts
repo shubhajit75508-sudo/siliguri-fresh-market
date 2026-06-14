@@ -62,17 +62,15 @@ export const useAuthStore = create<AuthState>()(
             if (users.some((u) => u.role === "admin")) {
               return { success: false, error: "Only one admin account is allowed. An admin already exists." };
             }
-            if (isSupabaseConfigured()) {
-              try {
-                const res = await fetch("/api/admin/exists");
-                const json = await res.json();
-                if (json.exists) {
-                  return { success: false, error: "Only one admin account is allowed. An admin already exists." };
-                }
-              } catch (e) {
-                console.error("Admin remote check failed:", e);
-                return { success: false, error: "Could not verify admin status. Please check your Supabase setup." };
+            try {
+              const res = await fetch("/api/admin/exists");
+              const json = await res.json();
+              if (json.exists) {
+                return { success: false, error: "Only one admin account is allowed. An admin already exists." };
               }
+            } catch (e) {
+              console.error("Admin remote check failed:", e);
+              return { success: false, error: "Could not verify admin status." };
             }
           }
 
@@ -96,25 +94,25 @@ export const useAuthStore = create<AuthState>()(
               },
             });
             if (error) return { success: false, error: error.message };
-
-            if (authData?.user) {
-              supabaseUserId = authData.user.id;
-              try {
-                await fetch("/api/admin/users", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    id: authData.user.id,
-                    name: data.name,
-                    email: data.email,
-                    phone: data.phone,
-                    role: data.role,
-                    loyalty_points: 0,
-                  }),
-                });
-              } catch (e) { console.error("User upsert failed:", e); }
-            }
+            if (authData?.user) supabaseUserId = authData.user.id;
           }
+
+          const userId = supabaseUserId ?? "auth-" + crypto.randomUUID();
+
+          try {
+            await fetch("/api/admin/users", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: userId,
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                role: data.role,
+                loyalty_points: 0,
+              }),
+            });
+          } catch (e) { console.error("User upsert failed:", e); }
 
           const hashedPassword = await hashPassword(data.password);
           const { password: _, ...dataWithoutPassword } = data;
@@ -217,13 +215,12 @@ export const useAuthStore = create<AuthState>()(
         },
 
         checkAdminRemote: async () => {
-          if (!isSupabaseConfigured()) return get().users.some((u) => u.role === "admin");
           try {
             const res = await fetch("/api/admin/exists");
             const json = await res.json();
             return json.exists;
           } catch {
-            return true;
+            return get().users.some((u) => u.role === "admin");
           }
         },
       }),
