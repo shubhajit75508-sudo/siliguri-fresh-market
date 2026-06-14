@@ -368,6 +368,7 @@ export default function CheckoutPage() {
         total,
         address: { ...selectedAddress, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined },
         paymentMethod: selectedPayment,
+        paymentStatus: selectedPayment === "upi" ? "paid" : "unpaid",
         customerName: currentUser?.name ?? "Guest",
         customerPhone: currentUser?.phone ?? "",
         customerEmail: currentUser?.email ?? "",

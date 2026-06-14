@@ -29,8 +29,14 @@ export default function DeliveryHistoryPage() {
               <div className="flex items-center gap-2">
                 <p className="font-bold">{a.customerName}</p>
                 <Badge variant="fresh">Delivered</Badge>
+                {a.paymentStatus === "paid" ? (
+                  <Badge variant="fresh">Paid</Badge>
+                ) : (
+                  <Badge variant="orange">COD</Badge>
+                )}
               </div>
               <p className="mt-0.5 text-sm text-muted">{a.customerPhone}</p>
+              <p className="text-[10px] font-mono text-muted mt-0.5">Order: {a.orderId}</p>
             </div>
             <p className="text-sm font-bold">{formatPrice(a.total)}</p>
           </div>

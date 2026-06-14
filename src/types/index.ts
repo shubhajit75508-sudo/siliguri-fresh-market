@@ -65,7 +65,7 @@ export interface Address {
   isDefault: boolean;
 }
 
-export type OrderStatus = "received" | "out_for_delivery" | "delivered";
+export type OrderStatus = "received" | "out_for_delivery" | "delivered" | "cancelled";
 
 export type DeliveryStatus = "pending" | "assigned" | "accepted" | "picked_up" | "delivered";
 
@@ -81,7 +81,9 @@ export interface Order {
   customerPhone: string;
   customerEmail: string;
   paymentMethod: string;
+  paymentStatus: "paid" | "unpaid";
   deliveryBoyId?: string;
+  deliveryBoyName?: string;
   deliveryStatus?: DeliveryStatus;
   returnRequested?: boolean;
   returnApproved?: boolean;
@@ -127,6 +129,7 @@ export interface DeliveryAssignment {
   orderId: string;
   customerName: string;
   customerPhone: string;
+  paymentStatus?: "paid" | "unpaid";
   address: Address;
   items: { name: string; quantity: number }[];
   total: number;

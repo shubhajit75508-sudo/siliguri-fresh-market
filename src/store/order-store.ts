@@ -25,11 +25,13 @@ interface OrderState {
   orders: Order[];
   loaded: boolean;
   loadOrders: () => Promise<void>;
+  cancelOrder: (id: string) => Promise<void>;
   createOrder: (data: {
     items: CartItem[];
     total: number;
     address: Address;
     paymentMethod: string;
+    paymentStatus: "paid" | "unpaid";
     customerName: string;
     customerPhone: string;
     customerEmail: string;
@@ -72,8 +74,10 @@ export const useOrderStore = create<OrderState>()(
             customerPhone: (r.customer_phone as string) ?? "",
             customerEmail: (r.customer_email as string) ?? "",
             paymentMethod: (r.payment_method as string) ?? "cod",
+            paymentStatus: (r.payment_status as "paid" | "unpaid") ?? "unpaid",
             deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
             deliveryBoyId: r.delivery_boy_id as string | undefined,
+            deliveryBoyName: r.delivery_boy_name as string | undefined,
             returnRequested: Boolean(r.return_requested),
             returnApproved: Boolean(r.return_approved),
           }));
@@ -86,6 +90,15 @@ export const useOrderStore = create<OrderState>()(
             return { orders: Array.from(remoteMap.values()), loaded: true };
           });
         } catch (e) { console.error("loadOrders failed:", e); set({ loaded: true }); }
+      },
+
+      cancelOrder: async (id) => {
+        set((state) => ({
+          orders: state.orders.map((o) =>
+            o.id === id ? { ...o, status: "cancelled" as Order["status"] } : o
+          ),
+        }));
+        await apiPut({ id, status: "cancelled" });
       },
 
       createOrder: async (data) => {
@@ -102,6 +115,7 @@ export const useOrderStore = create<OrderState>()(
           customerPhone: data.customerPhone,
           customerEmail: data.customerEmail,
           paymentMethod: data.paymentMethod,
+          paymentStatus: data.paymentStatus,
           deliveryStatus: "pending",
         };
         set((state) => ({ orders: [...state.orders, order] }));
@@ -116,6 +130,7 @@ export const useOrderStore = create<OrderState>()(
                 total: data.total,
                 status: "received",
                 payment_method: data.paymentMethod,
+                payment_status: data.paymentStatus,
                 customer_name: data.customerName,
                 customer_phone: data.customerPhone,
                 customer_email: data.customerEmail,
@@ -144,7 +159,7 @@ export const useOrderStore = create<OrderState>()(
         set((state) => ({
           orders: state.orders.map((o) =>
             o.id === orderId
-              ? { ...o, deliveryBoyId: boyId, deliveryStatus: "assigned" as DeliveryStatus, status: "out_for_delivery" as Order["status"] }
+              ? { ...o, deliveryBoyId: boyId, deliveryBoyName: boyName, deliveryStatus: "assigned" as DeliveryStatus, status: "out_for_delivery" as Order["status"] }
               : o
           ),
         }));
@@ -157,6 +172,7 @@ export const useOrderStore = create<OrderState>()(
             orderId,
             customerName: order.customerName,
             customerPhone: order.customerPhone,
+            paymentStatus: order.paymentStatus,
             address: {
               id: order.id + "-addr",
               label: "Delivery",
@@ -180,7 +196,7 @@ export const useOrderStore = create<OrderState>()(
           },
         ]);
 
-        await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_status: "assigned", status: "out_for_delivery" });
+        await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_boy_name: boyName, delivery_status: "assigned", status: "out_for_delivery" });
       },
 
       acceptDelivery: async (orderId) => {
@@ -234,7 +250,7 @@ export const useOrderStore = create<OrderState>()(
         const orders = get().orders;
         const today = new Date().toDateString();
         const todayOrders = orders.filter((o) => new Date(o.createdAt).toDateString() === today);
-        const revenueToday = todayOrders.reduce((sum, o) => sum + o.total, 0);
+        const revenueToday = todayOrders.filter((o) => o.status !== "cancelled").reduce((sum, o) => sum + o.total, 0);
         return {
           totalOrders: orders.length,
           revenueToday,

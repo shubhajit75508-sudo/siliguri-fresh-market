@@ -220,6 +220,7 @@ export async function fetchOrdersByUser(userId: string): Promise<Order[]> {
       customerPhone: "",
       customerEmail: "",
       paymentMethod: "cod",
+      paymentStatus: "unpaid" as const,
     };
   });
 }
