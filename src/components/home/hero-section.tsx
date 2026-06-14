@@ -38,7 +38,7 @@ export function HeroSection() {
         </div>
 
         <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-8 lg:p-10">
-          <div className="flex flex-1 flex-col justify-center gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-row flex-wrap items-start justify-center gap-4 lg:gap-8 lg:flex-nowrap lg:items-center lg:justify-between">
             <motion.div
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
@@ -83,15 +83,15 @@ export function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-[300px] glass-dark rounded-[24px] p-4 sm:p-5 lg:shrink-0"
+              className="max-w-[160px] sm:max-w-[300px] glass-dark rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 shrink-0"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-fresh">
                 Today&apos;s Catch
               </p>
-              <h3 className="mt-1.5 text-[22px] font-bold tracking-tight text-white">Padma Hilsa</h3>
-              <p className="mt-1 text-[12px] text-white/55">Harvested at dawn — iced & sealed</p>
+              <h3 className="mt-1.5 text-[14px] font-bold tracking-tight text-white sm:text-[22px]">Padma Hilsa</h3>
+              <p className="mt-0.5 text-[10px] text-white/55 sm:mt-1 sm:text-[12px]">Harvested at dawn — iced & sealed</p>
 
-              <div className="mt-5">
+              <div className="mt-3 sm:mt-5">
                 {timeline.map((step, i) => (
                   <div key={step.label} className="flex gap-3">
                     <div className="flex flex-col items-center pt-0.5">
@@ -105,12 +105,12 @@ export function HeroSection() {
                         }`}
                       />
                       {i < timeline.length - 1 && (
-                        <div className={`my-1 h-6 w-px sm:h-9 ${step.done ? "bg-brand-fresh/40" : "bg-white/15"}`} />
+                        <div className={`my-0.5 h-4 w-px sm:my-1 sm:h-9 ${step.done ? "bg-brand-fresh/40" : "bg-white/15"}`} />
                       )}
                     </div>
-                    <div className={i < timeline.length - 1 ? "pb-3" : ""}>
-                      <p className="text-[13px] font-semibold text-white">{step.label}</p>
-                      <p className="text-[11px] text-white/45">{step.time}</p>
+                    <div className={i < timeline.length - 1 ? "pb-1 sm:pb-3" : ""}>
+                      <p className="text-[11px] font-semibold text-white sm:text-[13px]">{step.label}</p>
+                      <p className="text-[9px] text-white/45 sm:text-[11px]">{step.time}</p>
                     </div>
                   </div>
                 ))}
