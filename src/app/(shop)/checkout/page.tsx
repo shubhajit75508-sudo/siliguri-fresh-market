@@ -189,7 +189,7 @@ export default function CheckoutPage() {
           {locationCoords && (
             <p className="text-xs text-brand-fresh flex items-center justify-center gap-1">
               <CheckCircle className="h-3 w-3" />
-              Location obtained — enter pincode or wait for auto-fill
+              Location obtained — enter your delivery pincode above
             </p>
           )}
         </div>
