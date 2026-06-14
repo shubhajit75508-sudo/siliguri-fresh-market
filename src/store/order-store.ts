@@ -61,9 +61,12 @@ export const useOrderStore = create<OrderState>()(
             return;
           }
           try {
+            console.log("[loadOrders] fetching /api/admin/orders...");
             const res = await fetch("/api/admin/orders");
-            if (!res.ok) throw new Error("Failed to fetch orders");
+            console.log("[loadOrders] response status:", res.status);
+            if (!res.ok) throw new Error("Failed to fetch orders (status " + res.status + ")");
             const json = await res.json();
+            console.log("[loadOrders] remote orders:", json.orders?.length ?? 0);
             const remoteOrders: Order[] = (json.orders ?? []).map((r: Record<string, unknown>) => ({
               id: r.id as string,
               items: (r.items as Order["items"]) ?? [],
