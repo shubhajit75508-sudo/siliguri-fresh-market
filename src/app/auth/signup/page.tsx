@@ -14,7 +14,7 @@ import { MapPin, Loader2, UserPlus, Shield, Truck, ShoppingBag } from "lucide-re
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { signup, login, adminExists } = useAuthStore();
+  const { signup, login, adminExists, checkAdminRemote } = useAuthStore();
   const { setUser, addAddress } = useUserStore();
   const toast = useToast();
   const [form, setForm] = useState({
@@ -30,6 +30,15 @@ function SignupForm() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showAdminOptions, setShowAdminOptions] = useState(false);
+  const [remoteAdminExists, setRemoteAdminExists] = useState(false);
+  const [remoteAdminLoading, setRemoteAdminLoading] = useState(true);
+
+  useEffect(() => {
+    checkAdminRemote().then((exists) => {
+      setRemoteAdminExists(exists);
+      setRemoteAdminLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     if (resolvedAddress && !form.address) {
@@ -56,6 +65,15 @@ function SignupForm() {
     if (form.password.length < 4) { setError("Password must be at least 4 characters"); return; }
     if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return; }
     if (!form.address.trim()) { setError("Address is required"); return; }
+
+    if (form.role === "admin") {
+      const remoteExists = await checkAdminRemote();
+      if (remoteExists) {
+        setSubmitting(false);
+        setError("Only one admin account is allowed. An admin already exists.");
+        return;
+      }
+    }
 
     setSubmitting(true);
     let result;
@@ -246,7 +264,7 @@ function SignupForm() {
           {/* Hidden admin/delivery options — tap title 5 times to reveal */}
           {showAdminOptions && (
             <div className="mt-1 grid grid-cols-2 gap-2">
-              {adminExists() ? (
+              {adminExists() || remoteAdminExists ? (
                 <div className="flex flex-col items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 p-3 opacity-60">
                   <Shield className="h-5 w-5 text-gray-300" />
                   <div className="text-center">
