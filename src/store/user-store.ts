@@ -21,6 +21,8 @@ interface UserState {
   updateUser: (partial: Partial<User>) => void;
   addAddress: (address: Address) => void;
   updateAddress: (address: Address) => void;
+  deleteAddress: (id: string) => void;
+  setDefaultAddress: (id: string) => void;
   addToRecentlyViewed: (productId: string) => void;
   addToSearchHistory: (query: string) => void;
   clearSearchHistory: () => void;
@@ -59,6 +61,14 @@ export const useUserStore = create<UserState>()(
   updateAddress: (address) =>
     set((state) => ({
       addresses: state.addresses.map((a) => (a.id === address.id ? address : a)),
+    })),
+  deleteAddress: (id) =>
+    set((state) => ({
+      addresses: state.addresses.filter((a) => a.id !== id),
+    })),
+  setDefaultAddress: (id) =>
+    set((state) => ({
+      addresses: state.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
     })),
 
       addToRecentlyViewed: (productId) =>
