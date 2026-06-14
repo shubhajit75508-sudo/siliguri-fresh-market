@@ -21,11 +21,11 @@ export function CategoriesSection() {
       </div>
 
       <div className="-mx-4 overflow-x-auto px-4 no-scrollbar sm:mx-0 sm:px-0">
-        <div className="flex gap-3 sm:grid sm:grid-cols-3 md:grid-cols-6 sm:gap-4">
+        <div className="flex gap-3 sm:grid sm:grid-cols-3 md:grid-cols-6 sm:gap-4 snap-x snap-mandatory scroll-smooth">
           {cats.map((cat, i) => (
             <div
               key={cat.name}
-              className={`w-[130px] shrink-0 sm:w-auto animate-in animate-in-d${Math.min(i + 1, 10)}`}
+              className={`w-[130px] shrink-0 sm:w-auto animate-in animate-in-d${Math.min(i + 1, 10)} snap-start`}
             >
               <Link href={cat.href} className="block">
                 <div className="category-tile relative aspect-square">

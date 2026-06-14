@@ -24,7 +24,7 @@ export function HeroSection() {
   return (
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl shadow-black/15">
-        <div className="relative min-h-[460px] sm:min-h-[520px] lg:min-h-[540px]">
+        <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-[540px]">
           <Image
             src={hero.image}
             alt="Fresh fish and produce"
@@ -52,7 +52,7 @@ export function HeroSection() {
                 </span>
               </div>
 
-              <h1 className="text-[32px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[42px] lg:text-[48px]">
+              <h1 className="text-[26px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[42px] lg:text-[48px]">
                 {hero.title.split("\n").map((line, i) => (
                   <span key={i}>{i > 0 && <br />}{line}</span>
                 ))}

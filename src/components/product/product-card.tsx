@@ -87,6 +87,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
     <Link href={`/product/${product.slug}`} className="block h-full">
       <motion.article
         whileHover={{ y: -5 }}
+        whileTap={{ scale: 0.97 }}
         transition={{ type: "spring", stiffness: 380, damping: 26 }}
         className="product-card flex h-full flex-col"
       >
@@ -132,7 +133,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               >
                 <button
                   onClick={handleDecrement}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/15"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/15"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -141,7 +142,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
                 </span>
                 <button
                   onClick={handleIncrement}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/15"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/15"
                 >
                   <Plus className="h-4 w-4" />
                 </button>

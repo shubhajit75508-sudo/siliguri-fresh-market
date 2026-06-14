@@ -29,7 +29,7 @@ export function ProductSection({
         {viewAllHref && (
           <Link
             href={viewAllHref}
-            className="shrink-0 text-[13px] font-semibold text-brand-fresh-dim hover:underline"
+            className="shrink-0 px-2 py-2 text-[13px] font-semibold text-brand-fresh-dim hover:underline"
           >
             See all
           </Link>
