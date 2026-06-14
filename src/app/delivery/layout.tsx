@@ -17,15 +17,17 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
   const router = useRouter();
   const { boy, logout } = useDeliveryStore();
-  const { logout: authLogout } = useAuthStore();
+  const { logout: authLogout, currentUser } = useAuthStore();
   const checked = useRef(false);
 
   // Wait for persisted stores to rehydrate before checking auth
   const [storesReady, setStoresReady] = useState(false);
 
   useEffect(() => {
-    useDeliveryStore.persist.rehydrate();
-    useAuthStore.persist.rehydrate();
+    if (useDeliveryStore.persist.hasHydrated() && useAuthStore.persist.hasHydrated()) {
+      setStoresReady(true);
+      return;
+    }
     const unsub1 = useDeliveryStore.persist.onFinishHydration(() => {
       if (useDeliveryStore.persist.hasHydrated() && useAuthStore.persist.hasHydrated()) {
         setStoresReady(true);
@@ -36,9 +38,6 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
         setStoresReady(true);
       }
     });
-    if (useDeliveryStore.persist.hasHydrated() && useAuthStore.persist.hasHydrated()) {
-      setStoresReady(true);
-    }
     return () => { unsub1(); unsub2(); };
   }, []);
 
@@ -46,11 +45,10 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   useEffect(() => {
     if (!storesReady) return;
     if (boy) return;
-    const user = useAuthStore.getState().currentUser;
-    if (user?.role === "delivery") {
-      useDeliveryStore.getState().loginAsBoy(user.name, user.phone);
+    if (currentUser?.role === "delivery") {
+      useDeliveryStore.getState().loginAsBoy(currentUser.name, currentUser.phone);
     }
-  }, [storesReady, boy]);
+  }, [storesReady, boy, currentUser]);
 
   // Poll for new assignments every 15 seconds
   useEffect(() => {
