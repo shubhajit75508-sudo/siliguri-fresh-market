@@ -23,6 +23,9 @@ import {
   Layers,
   ArrowLeft,
   Package,
+  Copy,
+  X,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -118,6 +121,9 @@ export default function CheckoutPage() {
   const [editingLocation, setEditingLocation] = useState(false);
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "" });
   const [showDetailForm, setShowDetailForm] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { items, getSubtotal, getTotal, getDeliveryFee, getCoinsDiscount, couponDiscount, clearCart, setCoinsDiscount } = useCartStore();
   const { addresses, user, coinsRedeemed, applyCoinsRedemption, removeCoinsRedemption, earnCoins, redeemCoins } = useUserStore();
   const { currentUser } = useAuthStore();
@@ -339,6 +345,15 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (selectedPayment === "upi" && !paymentConfirmed) {
+      setShowPaymentModal(true);
+      return;
+    }
+
+    placeOrder();
+  };
+
+  const placeOrder = () => {
     setConfirmingOrder(true);
 
     const total = getTotal();
@@ -359,6 +374,8 @@ export default function CheckoutPage() {
       });
 
       clearCart();
+      setPaymentConfirmed(false);
+      setShowPaymentModal(false);
       const earned = Math.floor(total / 100) * 10;
       toast.add(`Order placed! +${earned} coins earned. Delivery in 30 min - 1 hr.`);
       router.push(`/track/${orderId}`);
@@ -706,7 +723,7 @@ export default function CheckoutPage() {
 
                   {/* Payment */}
                   <div className="flex items-center gap-2 text-xs text-muted">
-                    <CreditCard className="h-3.5 w-3.5" />
+                    {selectedPayment === "upi" ? <Smartphone className="h-3.5 w-3.5" /> : <Package className="h-3.5 w-3.5" />}
                     Payment: {paymentMethods.find((m) => m.id === selectedPayment)?.label}
                   </div>
                   <p className="text-xs text-muted mt-1">Delivery time: 30 min — 1 hour</p>
@@ -809,6 +826,63 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Payment modal */}
+      <AnimatePresence>
+        {showPaymentModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-3 pb-6 sm:px-0"
+          >
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold">Pay via UPI</h3>
+                <button onClick={() => { setShowPaymentModal(false); if (!paymentConfirmed) setSelectedPayment("cod"); }} className="rounded-full p-1 hover:bg-gray-100">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-muted mb-3">
+                Send the exact amount to the UPI ID below, then confirm.
+              </p>
+
+              <div className="rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-brand-fresh/[0.03] p-4 text-center mb-4">
+                <p className="text-[10px] font-medium text-muted mb-2">UPI ID</p>
+                <p className="text-sm font-bold text-brand-dark tracking-wide">{PAYMENT_UPI_ID}</p>
+                <button
+                  onClick={() => { navigator.clipboard.writeText(PAYMENT_UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                  className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-brand-fresh-dim hover:text-brand-fresh"
+                >
+                  <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy UPI ID"}
+                </button>
+              </div>
+
+              <div className="rounded-xl bg-brand-orange/10 px-3 py-2.5 text-center mb-4">
+                <p className="text-[10px] font-medium text-brand-orange">Amount to pay</p>
+                <p className="text-lg font-extrabold text-brand-dark">{formatPrice(getTotal())}</p>
+              </div>
+
+              <button
+                onClick={() => { setPaymentConfirmed(true); setShowPaymentModal(false); placeOrder(); }}
+                className="w-full rounded-full bg-brand-fresh py-3 text-sm font-bold text-white hover:bg-brand-fresh-dim transition-colors"
+              >
+                <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm
+              </button>
+
+              <p className="mt-3 text-[10px] text-center text-muted">
+                <ExternalLink className="mr-0.5 inline h-3 w-3" /> Open GPay / PhonePe / Paytm and pay now
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
