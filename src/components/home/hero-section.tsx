@@ -9,7 +9,7 @@ import { useAdminStore } from "@/store/admin-store";
 const timeline = [
   { label: "Harvested", time: "Today, 5:12 AM", done: true },
   { label: "Packed", time: "Today, 7:40 AM", done: true },
-  { label: "Arriving", time: "12 min", active: true },
+  { label: "Arriving", time: "~30 min", active: true },
 ];
 
 export function HeroSection() {
@@ -48,7 +48,7 @@ export function HeroSection() {
               <div className="mb-5 inline-flex items-center gap-2.5 rounded-full glass-pill px-4 py-2">
                 <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh shadow-[0_0_8px_#22c55e]" />
                 <span className="text-[12px] font-semibold tracking-wide text-white/95">
-                  Live — Delivering in 10–15 min
+                  Live — Delivering in 30–60 min
                 </span>
               </div>
 
@@ -83,7 +83,7 @@ export function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-[300px] glass-dark rounded-[24px] p-5 lg:shrink-0"
+              className="w-full max-w-[300px] glass-dark rounded-[24px] p-4 sm:p-5 lg:shrink-0"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-fresh">
                 Today&apos;s Catch
@@ -105,7 +105,7 @@ export function HeroSection() {
                         }`}
                       />
                       {i < timeline.length - 1 && (
-                        <div className={`my-1 h-9 w-px ${step.done ? "bg-brand-fresh/40" : "bg-white/15"}`} />
+                        <div className={`my-1 h-6 w-px sm:h-9 ${step.done ? "bg-brand-fresh/40" : "bg-white/15"}`} />
                       )}
                     </div>
                     <div className={i < timeline.length - 1 ? "pb-3" : ""}>
@@ -125,7 +125,7 @@ export function HeroSection() {
             className="mt-6 flex flex-wrap gap-2"
           >
             {[
-              { icon: Clock, text: "10-min ETA" },
+              { icon: Clock, text: "30-min ETA" },
               { icon: ShieldCheck, text: "Freshness 100%" },
               { icon: Truck, text: "Free delivery" },
             ].map((item) => (
