@@ -36,21 +36,25 @@ export async function POST(req: NextRequest) {
     if (receipt && receipt.startsWith("SFM-")) {
       const supabaseAdmin = getSupabaseAdmin();
       if (supabaseAdmin) {
-        await supabaseAdmin.from("orders").upsert({
-          id: receipt,
-          items: [],
-          total: Math.round(amount),
-          status: "received",
-          payment_method: "upi",
-          payment_status: "pending",
-          address_snapshot: {},
-          customer_name: notes?.customer_name ?? "",
-          customer_phone: notes?.customer_phone ?? "",
-          customer_email: notes?.customer_email ?? "",
-          delivery_status: "pending",
-          eta: 30,
-          created_at: new Date().toISOString(),
-        }, { onConflict: "id" });
+        try {
+          await supabaseAdmin.from("orders").upsert({
+            id: receipt,
+            items: [],
+            total: Math.round(amount),
+            status: "received",
+            payment_method: "upi",
+            payment_status: "pending",
+            address_snapshot: {},
+            customer_name: notes?.customer_name ?? "",
+            customer_phone: notes?.customer_phone ?? "",
+            customer_email: notes?.customer_email ?? "",
+            delivery_status: "pending",
+            eta: 30,
+            created_at: new Date().toISOString(),
+          }, { onConflict: "id" });
+        } catch (e) {
+          console.warn("[create-order] pending order upsert skipped:", e);
+        }
       }
     }
 

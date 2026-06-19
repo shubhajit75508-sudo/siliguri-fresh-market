@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
   const body = await req.json();
-  const { error } = await supabaseAdmin.from("orders").upsert({
+  const upsertData: Record<string, unknown> = {
     id: body.id,
     user_id: body.user_id ?? null,
     items: body.items ?? [],
@@ -82,7 +82,6 @@ export async function POST(req: NextRequest) {
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
-    payment_status: body.payment_status ?? "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
@@ -92,7 +91,13 @@ export async function POST(req: NextRequest) {
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),
     eta: body.eta ?? 30,
-  });
+  };
+
+  if (body.payment_status !== undefined) {
+    upsertData.payment_status = body.payment_status;
+  }
+
+  const { error } = await supabaseAdmin.from("orders").upsert(upsertData);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   if (body.customer_email) {
