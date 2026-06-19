@@ -10,6 +10,10 @@ export async function POST(req: NextRequest) {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
 
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return NextResponse.json({ error: "Missing required payment fields" }, { status: 400 });
+    }
+
     const isValid = validatePaymentVerification(
       { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
       razorpay_signature,

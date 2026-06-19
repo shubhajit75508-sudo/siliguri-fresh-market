@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
   try {
     const { amount, currency, receipt, notes } = await req.json();
 
+    if (!amount || amount < 1) {
+      return NextResponse.json({ error: "Amount must be at least ₹1" }, { status: 400 });
+    }
+
     const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
 
     const order = await razorpay.orders.create({

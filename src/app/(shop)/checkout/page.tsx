@@ -394,6 +394,11 @@ export default function CheckoutPage() {
         },
       });
 
+      razorpay.on("payment.failed", (response: { error: { code: string; description: string } }) => {
+        setConfirmingOrder(false);
+        toast.add(`Payment failed: ${response.error.description}`, "error");
+      });
+
       razorpay.open();
     } catch {
       setConfirmingOrder(false);
