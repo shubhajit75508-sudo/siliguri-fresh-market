@@ -18,13 +18,23 @@ export async function GET(req: NextRequest) {
   const supabaseAdmin = getAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
 
+  let email: string | null = null;
+
   const { data: user } = await supabaseAdmin
     .from("users")
     .select("email")
     .eq("id", userId)
     .maybeSingle();
 
-  const email = user?.email;
+  if (user?.email) {
+    email = user.email;
+  } else {
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+    if (authUser?.user?.email) {
+      email = authUser.user.email;
+    }
+  }
+
   if (!email) return NextResponse.json({ orders: [] });
 
   const { data, error } = await supabaseAdmin
