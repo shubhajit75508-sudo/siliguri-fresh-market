@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { error } = await supabaseAdmin.from("orders").upsert({
     id: body.id,
-    user_id: body.user_id ?? null,
+    user_id: null,
     items: body.items ?? [],
     total: body.total,
     status: body.status ?? "received",
