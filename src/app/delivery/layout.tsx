@@ -50,7 +50,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     }
   }, [storesReady, boy, currentUser]);
 
-  // Poll for new assignments every 15 seconds
+  // Fetch and sync assignments
   useEffect(() => {
     if (!storesReady || !boy) return;
 
@@ -61,7 +61,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
       useDeliveryStore.getState().setAssignments(mine);
     }
 
-    const interval = setInterval(() => {
+    const fetchAssignments = () => {
       fetch("/api/admin/orders")
         .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then((json) => {
@@ -103,7 +103,10 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
           }
         })
         .catch((e) => { console.warn("[delivery] poll error:", e); });
-    }, 15000);
+    };
+
+    fetchAssignments();
+    const interval = setInterval(fetchAssignments, 15000);
     return () => clearInterval(interval);
   }, [storesReady, boy]);
 
