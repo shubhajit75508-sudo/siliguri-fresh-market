@@ -348,7 +348,17 @@ export default function CheckoutPage() {
       const res = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: total, currency: "INR", receipt: sfmOrderId, notes: { order_id: sfmOrderId } }),
+        body: JSON.stringify({
+          amount: total,
+          currency: "INR",
+          receipt: sfmOrderId,
+          notes: {
+            order_id: sfmOrderId,
+            customer_name: currentUser?.name ?? "",
+            customer_phone: currentUser?.phone ?? "",
+            customer_email: currentUser?.email ?? "",
+          },
+        }),
       });
       if (!res.ok) { setConfirmingOrder(false); setShowPaymentModal(true); return; }
 
