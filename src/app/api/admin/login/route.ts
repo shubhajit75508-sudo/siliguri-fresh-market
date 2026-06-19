@@ -50,6 +50,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("Admin login error:", err);
-    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
