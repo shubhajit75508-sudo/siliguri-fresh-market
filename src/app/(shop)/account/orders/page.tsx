@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
-import { useAuthStore } from "@/store/auth-store";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 
 const statusBadge: Record<string, "default" | "fresh" | "blue" | "red" | "orange"> = {
@@ -27,16 +26,13 @@ interface OrderSummary {
 }
 
 export default function OrdersPage() {
-  const { orders: allOrders, loaded, loadOrders } = useOrderStore();
-  const { currentUser } = useAuthStore();
+  const { orders: allOrders, loaded, loadUserOrders } = useOrderStore();
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
   const [returnDeliveredAt, setReturnDeliveredAt] = useState<string | undefined>();
 
-  useEffect(() => { loadOrders(); }, [loadOrders]);
+  useEffect(() => { loadUserOrders(); }, [loadUserOrders]);
 
-  const userEmail = currentUser?.email ?? "";
   const orders: OrderSummary[] = allOrders
-    .filter((o) => o.customerEmail === userEmail)
     .map((o) => ({
     id: o.id,
     date: new Date(o.createdAt).toLocaleDateString(),

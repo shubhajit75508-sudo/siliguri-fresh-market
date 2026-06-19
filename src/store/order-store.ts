@@ -26,6 +26,7 @@ interface OrderState {
   orders: Order[];
   loaded: boolean;
   loadOrders: () => Promise<void>;
+  loadUserOrders: () => Promise<void>;
   cancelOrder: (id: string) => Promise<void>;
   createOrder: (data: {
     items: CartItem[];
@@ -93,6 +94,39 @@ export const useOrderStore = create<OrderState>()(
               return { orders: Array.from(mergedMap.values()), loaded: true };
             });
           } catch (e) { console.error("loadOrders failed:", e); set({ loaded: true }); }
+        },
+
+        loadUserOrders: async () => {
+          if (!isSupabaseConfigured()) {
+            console.warn("[loadUserOrders] Supabase not configured, skipping remote fetch");
+            set({ loaded: true });
+            return;
+          }
+          try {
+            const res = await fetch("/api/orders");
+            if (!res.ok) throw new Error("Failed to fetch user orders");
+            const json = await res.json();
+            const userOrders: Order[] = (json.orders ?? []).map((r: Record<string, unknown>) => ({
+              id: r.id as string,
+              items: (r.items as Order["items"]) ?? [],
+              status: (r.status as Order["status"]) ?? "received",
+              total: Number(r.total),
+              createdAt: (r.created_at as string) ?? new Date().toISOString(),
+              address: (r.address_snapshot as Order["address"]) ?? { id: "", label: "", line1: "", city: "", pincode: "", isDefault: false },
+              eta: 30,
+              customerName: (r.customer_name as string) ?? "",
+              customerPhone: (r.customer_phone as string) ?? "",
+              customerEmail: (r.customer_email as string) ?? "",
+              paymentMethod: (r.payment_method as string) ?? "cod",
+              paymentStatus: (r.payment_status as "paid" | "unpaid") ?? "unpaid",
+              deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
+              deliveryBoyId: r.delivery_boy_id as string | undefined,
+              deliveryBoyName: r.delivery_boy_name as string | undefined,
+              returnRequested: Boolean(r.return_requested),
+              returnApproved: Boolean(r.return_approved),
+            }));
+            set({ orders: userOrders, loaded: true });
+          } catch (e) { console.error("loadUserOrders failed:", e); if (!get().loaded) set({ loaded: true }); }
         },
 
         cancelOrder: async (id) => {

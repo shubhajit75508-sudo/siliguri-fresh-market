@@ -11,9 +11,9 @@ import {
   XCircle,
   AlertTriangle,
 } from "lucide-react";
+import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
-import { useOrderStore } from "@/store/order-store";
 
 const stages = [
   { id: "received", label: "Order Received", icon: Package },
@@ -29,23 +29,38 @@ export default function TrackOrderPage({
   params: Promise<{ orderId: string }>;
 }) {
   const { orderId } = use(params);
-  const { orders, loadOrders } = useOrderStore();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showReturn, setShowReturn] = useState(false);
 
-  useEffect(() => { loadOrders(); }, [loadOrders]);
-
-  const order = orders.find((o) => o.id === orderId);
+  useEffect(() => {
+    fetch(`/api/orders/${orderId}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((json) => setOrder(json.order))
+      .catch(() => setOrder(null))
+      .finally(() => setLoading(false));
+  }, [orderId]);
   const isCancelled = order?.status === "cancelled";
   const currentStage = order ? (stageIndex[order.status] ?? 0) : 0;
   const isDelivered = order?.status === "delivered";
   const deliveredAt = order?.createdAt;
 
-  if (!order) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <Package className="mb-4 h-12 w-12 text-muted" />
         <h2 className="text-lg font-bold">Loading order...</h2>
         <p className="mt-1 text-sm text-muted">Looking up order {orderId}</p>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Package className="mb-4 h-12 w-12 text-muted" />
+        <h2 className="text-lg font-bold">Order not found</h2>
+        <p className="mt-1 text-sm text-muted">No order with ID {orderId}</p>
       </div>
     );
   }
