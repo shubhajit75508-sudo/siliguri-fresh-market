@@ -10,14 +10,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { amount, currency } = await req.json();
+    const { amount, currency, receipt, notes } = await req.json();
 
     const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
 
     const order = await razorpay.orders.create({
       amount: Math.round(amount * 100),
       currency: currency || "INR",
-      receipt: "rcpt_" + Date.now(),
+      receipt: receipt || "rcpt_" + Date.now(),
+      notes: notes || {},
     });
 
     return NextResponse.json({

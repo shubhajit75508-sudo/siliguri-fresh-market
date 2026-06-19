@@ -37,7 +37,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
   }
 
-  let event: { event: string; payload: { payment?: { entity?: { notes?: Record<string, string> } }; order?: { entity?: { receipt?: string } } } };
+  let event: {
+    event: string;
+    payload: {
+      payment?: { entity?: { notes?: Record<string, string> } };
+      order?: { entity?: { receipt?: string } };
+    };
+  };
   try {
     event = JSON.parse(body);
   } catch {
@@ -45,15 +51,33 @@ export async function POST(req: NextRequest) {
   }
 
   if (event.event === "payment.captured" || event.event === "order.paid") {
-    const receipt = event.payload?.order?.entity?.receipt;
-    if (!receipt) {
-      return NextResponse.json({ error: "No receipt" }, { status: 400 });
+    const orderId =
+      event.payload?.payment?.entity?.notes?.order_id ??
+      event.payload?.order?.entity?.receipt;
+
+    if (!orderId) {
+      return NextResponse.json({ error: "No order ID in webhook payload" }, { status: 400 });
+    }
+
+    const { data: existing } = await supabaseAdmin
+      .from("orders")
+      .select("id, payment_status")
+      .eq("id", orderId)
+      .maybeSingle();
+
+    if (!existing) {
+      console.warn("[webhook] order %s not found yet — payment captured before order creation", orderId);
+      return NextResponse.json({ success: true, note: "Order not yet created, will be paid on creation" });
+    }
+
+    if (existing.payment_status === "paid") {
+      return NextResponse.json({ success: true, note: "Already paid" });
     }
 
     const { error } = await supabaseAdmin
       .from("orders")
       .update({ payment_status: "paid" })
-      .eq("id", receipt);
+      .eq("id", orderId);
 
     if (error) {
       console.error("[webhook] DB update error:", error);

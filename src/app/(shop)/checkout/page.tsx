@@ -339,6 +339,8 @@ export default function CheckoutPage() {
     const total = getTotal();
     setConfirmingOrder(true);
 
+    const sfmOrderId = "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+
     try {
       const loaded = await loadRazorpayScript();
       if (!loaded) { setConfirmingOrder(false); setShowPaymentModal(true); return; }
@@ -346,7 +348,7 @@ export default function CheckoutPage() {
       const res = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: total, currency: "INR" }),
+        body: JSON.stringify({ amount: total, currency: "INR", receipt: sfmOrderId, notes: { order_id: sfmOrderId } }),
       });
       if (!res.ok) { setConfirmingOrder(false); setShowPaymentModal(true); return; }
 
@@ -368,7 +370,7 @@ export default function CheckoutPage() {
           if (verifyRes.ok) {
             setPaymentConfirmed(true);
             setSelectedPayment("upi");
-            placeOrder("paid");
+            placeOrder("paid", sfmOrderId);
           } else {
             toast.add("Payment verification failed. Contact support.", "error");
             setConfirmingOrder(false);
@@ -418,13 +420,14 @@ export default function CheckoutPage() {
     placeOrder("unpaid");
   };
 
-  const placeOrder = (paymentStatus: "paid" | "unpaid") => {
+  const placeOrder = (paymentStatus: "paid" | "unpaid", orderId?: string) => {
     setConfirmingOrder(true);
 
     const total = getTotal();
 
     (async () => {
-      const orderId = await createOrder({
+      const finalId = await createOrder({
+        id: orderId,
         items,
         total,
         address: { ...selectedAddress, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined },
@@ -446,7 +449,7 @@ export default function CheckoutPage() {
       setShowPaymentModal(false);
       const earned = Math.floor(total / 100) * 10;
       toast.add(`Order placed! +${earned} coins earned. Delivery in 30 min - 1 hr.`);
-      router.push(`/track/${orderId}`);
+      router.push(`/track/${finalId}`);
     })().catch(() => {
       setConfirmingOrder(false);
       toast.add("Failed to place order. Please try again.", "error");

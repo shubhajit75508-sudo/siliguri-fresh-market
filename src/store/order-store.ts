@@ -38,6 +38,7 @@ interface OrderState {
     customerPhone: string;
     customerEmail: string;
     userId?: string;
+    id?: string;
   }) => Promise<string>;
   updateStatus: (id: string, status: Order["status"]) => Promise<void>;
   assignDeliveryBoy: (orderId: string, boyId: string, boyName: string, boyEmail?: string) => Promise<{ assignment: DeliveryAssignment } | void>;
@@ -141,7 +142,7 @@ export const useOrderStore = create<OrderState>()(
         },
 
         createOrder: async (data) => {
-          const id = "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+          const id = data.id ?? "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
           const createdAt = new Date().toISOString();
           const eta = 30 + Math.floor(Math.random() * 31);
 
