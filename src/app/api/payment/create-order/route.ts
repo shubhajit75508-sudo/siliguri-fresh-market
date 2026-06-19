@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
           id: receipt,
           items: [],
           total: Math.round(amount),
-          status: "pending",
+          status: "received",
           payment_method: "upi",
           payment_status: "pending",
           address_snapshot: {},
