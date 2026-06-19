@@ -137,7 +137,7 @@ export default function CheckoutPage() {
   const maxRedeemable = Math.floor(coinBalance / 100) * 100;
   const coinsEarned = Math.floor(getTotal() / 100) * 10;
 
-  const isAuthenticated = !!(currentUser && currentUser.role === "customer");
+  const isAuthenticated = !!(currentUser && (currentUser.role === "customer" || currentUser.role === "admin"));
   const hasLocation = !!((selectedAddress?.lat && selectedAddress?.lng) || (useManualPincode && manualPincode.length === 6));
   const requiredDetailsFilled = !!(detailForm.area.trim()) && !!(detailForm.landmark.trim()) && !!(detailForm.building.trim());
 
