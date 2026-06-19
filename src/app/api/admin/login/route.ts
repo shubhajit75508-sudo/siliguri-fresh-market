@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
         role: "admin",
       },
     });
-  } catch {
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  } catch (err) {
+    console.error("Admin login error:", err);
+    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
   }
 }
