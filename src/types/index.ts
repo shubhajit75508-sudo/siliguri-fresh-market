@@ -128,6 +128,7 @@ export interface DeliveryBoy {
 export interface DeliveryAssignment {
   id: string;
   orderId: string;
+  deliveryBoyId: string;
   customerName: string;
   customerPhone: string;
   paymentStatus?: "paid" | "unpaid";

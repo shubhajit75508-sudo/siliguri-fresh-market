@@ -22,10 +22,10 @@ const statusColors: Record<string, "blue" | "orange" | "fresh" | "default"> = {
 };
 
 export default function DeliveryDashboard() {
-  const { assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
+  const { boy, assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
   const { acceptDelivery, pickUpDelivery, confirmDelivery } = useOrderStore();
 
-  const active = assignments.filter((a) => a.status !== "delivered");
+  const active = assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered");
 
   if (active.length === 0) {
     return (

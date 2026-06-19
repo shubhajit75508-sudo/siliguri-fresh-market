@@ -53,6 +53,14 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   // Poll for new assignments every 15 seconds
   useEffect(() => {
     if (!storesReady || !boy) return;
+
+    // Remove stale assignments from other delivery boys
+    const allCurrent = useDeliveryStore.getState().assignments;
+    const mine = allCurrent.filter((a) => a.deliveryBoyId === boy.id);
+    if (mine.length !== allCurrent.length) {
+      useDeliveryStore.getState().setAssignments(mine);
+    }
+
     const interval = setInterval(() => {
       fetch("/api/admin/orders")
         .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
@@ -67,6 +75,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
             const newAssignments = newOrders.map((o) => ({
               id: "da-" + crypto.randomUUID(),
               orderId: o.id,
+              deliveryBoyId: boy.id,
               customerName: o.customer_name,
               customerPhone: o.customer_phone,
               address: {

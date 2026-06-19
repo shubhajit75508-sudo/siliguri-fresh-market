@@ -221,6 +221,7 @@ export const useOrderStore = create<OrderState>()(
             assignment: {
               id: "da-" + Date.now(),
               orderId,
+              deliveryBoyId: boyId,
               customerName: order.customerName,
               customerPhone: order.customerPhone,
               paymentStatus: order.paymentStatus,
