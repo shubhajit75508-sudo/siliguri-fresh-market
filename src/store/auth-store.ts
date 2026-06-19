@@ -167,9 +167,29 @@ export const useAuthStore = create<AuthState>()(
                   .eq("id", user.id)
                   .single();
                 if (profile) dbRole = profile.role as string;
-              } catch (e) {
-                console.warn("Failed to fetch user role from Supabase:", e);
+              } catch {
+                // row not found — will migrate below
               }
+
+              if (dbRole === null) {
+                try {
+                  await fetch("/api/admin/users", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      id: user.id,
+                      name: user.user_metadata?.name ?? localUser?.name ?? email.split("@")[0],
+                      email,
+                      phone: localUser?.phone ?? user.user_metadata?.phone ?? "",
+                      role: localUser?.role ?? user.user_metadata?.role ?? "customer",
+                      loyalty_points: 0,
+                    }),
+                  });
+                } catch (e) {
+                  console.warn("Failed to migrate user to users table:", e);
+                }
+              }
+
               const resolvedRole = (localUser?.role ?? dbRole ?? user.user_metadata?.role ?? "customer") as UserRole;
               const newUser: AuthUser = {
                 id: user.id,
