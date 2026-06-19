@@ -73,9 +73,19 @@ export default function AdminDeliveryBoysPage() {
       });
     } catch {}
 
-    // Use the auth user's UUID as the delivery boy ID
-    const createdUser = useAuthStore.getState().users.find((u) => u.email === email);
-    const boyId = createdUser?.id || "auth-" + crypto.randomUUID();
+    // Resolve the real Supabase Auth UUID (not a legacy auth-xxx ID)
+    let boyId: string;
+    try {
+      const res = await fetch(`/api/admin/find-auth-user?email=${encodeURIComponent(email)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.id) { boyId = data.id; }
+        else { throw new Error("not found"); }
+      } else { throw new Error("API error"); }
+    } catch {
+      const createdUser = useAuthStore.getState().users.find((u) => u.email === email);
+      boyId = createdUser?.id || "auth-" + crypto.randomUUID();
+    }
 
     const newBoy: DeliveryBoy = {
       id: boyId,

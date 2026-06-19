@@ -275,8 +275,8 @@ export default function AdminOrdersPage() {
       {assignModal && (
         <AssignModal
           order={assignModal}
-          onAssign={async (boyId, boyName) => {
-            const result = await assignDeliveryBoy(assignModal.id, boyId, boyName);
+          onAssign={async (boyId, boyName, boyEmail) => {
+            const result = await assignDeliveryBoy(assignModal.id, boyId, boyName, boyEmail);
             if (result?.assignment) {
               const store = useDeliveryStore.getState();
               store.setAssignments([...store.assignments, result.assignment]);
@@ -317,12 +317,12 @@ export default function AdminOrdersPage() {
 
 function AssignModal({ order, onAssign, onClose }: {
   order: { id: string };
-  onAssign: (boyId: string, boyName: string) => void;
+  onAssign: (boyId: string, boyName: string, boyEmail?: string) => void;
   onClose: () => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const deliveryBoys = useDeliveryStore((s) => s.deliveryBoys);
-  const boys = deliveryBoys.map((b) => ({ id: b.id, name: b.name, phone: b.phone ?? "", area: b.area || "", isActive: true }));
+    const deliveryBoys = useDeliveryStore((s) => s.deliveryBoys);
+    const boys = deliveryBoys.map((b) => ({ id: b.id, name: b.name, phone: b.phone ?? "", area: b.area || "", isActive: true, email: b.email }));
 
   const allBoys = boys.filter((b) => b.isActive !== false);
 
@@ -349,7 +349,7 @@ function AssignModal({ order, onAssign, onClose }: {
         )}
         <div className="mt-6 flex gap-3">
           <Button variant="default" disabled={!selected}
-            onClick={() => { const boy = allBoys.find((b) => b.id === selected); if (boy) onAssign(boy.id, boy.name); }}>
+            onClick={() => { const boy = allBoys.find((b) => b.id === selected); if (boy) onAssign(boy.id, boy.name, boy.email); }}>
             Assign
           </Button>
           <Button variant="outline" onClick={onClose}>Cancel</Button>

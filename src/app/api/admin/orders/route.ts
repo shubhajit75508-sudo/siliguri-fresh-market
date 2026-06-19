@@ -21,6 +21,17 @@ export async function GET() {
   return NextResponse.json({ orders: data ?? [] });
 }
 
+async function resolveBoyId(supabaseAdmin: any, boyId: string, boyEmail?: string): Promise<string> {
+  if (!boyId.startsWith("auth-") || !boyEmail) return boyId;
+  try {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers();
+    if (error || !data?.users) return boyId;
+    const user = data.users.find((u: { email: string }) => u.email === boyEmail);
+    if (user) return user.id;
+  } catch {}
+  return boyId;
+}
+
 export async function PUT(req: NextRequest) {
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
@@ -31,7 +42,9 @@ export async function PUT(req: NextRequest) {
   const dbUpdates: Record<string, unknown> = {};
   if (updates.status !== undefined) dbUpdates.status = updates.status;
   if (updates.delivery_status !== undefined) dbUpdates.delivery_status = updates.delivery_status;
-  if (updates.delivery_boy_id !== undefined) dbUpdates.delivery_boy_id = updates.delivery_boy_id;
+  if (updates.delivery_boy_id !== undefined) {
+    dbUpdates.delivery_boy_id = await resolveBoyId(supabaseAdmin, updates.delivery_boy_id, updates.delivery_boy_email);
+  }
   if (updates.return_requested !== undefined) dbUpdates.return_requested = updates.return_requested;
   if (updates.return_approved !== undefined) dbUpdates.return_approved = updates.return_approved;
 

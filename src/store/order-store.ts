@@ -40,7 +40,7 @@ interface OrderState {
     userId?: string;
   }) => Promise<string>;
   updateStatus: (id: string, status: Order["status"]) => Promise<void>;
-  assignDeliveryBoy: (orderId: string, boyId: string, boyName: string) => Promise<{ assignment: DeliveryAssignment } | void>;
+  assignDeliveryBoy: (orderId: string, boyId: string, boyName: string, boyEmail?: string) => Promise<{ assignment: DeliveryAssignment } | void>;
   acceptDelivery: (orderId: string) => Promise<void>;
   pickUpDelivery: (orderId: string) => Promise<void>;
   confirmDelivery: (orderId: string) => Promise<void>;
@@ -198,7 +198,7 @@ export const useOrderStore = create<OrderState>()(
           if (!ok) set({ orders: prev });
         },
 
-        assignDeliveryBoy: async (orderId, boyId, boyName) => {
+        assignDeliveryBoy: async (orderId, boyId, boyName, boyEmail) => {
           const order = get().orders.find((o) => o.id === orderId);
           if (!order) return;
 
@@ -211,7 +211,7 @@ export const useOrderStore = create<OrderState>()(
             ),
           }));
 
-          const ok = await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_boy_name: boyName, delivery_status: "assigned", status: "out_for_delivery" });
+          const ok = await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_boy_email: boyEmail, delivery_boy_name: boyName, delivery_status: "assigned", status: "out_for_delivery" });
           if (!ok) {
             set({ orders: prev });
             return;
