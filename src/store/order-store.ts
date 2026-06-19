@@ -142,23 +142,9 @@ export const useOrderStore = create<OrderState>()(
 
         createOrder: async (data) => {
           const id = "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-          const order: Order = {
-            id,
-            items: data.items,
-            status: "received",
-            total: data.total,
-            createdAt: new Date().toISOString(),
-            address: data.address,
-            eta: 30 + Math.floor(Math.random() * 31),
-            customerName: data.customerName,
-            customerPhone: data.customerPhone,
-            customerEmail: data.customerEmail,
-            paymentMethod: data.paymentMethod,
-            paymentStatus: data.paymentStatus,
-            deliveryStatus: "pending",
-            userId: data.userId,
-          };
-          set((state) => ({ orders: [...state.orders, order] }));
+          const createdAt = new Date().toISOString();
+          const eta = 30 + Math.floor(Math.random() * 31);
+
           if (isSupabaseConfigured()) {
             try {
               const res = await fetch("/api/admin/orders", {
@@ -174,16 +160,41 @@ export const useOrderStore = create<OrderState>()(
                   customer_phone: data.customerPhone,
                   customer_email: data.customerEmail,
                   address_snapshot: data.address as unknown as Record<string, unknown>,
-                  created_at: order.createdAt,
-                  eta: order.eta,
+                  created_at: createdAt,
+                  eta,
+                  delivery_status: "pending",
+                  user_id: data.userId ?? null,
                 }),
               });
               if (!res.ok) {
                 const errBody = await res.text();
-                console.error("Order sync failed:", res.status, errBody);
+                console.error("Order DB create failed:", res.status, errBody);
+                throw new Error("Failed to save order");
               }
-            } catch (e) { console.error("Order sync network error:", e); }
+            } catch (e) {
+              console.error("Order DB error:", e);
+              throw e;
+            }
           }
+
+          set((state) => ({
+            orders: [...state.orders, {
+              id,
+              items: data.items,
+              status: "received" as Order["status"],
+              total: data.total,
+              createdAt,
+              address: data.address,
+              eta,
+              customerName: data.customerName,
+              customerPhone: data.customerPhone,
+              customerEmail: data.customerEmail,
+              paymentMethod: data.paymentMethod,
+              paymentStatus: data.paymentStatus,
+              deliveryStatus: "pending" as DeliveryStatus,
+              userId: data.userId,
+            }],
+          }));
           return id;
         },
 

@@ -48,6 +48,17 @@ const steps = [
 
 const PAYMENT_UPI_ID = "shubhajit75508@okhdfcbank";
 
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && (window as any).Razorpay) return resolve(true);
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 const paymentMethods = [
   { id: "upi", label: "UPI", desc: PAYMENT_UPI_ID, icon: Smartphone },
   { id: "cod", label: "Cash on Delivery", desc: "Pay when you receive", icon: Package },
@@ -324,6 +335,60 @@ export default function CheckoutPage() {
     useUserStore.getState().updateAddress(updated);
   };
 
+  const openRazorpayCheckout = async () => {
+    const total = getTotal();
+    setConfirmingOrder(true);
+
+    try {
+      const loaded = await loadRazorpayScript();
+      if (!loaded) { setConfirmingOrder(false); setShowPaymentModal(true); return; }
+
+      const res = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total, currency: "INR" }),
+      });
+      if (!res.ok) { setConfirmingOrder(false); setShowPaymentModal(true); return; }
+
+      const order = await res.json();
+
+      const razorpay = new (window as any).Razorpay({
+        key: order.key_id,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Siliguri Fresh Mart",
+        order_id: order.id,
+        prefill: { name: currentUser?.name, email: currentUser?.email, contact: currentUser?.phone },
+        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+          const verifyRes = await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
+          if (verifyRes.ok) {
+            setPaymentConfirmed(true);
+            setSelectedPayment("upi");
+            placeOrder("paid");
+          } else {
+            toast.add("Payment verification failed. Contact support.", "error");
+            setConfirmingOrder(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setConfirmingOrder(false);
+            toast.add("Payment cancelled. You can retry or choose COD.", "error");
+          },
+        },
+      });
+
+      razorpay.open();
+    } catch {
+      setConfirmingOrder(false);
+      setShowPaymentModal(true);
+    }
+  };
+
   const handlePlaceOrder = () => {
     if (!isAuthenticated) {
       toast.add("Sign up required to place orders", "error");
@@ -345,15 +410,15 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (selectedPayment === "upi" && !paymentConfirmed) {
-      setShowPaymentModal(true);
+    if (selectedPayment === "upi") {
+      openRazorpayCheckout();
       return;
     }
 
-    placeOrder();
+    placeOrder("unpaid");
   };
 
-  const placeOrder = () => {
+  const placeOrder = (paymentStatus: "paid" | "unpaid") => {
     setConfirmingOrder(true);
 
     const total = getTotal();
@@ -364,7 +429,7 @@ export default function CheckoutPage() {
         total,
         address: { ...selectedAddress, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined },
         paymentMethod: selectedPayment,
-        paymentStatus: selectedPayment === "upi" ? "paid" : "unpaid",
+        paymentStatus,
         customerName: currentUser?.name ?? "Guest",
         customerPhone: currentUser?.phone ?? "",
         customerEmail: currentUser?.email ?? "",
@@ -876,7 +941,7 @@ export default function CheckoutPage() {
               </div>
 
               <button
-                onClick={() => { setPaymentConfirmed(true); setShowPaymentModal(false); placeOrder(); }}
+                onClick={() => { setPaymentConfirmed(true); setShowPaymentModal(false); placeOrder("paid"); }}
                 className="w-full rounded-full bg-brand-fresh py-3 text-sm font-bold text-white hover:bg-brand-fresh-dim transition-colors"
               >
                 <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm

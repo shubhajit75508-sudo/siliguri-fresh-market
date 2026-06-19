@@ -1,56 +1,44 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
-import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import type { DeliveryBoy } from "@/types";
 
 export default function AdminDeliveryBoysPage() {
   const { deliveryBoys, addBoy, removeBoy } = useDeliveryStore();
-  const migrated = useRef(false);
   const [boys, setBoys] = useState<DeliveryBoy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ name: "", phone: "", code: "", area: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", area: "" });
   const toast = useToast();
 
   useEffect(() => {
-    if (migrated.current) {
-      setBoys(deliveryBoys);
-      setLoading(false);
-      return;
-    }
-    const authUsers = useAuthStore.getState().users;
-    let changed = false;
-    const migratedBoys = deliveryBoys.map((b) => {
-      const authUser = authUsers.find((u) => u.email === b.email);
-      if (authUser && authUser.id !== b.id) {
-        changed = true;
-        return { ...b, id: authUser.id };
-      }
-      return b;
-    });
-    if (changed) {
-      migrated.current = true;
-      migratedBoys.forEach((b) => addBoy(b));
-      // Reconcile server-side orders for each migrated boy
-      for (const oldBoy of deliveryBoys) {
-        const newBoy = migratedBoys.find((mb) => mb.email === oldBoy.email);
-        if (newBoy && newBoy.id !== oldBoy.id) {
-          fetch("/api/admin/reconcile-delivery-ids", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ oldId: oldBoy.id, newId: newBoy.id }),
-          }).catch(() => {});
+    (async () => {
+      try {
+        const res = await fetch("/api/admin/delivery-boys");
+        if (res.ok) {
+          const json = await res.json();
+          const apiBoys: DeliveryBoy[] = (json.boys ?? []).map((b: Record<string, unknown>) => ({
+            id: b.id as string,
+            name: b.name as string,
+            phone: b.phone as string,
+            email: (b as any).email ?? "",
+            code: b.code as string,
+            isActive: b.is_active as boolean,
+            area: b.area as string,
+          }));
+          setBoys(apiBoys);
+          apiBoys.forEach((b) => addBoy(b));
         }
-      }
-    }
-    setBoys(migratedBoys);
-    setLoading(false);
-  }, [deliveryBoys]);
+      } catch { /* use local fallback */ }
+      if (boys.length === 0) setBoys(deliveryBoys);
+      setLoading(false);
+    })();
+  }, []);
 
   const addBoyFn = async () => {
     if (!form.name || !form.phone) {
@@ -58,53 +46,50 @@ export default function AdminDeliveryBoysPage() {
       return;
     }
     const email = form.email || `${form.name.toLowerCase().replace(/\s+/g, ".")}@delivery.sfm`;
-    const generatedPassword = crypto.randomUUID().slice(0, 12);
+    const password = form.password || crypto.randomUUID().slice(0, 12);
 
-    // Create auth user first
+    setSaving(true);
     try {
-      await useAuthStore.getState().signup({
-        email,
-        password: form.password || generatedPassword,
+      const res = await fetch("/api/admin/delivery-boys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: form.name, phone: form.phone, email, password, area: form.area || "Siliguri" }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        toast.add(err.error || "Failed to create delivery boy", "error");
+        setSaving(false);
+        return;
+      }
+      const data = await res.json();
+
+      const newBoy: DeliveryBoy = {
+        id: data.id,
         name: form.name,
         phone: form.phone,
-        address: form.area || "Siliguri",
-        role: "delivery",
-        location: null,
-      });
-    } catch {}
+        email,
+        code: form.name.slice(0, 3).toUpperCase() + form.phone.slice(-3),
+        isActive: true,
+        area: form.area || "Siliguri",
+      };
 
-    // Resolve the real Supabase Auth UUID (not a legacy auth-xxx ID)
-    let boyId: string;
-    try {
-      const res = await fetch(`/api/admin/find-auth-user?email=${encodeURIComponent(email)}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.id) { boyId = data.id; }
-        else { throw new Error("not found"); }
-      } else { throw new Error("API error"); }
+      addBoy(newBoy);
+      setBoys((prev) => [newBoy, ...prev]);
+      setForm({ name: "", phone: "", email: "", password: "", area: "" });
+      setAdding(false);
+      toast.add(`Delivery boy ${form.name} added`);
     } catch {
-      const createdUser = useAuthStore.getState().users.find((u) => u.email === email);
-      boyId = createdUser?.id || "auth-" + crypto.randomUUID();
+      toast.add("Network error. Try again.", "error");
     }
-
-    const newBoy: DeliveryBoy = {
-      id: boyId,
-      name: form.name,
-      phone: form.phone,
-      email,
-      code: form.name.slice(0, 3).toUpperCase() + form.phone.slice(-3),
-      isActive: true,
-      area: form.area || "Siliguri",
-    };
-
-    addBoy(newBoy);
-    setForm({ name: "", phone: "", code: "", area: "", email: "", password: "" });
-    setAdding(false);
-    toast.add(`Delivery boy ${form.name} added`);
+    setSaving(false);
   };
 
-  const removeBoyFn = (id: string) => {
+  const removeBoyFn = async (id: string) => {
+    try {
+      await fetch(`/api/admin/delivery-boys?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    } catch { /* best-effort */ }
     removeBoy(id);
+    setBoys((prev) => prev.filter((b) => b.id !== id));
   };
 
   if (loading) {
@@ -136,7 +121,9 @@ export default function AdminDeliveryBoysPage() {
             <input placeholder="Service Area" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
           </div>
           <div className="mt-4 flex gap-2">
-            <button onClick={addBoyFn} className="rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim">Save</button>
+            <button onClick={addBoyFn} disabled={saving} className="rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim disabled:opacity-50">
+              {saving ? "Saving..." : "Save"}
+            </button>
             <button onClick={() => setAdding(false)} className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
           </div>
         </motion.div>
@@ -149,6 +136,7 @@ export default function AdminDeliveryBoysPage() {
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">Code</th>
               <th className="px-4 py-3">Area</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Actions</th>
@@ -156,13 +144,14 @@ export default function AdminDeliveryBoysPage() {
           </thead>
           <tbody>
             {boys.length === 0 ? (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">No delivery boys registered.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-gray-400">No delivery boys registered.</td></tr>
             ) : (
               [...boys].reverse().map((b) => (
                 <tr key={b.id} className="border-b last:border-0 hover:bg-surface/50">
                   <td className="px-4 py-3 font-medium">{b.name}</td>
                   <td className="px-4 py-3 text-muted">{b.phone}</td>
                   <td className="px-4 py-3 text-muted">{b.email || "—"}</td>
+                  <td className="px-4 py-3 text-muted">{b.code || "—"}</td>
                   <td className="px-4 py-3 text-muted">{b.area || "—"}</td>
                   <td className="px-4 py-3">
                     <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-[11px] font-semibold text-green-700">Active</span>
