@@ -54,9 +54,18 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   useEffect(() => {
     if (!storesReady || !boy) return;
 
+    // Collect all known user IDs for the logged-in user's email
+    // (handles ID mismatch when a boy was assigned with a legacy auth-xxx ID
+    //  but now logs in with a Supabase Auth UUID)
+    const cu = useAuthStore.getState().currentUser;
+    const allUserIds = cu?.email
+      ? useAuthStore.getState().users.filter((u) => u.email === cu.email).map((u) => u.id)
+      : [];
+    const knownIds = new Set([boy.id, ...allUserIds]);
+
     // Remove stale assignments from other delivery boys
     const allCurrent = useDeliveryStore.getState().assignments;
-    const mine = allCurrent.filter((a) => a.deliveryBoyId === boy.id);
+    const mine = allCurrent.filter((a) => a.deliveryBoyId && knownIds.has(a.deliveryBoyId));
     if (mine.length !== allCurrent.length) {
       useDeliveryStore.getState().setAssignments(mine);
     }
@@ -69,7 +78,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
           const currentAssignments = useDeliveryStore.getState().assignments;
           const assignedIds = new Set(currentAssignments.map((a) => a.orderId));
           const newOrders = allOrders.filter(
-            (o) => o.delivery_boy_id === boy.id && !assignedIds.has(o.id)
+            (o) => o.delivery_boy_id && knownIds.has(o.delivery_boy_id) && !assignedIds.has(o.id)
           );
           if (newOrders.length > 0) {
             const newAssignments = newOrders.map((o) => ({
