@@ -71,8 +71,12 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     }
 
     const fetchAssignments = () => {
-      fetch("/api/admin/orders")
-        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      // First try the dedicated delivery endpoint (uses cookie session)
+      fetch("/api/delivery/orders")
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
         .then((json) => {
           const allOrders: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number }[] = json.orders ?? [];
           const currentAssignments = useDeliveryStore.getState().assignments;

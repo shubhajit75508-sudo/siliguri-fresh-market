@@ -36,6 +36,17 @@ export default function AdminDeliveryBoysPage() {
     if (changed) {
       migrated.current = true;
       migratedBoys.forEach((b) => addBoy(b));
+      // Reconcile server-side orders for each migrated boy
+      for (const oldBoy of deliveryBoys) {
+        const newBoy = migratedBoys.find((mb) => mb.email === oldBoy.email);
+        if (newBoy && newBoy.id !== oldBoy.id) {
+          fetch("/api/admin/reconcile-delivery-ids", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ oldId: oldBoy.id, newId: newBoy.id }),
+          }).catch(() => {});
+        }
+      }
     }
     setBoys(migratedBoys);
     setLoading(false);
