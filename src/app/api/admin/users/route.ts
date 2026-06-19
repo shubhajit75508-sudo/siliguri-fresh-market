@@ -6,14 +6,18 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
 
-  addLocalUser({
-    id: body.id,
-    name: body.name,
-    email: body.email,
-    phone: body.phone ?? "",
-    role: body.role ?? "customer",
-    createdAt: new Date().toISOString(),
-  });
+  try {
+    addLocalUser({
+      id: body.id,
+      name: body.name,
+      email: body.email,
+      phone: body.phone ?? "",
+      role: body.role ?? "customer",
+      createdAt: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.error("Local user save failed (expected on Vercel):", e);
+  }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
