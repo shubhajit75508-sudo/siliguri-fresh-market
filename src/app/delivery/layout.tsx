@@ -7,6 +7,7 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 
 const navLinks = [
   { href: "/delivery", icon: Package, label: "Deliveries" },
@@ -19,7 +20,6 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   const { boy, logout } = useDeliveryStore();
   const { logout: authLogout, currentUser } = useAuthStore();
 
-  // Wait for persisted stores to rehydrate before checking auth
   const [storesReady, setStoresReady] = useState(false);
 
   useEffect(() => {
@@ -40,87 +40,96 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
     return () => { unsub1(); unsub2(); };
   }, []);
 
-  // Auto-set boy from auth user after login
   useEffect(() => {
     if (!storesReady) return;
     if (boy) return;
     if (currentUser?.role === "delivery") {
-      console.debug("[delivery] auto-setting boy from currentUser", currentUser.id);
       useDeliveryStore.getState().loginAsBoy({ id: currentUser.id, name: currentUser.name, phone: currentUser.phone }, currentUser.name, currentUser.phone);
     }
   }, [storesReady, boy, currentUser]);
 
-  // Fetch and sync assignments
+  // Fetch + Realtime subscriptions
   useEffect(() => {
     if (!storesReady || !boy) return;
 
-    // Collect all known user IDs for the logged-in user's email
-    // (handles ID mismatch when a boy was assigned with a legacy auth-xxx ID
-    //  but now logs in with a Supabase Auth UUID)
     const cu = useAuthStore.getState().currentUser;
     const allUserIds = cu?.email
       ? useAuthStore.getState().users.filter((u) => u.email === cu.email).map((u) => u.id)
       : [];
     const knownIds = new Set([boy.id, ...allUserIds]);
 
-    // Remove stale assignments from other delivery boys
     const allCurrent = useDeliveryStore.getState().assignments;
     const mine = allCurrent.filter((a) => a.deliveryBoyId && knownIds.has(a.deliveryBoyId));
     if (mine.length !== allCurrent.length) {
       useDeliveryStore.getState().setAssignments(mine);
     }
 
+    const orderToAssignment = (o: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number }) => ({
+      id: "da-" + crypto.randomUUID(),
+      orderId: o.id,
+      deliveryBoyId: boy.id,
+      customerName: o.customer_name,
+      customerPhone: o.customer_phone,
+      address: {
+        id: o.id + "-addr",
+        label: "Delivery" as const,
+        line1: (o.address_snapshot?.line1 as string) ?? "",
+        line2: (o.address_snapshot?.line2 as string) ?? "",
+        area: (o.address_snapshot?.area as string) ?? undefined,
+        landmark: (o.address_snapshot?.landmark as string) ?? undefined,
+        building: (o.address_snapshot?.building as string) ?? undefined,
+        flat: (o.address_snapshot?.flat as string) ?? undefined,
+        floor: (o.address_snapshot?.floor as string) ?? undefined,
+        city: (o.address_snapshot?.city as string) ?? "",
+        pincode: (o.address_snapshot?.pincode as string) ?? "",
+        lat: o.address_snapshot?.lat as number | undefined,
+        lng: o.address_snapshot?.lng as number | undefined,
+        isDefault: false,
+      },
+      items: o.items?.map((i: { product: { name: string }; quantity: number }) => ({ name: i.product.name, quantity: i.quantity })) ?? [],
+      total: o.total,
+      status: "assigned" as const,
+      assignedAt: new Date().toISOString(),
+    });
+
+    // Initial fetch
     const fetchAssignments = () => {
-      // First try the dedicated delivery endpoint (uses cookie session)
       fetch("/api/delivery/orders")
-        .then((r) => {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.json();
-        })
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then((json) => {
-          const allOrders: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number }[] = json.orders ?? [];
+          const allOrders: any[] = json.orders ?? [];
           const currentAssignments = useDeliveryStore.getState().assignments;
           const assignedIds = new Set(currentAssignments.map((a) => a.orderId));
-          const newOrders = allOrders.filter(
-            (o) => o.delivery_boy_id && knownIds.has(o.delivery_boy_id) && !assignedIds.has(o.id)
-          );
+          const newOrders = allOrders.filter((o) => o.delivery_boy_id && knownIds.has(o.delivery_boy_id) && !assignedIds.has(o.id));
           if (newOrders.length > 0) {
-            const newAssignments = newOrders.map((o) => ({
-              id: "da-" + crypto.randomUUID(),
-              orderId: o.id,
-              deliveryBoyId: boy.id,
-              customerName: o.customer_name,
-              customerPhone: o.customer_phone,
-              address: {
-                id: o.id + "-addr",
-                label: "Delivery",
-                line1: (o.address_snapshot?.line1 as string) ?? "",
-                line2: (o.address_snapshot?.line2 as string) ?? "",
-                area: (o.address_snapshot?.area as string) ?? undefined,
-                landmark: (o.address_snapshot?.landmark as string) ?? undefined,
-                building: (o.address_snapshot?.building as string) ?? undefined,
-                flat: (o.address_snapshot?.flat as string) ?? undefined,
-                floor: (o.address_snapshot?.floor as string) ?? undefined,
-                city: (o.address_snapshot?.city as string) ?? "",
-                pincode: (o.address_snapshot?.pincode as string) ?? "",
-                lat: o.address_snapshot?.lat as number | undefined,
-                lng: o.address_snapshot?.lng as number | undefined,
-                isDefault: false,
-              },
-              items: o.items?.map((i: { product: { name: string }; quantity: number }) => ({ name: i.product.name, quantity: i.quantity })) ?? [],
-              total: o.total,
-              status: "assigned" as const,
-              assignedAt: new Date().toISOString(),
-            }));
-            useDeliveryStore.getState().setAssignments([...currentAssignments, ...newAssignments]);
+            useDeliveryStore.getState().setAssignments([...currentAssignments, ...newOrders.map(orderToAssignment)]);
           }
         })
-        .catch((e) => { console.warn("[delivery] poll error:", e); });
+        .catch((e) => console.warn("[delivery] fetch error:", e));
     };
 
     fetchAssignments();
+
+    // Realtime subscription — fires on INSERT/UPDATE when enabled on orders table
+    const sb = isSupabaseConfigured() ? supabase : null;
+    let sbChannel: ReturnType<NonNullable<typeof supabase>["channel"]> | null = null;
+    if (sb) {
+      sbChannel = sb
+        .channel("delivery-orders-" + boy.id)
+        .on("postgres_changes",
+          { event: "*", schema: "public", table: "orders", filter: `delivery_boy_id=eq.${boy.id}` },
+          () => fetchAssignments()
+        )
+        .subscribe();
+    }
+
+    // Polling fallback (15s) for when Realtime isn't enabled yet
     const interval = setInterval(fetchAssignments, 15000);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      if (sbChannel && sb) sb.removeChannel(sbChannel);
+    };
   }, [storesReady, boy]);
 
   useEffect(() => {

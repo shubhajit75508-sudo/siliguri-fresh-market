@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { sendOrderConfirmation, sendDeliveryUpdate } from "@/lib/email";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -50,6 +51,16 @@ export async function PUT(req: NextRequest) {
 
   const { error } = await supabaseAdmin.from("orders").update(dbUpdates).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (dbUpdates.delivery_status && body.customer_email) {
+    sendDeliveryUpdate({
+      email: body.customer_email,
+      name: body.customer_name ?? "",
+      orderId: id,
+      status: dbUpdates.delivery_status as string,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }
 
@@ -71,6 +82,7 @@ export async function POST(req: NextRequest) {
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
+    payment_status: body.payment_status ?? "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
@@ -82,5 +94,22 @@ export async function POST(req: NextRequest) {
     eta: body.eta ?? 30,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (body.customer_email) {
+    sendOrderConfirmation({
+      email: body.customer_email,
+      name: body.customer_name ?? "",
+      orderId: body.id,
+      total: body.total ?? 0,
+      items: (body.items ?? []).map((i: { product?: { name: string; price: number }; quantity: number }) => ({
+        name: i.product?.name ?? "Item",
+        quantity: i.quantity,
+        price: i.product?.price ?? 0,
+      })),
+      deliveryAddress: typeof body.address_snapshot === "object" ? (body.address_snapshot as Record<string, string>)?.line1 ?? "" : "",
+      eta: body.eta ?? 30,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

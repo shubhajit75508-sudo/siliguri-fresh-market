@@ -223,6 +223,9 @@ CREATE TRIGGER auto_set_customer_role_trigger
 
 -- 4a. Enable RLS on all tables
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+-- Enable Realtime for live delivery tracking
+ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
