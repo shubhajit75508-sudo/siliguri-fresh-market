@@ -36,6 +36,7 @@ interface OrderState {
     customerName: string;
     customerPhone: string;
     customerEmail: string;
+    userId?: string;
   }) => Promise<string>;
   updateStatus: (id: string, status: Order["status"]) => Promise<void>;
   assignDeliveryBoy: (orderId: string, boyId: string, boyName: string) => Promise<{ assignment: DeliveryAssignment } | void>;
@@ -121,6 +122,7 @@ export const useOrderStore = create<OrderState>()(
             paymentMethod: data.paymentMethod,
             paymentStatus: data.paymentStatus,
             deliveryStatus: "pending",
+            userId: data.userId,
           };
           set((state) => ({ orders: [...state.orders, order] }));
           if (isSupabaseConfigured()) {
@@ -130,6 +132,7 @@ export const useOrderStore = create<OrderState>()(
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   id,
+                  user_id: data.userId ?? null,
                   items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity })),
                   total: data.total,
                   status: "received",

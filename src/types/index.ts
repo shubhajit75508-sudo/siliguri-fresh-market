@@ -80,6 +80,7 @@ export interface Order {
   customerName: string;
   customerPhone: string;
   customerEmail: string;
+  userId?: string;
   paymentMethod: string;
   paymentStatus: "paid" | "unpaid";
   deliveryBoyId?: string;

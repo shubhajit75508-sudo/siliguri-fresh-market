@@ -368,6 +368,7 @@ export default function CheckoutPage() {
         customerName: currentUser?.name ?? "Guest",
         customerPhone: currentUser?.phone ?? "",
         customerEmail: currentUser?.email ?? "",
+        userId: currentUser?.id,
       });
 
       if (coinsRedeemed > 0) {
