@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
             total: Math.round(amount),
             status: "received",
             payment_method: "upi",
-            payment_status: "pending",
             address_snapshot: {},
             customer_name: notes?.customer_name ?? "",
             customer_phone: notes?.customer_phone ?? "",

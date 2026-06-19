@@ -420,7 +420,6 @@ export async function createOrder(order: {
       coupon_code: order.coupon_code ?? null,
       address_id: order.address_id ?? null,
       payment_method: order.payment_method ?? null,
-      payment_status: "pending",
     })
     .select()
     .single();

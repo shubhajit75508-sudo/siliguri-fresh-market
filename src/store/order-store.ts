@@ -157,7 +157,6 @@ export const useOrderStore = create<OrderState>()(
                   total: data.total,
                   status: "received",
                   payment_method: data.paymentMethod,
-                  payment_status: data.paymentStatus,
                   customer_name: data.customerName,
                   customer_phone: data.customerPhone,
                   customer_email: data.customerEmail,
