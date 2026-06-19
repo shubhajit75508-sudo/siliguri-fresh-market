@@ -161,7 +161,7 @@ export const useOrderStore = create<OrderState>()(
           set((state) => ({ orders: [...state.orders, order] }));
           if (isSupabaseConfigured()) {
             try {
-              await fetch("/api/admin/orders", {
+              const res = await fetch("/api/admin/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -171,15 +171,19 @@ export const useOrderStore = create<OrderState>()(
                   total: data.total,
                   status: "received",
                   payment_method: data.paymentMethod,
-                  payment_status: data.paymentStatus,
                   customer_name: data.customerName,
                   customer_phone: data.customerPhone,
                   customer_email: data.customerEmail,
                   address_snapshot: data.address as unknown as Record<string, unknown>,
                   created_at: order.createdAt,
+                  eta: order.eta,
                 }),
               });
-            } catch (e) { console.error("Order sync failed:", e); }
+              if (!res.ok) {
+                const errBody = await res.text();
+                console.error("Order sync failed:", res.status, errBody);
+              }
+            } catch (e) { console.error("Order sync network error:", e); }
           }
           return id;
         },

@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),
+    eta: body.eta ?? 30,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
