@@ -320,7 +320,7 @@ export const useOrderStore = create<OrderState>()(
           };
         },
       }),
-      { name: "sfm-orders", partialize: (state) => {
+      { name: "sfm-orders-v2", partialize: (state) => {
         const { loaded, ...rest } = state;
         return rest;
       } }

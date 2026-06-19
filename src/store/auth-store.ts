@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
-import { ADMIN_CREDS } from "@/lib/admin-creds";
+import { ADMIN_EMAILS } from "@/lib/admin-creds";
 
 export type UserRole = "admin" | "delivery" | "customer";
 
@@ -124,17 +124,37 @@ export const useAuthStore = create<AuthState>()(
         },
 
         login: async (email, password) => {
-          const adminCred = ADMIN_CREDS.find((c) => c.email === email);
-          if (adminCred) {
-            if (adminCred.password !== password) {
-              return { success: false, error: "Incorrect password" };
+          const isAdmin = ADMIN_EMAILS.includes(email);
+
+          if (isAdmin) {
+            let authUser: import("@supabase/supabase-js").User | null = null;
+
+            if (isSupabaseConfigured() && supabase) {
+              const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+              if (!error) authUser = data.user;
             }
+
+            if (!authUser) {
+              try {
+                const resp = await fetch("/api/admin/login", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email, password }),
+                });
+                if (!resp.ok) {
+                  return { success: false, error: "Incorrect password" };
+                }
+              } catch {
+                return { success: false, error: "Server unreachable. Try again." };
+              }
+            }
+
+            const userId = authUser?.id ?? "admin-" + crypto.randomUUID();
             const { users } = get();
             let user = users.find((u) => u.email === email);
             if (!user) {
-              const id = "admin-" + crypto.randomUUID();
               user = {
-                id,
+                id: userId,
                 email,
                 name: email.split("@")[0],
                 phone: "",
@@ -145,7 +165,7 @@ export const useAuthStore = create<AuthState>()(
               };
               set({ users: [...users, user] });
             }
-            const adminUser = { ...user, role: "admin" as const };
+            const adminUser = { ...user, role: "admin" as const, id: userId };
             set({ currentUser: adminUser });
             document.cookie = `sfm-auth-session=${adminUser.id}|admin; path=/; max-age=${60 * 60 * 24 * 7}`;
             return { success: true, user: adminUser };
@@ -247,10 +267,10 @@ export const useAuthStore = create<AuthState>()(
 
         adminExists: () => {
           const { users } = get();
-          return users.some((u) => u.role === "admin") || ADMIN_CREDS.some((c) => users.some((u) => u.email === c.email));
+          return users.some((u) => u.role === "admin") || ADMIN_EMAILS.some((email) => users.some((u) => u.email === email));
         },
       }),
-      { name: "sfm-auth" }
+      { name: "sfm-auth-v2" }
     ),
     { name: "AuthStore" }
   )

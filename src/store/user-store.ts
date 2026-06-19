@@ -139,7 +139,7 @@ export const useUserStore = create<UserState>()(
 
         setDeliveryPincode: (pincode) => set({ deliveryPincode: pincode }),
       }),
-      { name: "sfm-user" }
+      { name: "sfm-user-v2" }
     ),
     { name: "UserStore" }
   )

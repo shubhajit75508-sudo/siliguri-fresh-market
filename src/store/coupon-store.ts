@@ -29,7 +29,7 @@ export const useCouponStore = create<CouponState>()(
             coupons: state.coupons.filter((c) => c.code !== code),
           })),
       }),
-      { name: "sfm-coupons" }
+      { name: "sfm-coupons-v2" }
     ),
     { name: "CouponStore" }
   )

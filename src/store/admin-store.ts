@@ -91,7 +91,7 @@ export const useAdminStore = create<AdminState>()(
           })),
       }),
       {
-        name: "sfm-admin",
+        name: "sfm-admin-v2",
         merge: (persisted, current) => {
           const p = persisted as Record<string, unknown>;
           const pSettings = (p?.settings ?? {}) as Record<string, unknown>;

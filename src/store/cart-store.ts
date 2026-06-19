@@ -156,7 +156,7 @@ export const useCartStore = create<CartState>()(
             .items.filter((i) => i.product.id === productId)
             .reduce((sum, i) => sum + i.quantity, 0),
       }),
-      { name: "sfm-cart" }
+      { name: "sfm-cart-v2" }
     ),
     { name: "CartStore" }
   )
