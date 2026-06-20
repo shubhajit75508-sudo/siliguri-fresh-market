@@ -49,7 +49,7 @@ export default function AdminProductsPage() {
   };
 
   const invalidateProducts = () => {
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+    queryClient.invalidateQueries({ queryKey: ["products"], exact: false });
   };
 
   const openEdit = (p: Product) => {
