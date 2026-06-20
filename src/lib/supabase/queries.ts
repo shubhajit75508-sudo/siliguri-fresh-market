@@ -15,7 +15,8 @@ interface ProductRow {
   images: string[] | null;
   unit: string;
   stock: number | null;
-  weight: string[] | null;
+  weight?: string[] | null;
+  weights?: string[] | null;
   cuts: string[] | null;
   cleaning_options: string[] | null;
   freshness_score: number;
@@ -131,7 +132,7 @@ function mapProduct(row: ProductRow): Product {
     images: row.images ?? undefined,
     unit: row.unit,
     stock: row.stock ?? undefined,
-    weight: row.weight ?? undefined,
+    weight: (row.weights ?? row.weight) ?? undefined,
     cuts: row.cuts ?? undefined,
     cleaningOptions: row.cleaning_options ?? undefined,
     freshnessScore: row.freshness_score,
