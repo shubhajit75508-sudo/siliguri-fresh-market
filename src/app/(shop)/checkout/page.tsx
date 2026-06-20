@@ -57,7 +57,6 @@ export default function CheckoutPage() {
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [showCoins, setShowCoins] = useState(false);
   const [addressMissing, setAddressMissing] = useState(false);
-  const [step, setStep] = useState(1);
   const addressRef = useRef<HTMLDivElement>(null);
 
   const { location: liveLocation, locating, error: geoError, getLocation } = useGeolocation();
@@ -348,35 +347,12 @@ export default function CheckoutPage() {
       </div>
 
       <div className="mx-auto max-w-6xl px-3 py-5 sm:px-4 sm:py-8">
-
-        {/* Step Progress Bar */}
-        <div className="mb-6 flex items-center gap-2">
-          {[1, 2, 3].map((n, i) => (
-            <div key={n} className="flex items-center gap-2 flex-1 last:flex-none sm:flex-1">
-              <div className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all ${
-                  step > n ? "bg-brand-fresh text-white" : step === n ? "bg-brand-dark text-white ring-2 ring-brand-dark/30" : "bg-gray-100 text-muted"
-                }`}>
-                  {step > n ? <CheckCircle className="h-4 w-4" /> : n}
-                </div>
-                <span className={`hidden sm:inline text-[11px] font-semibold ${step >= n ? "text-brand-dark" : "text-muted"}`}>
-                  {n === 1 ? "Address" : n === 2 ? "Review" : "Payment"}
-                </span>
-              </div>
-              {i < 2 && <div className={`flex-1 h-0.5 rounded-full ${step > n ? "bg-brand-fresh" : "bg-gray-200"}`} />}
-            </div>
-          ))}
-        </div>
-
         <div className="grid gap-6 lg:grid-cols-5 lg:gap-8">
 
           {/* ─── Main Column ─── */}
           <div className="space-y-5 lg:col-span-3">
 
-            {/* ─── STEP 1: Address + Continue ─── */}
-            <div className={step === 1 ? "" : "hidden"}>
-
-            {/* Delivery Address */}
+            {/* Step 1 — Delivery Address */}
             <div ref={addressRef} className={`rounded-2xl border-2 bg-white transition-all duration-500 ${addressMissing ? "border-brand-red/60 ring-8 ring-brand-red/30 shadow-2xl shadow-brand-red/25 address-shake" : "border-border/40 shadow-md hover:shadow-lg"}`}>
                 {/* Error banner */}
                 {addressMissing && (
@@ -466,15 +442,9 @@ export default function CheckoutPage() {
                           <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))}
                             placeholder="734009"
                             className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-          </div>
-
-          {/* Step 3 Back */}
-          <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-            className={`${step === 3 ? "" : "hidden"} mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl border-2 border-border/60 bg-white py-3 text-sm font-semibold text-muted hover:bg-gray-50 transition-all`}>
-            <ArrowLeft className="h-4 w-4" /> Back to Review
-          </button>
-        </div>
-      </div>
+                        </div>
+                      </div>
+                    </div>
                     <div>
                       <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Area / Locality *</label>
                       <div className="mt-1 relative">
@@ -740,28 +710,6 @@ export default function CheckoutPage() {
                 )}
             </div>
 
-            {/* Step 1 → 2 */}
-            <button
-              onClick={() => {
-                if (!selectedAddress || !requiredDetailsFilled) {
-                  toast.add("Please complete your delivery address", "error");
-                  setAddressMissing(true);
-                  addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  setTimeout(() => setAddressMissing(false), 3000);
-                  return;
-                }
-                setStep(2);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-dark py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-dark/20 hover:shadow-xl transition-all"
-            >
-              Continue to Review <ChevronRight className="h-4 w-4" />
-            </button>
-            </div>
-
-            {/* ─── STEP 2: Items + Coins ─── */}
-            <div className={step === 2 ? "" : "hidden"}>
-
             {/* Order Items */}
             <div className="rounded-2xl border border-border/50 bg-white shadow-sm transition-all hover:shadow-md">
               <div className="flex items-center justify-between border-b border-border/30 px-5 py-4">
@@ -847,24 +795,10 @@ export default function CheckoutPage() {
                 </div>
               </div>
             )}
-
-            {/* Step 2 Navigation */}
-            <div className="flex gap-3 mt-4">
-              <button onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                className="flex items-center justify-center gap-1.5 rounded-2xl border-2 border-border/60 bg-white px-6 py-3 text-sm font-semibold text-muted hover:bg-gray-50 transition-all">
-                <ArrowLeft className="h-4 w-4" /> Back
-              </button>
-              <button onClick={() => { setStep(3); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-brand-dark py-3 text-sm font-bold text-white shadow-lg shadow-brand-dark/20 hover:shadow-xl transition-all">
-                Continue to Payment <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-            </div>
-
           </div>
 
-          {/* ─── STEP 3: Sidebar ─── */}
-          <div className={step === 3 ? "lg:col-span-2" : "hidden"}>
+          {/* ─── Sidebar ─── */}
+          <div className="lg:col-span-2">
             <div className="sticky top-20 space-y-5">
 
               {/* Payment Method */}
