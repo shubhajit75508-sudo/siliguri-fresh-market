@@ -95,6 +95,7 @@ export default function CheckoutPage() {
       }));
       if (!selectedAddress) {
         setAddressMissing(false);
+        toast.add("GPS location detected! Verify and fill remaining details.");
       }
     }
   }, [resolvedFields]);
