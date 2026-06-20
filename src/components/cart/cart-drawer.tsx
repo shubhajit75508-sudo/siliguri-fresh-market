@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Plus, Minus, Tag, ArrowRight, ShoppingBag, Percent, Sparkles } from "lucide-react";
+import { X, Plus, Minus, Tag, ArrowRight, ShoppingBag, Percent, Sparkles, Truck, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { useCouponStore } from "@/store/coupon-store";
@@ -47,6 +47,13 @@ export function CartDrawer() {
     }
   };
 
+  const badge = (cat: string) => {
+    if (["fish", "chicken", "mutton", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
+    if (["fruits", "vegetables"].includes(cat)) return { label: "ORGANIC", cls: "organic" };
+    if (["dairy", "eggs"].includes(cat)) return { label: "FARM", cls: "farm" };
+    return null;
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -56,7 +63,7 @@ export function CartDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeCart}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
           />
           <motion.div
             initial={{ x: "100%" }}
@@ -67,90 +74,87 @@ export function CartDrawer() {
             dragConstraints={{ left: 0, right: 120 }}
             dragElastic={0.12}
             onDragEnd={(_, info) => { if (info.offset.x > 100) closeCart(); }}
-            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-gradient-to-b from-white to-gray-50/80 shadow-2xl"
+            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-gradient-to-b from-[#0d1b2a] to-[#0a1f1c] shadow-2xl border-l border-white/5"
           >
             {/* Header */}
-            <div className="relative border-b border-border/60 bg-white/90 px-5 py-4 backdrop-blur-xl">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-brand-fresh to-brand-blue text-white shadow-sm">
-                      <ShoppingBag className="h-3.5 w-3.5" />
-                    </div>
-                    <h2 className="text-lg font-bold tracking-tight">Your Cart</h2>
-                  </div>
-                  <p className="mt-0.5 text-xs text-muted pl-9">
-                    {getItemCount()} {getItemCount() === 1 ? "item" : "items"}
-                  </p>
-                </div>
-                <button
-                  onClick={closeCart}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-white shadow-sm hover:bg-gray-50 transition-all"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+              <div>
+                <h2 className="text-lg font-extrabold text-white">🛒 Your Cart</h2>
+                <p className="text-xs text-[#80949b] mt-0.5">{getItemCount()} items</p>
               </div>
+              <button
+                onClick={closeCart}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 hover:bg-white/5 transition-all"
+              >
+                <X className="h-5 w-5 text-[#80949b]" />
+              </button>
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-8">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-8">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center py-20 text-center">
-                  <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200">
-                    <ShoppingBag className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-bold tracking-tight">Your cart is empty</h3>
-                  <p className="mt-1 text-sm text-muted">Add fresh farm items to get started</p>
-                  <Button variant="default" className="mt-6 rounded-full shadow-lg" asChild onClick={closeCart}>
-                    <Link href="/">Start Shopping</Link>
-                  </Button>
+                  <span className="text-5xl mb-4">🛒</span>
+                  <h3 className="text-lg font-bold text-white">Cart is empty</h3>
+                  <p className="mt-1 text-sm text-[#80949b]">Add fresh items to get started</p>
+                  <Link href="/" onClick={closeCart}>
+                    <Button className="mt-6 rounded-full bg-[#2ecc71] hover:bg-[#27ae60] text-[#0a1f1c] font-bold px-6 py-2.5 shadow-lg shadow-[#2ecc71]/20">
+                      Browse Products
+                    </Button>
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {items.map((item) => {
                     const lineKey = cartLineKey(item);
+                    const b = badge(item.product.category);
                     return (
                       <motion.div
                         key={cartLineId(lineKey)}
                         layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="group relative flex gap-3 rounded-2xl border border-border/50 bg-white p-3 shadow-sm transition-all hover:shadow-md"
+                        className="group relative flex gap-3 rounded-2xl border border-white/5 bg-white/[0.03] p-3"
                       >
-                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-50">
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/5">
                           <Image
                             src={item.product.image}
                             alt={item.product.name}
                             fill
-                            className="object-cover"
+                            className="object-cover brightness-90"
                             sizes="80px"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
                         </div>
-                        <div className="flex flex-1 flex-col justify-between py-0.5">
+                        <div className="flex flex-1 flex-col justify-between">
                           <div>
-                            <h4 className="text-sm font-semibold leading-tight">{item.product.name}</h4>
-                            <p className="mt-0.5 text-[11px] text-muted tracking-tight">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-semibold text-white">{item.product.name}</h4>
+                              {b && (
+                                <span className={`product-badge ${b.cls}`}>{b.label}</span>
+                              )}
+                            </div>
+                            <p className="mt-0.5 text-[11px] text-[#80949b]">
                               {item.selectedWeight || item.product.unit}
                             </p>
                           </div>
                           <div className="flex items-center justify-between">
-                            <p className="text-sm font-bold text-brand-dark">
+                            <p className="text-sm font-bold text-[#2ecc71]">
                               {formatPrice(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity)}
                             </p>
                             <button
                               onClick={() => removeItem(lineKey)}
-                              className="text-[11px] font-semibold text-gray-400 transition-all hover:text-brand-red sm:opacity-0 sm:group-hover:opacity-100"
+                              className="text-[11px] font-semibold text-[#80949b] transition-all hover:text-[#e74c3c] sm:opacity-0 sm:group-hover:opacity-100"
                             >
                               Remove
                             </button>
                           </div>
                         </div>
+                        {/* Quantity stepper */}
                         <div className="absolute right-3 top-3 sm:static sm:self-end">
-                          <div className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-dark to-brand-dark/90 px-1.5 py-1.5 shadow-md">
+                          <div className="flex items-center gap-1 rounded-xl bg-white/8 px-1 py-1">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}
-                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-all hover:bg-white/20"
+                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
                             >
                               <Minus className="h-4 w-4" />
                             </button>
@@ -159,7 +163,7 @@ export function CartDrawer() {
                             </span>
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity + 1)}
-                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-all hover:bg-white/20"
+                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
                             >
                               <Plus className="h-4 w-4" />
                             </button>
@@ -175,34 +179,23 @@ export function CartDrawer() {
                     onClick={handleApplyCoupon}
                     className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 transition-all ${
                       couponCode
-                        ? "border-brand-fresh/40 bg-gradient-to-r from-brand-fresh/5 to-brand-fresh/10"
-                        : "border-dashed border-gray-300 bg-white/50 hover:border-brand-fresh/40 hover:bg-brand-fresh/[0.02]"
+                        ? "border-[#2ecc71]/30 bg-[#2ecc71]/5"
+                        : "border-dashed border-white/10 bg-white/[0.02] hover:border-[#2ecc71]/30"
                     }`}
                   >
-                    <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${
-                      couponCode ? "bg-brand-fresh/10" : "bg-gray-100"
-                    }`}>
-                      {couponCode
-                        ? <Percent className="h-4 w-4 text-brand-fresh" />
-                        : <Tag className="h-4 w-4 text-gray-500" />
-                      }
-                    </div>
+                    <span className="text-lg">{couponCode ? "🎫" : "🏷️"}</span>
                     <div className="flex-1 text-left">
-                      <p className={`text-sm font-semibold ${couponCode ? "text-brand-fresh-dim" : ""}`}>
-                        {couponCode ? `Coupon ${couponCode} applied` : "Add a coupon code"}
+                      <p className={`text-sm font-semibold ${couponCode ? "text-[#2ecc71]" : "text-white"}`}>
+                        {couponCode ? `Coupon ${couponCode} applied` : "Have a coupon?"}
                       </p>
-                      <p className="text-[11px] text-muted">
+                      <p className="text-[11px] text-[#80949b]">
                         {couponCode
                           ? `You save ${formatPrice(couponDiscount)}`
-                          : "Enter code at checkout or tap to apply"
+                          : "Tap to apply FRESH50"
                         }
                       </p>
                     </div>
-                    {couponCode && (
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-fresh/10">
-                        <Sparkles className="h-3 w-3 text-brand-fresh" />
-                      </div>
-                    )}
+                    {couponCode && <Sparkles className="h-4 w-4 text-[#2ecc71]" />}
                   </motion.button>
                 </div>
               )}
@@ -210,38 +203,40 @@ export function CartDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-border/60 bg-white/90 px-5 pb-6 pt-4 backdrop-blur-xl safe-bottom">
-                <div className="mb-4 space-y-2 text-sm">
+              <div className="border-t border-white/5 bg-[#0d1b2a]/95 backdrop-blur-xl px-4 pb-6 pt-4 safe-bottom">
+                <div className="mb-4 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted">Subtotal</span>
-                    <span className="font-medium">{formatPrice(subtotal)}</span>
+                    <span className="text-[#80949b]">Subtotal</span>
+                    <span className="text-white font-medium">{formatPrice(subtotal)}</span>
                   </div>
                   {couponDiscount > 0 && (
                     <div className="flex justify-between text-xs">
-                      <span className="text-brand-fresh">Discount</span>
-                      <span className="font-medium text-brand-fresh">-{formatPrice(couponDiscount)}</span>
+                      <span className="text-[#2ecc71]">Savings</span>
+                      <span className="text-[#2ecc71] font-medium">-{formatPrice(couponDiscount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted">Delivery</span>
-                    <span className={deliveryFee === 0 ? "font-medium text-brand-fresh" : "font-medium"}>
-                      {deliveryFee === 0 ? "Free" : formatPrice(deliveryFee)}
+                    <span className="text-[#80949b]">Delivery</span>
+                    <span className={deliveryFee === 0 ? "text-[#2ecc71] font-medium" : "text-white font-medium"}>
+                      {deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}
                     </span>
                   </div>
-                  <div className="flex justify-between border-t border-border/40 pt-2 text-base font-bold">
-                    <span>Total</span>
-                    <span className="text-brand-dark tabular-nums">₹{total.toLocaleString()}</span>
+                  <div className="flex justify-between border-t border-white/5 pt-3 text-base font-bold">
+                    <span className="text-white">Total</span>
+                    <span className="text-white tabular-nums">₹{total.toLocaleString()}</span>
                   </div>
                 </div>
                 <Link href="/checkout" onClick={closeCart}>
-                  <Button
-                    variant="default"
-                    className="w-full rounded-xl py-3 text-sm font-bold shadow-lg shadow-brand-dark/20 transition-all hover:shadow-xl"
-                  >
+                  <button className="btn-glow flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold">
                     Proceed to Checkout
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </Link>
+                <div className="mt-3 flex items-center justify-center gap-3 text-[10px] text-[#5a7278]">
+                  <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Secure</span>
+                  <span>🌿 100% Fresh</span>
+                  <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
+                </div>
               </div>
             )}
           </motion.div>
