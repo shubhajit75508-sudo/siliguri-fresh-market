@@ -82,7 +82,7 @@ export interface Order {
   customerEmail: string;
   userId?: string;
   paymentMethod: string;
-  paymentStatus: "paid" | "unpaid";
+  paymentStatus: "paid" | "unpaid" | "refunded";
   deliveryBoyId?: string;
   deliveryBoyName?: string;
   deliveryStatus?: DeliveryStatus;
@@ -132,7 +132,7 @@ export interface DeliveryAssignment {
   deliveryBoyId: string;
   customerName: string;
   customerPhone: string;
-  paymentStatus?: "paid" | "unpaid";
+  paymentStatus?: "paid" | "unpaid" | "refunded";
   address: Address;
   items: { name: string; quantity: number }[];
   total: number;

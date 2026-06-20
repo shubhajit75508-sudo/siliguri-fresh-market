@@ -143,12 +143,19 @@ export const useOrderStore = create<OrderState>()(
 
         cancelOrder: async (id) => {
           const prev = get().orders;
+          const order = prev.find((o) => o.id === id);
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === id ? { ...o, status: "cancelled" as Order["status"] } : o
+              o.id === id
+                ? { ...o, status: "cancelled" as Order["status"], paymentStatus: o.paymentStatus === "paid" ? "refunded" as const : o.paymentStatus }
+                : o
             ),
           }));
-          const ok = await apiPut({ id, status: "cancelled" });
+          const payload: Record<string, unknown> = { id, status: "cancelled" };
+          if (order?.paymentStatus === "paid") {
+            payload.payment_status = "refunded";
+          }
+          const ok = await apiPut(payload);
           if (!ok) set({ orders: prev });
         },
 

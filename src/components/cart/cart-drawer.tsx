@@ -63,6 +63,10 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 280 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 120 }}
+            dragElastic={0.12}
+            onDragEnd={(_, info) => { if (info.offset.x > 100) closeCart(); }}
             className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-gradient-to-b from-white to-gray-50/80 shadow-2xl"
           >
             {/* Header */}
@@ -81,15 +85,15 @@ export function CartDrawer() {
                 </div>
                 <button
                   onClick={closeCart}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-white shadow-sm hover:bg-gray-50 transition-all"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-white shadow-sm hover:bg-gray-50 transition-all"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto px-5 py-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-8">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center py-20 text-center">
                   <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200">
@@ -136,28 +140,28 @@ export function CartDrawer() {
                             </p>
                             <button
                               onClick={() => removeItem(lineKey)}
-                              className="text-[10px] font-medium text-gray-400 opacity-0 transition-all hover:text-brand-red group-hover:opacity-100"
+                              className="text-[11px] font-semibold text-gray-400 transition-all hover:text-brand-red sm:opacity-0 sm:group-hover:opacity-100"
                             >
                               Remove
                             </button>
                           </div>
                         </div>
                         <div className="absolute right-3 top-3 sm:static sm:self-end">
-                          <div className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-brand-dark to-brand-dark/90 px-1 py-1 shadow-md">
+                          <div className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-dark to-brand-dark/90 px-1.5 py-1.5 shadow-md">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg text-white/90 transition-all hover:bg-white/20"
+                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-all hover:bg-white/20"
                             >
-                              <Minus className="h-3 w-3" />
+                              <Minus className="h-4 w-4" />
                             </button>
-                            <span className="flex h-7 w-7 items-center justify-center text-sm font-bold text-white tabular-nums">
+                            <span className="flex h-10 w-10 items-center justify-center text-sm font-bold text-white tabular-nums">
                               {item.quantity}
                             </span>
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity + 1)}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg text-white/90 transition-all hover:bg-white/20"
+                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-all hover:bg-white/20"
                             >
-                              <Plus className="h-3 w-3" />
+                              <Plus className="h-4 w-4" />
                             </button>
                           </div>
                         </div>

@@ -14,10 +14,15 @@ import {
   Copy,
   KeyRound,
   ShoppingBag,
+  Ban,
+  Loader2,
 } from "lucide-react";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
+import { useOrderStore } from "@/store/order-store";
+import { useToast } from "@/components/ui/toaster";
 import dynamic from "next/dynamic";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
@@ -45,6 +50,10 @@ export default function TrackOrderPage({
   const [speed, setSpeed] = useState(0);
   const [etaMinutes, setEtaMinutes] = useState<number | null>(null);
   const [lastUpdated, setLastUpdated] = useState("");
+  const [showCancel, setShowCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const toast = useToast();
+  const { cancelOrder } = useOrderStore();
 
   const fetchOrder = useCallback(() => {
     fetch(`/api/orders/${orderId}`)
@@ -93,6 +102,21 @@ export default function TrackOrderPage({
       .catch(() => setOrder(null))
       .finally(() => setLoading(false));
   }, [orderId]);
+
+  const handleCancel = async () => {
+    if (!order) return;
+    setCancelling(true);
+    try {
+      await cancelOrder(order.id);
+      setOrder((prev) => prev ? { ...prev, status: "cancelled" } : null);
+      toast.add("Order cancelled. Refund will be processed within 3-5 days if already paid.");
+      setShowCancel(false);
+    } catch {
+      toast.add("Failed to cancel order. Try again.", "error");
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   useEffect(() => { fetchOrder(); }, [fetchOrder]);
 
@@ -255,6 +279,19 @@ export default function TrackOrderPage({
         )}
       </div>
 
+      {/* Cancel Order - only for received orders before packing */}
+      {order.status === "received" && (
+        <div className="mt-4">
+          <button
+            onClick={() => setShowCancel(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-red/20 bg-brand-red/5 px-4 py-3 text-sm font-semibold text-brand-red hover:bg-brand-red/10 hover:border-brand-red/30 transition-all"
+          >
+            <Ban className="h-4 w-4" /> Cancel Order
+          </button>
+          <p className="mt-1 text-center text-[10px] text-muted">You can cancel before it&apos;s packed</p>
+        </div>
+      )}
+
       {/* Live Map */}
       <div className="relative mt-6 overflow-hidden rounded-2xl border border-border/60 shadow-sm">
         {isOutForDelivery ? (
@@ -331,6 +368,46 @@ export default function TrackOrderPage({
 
       {showReturn && deliveredAt && (
         <ReturnRequestModal orderId={orderId} deliveredAt={deliveredAt} onClose={() => setShowReturn(false)} />
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {showCancel && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4 pb-8 sm:px-0 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-white p-6 shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-red/10 mb-4">
+              <Ban className="h-8 w-8 text-brand-red" />
+            </div>
+            <h3 className="text-center text-lg font-bold">Cancel Order?</h3>
+            <p className="mt-2 text-center text-sm text-muted">
+              This action cannot be undone. Your order <span className="font-semibold">{orderId}</span> will be cancelled.
+            </p>
+            {order?.paymentStatus === "paid" && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-brand-orange/10 px-4 py-2.5 text-xs text-brand-orange">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                Refund will be processed within 3-5 business days
+              </div>
+            )}
+            <div className="mt-5 flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl py-2.5 text-sm"
+                onClick={() => setShowCancel(false)}
+                disabled={cancelling}
+              >
+                Keep Order
+              </Button>
+              <Button
+                variant="default"
+                className="flex-1 rounded-xl py-2.5 text-sm bg-brand-red hover:bg-brand-red/90"
+                onClick={handleCancel}
+                disabled={cancelling}
+              >
+                {cancelling ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Ban className="mr-1 h-4 w-4" />}
+                Cancel Order
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Timeline */}

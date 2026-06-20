@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2, XCircle } from "lucide-react";
+import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2, XCircle, Ban } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
+import { useToast } from "@/components/ui/toaster";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 
 const statusBadge: Record<string, "default" | "fresh" | "blue" | "red" | "orange"> = {
@@ -26,9 +27,12 @@ interface OrderSummary {
 }
 
 export default function OrdersPage() {
-  const { orders: allOrders, loaded, loadUserOrders } = useOrderStore();
+  const { orders: allOrders, loaded, loadUserOrders, cancelOrder } = useOrderStore();
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
   const [returnDeliveredAt, setReturnDeliveredAt] = useState<string | undefined>();
+  const [cancelId, setCancelId] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const toast = useToast();
 
   useEffect(() => { loadUserOrders(); }, [loadUserOrders]);
 
@@ -45,6 +49,20 @@ export default function OrdersPage() {
   const handleReturn = (order: OrderSummary) => {
     setReturnOrderId(order.id);
     setReturnDeliveredAt(order.deliveredAt);
+  };
+
+  const handleCancel = async () => {
+    if (!cancelId) return;
+    setCancelling(true);
+    try {
+      await cancelOrder(cancelId);
+      toast.add("Order cancelled");
+      setCancelId(null);
+    } catch {
+      toast.add("Failed to cancel", "error");
+    } finally {
+      setCancelling(false);
+    }
   };
 
   if (!loaded) {
@@ -106,6 +124,15 @@ export default function OrdersPage() {
                     This order was cancelled
                   </div>
                 )}
+                {order.status === "received" && (
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCancelId(order.id); }}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-brand-red/20 bg-brand-red/5 py-2 text-xs font-semibold text-brand-red hover:bg-brand-red/10 transition-colors"
+                  >
+                    <Ban className="h-3.5 w-3.5" />
+                    Cancel Order
+                  </button>
+                )}
                 {order.status === "delivered" && (
                   inWindow ? (
                     <button
@@ -134,6 +161,39 @@ export default function OrdersPage() {
           deliveredAt={returnDeliveredAt}
           onClose={() => { setReturnOrderId(null); setReturnDeliveredAt(undefined); }}
         />
+      )}
+
+      {cancelId && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4 pb-8 sm:px-0 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-white p-6 shadow-2xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-red/10 mb-4">
+              <Ban className="h-8 w-8 text-brand-red" />
+            </div>
+            <h3 className="text-center text-lg font-bold">Cancel Order?</h3>
+            <p className="mt-2 text-center text-sm text-muted">
+              This action cannot be undone.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl py-2.5 text-sm"
+                onClick={() => setCancelId(null)}
+                disabled={cancelling}
+              >
+                Keep Order
+              </Button>
+              <Button
+                variant="default"
+                className="flex-1 rounded-xl py-2.5 text-sm bg-brand-red hover:bg-brand-red/90"
+                onClick={handleCancel}
+                disabled={cancelling}
+              >
+                {cancelling ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Ban className="mr-1 h-4 w-4" />}
+                Cancel Order
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

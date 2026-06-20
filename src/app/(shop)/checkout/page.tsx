@@ -370,7 +370,7 @@ export default function CheckoutPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-border/20">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center rounded-full bg-brand-dark text-white text-[10px] font-bold w-6 h-6">
+                    <div className="flex items-center justify-center rounded-full bg-brand-dark text-white text-[10px] font-bold w-7 h-7">
                       1
                     </div>
                     <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/15 to-brand-blue/15"}`}>
@@ -432,7 +432,7 @@ export default function CheckoutPage() {
                           <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
                           <input value={newAddress.city} onChange={(e) => setNewAddress(f => ({ ...f, city: e.target.value }))}
                             placeholder="Siliguri"
-                            className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                            className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                         </div>
                       </div>
                       <div>
@@ -441,7 +441,7 @@ export default function CheckoutPage() {
                           <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
                           <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))}
                             placeholder="734009"
-                            className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                            className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                         </div>
                       </div>
                     </div>
@@ -451,7 +451,7 @@ export default function CheckoutPage() {
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
                         <input value={newAddress.area} onChange={(e) => setNewAddress(f => ({ ...f, area: e.target.value }))}
                           placeholder="e.g. Salbari, Dabgram"
-                          className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -459,13 +459,13 @@ export default function CheckoutPage() {
                         <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
                         <input value={newAddress.landmark} onChange={(e) => setNewAddress(f => ({ ...f, landmark: e.target.value }))}
                           placeholder="Near City Centre"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                       <div>
                         <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building (optional)</label>
                         <input value={newAddress.building} onChange={(e) => setNewAddress(f => ({ ...f, building: e.target.value }))}
                           placeholder="Green Tower"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -473,13 +473,13 @@ export default function CheckoutPage() {
                             <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
                         <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
                           placeholder="3B"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                       <div>
                             <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
                         <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
                           placeholder="2nd"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                     </div>
                     <Button variant="default" size="lg" className="w-full rounded-2xl py-3.5 text-sm font-bold shadow-xl shadow-brand-dark/15 hover:shadow-2xl hover:shadow-brand-dark/20 transition-all"
@@ -528,7 +528,7 @@ export default function CheckoutPage() {
                             <button
                               key={addr.id}
                               onClick={() => setSelectedAddressId(addr.id)}
-                              className={`rounded-xl border px-3.5 py-2.5 text-left text-xs transition-all ${
+                              className={`rounded-xl border px-3.5 py-3 text-left text-xs transition-all ${
                                 isSelected
                                   ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/5 to-brand-blue/5 ring-2 ring-brand-fresh/15 shadow-md"
                                   : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
@@ -617,14 +617,14 @@ export default function CheckoutPage() {
                               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
                               <input value={detailForm.area} onChange={(e) => setDetailForm(f => ({ ...f, area: e.target.value }))}
                                 placeholder="e.g. Salbari"
-                                className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                                className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                             </div>
                           </div>
                           <div>
                             <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
                             <input value={detailForm.landmark} onChange={(e) => setDetailForm(f => ({ ...f, landmark: e.target.value }))}
                               placeholder="Near City Centre"
-                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
@@ -634,20 +634,20 @@ export default function CheckoutPage() {
                               <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
                               <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))}
                                 placeholder="Green Tower"
-                                className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                                className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                             </div>
                           </div>
                           <div>
                         <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
                             <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
                               placeholder="3B"
-                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
                           <div>
                         <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
                             <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
                               placeholder="2nd"
-                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
                         </div>
                         <Button variant="fresh" size="sm" className="rounded-xl text-xs font-bold shadow-lg shadow-brand-fresh/20 hover:shadow-xl hover:shadow-brand-fresh/30 transition-all"
