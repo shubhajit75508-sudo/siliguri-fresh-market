@@ -190,7 +190,7 @@ export default function DeliveryDashboard() {
 
   function DeliveryCard({ a }: { a: typeof active[0] }) {
     return (
-      <div className="mb-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
+      <div className="mb-3 rounded-2xl border border-border bg-[#0d1b2a] p-4 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -332,7 +332,7 @@ export default function DeliveryDashboard() {
                       setDeliveryCodes({ ...deliveryCodes, [a.orderId]: e.target.value.replace(/\D/g, "").slice(0, 4) });
                       setCodeError(null);
                     }}
-                    className="flex-1 rounded-xl border border-border bg-white px-3 py-2 text-sm text-center tracking-[0.25em] font-bold outline-none focus:border-brand-fresh/50"
+                    className="flex-1 rounded-xl border border-border bg-[#0d1b2a] px-3 py-2 text-sm text-center tracking-[0.25em] font-bold outline-none focus:border-brand-fresh/50"
                   />
                 </div>
                 {codeError && <p className="text-xs text-brand-red">{codeError}</p>}

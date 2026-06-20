@@ -43,7 +43,7 @@ export default function CouponsPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleAdd} className="mt-4 max-w-md rounded-xl border bg-white p-5 shadow-sm space-y-3">
+        <form onSubmit={handleAdd} className="mt-4 max-w-md rounded-xl border bg-[#0d1b2a] p-5 shadow-sm space-y-3">
           <input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="COUPON CODE" className="w-full rounded-lg border px-3 py-2 text-sm uppercase outline-none focus:border-brand-dark" />
           <div className="grid grid-cols-2 gap-3">
             <input type="number" value={form.discount || ""} onChange={(e) => setForm({ ...form, discount: Number(e.target.value) })} placeholder="Discount" className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark" />
@@ -62,9 +62,9 @@ export default function CouponsPage() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {[...coupons].reverse().map((c) => (
-          <div key={c.code} className="rounded-xl border bg-white p-5 shadow-sm">
+          <div key={c.code} className="rounded-xl border bg-[#0d1b2a] p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <code className="text-lg font-bold text-brand-dark">{c.code}</code>
+              <code className="text-lg font-bold text-white">{c.code}</code>
               <div className="flex items-center gap-2">
                 <Badge variant="fresh">Active</Badge>
                 <button onClick={() => handleDelete(c.code)} className="rounded-lg p-1 hover:bg-red-50"><Trash2 className="h-4 w-4 text-brand-red" /></button>
@@ -73,7 +73,7 @@ export default function CouponsPage() {
             <p className="mt-2 text-sm font-medium">
               {c.type === "flat" ? `₹${c.discount} off` : `${c.discount}% off`}
             </p>
-            <p className="text-xs text-gray-500">Min order: ₹{c.minOrder}</p>
+            <p className="text-xs text-[#80949b]">Min order: ₹{c.minOrder}</p>
           </div>
         ))}
       </div>

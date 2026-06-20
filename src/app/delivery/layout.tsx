@@ -149,7 +149,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   if (!boy) {
     if (pathname === "/delivery/login") return <>{children}</>;
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white/5">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-fresh border-t-transparent" />
         <p className="mt-4 text-sm text-muted">Loading your deliveries...</p>
       </div>
@@ -157,8 +157,8 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
-      <header className="flex h-14 items-center gap-3 border-b bg-white px-4 shadow-sm">
+    <div className="flex min-h-screen flex-col bg-white/5">
+      <header className="flex h-14 items-center gap-3 border-b bg-[#0d1b2a] px-4 shadow-sm">
         <Truck className="h-5 w-5 text-brand-fresh-dim" />
         <div className="leading-none">
           <p className="text-sm font-bold">{boy.name}</p>

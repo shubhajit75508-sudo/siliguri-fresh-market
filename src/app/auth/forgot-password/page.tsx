@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
     <div className="mx-auto max-w-sm py-16 px-4">
       <div className="mb-8 text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-dark/10">
-          <KeyRound className="h-7 w-7 text-brand-dark" />
+          <KeyRound className="h-7 w-7 text-white" />
         </div>
         <h1 className="text-2xl font-extrabold">Forgot Password</h1>
         <p className="mt-1 text-sm text-muted">
@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+              className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
             />
           </div>
           <Button variant="default" className="w-full" onClick={handleSend} disabled={loading}>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
       )}
 
       <p className="mt-6 text-center text-sm text-muted">
-        <Link href="/auth/login" className="font-semibold text-brand-dark hover:underline">
+        <Link href="/auth/login" className="font-semibold text-white hover:underline">
           <ArrowLeft className="mr-1 inline h-3 w-3" /> Back to Log In
         </Link>
       </p>

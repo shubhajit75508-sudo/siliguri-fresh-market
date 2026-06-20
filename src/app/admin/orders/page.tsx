@@ -35,7 +35,7 @@ export default function AdminOrdersPage() {
   const filtered = activeTab === "all" ? orders : orders.filter((o) => o.status === activeTab);
 
   if (!loaded) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-gray-400" /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-[#5a7278]" /></div>;
   }
 
   return (
@@ -54,7 +54,7 @@ export default function AdminOrdersPage() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors capitalize ${
-              activeTab === tab ? "bg-brand-dark text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              activeTab === tab ? "bg-brand-dark text-white" : "bg-white/8 text-[#80949b] hover:bg-gray-200"
             }`}
           >
             {tab.replace(/_/g, " ")} ({tab === "all" ? orders.length : orders.filter((o) => o.status === tab).length})
@@ -62,26 +62,26 @@ export default function AdminOrdersPage() {
         ))}
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-xl border bg-white shadow-sm">
+      <div className="mt-4 overflow-x-auto rounded-xl border bg-[#0d1b2a] shadow-sm">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-gray-50 text-left">
-              <th className="px-4 py-3 font-medium text-gray-500">Order ID</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Customer</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Items</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Total</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Payment</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Delivery</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Action</th>
+            <tr className="border-b bg-white/5 text-left">
+              <th className="px-4 py-3 font-medium text-[#80949b]">Order ID</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Customer</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Items</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Total</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Payment</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Status</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Delivery</th>
+              <th className="px-4 py-3 font-medium text-[#80949b]">Action</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-400">No orders yet.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-[#5a7278]">No orders yet.</td></tr>
             ) : (
               filtered.map((order) => (
-                <tr key={order.id} className="border-b hover:bg-gray-50">
+                <tr key={order.id} className="border-b hover:bg-white/5">
                   <td className="px-4 py-3 font-mono text-xs font-medium">{order.id}</td>
                   <td className="px-4 py-3">
                     <p className="font-medium">{order.customerName}</p>
@@ -120,8 +120,8 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
-                      <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-gray-100" title="View details">
-                        <Eye className="h-4 w-4 text-gray-500" />
+                      <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
+                        <Eye className="h-4 w-4 text-[#80949b]" />
                       </button>
                       {order.status === "received" && (
                         <>
@@ -160,9 +160,9 @@ export default function AdminOrdersPage() {
       {/* Cancel confirm modal */}
       {confirmCancel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmCancel(null)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold">Cancel Order</h3>
-            <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-brand-dark">{confirmCancel}</span>?</p>
+            <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-white">{confirmCancel}</span>?</p>
             <div className="mt-6 flex gap-3">
               <Button variant="default" onClick={() => { cancelOrder(confirmCancel); setConfirmCancel(null); }} className="bg-brand-red hover:bg-brand-red/80">
                 <XCircle className="mr-1 h-4 w-4" /> Yes, Cancel
@@ -176,10 +176,10 @@ export default function AdminOrdersPage() {
       {/* Detail modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="mx-4 w-full max-w-lg rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">{selectedOrder.id}</h3>
-              <button onClick={() => setSelectedOrder(null)} className="rounded-lg p-1 hover:bg-gray-100"><X className="h-5 w-5" /></button>
+              <button onClick={() => setSelectedOrder(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
             </div>
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function AdminOrdersPage() {
                 <span className="text-muted flex items-center gap-1 mb-1"><Package className="h-3.5 w-3.5" /> Products:</span>
                 <ul className="space-y-1">
                   {selectedOrder.items.map((item, i) => (
-                    <li key={i} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs">
+                    <li key={i} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2 text-xs">
                       <span>{item.product.name}</span>
                       <span className="font-medium">{item.quantity} × {formatPrice(item.product.price)}</span>
                     </li>
@@ -242,7 +242,7 @@ export default function AdminOrdersPage() {
               </div>
               <div className="flex justify-between border-t pt-2 text-sm font-bold">
                 <span>Total</span>
-                <span className="text-brand-dark">{formatPrice(selectedOrder.total)}</span>
+                <span className="text-white">{formatPrice(selectedOrder.total)}</span>
               </div>
             </div>
             <div className="mt-6 flex gap-3">
@@ -289,12 +289,12 @@ export default function AdminOrdersPage() {
 
       {returnModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setReturnModal(null)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">Return Request</h3>
-              <button onClick={() => setReturnModal(null)} className="rounded-lg p-1 hover:bg-gray-100"><X className="h-5 w-5" /></button>
+              <button onClick={() => setReturnModal(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
             </div>
-            <p className="mt-3 text-sm text-muted">Customer <span className="font-semibold text-brand-dark">{returnModal.customerName}</span> has requested a return for order {returnModal.id}.</p>
+            <p className="mt-3 text-sm text-muted">Customer <span className="font-semibold text-white">{returnModal.customerName}</span> has requested a return for order {returnModal.id}.</p>
             <div className="mt-4 rounded-xl bg-surface p-3 text-sm">
               <p className="font-medium">{returnModal.customerName}</p>
               <p className="mt-1 text-muted">{returnModal.customerPhone}</p>
@@ -328,10 +328,10 @@ function AssignModal({ order, onAssign, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold">Assign Delivery</h3>
-          <button onClick={onClose} className="rounded-lg p-1 hover:bg-gray-100"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
         </div>
         <p className="mt-2 text-sm text-muted">Order: {order.id}</p>
         {allBoys.length === 0 ? (

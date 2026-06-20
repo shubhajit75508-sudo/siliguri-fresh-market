@@ -38,7 +38,7 @@ export function Header() {
               <>
                 <Link
                   href={currentUser.role === "admin" ? "/admin" : currentUser.role === "delivery" ? "/delivery" : "/account"}
-                  className="flex h-10 items-center gap-2 rounded-full border border-border bg-white px-3 pl-1.5 transition-all hover:border-brand-dark/20 hover:shadow-sm"
+                  className="flex h-10 items-center gap-2 rounded-full border border-border bg-[#0d1b2a] px-3 pl-1.5 transition-all hover:border-brand-dark/20 hover:shadow-sm"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-dark text-[11px] font-bold text-white">
                     {currentUser.name.charAt(0)}
@@ -62,7 +62,7 @@ export function Header() {
               <>
                 <Link
                   href="/auth/signup"
-                  className="hidden lg:flex h-10 items-center gap-1.5 rounded-full border border-border bg-white px-3 text-[13px] font-medium hover:bg-surface"
+                  className="hidden lg:flex h-10 items-center gap-1.5 rounded-full border border-border bg-[#0d1b2a] px-3 text-[13px] font-medium hover:bg-surface"
                 >
                   <UserPlus className="h-3.5 w-3.5" /> Sign Up
                 </Link>
@@ -82,7 +82,7 @@ export function Header() {
               <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
               Cart
               {itemCount > 0 && (
-                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-brand-dark">
+                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#0d1b2a] px-1 text-[10px] font-bold text-white">
                   {itemCount}
                 </span>
               )}
@@ -129,7 +129,7 @@ export function Header() {
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[8px] font-bold text-brand-dark">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0d1b2a] text-[8px] font-bold text-white">
                   {itemCount}
                 </span>
               )}

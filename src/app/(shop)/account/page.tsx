@@ -73,7 +73,7 @@ export default function ProfilePage() {
               <input
                 value={form[field]}
                 onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+                className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
               />
             </div>
           ))}

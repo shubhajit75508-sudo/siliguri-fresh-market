@@ -22,7 +22,7 @@ export function FAQSection() {
           <Accordion.Item
             key={i}
             value={`f-${i}`}
-            className={`animate-in animate-in-d${Math.min(i + 1, 10)} overflow-hidden rounded-[18px] border border-border bg-white shadow-sm`}
+            className={`animate-in animate-in-d${Math.min(i + 1, 10)} overflow-hidden rounded-[18px] border border-border bg-[#0d1b2a] shadow-sm`}
           >
             <Accordion.Trigger className="group flex w-full items-center justify-between px-5 py-4 text-left text-[14px] font-semibold">
               {f.q}

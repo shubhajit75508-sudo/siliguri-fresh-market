@@ -46,7 +46,7 @@ export default function UpdatePasswordPage() {
     <div className="mx-auto max-w-sm py-16 px-4">
       <div className="mb-8 text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-dark/10">
-          <Lock className="h-7 w-7 text-brand-dark" />
+          <Lock className="h-7 w-7 text-white" />
         </div>
         <h1 className="text-2xl font-extrabold">{done ? "Password Updated" : "Set New Password"}</h1>
       </div>
@@ -69,12 +69,12 @@ export default function UpdatePasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={4}
-                className="w-full rounded-l-xl border border-r-0 border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+                className="w-full rounded-l-xl border border-r-0 border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-white px-3 text-muted hover:text-brand-dark"
+                className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-[#0d1b2a] px-3 text-muted hover:text-white"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -88,7 +88,7 @@ export default function UpdatePasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+              className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
             />
           </div>
           <Button variant="default" className="w-full" onClick={handleUpdate} disabled={loading}>

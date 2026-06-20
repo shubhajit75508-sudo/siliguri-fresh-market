@@ -84,7 +84,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoFocus
-                className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
 
@@ -97,12 +97,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full rounded-l-xl border border-r-0 border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
+                  className="w-full rounded-l-xl border border-r-0 border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-white px-3 text-muted transition-colors hover:text-brand-dark"
+                  className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-[#0d1b2a] px-3 text-muted transition-colors hover:text-white"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -111,7 +111,7 @@ export default function LoginPage() {
             </div>
 
             <div className="flex justify-end">
-              <Link href="/auth/forgot-password" className="text-xs font-medium text-muted transition-colors hover:text-brand-dark">
+              <Link href="/auth/forgot-password" className="text-xs font-medium text-muted transition-colors hover:text-white">
                 Forgot Password?
               </Link>
             </div>
@@ -123,7 +123,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-muted">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="font-semibold text-brand-dark transition-colors hover:underline">
+            <Link href="/auth/signup" className="font-semibold text-white transition-colors hover:underline">
               Sign Up
             </Link>
           </p>

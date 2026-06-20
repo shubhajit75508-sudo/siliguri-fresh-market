@@ -38,7 +38,7 @@ export default function AdminNotificationsPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSend} className="mt-4 max-w-md rounded-xl border bg-white p-5 shadow-sm space-y-3">
+        <form onSubmit={handleSend} className="mt-4 max-w-md rounded-xl border bg-[#0d1b2a] p-5 shadow-sm space-y-3">
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Notification title" className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark" />
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} placeholder="Body text" rows={2} className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark" />
           <div className="grid grid-cols-2 gap-3">
@@ -59,17 +59,17 @@ export default function AdminNotificationsPage() {
 
       <div className="mt-6 space-y-3">
         {notifications.map((n) => (
-          <div key={n.id} className="rounded-xl border bg-white p-4 shadow-sm">
+          <div key={n.id} className="rounded-xl border bg-[#0d1b2a] p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{n.title}</p>
-                  <span className={`rounded-full px-3 py-0.5 text-xs font-medium ${typeColors[n.type] || "bg-gray-100"}`}>
+                  <span className={`rounded-full px-3 py-0.5 text-xs font-medium ${typeColors[n.type] || "bg-white/8"}`}>
                     {n.type}
                   </span>
                 </div>
-                {n.body && <p className="mt-1 text-sm text-gray-500">{n.body}</p>}
-                <p className="mt-1 text-xs text-gray-400">Sent to {n.sentTo} users · {n.sentAt}</p>
+                {n.body && <p className="mt-1 text-sm text-[#80949b]">{n.body}</p>}
+                <p className="mt-1 text-xs text-[#5a7278]">Sent to {n.sentTo} users · {n.sentAt}</p>
               </div>
               <button onClick={() => deleteNotification(n.id)} className="rounded-lg p-1.5 hover:bg-red-50"><Trash2 className="h-4 w-4 text-brand-red" /></button>
             </div>

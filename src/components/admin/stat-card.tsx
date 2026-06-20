@@ -19,7 +19,7 @@ export function StatCard({ title, value, change, icon: Icon, color = "bg-brand-d
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border bg-white p-6 shadow-sm"
+      className="rounded-xl border bg-[#0d1b2a] p-6 shadow-sm"
     >
       <div className="flex items-center justify-between">
         <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg text-white", color)}>
@@ -40,7 +40,7 @@ export function StatCard({ title, value, change, icon: Icon, color = "bg-brand-d
         </div>
       </div>
       <p className="mt-4 text-2xl font-bold">{value}</p>
-      <p className="text-sm text-gray-500">{title}</p>
+      <p className="text-sm text-[#80949b]">{title}</p>
     </motion.div>
   );
 }

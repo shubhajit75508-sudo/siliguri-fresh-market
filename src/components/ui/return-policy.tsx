@@ -28,7 +28,7 @@ export function ReturnPolicyBanner({ deliveredAt }: { deliveredAt?: string }) {
   return (
     <div className={`flex items-start gap-2 rounded-xl border p-3 text-xs ${
       expired
-        ? "bg-gray-50 border-gray-200 text-gray-400"
+        ? "bg-white/5 border-white/10 text-gray-400"
         : "bg-brand-orange/5 border-brand-orange/20 text-muted"
     }`}>
       {expired ? (
@@ -41,7 +41,7 @@ export function ReturnPolicyBanner({ deliveredAt }: { deliveredAt?: string }) {
           <span className="text-gray-400">Replacement window has expired (available within 3 hours of delivery).</span>
         ) : (
           <>
-            <span className="font-semibold text-brand-dark">Replacement only.</span>{" "}
+            <span className="font-semibold text-white">Replacement only.</span>{" "}
             Available within 3 hours of delivery. Call{" "}
             <a href={`tel:${CUSTOMER_CARE}`} className="font-semibold text-brand-blue underline">
               {CUSTOMER_CARE}
@@ -60,8 +60,8 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
   if (expired) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-        <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl text-center" onClick={(e) => e.stopPropagation()}>
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+        <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl text-center" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/8">
             <Clock className="h-6 w-6 text-gray-400" />
           </div>
           <h3 className="text-lg font-bold">Window Expired</h3>
@@ -79,7 +79,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+        className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {sent ? (
@@ -102,7 +102,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
           <>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">Request Replacement</h3>
-              <button onClick={onClose} className="rounded-lg p-1 hover:bg-gray-100">
+              <button onClick={onClose} className="rounded-lg p-1 hover:bg-white/8">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -111,7 +111,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
               <span className="font-semibold">{remaining}</span>
             </div>
             <p className="mt-3 text-sm text-muted">
-              For replacement of order <span className="font-semibold text-brand-dark">{orderId}</span>, please call our customer care.
+              For replacement of order <span className="font-semibold text-white">{orderId}</span>, please call our customer care.
             </p>
             <a
               href={`tel:${CUSTOMER_CARE}`}

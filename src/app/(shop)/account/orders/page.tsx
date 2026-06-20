@@ -68,7 +68,7 @@ export default function OrdersPage() {
   if (!loaded) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#5a7278]" />
       </div>
     );
   }
@@ -137,13 +137,13 @@ export default function OrdersPage() {
                   inWindow ? (
                     <button
                       onClick={() => handleReturn(order)}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-brand-dark"
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-white"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
                       Request Replacement ({getRemainingTime(order.deliveredAt!)})
                     </button>
                   ) : (
-                    <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-50 py-2 text-xs text-gray-400">
+                    <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 py-2 text-xs text-[#5a7278]">
                       <Clock className="h-3.5 w-3.5" />
                       Replacement window expired
                     </div>
@@ -165,7 +165,7 @@ export default function OrdersPage() {
 
       {cancelId && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4 pb-8 sm:px-0 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-[#0d1b2a] p-6 shadow-2xl">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-red/10 mb-4">
               <Ban className="h-8 w-8 text-brand-red" />
             </div>

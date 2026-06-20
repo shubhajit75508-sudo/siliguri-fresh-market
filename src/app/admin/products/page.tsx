@@ -167,10 +167,10 @@ export default function AdminProductsPage() {
         >
           <h3 className="mb-4 font-bold">New Product</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Price (₹)" type="number" value={form.price ?? ""} onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40">
+            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Price (₹)" type="number" value={form.price ?? ""} onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40">
               <option value="fish">Fish</option>
               <option value="chicken">Chicken</option>
               <option value="mutton">Mutton</option>
@@ -178,9 +178,9 @@ export default function AdminProductsPage() {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>
             </select>
-            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
-            <input placeholder="Weights (comma-separated, e.g. 500g, 1kg, 2kg)" value={(form.weight || []).join(", ")} onChange={(e) => setForm({ ...form, weight: e.target.value.split(",").map((w) => w.trim()).filter(Boolean) })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
-            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={3} />
+            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
+            <input placeholder="Weights (comma-separated, e.g. 500g, 1kg, 2kg)" value={(form.weight || []).join(", ")} onChange={(e) => setForm({ ...form, weight: e.target.value.split(",").map((w) => w.trim()).filter(Boolean) })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
+            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={3} />
           </div>
           <div className="mt-4 flex gap-2">
             <button onClick={saveAdd} className="inline-flex items-center gap-2 rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim">

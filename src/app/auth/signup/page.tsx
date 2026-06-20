@@ -123,7 +123,7 @@ function SignupForm() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
-                className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
 
@@ -135,7 +135,7 @@ function SignupForm() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
-                className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
 
@@ -147,7 +147,7 @@ function SignupForm() {
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 required
-                className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
 
@@ -161,12 +161,12 @@ function SignupForm() {
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     required
-                    className="w-full rounded-l-xl border border-r-0 border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
+                    className="w-full rounded-l-xl border border-r-0 border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-white px-3 text-muted transition-colors hover:text-brand-dark"
+                    className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-[#0d1b2a] px-3 text-muted transition-colors hover:text-white"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -191,12 +191,12 @@ function SignupForm() {
                     value={form.confirmPassword}
                     onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
                     required
-                    className="w-full rounded-l-xl border border-r-0 border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
+                    className="w-full rounded-l-xl border border-r-0 border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-white px-3 text-muted transition-colors hover:text-brand-dark"
+                    className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-[#0d1b2a] px-3 text-muted transition-colors hover:text-white"
                   >
                     {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -212,18 +212,18 @@ function SignupForm() {
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
                   required
-                  className="flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                  className="flex-1 rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
                 />
                 <button
                   type="button"
                   onClick={getLiveLocation}
                   disabled={locating}
-                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-medium transition-colors hover:bg-surface disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-surface disabled:opacity-50"
                 >
                   {locating ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <MapPin className="h-4 w-4 text-brand-dark" />
+                    <MapPin className="h-4 w-4 text-white" />
                   )}
                   {locating ? "Locating..." : "Live"}
                 </button>
@@ -256,7 +256,7 @@ function SignupForm() {
 
           <p className="mt-6 text-center text-sm text-muted">
             Already have an account?{" "}
-            <Link href="/auth/login" className="font-semibold text-brand-dark transition-colors hover:underline">
+            <Link href="/auth/login" className="font-semibold text-white transition-colors hover:underline">
               Sign In
             </Link>
           </p>

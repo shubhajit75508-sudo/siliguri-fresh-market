@@ -27,7 +27,7 @@ export default function SupportPage() {
           disabled
           placeholder="Coming soon"
           rows={4}
-          className="mt-3 w-full rounded-xl border border-brand-dark/10 bg-white/50 p-4 text-sm opacity-60 cursor-not-allowed"
+          className="mt-3 w-full rounded-xl border border-brand-dark/10 bg-white/8 p-4 text-sm opacity-60 cursor-not-allowed"
         />
         <p className="mt-3 text-xs text-muted">Messaging support is coming soon. Please call or email us for now.</p>
       </div>

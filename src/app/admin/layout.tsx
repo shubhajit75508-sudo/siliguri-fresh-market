@@ -83,27 +83,27 @@ export default function AdminLayout({
   }, [isLoggedIn, currentUser, pathname, router, storesReady]);
 
   if (!storesReady) {
-    return <div className="flex min-h-screen items-center justify-center bg-gray-50"><p className="text-sm text-muted">Loading...</p></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Loading...</p></div>;
   }
 
   if (!isLoggedIn || currentUser?.role !== "admin") {
     if (pathname === "/admin/login") return <>{children}</>;
-    return <div className="flex min-h-screen items-center justify-center bg-gray-50"><p className="text-sm text-muted">Redirecting...</p></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Redirecting...</p></div>;
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white/5">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 transform bg-white border-r border-gray-200 transition-transform lg:translate-x-0 lg:static",
+          "fixed inset-y-0 left-0 z-50 w-64 transform bg-[#0d1b2a] border-r border-white/10 transition-transform lg:translate-x-0 lg:static",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="flex h-16 items-center gap-2 border-b px-6">
           <Image src="/logo.png" alt="SFM" width={32} height={32} />
           <div>
-            <p className="text-sm font-extrabold text-brand-dark">SFM Admin</p>
+            <p className="text-sm font-extrabold text-white">SFM Admin</p>
             <p className="text-[10px] text-muted">Dashboard</p>
           </div>
           <button
@@ -129,7 +129,7 @@ export default function AdminLayout({
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-brand-dark text-white"
-                    : "text-gray-600 hover:bg-gray-100"
+                    : "text-[#80949b] hover:bg-white/8"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -138,10 +138,10 @@ export default function AdminLayout({
             );
           })}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 p-4">
+        <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-4">
           <button
             onClick={() => { logout(); authLogout(); document.cookie = "sfm-auth-session=; path=/; max-age=0"; router.push("/auth/login"); }}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#80949b] transition-colors hover:bg-white/8"
           >
             <LogOut className="h-4 w-4" />
             Logout
@@ -158,11 +158,11 @@ export default function AdminLayout({
 
       {/* Main */}
       <div className="flex-1">
-        <header className="flex h-16 items-center gap-4 border-b bg-white px-6">
+        <header className="flex h-16 items-center gap-4 border-b bg-[#0d1b2a] px-6">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-lg font-bold text-brand-dark">Admin Panel</h1>
+          <h1 className="text-lg font-bold text-white">Admin Panel</h1>
           <Link
             href="/"
             className="ml-auto text-sm text-brand-blue hover:underline"

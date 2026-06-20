@@ -28,7 +28,7 @@ export default function NotificationsPage() {
               className={`flex items-start gap-3 rounded-2xl p-4 ${n.read ? "bg-white/30" : "glass-card"}`}
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-dark/5">
-                <Icon className="h-4 w-4 text-brand-dark" />
+                <Icon className="h-4 w-4 text-white" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium">{n.title}</p>

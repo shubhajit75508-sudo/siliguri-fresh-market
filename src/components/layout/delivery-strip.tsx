@@ -67,7 +67,7 @@ export function DeliveryStrip() {
           </button>
 
           {open && (
-            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-border bg-white p-4 shadow-xl z-50">
+            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-border bg-[#0d1b2a] p-4 shadow-xl z-50">
               <p className="mb-3 text-sm font-bold">Delivery Location</p>
 
               {/* Saved addresses */}
@@ -131,7 +131,7 @@ export function DeliveryStrip() {
         <div className="hidden items-center gap-1.5 font-medium text-muted sm:flex">
           <Clock className="h-3.5 w-3.5 text-brand-fresh-dim" />
           <span>
-            Arriving in <span className="font-semibold text-brand-dark">10–15 min</span>
+            Arriving in <span className="font-semibold text-white">10–15 min</span>
           </span>
         </div>
       </div>

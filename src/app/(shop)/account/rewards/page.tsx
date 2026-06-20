@@ -37,19 +37,19 @@ export default function RewardsPage() {
       {/* Balance card */}
       <div className="glass-card rounded-2xl p-6 text-center">
         <Coins className="mx-auto h-10 w-10 text-brand-orange" />
-        <p className="mt-3 text-3xl font-extrabold text-brand-dark">
+        <p className="mt-3 text-3xl font-extrabold text-white">
           {balance.toLocaleString()}
         </p>
         <p className="text-sm font-medium text-muted">Coins</p>
         <div className="mt-3 flex justify-center gap-4 text-xs text-muted">
-          <span>Earn: ₹100 = <strong className="text-brand-dark">10</strong> coins</span>
-          <span>Redeem: <strong className="text-brand-dark">100</strong> coins = ₹50</span>
+          <span>Earn: ₹100 = <strong className="text-white">10</strong> coins</span>
+          <span>Redeem: <strong className="text-white">100</strong> coins = ₹50</span>
         </div>
       </div>
 
       {/* Redeem section */}
       {balance >= minCoins && (
-        <div className="mt-6 rounded-2xl border border-border bg-white p-5 shadow-sm">
+        <div className="mt-6 rounded-2xl border border-border bg-[#0d1b2a] p-5 shadow-sm">
           <h3 className="flex items-center gap-2 text-sm font-bold">
             <Gift className="h-4 w-4 text-brand-orange" />
             Redeem Your Coins
@@ -90,7 +90,7 @@ export default function RewardsPage() {
       )}
 
       {balance < minCoins && (
-        <div className="mt-6 rounded-2xl border border-border bg-white p-5 text-center text-sm text-muted">
+        <div className="mt-6 rounded-2xl border border-border bg-[#0d1b2a] p-5 text-center text-sm text-muted">
           Earn {minCoins - balance} more coins to start redeeming
         </div>
       )}
@@ -104,7 +104,7 @@ export default function RewardsPage() {
           activityLog.map((item, i) => (
             <div
               key={i}
-              className="flex items-center justify-between rounded-xl bg-white/50 p-3 text-sm"
+              className="flex items-center justify-between rounded-xl bg-white/8 p-3 text-sm"
             >
               <div className="flex items-center gap-2">
                 <Star className={`h-4 w-4 ${item.coins > 0 ? "text-brand-orange" : "text-muted"}`} />

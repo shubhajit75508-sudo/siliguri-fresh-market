@@ -47,7 +47,7 @@ export function BottomNav() {
           <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/30">
             <ShoppingBag className="h-5 w-5" strokeWidth={2.5} />
             {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0d1b2a] bg-white text-[10px] font-bold text-[#0a1f1c]">
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0d1b2a] bg-[#0d1b2a] text-[10px] font-bold text-[#0a1f1c]">
                 {count}
               </span>
             )}

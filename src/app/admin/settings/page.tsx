@@ -35,11 +35,11 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-4 border-b border-gray-200 pb-4">
+      <div className="mb-6 flex items-center gap-4 border-b border-white/10 pb-4">
         <button
           onClick={() => setTab("general")}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-            tab === "general" ? "bg-brand-dark text-white" : "text-gray-600 hover:bg-gray-100"
+            tab === "general" ? "bg-brand-dark text-white" : "text-[#80949b] hover:bg-white/8"
           }`}
         >
           <Settings className="h-4 w-4" /> General
@@ -47,7 +47,7 @@ export default function SettingsPage() {
         <button
           onClick={() => setTab("home")}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-            tab === "home" ? "bg-brand-dark text-white" : "text-gray-600 hover:bg-gray-100"
+            tab === "home" ? "bg-brand-dark text-white" : "text-[#80949b] hover:bg-white/8"
           }`}
         >
           <Home className="h-4 w-4" /> Home Page
@@ -63,8 +63,8 @@ export default function SettingsPage() {
             { key: "deliveryFee", label: "Delivery Fee", type: "text" },
             { key: "operatingHours", label: "Operating Hours", type: "text" },
           ] as const).map(({ key, label, type }) => (
-            <div key={key} className="rounded-xl border bg-white p-4 shadow-sm">
-              <label className="text-xs font-medium text-gray-500">{label}</label>
+            <div key={key} className="rounded-xl border bg-[#0d1b2a] p-4 shadow-sm">
+              <label className="text-xs font-medium text-[#80949b]">{label}</label>
               <input
                 type={type}
                 value={form[key]}
@@ -80,11 +80,11 @@ export default function SettingsPage() {
       {tab === "home" && (
         <div className="max-w-2xl space-y-8">
           {/* Hero section */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="rounded-xl border bg-[#0d1b2a] p-5 shadow-sm">
             <h3 className="mb-4 font-bold">Hero Banner</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-gray-500">Background Image URL</label>
+                <label className="text-xs font-medium text-[#80949b]">Background Image URL</label>
                 <input
                   type="text"
                   value={form.hero.image}
@@ -93,7 +93,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500">Title (use \n for line break)</label>
+                <label className="text-xs font-medium text-[#80949b]">Title (use \n for line break)</label>
                 <textarea
                   value={form.hero.title}
                   onChange={(e) => { setForm({ ...form, hero: { ...form.hero, title: e.target.value } }); edited.current = true; }}
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500">Subtitle</label>
+                <label className="text-xs font-medium text-[#80949b]">Subtitle</label>
                 <textarea
                   value={form.hero.subtitle}
                   onChange={(e) => { setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } }); edited.current = true; }}
@@ -114,38 +114,38 @@ export default function SettingsPage() {
           </div>
 
           {/* Product sections */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="rounded-xl border bg-[#0d1b2a] p-5 shadow-sm">
             <h3 className="mb-4 font-bold">Category Sections on Home Page</h3>
-            <p className="mb-4 text-xs text-gray-500">Toggle visibility and edit titles for each category section.</p>
+            <p className="mb-4 text-xs text-[#80949b]">Toggle visibility and edit titles for each category section.</p>
             <div className="space-y-3">
               {form.sections.map((sec, idx) => (
                 <div
                   key={sec.category}
                   className={`flex items-center gap-4 rounded-lg border p-4 ${
-                    sec.enabled ? "bg-white" : "bg-gray-50 opacity-60"
+                    sec.enabled ? "bg-[#0d1b2a]" : "bg-white/5 opacity-60"
                   }`}
                 >
                   <button
                     onClick={() => updateSection(idx, { enabled: !sec.enabled })}
                     className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                      sec.enabled ? "bg-brand-fresh text-white" : "bg-gray-200 text-gray-400"
+                      sec.enabled ? "bg-brand-fresh text-white" : "bg-gray-200 text-[#5a7278]"
                     }`}
                   >
                     {sec.enabled ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-400 uppercase">{sec.category}</p>
+                    <p className="text-xs font-medium text-[#5a7278] uppercase">{sec.category}</p>
                     <input
                       type="text"
                       value={sec.title}
                       onChange={(e) => updateSection(idx, { title: e.target.value })}
-                      className="mt-1 w-full rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-brand-dark"
+                      className="mt-1 w-full rounded border border-white/10 px-2 py-1 text-sm outline-none focus:border-brand-dark"
                     />
                     <input
                       type="text"
                       value={sec.subtitle}
                       onChange={(e) => updateSection(idx, { subtitle: e.target.value })}
-                      className="mt-1 w-full rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-brand-dark"
+                      className="mt-1 w-full rounded border border-white/10 px-2 py-1 text-sm outline-none focus:border-brand-dark"
                     />
                   </div>
                 </div>
