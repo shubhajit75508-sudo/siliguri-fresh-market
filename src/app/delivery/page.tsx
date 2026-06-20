@@ -4,7 +4,7 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, ShieldQuestion, KeyRound, LocateFixed } from "lucide-react";
+import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
 import LiveMap from "@/components/maps/LiveMap";

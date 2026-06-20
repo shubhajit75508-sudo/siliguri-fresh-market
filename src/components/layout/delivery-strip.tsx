@@ -11,7 +11,7 @@ export function DeliveryStrip() {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const { deliveryPincode, setDeliveryPincode, addresses } = useUserStore();
-  const { location, locating, error: locationError, resolvedAddress, getLocation } = useGeolocation();
+  const { locating, error: locationError, resolvedAddress, getLocation } = useGeolocation();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

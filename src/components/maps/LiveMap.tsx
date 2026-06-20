@@ -60,13 +60,6 @@ export default function LiveMap({ center, zoom = 14, markers = [], className = "
     markerRefs.current.forEach((m) => m.remove());
     markerRefs.current = [];
 
-    const defaultIcon = L.icon({
-      iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    });
-
     markers.forEach((m) => {
       const iconUrl = iconUrls[m.icon ?? "boy"];
       const icon = L.icon({

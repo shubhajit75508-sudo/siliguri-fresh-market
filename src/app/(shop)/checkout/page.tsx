@@ -4,23 +4,18 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  MapPin, CreditCard, CheckCircle, ChevronRight, Coins, Shield, Lock,
-  Smartphone, Building2, Hash, Layers, Package, Copy, X, ExternalLink,
-  ArrowLeft, Loader2, Wallet, Banknote, CreditCard as CardIcon, Trash2,
-  Plus, Minus, Ticket, Zap, ShoppingBag, Sparkles, Gift, Truck,
-  ChevronDown, CircleDot, Dot, Navigation, AlertTriangle, Clock,
+  CheckCircle, Copy, X, ExternalLink, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useCartStore, cartLineId, cartLineKey } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrderStore } from "@/store/order-store";
+import { useCouponStore } from "@/store/coupon-store";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
-import { ReturnPolicyBanner } from "@/components/ui/return-policy";
 import type { Address } from "@/types";
 
 const PAYMENT_UPI_ID = "shubhajit75508@okhdfcbank";
@@ -40,10 +35,11 @@ export default function CheckoutPage() {
   const router = useRouter();
   const toast = useToast();
   const hydrated = useHydrated();
-  const { items, getSubtotal, getTotal, getDeliveryFee, getCoinsDiscount, couponDiscount, clearCart, setCoinsDiscount, updateQuantity, removeItem } = useCartStore();
+  const { items, getSubtotal, getTotal, getDeliveryFee, getCoinsDiscount, couponDiscount, clearCart, setCoinsDiscount, updateQuantity, removeItem, applyCoupon: applyCartCoupon, removeCoupon } = useCartStore();
   const { addresses, user, coinsRedeemed, applyCoinsRedemption, removeCoinsRedemption, earnCoins, redeemCoins } = useUserStore();
   const { currentUser } = useAuthStore();
   const { createOrder } = useOrderStore();
+  const { coupons } = useCouponStore();
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState<"razorpay" | "cod">("razorpay");
@@ -51,11 +47,12 @@ export default function CheckoutPage() {
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [showUPIModal, setShowUPIModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
-  const [showCoins, setShowCoins] = useState(false);
   const [addressMissing, setAddressMissing] = useState(false);
   const [step, setStep] = useState(1);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [contactForm, setContactForm] = useState({ name: currentUser?.name || "", phone: currentUser?.phone || "", email: currentUser?.email || "" });
   const addressRef = useRef<HTMLDivElement>(null);
 
   const { location: liveLocation, locating, error: geoError, getLocation } = useGeolocation();
@@ -66,7 +63,6 @@ export default function CheckoutPage() {
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses.find((a) => a.isDefault) || addresses[0];
   const coinBalance = user?.loyaltyPoints ?? 0;
   const maxRedeemable = Math.floor(coinBalance / 100) * 100;
-  const coinsEarned = Math.floor(getTotal() / 100) * 10;
   const isAuthenticated = !!(currentUser && (currentUser.role === "customer" || currentUser.role === "admin"));
   const requiredDetailsFilled = !!(detailForm.area.trim()) && !!(detailForm.landmark.trim());
 
@@ -91,6 +87,23 @@ export default function CheckoutPage() {
       if (redeem < 100) { toast.add("Need at least 100 coins to redeem", "error"); return; }
       const discount = (redeem / 100) * 50; applyCoinsRedemption(redeem); setCoinsDiscount(discount);
       toast.add(`${redeem} coins applied — ₹${discount} off`);
+    }
+  };
+
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) { setCouponMsg({ text: "Enter a coupon code first", ok: false }); return; }
+    const c = coupons.find(c => c.code.toUpperCase() === code);
+    if (c) {
+      const d = c.type === "percentage" ? Math.round(getSubtotal() * c.discount / 100) : c.discount;
+      if (getSubtotal() >= c.minOrder) {
+        applyCartCoupon(c.code, d);
+        setCouponMsg({ text: `"${code}" applied — ${c.discount}${c.type === "percentage" ? "%" : "₹"} off!`, ok: true });
+      } else {
+        setCouponMsg({ text: `Minimum order ₹${c.minOrder} required`, ok: false });
+      }
+    } else {
+      setCouponMsg({ text: "Invalid coupon code", ok: false });
     }
   };
 
@@ -125,7 +138,7 @@ export default function CheckoutPage() {
   const handlePlaceOrder = () => {
     if (!isAuthenticated) { toast.add("Sign up required to place orders", "error"); return; }
     if (!selectedAddress) { toast.add("Please add or select a delivery address", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
-    if (!requiredDetailsFilled) { toast.add("Please fill Area and Landmark details", "error"); setShowAddressForm(true); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+    if (!requiredDetailsFilled) { toast.add("Please fill Area and Landmark details", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
     if (selectedPayment === "razorpay") { openRazorpayCheckout(); return; }
     placeOrder("unpaid");
   };
@@ -182,7 +195,6 @@ export default function CheckoutPage() {
 
   const subtotal = getSubtotal();
   const total = getTotal();
-  const deliveryFee = getDeliveryFee();
   const saving = couponDiscount + getCoinsDiscount();
   const catBadge = (cat: string) => {
     if (["fish","chicken","mutton","seafood"].includes(cat)) return { label:"FRESH", cls:"fresh" };
@@ -282,11 +294,16 @@ export default function CheckoutPage() {
                 <h2 className="text-sm font-bold text-white">Coupon / Promo</h2>
               </div>
               <div className="flex gap-2 p-4">
-                <input placeholder="Enter coupon code" className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10 uppercase tracking-wider" maxLength={20} />
-                <button onClick={handleToggleCoins} className="px-4 py-2.5 rounded-xl bg-[#2ecc71]/20 border border-[#2ecc71]/30 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/30 transition-colors whitespace-nowrap">
-                  {coinsRedeemed > 0 ? "Remove" : "Apply"}
+                <input placeholder="Enter coupon code" value={couponCode} onChange={(e) => { setCouponCode(e.target.value); setCouponMsg(null); }} onKeyDown={(e) => { if (e.key === "Enter") handleApplyCoupon(); }} className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10 uppercase tracking-wider" maxLength={20} />
+                <button onClick={couponDiscount > 0 ? removeCoupon : handleApplyCoupon} className="px-4 py-2.5 rounded-xl bg-[#2ecc71]/20 border border-[#2ecc71]/30 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/30 transition-colors whitespace-nowrap">
+                  {couponDiscount > 0 ? "Remove" : "Apply"}
                 </button>
               </div>
+              {couponMsg && (
+                <div className={`px-5 pb-3 text-[11px] font-semibold ${couponMsg.ok ? "text-[#2ecc71]" : "text-[#e74c3c]"}`}>
+                  {couponMsg.ok ? "✅" : "❌"} {couponMsg.text}
+                </div>
+              )}
             </div>
 
             {/* Bill Summary */}
@@ -331,15 +348,15 @@ export default function CheckoutPage() {
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Full Name <span className="text-[#e74c3c] text-xs">*</span></label>
-                  <input type="text" defaultValue={currentUser?.name || ""} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Rajan Sharma" />
+                  <input type="text" value={contactForm.name} onChange={(e) => setContactForm(c => ({ ...c, name: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Rajan Sharma" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Phone <span className="text-[#e74c3c] text-xs">*</span></label>
-                  <div className="flex"><div className="bg-[#2ecc71]/15 border border-white/15 border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2ecc71] whitespace-nowrap flex items-center gap-1">🇮🇳 +91</div><input type="tel" className="flex-1 bg-white/5 border border-white/15 rounded-r-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="98765 43210" /></div>
+                  <div className="flex"><div className="bg-[#2ecc71]/15 border border-white/15 border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2ecc71] whitespace-nowrap flex items-center gap-1">🇮🇳 +91</div><input type="tel" value={contactForm.phone} onChange={(e) => setContactForm(c => ({ ...c, phone: e.target.value }))} className="flex-1 bg-white/5 border border-white/15 rounded-r-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="98765 43210" /></div>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Email <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
-                  <input type="email" defaultValue={currentUser?.email || ""} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="you@example.com" />
+                  <input type="email" value={contactForm.email} onChange={(e) => setContactForm(c => ({ ...c, email: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="you@example.com" />
                 </div>
               </div>
             </div>
@@ -425,12 +442,9 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={getLocation} disabled={locating} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#4A8FE7]/20 border border-[#4A8FE7]/30 text-[#8FC4FF] text-xs font-bold hover:bg-[#4A8FE7]/30 transition-colors disabled:opacity-50">
+                  <button onClick={getLocation} disabled={locating} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#4A8FE7]/20 border border-[#4A8FE7]/30 text-[#8FC4FF] text-xs font-bold hover:bg-[#4A8FE7]/30 transition-colors disabled:opacity-50">
                     {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span>🎯</span>}
                     {locating ? "Detecting..." : "Detect Location"}
-                  </button>
-                  <button disabled={!liveLocation} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#2ecc71]/20 border border-[#2ecc71]/30 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/30 transition-colors disabled:opacity-50">
-                    <span>⚡</span> Fetch Details
                   </button>
                 </div>
                 {geoError && <p className="text-[10px] text-[#e74c3c] mt-2 text-center">{geoError}</p>}
@@ -547,7 +561,7 @@ export default function CheckoutPage() {
             <p className="text-lg font-extrabold text-white tabular-nums">{formatPrice(total)}</p>
             <p className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</p>
           </div>
-          <button onClick={handlePlaceOrder} disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/20 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          <button onClick={step === 1 ? () => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); } : handlePlaceOrder} disabled={step === 1 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/20 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "razorpay" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>

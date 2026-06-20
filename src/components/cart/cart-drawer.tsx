@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Plus, Minus, Tag, ArrowRight, ShoppingBag, Percent, Sparkles, Truck, Shield } from "lucide-react";
+import { X, Plus, Minus, ArrowRight, Sparkles, Truck, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { useCouponStore } from "@/store/coupon-store";

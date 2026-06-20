@@ -6,7 +6,6 @@ import {
   Clock,
   XCircle,
   AlertTriangle,
-  Navigation,
   Copy,
   KeyRound,
   Ban,
@@ -28,8 +27,6 @@ const stages = [
   { id: "out_for_delivery", label: "Out For Delivery", icon: "🚚", sub: "On the way to you" },
   { id: "delivered", label: "Delivered", icon: "✅", sub: "Enjoy your fresh groceries!" },
 ];
-
-const stageIndex: Record<string, number> = { received: 0, picked_up: 1, out_for_delivery: 2, delivered: 3 };
 
 export default function TrackOrderPage({
   params,
