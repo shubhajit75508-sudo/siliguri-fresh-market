@@ -7,20 +7,11 @@ interface GeoLocation {
   lng: number;
 }
 
-interface ResolvedAddress {
-  area?: string;
-  landmark?: string;
-  building?: string;
-  city?: string;
-  pincode?: string;
-}
-
 interface UseGeolocationReturn {
   location: GeoLocation | null;
   locating: boolean;
   error: string;
   resolvedAddress: string;
-  resolvedFields: ResolvedAddress | null;
   getLocation: () => void;
   reset: () => void;
 }
@@ -30,50 +21,48 @@ export function useGeolocation(): UseGeolocationReturn {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState("");
   const [resolvedAddress, setResolvedAddress] = useState("");
-  const [resolvedFields, setResolvedFields] = useState<ResolvedAddress | null>(null);
 
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError("Geolocation not supported by your browser");
-      setLocating(false);
       return;
     }
     setLocating(true);
     setError("");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocating(false);
-        fetch(`/api/geocode?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
-          .then((r) => r.json())
-          .then((data) => {
-            if (data?.display_name) {
-              setResolvedAddress(data.display_name);
-            }
-            if (data?.address) {
-              setResolvedFields(data.address);
-            }
-          })
-          .catch(() => {});
-      },
-      (err) => {
-        setError(
-          err.code === 1
-            ? "Location access denied. Enable location in browser settings."
-            : err.message
-        );
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+
+    const onSuccess = (pos: GeolocationPosition) => {
+      setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      setLocating(false);
+      fetch(`/api/geocode?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.display_name) setResolvedAddress(data.display_name);
+        })
+        .catch(() => {});
+    };
+
+    const onError = (err: GeolocationPositionError) => {
+      const msg = err.code === 1
+        ? "Location denied — enable in browser settings"
+        : err.code === 2
+        ? "Location unavailable — check GPS/WiFi"
+        : "Location timed out — try again";
+      setError(msg);
+      setLocating(false);
+    };
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+      enableHighAccuracy: false,
+      timeout: 8000,
+      maximumAge: 60000,
+    });
   }, []);
 
   const reset = useCallback(() => {
     setLocation(null);
     setError("");
     setResolvedAddress("");
-    setResolvedFields(null);
   }, []);
 
-  return { location, locating, error, resolvedAddress, resolvedFields, getLocation, reset };
+  return { location, locating, error, resolvedAddress, getLocation, reset };
 }
