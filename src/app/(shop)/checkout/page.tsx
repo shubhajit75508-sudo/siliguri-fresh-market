@@ -347,22 +347,22 @@ export default function CheckoutPage() {
           <div className="space-y-5 lg:col-span-3">
 
             {/* Step 1 — Delivery Address */}
-            <div ref={addressRef} className={`relative rounded-3xl overflow-hidden transition-all duration-500 ${addressMissing ? "ring-4 ring-brand-red/25 shadow-2xl shadow-brand-red/15" : "shadow-xl hover:shadow-2xl"}`}>
+            <div ref={addressRef} className={`relative rounded-3xl overflow-hidden transition-all duration-500 ${addressMissing ? "ring-8 ring-brand-red/30 shadow-2xl shadow-brand-red/25 address-shake" : "shadow-xl hover:shadow-2xl"}`}>
               {/* Animated gradient border */}
-              <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br p-[2px] ${addressMissing ? "from-brand-red via-brand-red/50 to-brand-orange animate-pulse" : "from-brand-fresh/40 via-brand-blue/30 to-brand-fresh/40"}`}>
+              <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br p-[3px] ${addressMissing ? "from-brand-red via-red-500 to-brand-orange animate-pulse" : "from-brand-fresh/40 via-brand-blue/30 to-brand-fresh/40"}`}>
                 <div className="h-full w-full rounded-3xl bg-white" />
               </div>
               {/* Glass inner */}
               <div className="relative rounded-3xl bg-white/90 backdrop-blur-sm">
                 {/* Error banner */}
                 {addressMissing && (
-                  <div className="flex items-center gap-3 bg-gradient-to-r from-brand-red/15 via-brand-red/10 to-brand-orange/5 px-5 py-3 border-b border-brand-red/20">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-red/20">
-                      <AlertTriangle className="h-4 w-4 text-brand-red animate-bounce" />
+                  <div className="flex items-center gap-3 bg-gradient-to-r from-brand-red/20 via-brand-red/12 to-brand-orange/8 px-5 py-3.5 border-b-2 border-brand-red/30">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-red/25 animate-bounce">
+                      <AlertTriangle className="h-5 w-5 text-brand-red" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs font-bold text-brand-red">Address Required</p>
-                      <p className="text-[10px] text-brand-red/70">Fill in your delivery details to continue</p>
+                      <p className="text-sm font-extrabold text-brand-red">Address Required!</p>
+                      <p className="text-[11px] text-brand-red/80">Please fill in your delivery details below</p>
                     </div>
                   </div>
                 )}
