@@ -42,6 +42,9 @@ export default function TrackOrderPage({
   const [showReturn, setShowReturn] = useState(false);
   const [boyLocation, setBoyLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [distance, setDistance] = useState("");
+  const [speed, setSpeed] = useState(0);
+  const [etaMinutes, setEtaMinutes] = useState<number | null>(null);
+  const [lastUpdated, setLastUpdated] = useState("");
 
   const fetchOrder = useCallback(() => {
     fetch(`/api/orders/${orderId}`)
@@ -94,6 +97,20 @@ export default function TrackOrderPage({
   useEffect(() => { fetchOrder(); }, [fetchOrder]);
 
   useEffect(() => {
+    if (!etaMinutes || etaMinutes <= 0) return;
+    const timer = setInterval(() => {
+      setEtaMinutes((prev) => (prev !== null && prev > 0 ? prev - 1 : null));
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [etaMinutes]);
+
+  useEffect(() => {
+    if (etaMinutes !== null && etaMinutes <= 0) {
+      setEtaMinutes(null);
+    }
+  }, [etaMinutes]);
+
+  useEffect(() => {
     if (!order || order.status === "cancelled" || order.status === "delivered") return;
 
     const fetchLocation = () => {
@@ -101,10 +118,20 @@ export default function TrackOrderPage({
         .then((r) => r.ok ? r.json() : null)
         .then((json) => {
           if (json?.location) {
-            setBoyLocation({ lat: json.location.lat, lng: json.location.lng });
+            const loc = json.location;
+            setBoyLocation({ lat: loc.lat, lng: loc.lng });
+            setSpeed(loc.speed ?? 0);
+            setLastUpdated(loc.updated_at ?? "");
             if (order.address?.lat && order.address?.lng) {
-              const d = calcDistance(json.location.lat, json.location.lng, order.address.lat, order.address.lng);
+              const d = calcDistance(loc.lat, loc.lng, order.address.lat, order.address.lng);
               setDistance(d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`);
+              const speedKmph = (loc.speed ?? 0) * 3.6;
+              if (speedKmph > 1) {
+                const etaH = d / speedKmph;
+                setEtaMinutes(Math.max(1, Math.round(etaH * 60)));
+              } else {
+                setEtaMinutes(null);
+              }
             }
           }
         })
@@ -201,10 +228,27 @@ export default function TrackOrderPage({
       <div className="text-center">
         <Badge variant="fresh" className="mb-3">Live Tracking</Badge>
         <h1 className="text-2xl font-extrabold">Order {orderId}</h1>
-        {isOutForDelivery && distance && (
-          <p className="mt-1 text-sm text-muted flex items-center justify-center gap-1">
-            <Truck className="h-4 w-4 text-brand-fresh" /> {distance} away
-          </p>
+        {isOutForDelivery && (
+          <div className="mt-2 flex flex-col items-center gap-1">
+            {distance && (
+              <p className="text-sm text-muted flex items-center justify-center gap-1">
+                <Truck className="h-4 w-4 text-brand-fresh" /> {distance} away
+              </p>
+            )}
+            {etaMinutes !== null && etaMinutes > 0 && (
+              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-fresh/10 to-brand-blue/10 border border-brand-fresh/20 px-4 py-1.5">
+                <Clock className="h-4 w-4 text-brand-fresh-dim" />
+                <span className="text-sm font-bold text-brand-dark tabular-nums">
+                  Arriving in ~{etaMinutes} min
+                </span>
+              </div>
+            )}
+            {lastUpdated && (
+              <p className="text-[10px] text-muted/60">
+                Updated {new Date(lastUpdated).toLocaleTimeString()}
+              </p>
+            )}
+          </div>
         )}
         {!isOutForDelivery && !isDelivered && (
           <p className="mt-1 text-sm text-muted">Estimated delivery: 30 min — 1 hour</p>
@@ -237,6 +281,9 @@ export default function TrackOrderPage({
               <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-fresh" />
             </span>
             Live
+            {speed > 0 && (
+              <span className="text-muted ml-1 font-mono">{(speed * 3.6).toFixed(1)} km/h</span>
+            )}
           </div>
         )}
       </div>

@@ -60,11 +60,13 @@ Make the site production-ready with delivery code verification, premium checkout
 - **TypeScript**: compiles clean (`npx tsc --noEmit`)
 - **Committed + pushed**: all changes on `master` (latest commit `c027051`)
 - **Checkout address overhaul**: inline address creation form (no redirect), "Use My Location" button w/ `useGeolocation`, GPS coords saved with address, animated pulse + red border + auto-scroll on missing address
+- **Checkout address premium polish**: red glow/shadow + scale animation on missing address, "Address Required" banner with bouncing alert icon, red-tinted icon container, "Missing" badge pulse, GPS coords display badge on saved address, larger + more prominent "Use My Location" buttons
+- **Delivery boy page** (`src/app/delivery/page.tsx`): LiveMap showing boy (green) + customer (red) markers with live distance badge, GPS status card with pulsing Live indicator + coordinates, Haversine distance calculation per delivery card
+- **Customer track page** (`src/app/(shop)/track/[orderId]/page.tsx`): dynamic ETA from boy's GPS speed (`speed * 3.6` km/h), live countdown timer ticking every minute, "Arriving in ~X min" pill badge, boy's speed shown in map overlay, "Updated at HH:MM:SS" timestamp
+- **Admin delivery page** (`src/app/admin/delivery/page.tsx`): ETA badge per delivery (computed from distance + estimated speed), distance-away label, last-updated timestamp ("X min ago", "Just now"), stale GPS indicator (amber dot if >5 min), `calcDistance` Haversine function
 
 ### In Progress
-- **Delivery boy GPS visibility**: LiveMap + distance badges + GPS status card on delivery page
-- **Customer dynamic ETA**: compute arrival time from boy's GPS speed + distance, live countdown
-- **Admin delivery polish**: ETA per delivery, last-updated timestamps
+- *(none — all tracking features completed)*
 
 ### Blocked
 - **Custom domain DNS not configured**: `siligurifreshmart.com` added to Vercel but nameservers still at Hostinger parking. Need A record `76.76.21.21` or Vercel nameservers
@@ -80,11 +82,8 @@ Make the site production-ready with delivery code verification, premium checkout
 - GPS location stored per-address via `useGeolocation` — passed into `createOrder` as `lat`/`lng`
 
 ## Next Steps
-1. Add LiveMap + distance badges + GPS status card to delivery boy page
-2. Compute dynamic ETA from boy's speed+distance on customer track page
-3. Add ETA per delivery + last-updated timestamps to admin delivery page
-4. Point DNS at Hostinger: A record `@` → `76.76.21.21` + CNAME `www` → `cname.vercel-dns.com`
-5. Get live Razorpay keys from user
+1. Point DNS at Hostinger: A record `@` → `76.76.21.21` + CNAME `www` → `cname.vercel-dns.com`
+2. Get live Razorpay keys from user
 
 ## Critical Context
 - `notification` table has FK issue on Vercel — needs `user_id` type change or removal from realtime publication
@@ -95,11 +94,11 @@ Make the site production-ready with delivery code verification, premium checkout
 
 ## Relevant Files
 - `src/app/(shop)/checkout/page.tsx`: checkout page — inline address creation + live location + animated warning (DONE)
-- `src/app/delivery/page.tsx`: delivery boy page — LiveMap pending
-- `src/app/(shop)/track/[orderId]/page.tsx`: customer tracking — Picked Up stage added, dynamic ETA pending
+- `src/app/delivery/page.tsx`: delivery boy page — LiveMap showing boy + customer markers, GPS status card, distance badges (DONE)
+- `src/app/(shop)/track/[orderId]/page.tsx`: customer tracking — Picked Up stage, dynamic ETA, live countdown, speed overlay (DONE)
 - `src/app/api/delivery/assignments/route.ts`: queries `orders` table directly for delivery codes
 - `src/app/delivery/layout.tsx`: `orderToAssignment` maps `deliveryCode`, `paymentStatus`, `deliveryStatus`
 - `src/app/(shop)/layout.tsx`: hides footer on checkout via `usePathname()`
-- `src/app/admin/delivery/page.tsx`: admin delivery — ETA + timestamps pending
+- `src/app/admin/delivery/page.tsx`: admin delivery — ETA per delivery, last-updated timestamps, stale GPS indicator (DONE)
 - `src/components/maps/LiveMap.tsx`: Leaflet map with boy/customer/store markers
 - `src/lib/hooks/use-geolocation.ts`: geolocation hook

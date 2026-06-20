@@ -4,9 +4,10 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, ShieldQuestion, KeyRound } from "lucide-react";
+import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, ShieldQuestion, KeyRound, LocateFixed } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
+import LiveMap from "@/components/maps/LiveMap";
 
 const statusLabels: Record<string, string> = {
   assigned: "Assigned",
@@ -33,12 +34,15 @@ export default function DeliveryDashboard() {
   const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
   const [codeError, setCodeError] = useState<string | null>(null);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
+  const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
+  const [customerLocations, setCustomerLocations] = useState<Record<string, [number, number]>>({});
 
   const active = assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered");
   const activeOrderIds = active.map((a) => a.orderId);
 
   const sendLocation = useCallback(async (lat: number, lng: number) => {
     if (!boy || activeOrderIds.length === 0) return;
+    setCurrentPosition([lat, lng]);
     for (const orderId of activeOrderIds) {
       try {
         await fetch("/api/delivery/location", {
@@ -88,6 +92,16 @@ export default function DeliveryDashboard() {
     }
   }, [boy?.id]);
 
+  useEffect(() => {
+    const locs: Record<string, [number, number]> = {};
+    for (const a of active) {
+      if (a.address.lat && a.address.lng) {
+        locs[a.orderId] = [a.address.lat, a.address.lng];
+      }
+    }
+    setCustomerLocations(locs);
+  }, [active]);
+
   const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
   const outForDelivery = active.filter((a) => a.status === "picked_up");
 
@@ -112,23 +126,44 @@ export default function DeliveryDashboard() {
 
   return (
     <div className="space-y-4 pb-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">Active Deliveries ({active.length})</h2>
-        <div className="flex items-center gap-2">
-          {tracking ? (
-            <span className="flex items-center gap-1.5 text-xs text-brand-fresh">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-fresh" />
-              </span>
-              Live
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5 text-xs text-brand-red">
-              <Radio className="h-3 w-3" /> GPS {gpsError ? "Error" : "Off"}
-            </span>
-          )}
+      <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-white" : "border-brand-red/30 bg-gradient-to-r from-brand-red/[0.03] to-white"}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tracking ? "bg-brand-fresh/10" : "bg-brand-red/10"}`}>
+              <LocateFixed className={`h-5 w-5 ${tracking ? "text-brand-fresh" : "text-brand-red"}`} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold">Active Deliveries ({active.length})</h2>
+                {tracking ? (
+                  <span className="flex items-center gap-1.5 text-[10px] text-brand-fresh font-semibold bg-brand-fresh/10 px-2 py-0.5 rounded-full">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-fresh" />
+                    </span>
+                    GPS Live
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-brand-red font-semibold bg-brand-red/10 px-2 py-0.5 rounded-full">
+                    <Radio className="mr-0.5 inline h-3 w-3" /> GPS {gpsError ? "Error" : "Off"}
+                  </span>
+                )}
+              </div>
+              {currentPosition && (
+                <p className="text-[10px] text-muted mt-0.5 font-mono">
+                  {currentPosition[0].toFixed(5)}, {currentPosition[1].toFixed(5)}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-bold tabular-nums">{active.length}</p>
+            <p className="text-[10px] text-muted -mt-0.5">active</p>
+          </div>
         </div>
+        {gpsError && (
+          <p className="mt-2 text-[10px] text-brand-red bg-brand-red/5 rounded-lg px-3 py-2">{gpsError}</p>
+        )}
       </div>
 
       {pickupStatuses.length > 0 && (
@@ -202,6 +237,32 @@ export default function DeliveryDashboard() {
             >
               <Navigation className="h-3.5 w-3.5" /> Navigate
             </a>
+          )}
+          {currentPosition && customerLocations[a.orderId] && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-semibold text-muted uppercase tracking-wide">Live Tracking</span>
+                <span className="text-[10px] font-mono text-brand-fresh">
+                  {(() => {
+                    const [blat, blng] = currentPosition;
+                    const [clat, clng] = customerLocations[a.orderId];
+                    const R = 6371; const dLat = (clat - blat) * Math.PI / 180; const dLng = (clng - blng) * Math.PI / 180;
+                    const calcA = Math.sin(dLat / 2) ** 2 + Math.cos(blat * Math.PI / 180) * Math.cos(clat * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+                    const dist = R * 2 * Math.atan2(Math.sqrt(calcA), Math.sqrt(1 - calcA));
+                    return dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
+                  })()} away
+                </span>
+              </div>
+              <LiveMap
+                center={currentPosition}
+                zoom={15}
+                markers={[
+                  { position: currentPosition, icon: "boy", label: "You" },
+                  { position: customerLocations[a.orderId], icon: "customer", label: a.customerName },
+                ]}
+                className="h-40 w-full rounded-xl"
+              />
+            </div>
           )}
         </div>
 

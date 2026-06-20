@@ -347,11 +347,17 @@ export default function CheckoutPage() {
           <div className="space-y-5 lg:col-span-3">
 
             {/* Delivery Address */}
-            <div ref={addressRef} className={`group rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${addressMissing ? "border-brand-red/60 ring-2 ring-brand-red/20 animate-pulse" : "border-border/50"}`}>
+            <div ref={addressRef} className={`group rounded-2xl border bg-white shadow-sm transition-all duration-500 ${addressMissing ? "border-brand-red/60 ring-4 ring-brand-red/20 shadow-lg shadow-brand-red/10 animate-pulse" : "border-border/50 hover:shadow-md"}`}>
+              {addressMissing && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-brand-red/10 to-brand-red/5 px-5 py-2.5 border-b border-brand-red/20">
+                  <AlertTriangle className="h-4 w-4 text-brand-red animate-bounce" />
+                  <span className="text-xs font-semibold text-brand-red">Address required — please fill in your delivery details</span>
+                </div>
+              )}
               <div className="flex items-center justify-between border-b border-border/30 px-5 py-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
-                    <MapPin className="h-4 w-4 text-brand-fresh-dim" />
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10"}`}>
+                    <MapPin className={`h-4 w-4 transition-colors duration-500 ${addressMissing ? "text-brand-red" : "text-brand-fresh-dim"}`} />
                   </div>
                   <div>
                     <h2 className="text-sm font-bold">Delivery Address</h2>
@@ -363,16 +369,21 @@ export default function CheckoutPage() {
                     {requiredDetailsFilled ? "Ready" : "Details needed"}
                   </Badge>
                 )}
+                {!selectedAddress && addressMissing && (
+                  <Badge variant="red" className="text-[10px] px-3 py-1 animate-pulse">
+                    Missing
+                  </Badge>
+                )}
               </div>
 
               {!selectedAddress ? (
                 <div className="p-5 space-y-4">
                   <div className="text-center">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
-                      <MapPin className="h-7 w-7 text-muted" />
+                    <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10"}`}>
+                      <MapPin className={`h-8 w-8 transition-all duration-500 ${addressMissing ? "text-brand-red animate-bounce" : "text-brand-fresh-dim"}`} />
                     </div>
-                    <p className="mt-3 text-sm font-medium">No saved addresses found</p>
-                    <p className="mt-0.5 text-xs text-muted">Fill in your delivery details below</p>
+                    <p className="mt-3 text-sm font-bold">Where should we deliver?</p>
+                    <p className="mt-0.5 text-xs text-muted">Fill in your details below to get started</p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -423,18 +434,18 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <button type="button" onClick={getLocation} disabled={locating}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-2.5 text-xs font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-3 text-sm font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
                   >
-                    <Navigation className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
-                    {locating ? "Getting location..." : liveLocation ? "📍 Location acquired" : "Use My Current Location"}
+                    <Navigation className={`h-5 w-5 ${locating ? "animate-spin" : ""}`} />
+                    {locating ? "Getting location..." : liveLocation ? "✓ Location acquired" : "📍 Use My Current Location"}
                   </button>
                   {resolvedAddress && (
-                    <p className="text-[10px] text-muted text-center">{resolvedAddress}</p>
+                    <p className="text-[10px] text-muted text-center bg-gray-50 rounded-lg px-3 py-2">{resolvedAddress}</p>
                   )}
                   {geoError && (
-                    <p className="text-[10px] text-brand-red text-center">{geoError}</p>
+                    <p className="text-[10px] text-brand-red text-center bg-brand-red/5 rounded-lg px-3 py-2">{geoError}</p>
                   )}
-                  <Button variant="default" size="sm" className="w-full rounded-xl shadow-lg"
+                  <Button variant="default" size="sm" className="w-full rounded-xl py-3 shadow-lg shadow-brand-dark/20"
                     disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
                     onClick={() => {
                       if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
@@ -467,7 +478,7 @@ export default function CheckoutPage() {
                       toast.add("Address saved! Ready to order.");
                     }}
                   >
-                    <CheckCircle className="mr-1 h-4 w-4" /> Save & Continue
+                    <CheckCircle className="mr-1.5 h-4 w-4" /> Save & Continue
                   </Button>
                 </div>
               ) : (
@@ -494,7 +505,7 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  <div className="rounded-xl bg-gradient-to-r from-gray-50 to-white border border-border/30 p-4">
+                  <div className={`rounded-xl p-4 transition-all duration-300 ${addressMissing ? "bg-brand-red/5 border border-brand-red/30 ring-1 ring-brand-red/20" : "bg-gradient-to-r from-gray-50 to-white border border-border/30"}`}>
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -507,6 +518,11 @@ export default function CheckoutPage() {
                         {selectedAddress.landmark && (
                           <p className="text-xs text-muted pl-8 flex items-center gap-1">
                             <Dot className="h-3 w-3 text-brand-fresh" /> Near {selectedAddress.landmark}
+                          </p>
+                        )}
+                        {selectedAddress.lat && selectedAddress.lng && (
+                          <p className="text-[10px] text-brand-fresh-dim pl-8 flex items-center gap-1 mt-1">
+                            <Navigation className="h-3 w-3" /> GPS coordinates saved
                           </p>
                         )}
                       </div>
@@ -523,16 +539,16 @@ export default function CheckoutPage() {
                     <div className="mt-4 space-y-3 border-t border-border/30 pt-4">
                       <p className="text-[11px] font-semibold text-muted">Delivery details</p>
                       <button type="button" onClick={getLocation} disabled={locating}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-2.5 text-xs font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-3 text-sm font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
                       >
-                        <Navigation className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
-                        {locating ? "Getting location..." : liveLocation ? "📍 Location acquired" : "Use My Current Location"}
+                        <Navigation className={`h-5 w-5 ${locating ? "animate-spin" : ""}`} />
+                        {locating ? "Getting location..." : liveLocation ? "✓ Location acquired" : "📍 Use My Current Location"}
                       </button>
                       {resolvedAddress && (
-                        <p className="text-[10px] text-muted text-center">{resolvedAddress}</p>
+                        <p className="text-[10px] text-muted text-center bg-gray-50 rounded-lg px-3 py-2">{resolvedAddress}</p>
                       )}
                       {geoError && (
-                        <p className="text-[10px] text-brand-red text-center">{geoError}</p>
+                        <p className="text-[10px] text-brand-red text-center bg-brand-red/5 rounded-lg px-3 py-2">{geoError}</p>
                       )}
                       <div className="grid grid-cols-2 gap-3">
                         <div>

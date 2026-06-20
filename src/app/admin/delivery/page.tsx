@@ -152,27 +152,40 @@ export default function DeliveryPage() {
         <div className="mt-6">
           <h3 className="mb-3 font-bold">Partner Locations</h3>
           <div className="space-y-2">
-            {boyLocations.map((b) => (
-              <div key={b.orderId} className="flex items-center justify-between rounded-xl border bg-white p-3 shadow-sm">
-                <div>
-                  <p className="text-sm font-medium">{b.boyName}</p>
-                  <p className="text-xs text-muted">{b.orderId}</p>
+            {boyLocations.map((b) => {
+              const mins = b.updatedAt ? Math.round((Date.now() - new Date(b.updatedAt).getTime()) / 60000) : null;
+              return (
+                <div key={b.orderId} className="flex items-center justify-between rounded-xl border bg-white p-3 shadow-sm">
+                  <div>
+                    <p className="text-sm font-medium">{b.boyName}</p>
+                    <p className="text-xs text-muted">{b.orderId}</p>
+                    {mins !== null && (
+                      <p className="text-[10px] text-muted/60 mt-0.5 flex items-center gap-1">
+                        <Clock className="h-3 w-3" /> Updated {mins < 1 ? "just now" : `${mins} min ago`}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted">
+                    <MapPin className="h-3 w-3" />
+                    {b.lat.toFixed(4)}, {b.lng.toFixed(4)}
+                    <a
+                      href={`https://www.google.com/maps?q=${b.lat},${b.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1 text-brand-blue hover:underline"
+                    >
+                      <Navigation className="h-3 w-3" />
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {mins !== null && mins > 5 && (
+                      <span className="h-2 w-2 rounded-full bg-amber-400" title="Stale GPS" />
+                    )}
+                    <Badge variant="fresh">Live</Badge>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted">
-                  <MapPin className="h-3 w-3" />
-                  {b.lat.toFixed(4)}, {b.lng.toFixed(4)}
-                  <a
-                    href={`https://www.google.com/maps?q=${b.lat},${b.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-1 text-brand-blue hover:underline"
-                  >
-                    <Navigation className="h-3 w-3" />
-                  </a>
-                </div>
-                <Badge variant="fresh">Live</Badge>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -188,15 +201,34 @@ export default function DeliveryPage() {
           activeDeliveries.map((o) => {
             const assignment = assignments.find((a) => a.orderId === o.id);
             const location = boyLocations.find((b) => b.orderId === o.id);
+            let etaText = "";
+            let distanceText = "";
+            let timeSinceUpdate = "";
+            if (location && o.address.lat && o.address.lng) {
+              const d = calcDistance(location.lat, location.lng, o.address.lat, o.address.lng);
+              distanceText = d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`;
+              const speed = 20;
+              const etaH = d / speed;
+              etaText = etaH > 0.1 ? `${Math.round(etaH * 60)} min` : "Arriving";
+              if (location.updatedAt) {
+                const mins = Math.round((Date.now() - new Date(location.updatedAt).getTime()) / 60000);
+                timeSinceUpdate = mins < 1 ? "Just now" : `${mins} min ago`;
+              }
+            }
             return (
               <div key={o.id} className="rounded-xl border bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-bold">{o.id}</p>
                       <Badge variant={o.deliveryStatus === "assigned" ? "blue" : o.deliveryStatus === "accepted" ? "orange" : "fresh"}>
                         {o.deliveryStatus?.replace(/_/g, " ") ?? "Pending"}
                       </Badge>
+                      {etaText && (
+                        <Badge variant="blue" className="text-[10px]">
+                          <Clock className="mr-0.5 h-3 w-3" /> ETA {etaText}
+                        </Badge>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-muted">{o.customerName} · {o.customerPhone}</p>
                     {location && (
@@ -205,7 +237,12 @@ export default function DeliveryPage() {
                       </p>
                     )}
                   </div>
-                  <p className="text-sm font-bold">{formatPrice(o.total)}</p>
+                  <div className="text-right">
+                    <p className="text-sm font-bold">{formatPrice(o.total)}</p>
+                    {distanceText && (
+                      <p className="text-[10px] text-muted mt-0.5">{distanceText} away</p>
+                    )}
+                  </div>
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-xs text-muted">
                   <MapPin className="h-3 w-3" />
@@ -215,6 +252,9 @@ export default function DeliveryPage() {
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted">
                     <Package className="h-3 w-3" />
                     {assignment.items.length} items
+                    <span className="mx-1">·</span>
+                    <Clock className="h-3 w-3" />
+                    {timeSinceUpdate || "No GPS"}
                   </div>
                 )}
               </div>
@@ -224,4 +264,14 @@ export default function DeliveryPage() {
       </div>
     </div>
   );
+}
+
+function calcDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
