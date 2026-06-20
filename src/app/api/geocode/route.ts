@@ -9,11 +9,18 @@ export async function GET(req: NextRequest) {
   }
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
       { headers: { "User-Agent": "SiliguriFreshMart/1.0" } }
     );
     const data = await res.json();
-    return NextResponse.json(data);
+    const addr = data.address ?? {};
+    const road = addr.road ?? addr.street ?? addr.footway ?? addr.path ?? "";
+    const neighbourhood = addr.neighbourhood ?? addr.suburb ?? addr.residential ?? addr.quarter ?? "";
+    const building = addr.house_number
+      ? `${addr.house_number}${road ? ` ${road}` : ""}`
+      : road;
+    const line = building || neighbourhood || addr.city_district || addr.town || addr.city || data.display_name;
+    return NextResponse.json({ display_name: line, full: data });
   } catch {
     return NextResponse.json({ error: "Geocode failed" }, { status: 502 });
   }
