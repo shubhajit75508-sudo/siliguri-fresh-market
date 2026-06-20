@@ -3,17 +3,12 @@
 import { use, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  Package,
-  Truck,
-  CheckCircle,
-  MapPin,
   Clock,
   XCircle,
   AlertTriangle,
   Navigation,
   Copy,
   KeyRound,
-  ShoppingBag,
   Ban,
   Loader2,
 } from "lucide-react";
@@ -28,10 +23,10 @@ import dynamic from "next/dynamic";
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
 const stages = [
-  { id: "received", label: "Order Received", icon: Package },
-  { id: "picked_up", label: "Picked Up", icon: ShoppingBag },
-  { id: "out_for_delivery", label: "Out For Delivery", icon: Truck },
-  { id: "delivered", label: "Delivered", icon: CheckCircle },
+  { id: "received", label: "Order Received", icon: "📦", sub: "Preparing your order…" },
+  { id: "picked_up", label: "Picked Up", icon: "🛍️", sub: "Picked up by rider" },
+  { id: "out_for_delivery", label: "Out For Delivery", icon: "🚚", sub: "On the way to you" },
+  { id: "delivered", label: "Delivered", icon: "✅", sub: "Enjoy your fresh groceries!" },
 ];
 
 const stageIndex: Record<string, number> = { received: 0, picked_up: 1, out_for_delivery: 2, delivered: 3 };
@@ -189,7 +184,7 @@ export default function TrackOrderPage({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="mb-4 h-12 w-12 text-muted" />
+        <span className="text-5xl mb-4">📦</span>
         <h2 className="text-lg font-bold">Loading order...</h2>
         <p className="mt-1 text-sm text-muted">Looking up order {orderId}</p>
       </div>
@@ -199,7 +194,7 @@ export default function TrackOrderPage({
   if (!order) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="mb-4 h-12 w-12 text-muted" />
+        <span className="text-5xl mb-4">📦</span>
         <h2 className="text-lg font-bold">Order not found</h2>
         <p className="mt-1 text-sm text-muted">No order with ID {orderId}</p>
       </div>
@@ -231,9 +226,7 @@ export default function TrackOrderPage({
         </div>
         <div className="mt-8 rounded-2xl border border-border bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-              <Package className="h-5 w-5 text-muted" />
-            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-lg">📦</div>
             <div className="flex-1">
               <p className="text-sm font-medium">{order.items.length} item{order.items.length > 1 ? "s" : ""}</p>
               <p className="text-xs text-muted">{order.items.map((i) => i.product.name).join(", ")}</p>
@@ -311,7 +304,7 @@ export default function TrackOrderPage({
           />
         ) : (
           <div className="flex h-48 flex-col items-center justify-center bg-gradient-to-br from-brand-fresh/5 to-brand-blue/5 sm:h-64">
-            <Package className="h-10 w-10 text-brand-fresh/60" />
+            <span className="text-4xl">📦</span>
             <p className="mt-2 text-sm font-medium text-muted">
               {order.status === "received" ? "Preparing your order..." : "Delivered!"}
             </p>
@@ -416,10 +409,19 @@ export default function TrackOrderPage({
         </div>
       )}
 
+      {/* Status Card */}
+      <div className="glass rounded-2xl border border-white/10 p-8 text-center mt-6 mb-6">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-[#2ecc71]/15 flex items-center justify-center text-3xl mb-4">
+          {isDelivered ? "✅" : isOutForDelivery ? "🚚" : "📦"}
+        </div>
+        <p className="text-sm font-bold text-[#c2d0c9]">
+          {isDelivered ? "Delivered!" : isOutForDelivery && order?.deliveryStatus === "picked_up" ? "On the way to you!" : "Preparing your order…"}
+        </p>
+      </div>
+
       {/* Timeline */}
-      <div className="mt-8 space-y-0">
+      <div className="mt-8">
         {stages.map((stage, i) => {
-          const Icon = stage.icon;
           const isActive = i <= currentStage;
           const isCurrent = i === currentStage;
           return (
@@ -428,26 +430,26 @@ export default function TrackOrderPage({
                 <motion.div
                   animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 1, repeat: Infinity }}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    isActive ? "bg-[#2ecc71] text-[#0a1f1c]" : "bg-white/5 text-[#80949b]"
+                  className={`flex h-10 w-10 items-center justify-center rounded-full text-lg ${
+                    isActive ? "bg-[#2ecc71] text-[#0a1f1c]" : "bg-white/5 border border-white/10 text-[#80949b]"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  {stage.icon}
                 </motion.div>
                 {i < stages.length - 1 && (
                   <div className={`h-12 w-0.5 ${i < currentStage ? "bg-[#2ecc71]" : "bg-white/10"}`} />
                 )}
               </div>
               <div className="pb-8 pt-2">
-                <p className={`text-sm font-semibold ${isActive ? "text-white" : "text-[#80949b]"}`}>
+                <p className={`text-sm font-bold ${isActive ? "text-white" : "text-[#80949b]"}`}>
                   {stage.label}
                 </p>
                 {isCurrent && (
                   <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-[#2ecc71]">
-                    {order.status === "received" ? "Preparing your order..." : order.status === "out_for_delivery" && order.deliveryStatus === "picked_up" ? "On the way to you!" : "In progress..."}
+                    {stage.sub}
                   </motion.p>
                 )}
-                {isActive && !isCurrent && <p className="text-xs text-[#5a7278]">Completed</p>}
+                {isActive && !isCurrent && <p className="text-xs text-[#2ecc71]">Completed</p>}
               </div>
             </div>
           );

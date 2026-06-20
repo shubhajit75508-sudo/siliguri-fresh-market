@@ -8,7 +8,7 @@ import {
   Smartphone, Building2, Hash, Layers, Package, Copy, X, ExternalLink,
   ArrowLeft, Loader2, Wallet, Banknote, CreditCard as CardIcon, Trash2,
   Plus, Minus, Ticket, Zap, ShoppingBag, Sparkles, Gift, Truck,
-  ChevronDown, CircleDot, Dot, Navigation, AlertTriangle,
+  ChevronDown, CircleDot, Dot, Navigation, AlertTriangle, Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,8 +36,6 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
-const quickAmounts = [500, 1000, 2000, 5000];
-
 export default function CheckoutPage() {
   const router = useRouter();
   const toast = useToast();
@@ -63,6 +61,7 @@ export default function CheckoutPage() {
   const { location: liveLocation, locating, error: geoError, getLocation } = useGeolocation();
 
   const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
+  const [addrType, setAddrType] = useState("home");
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses.find((a) => a.isDefault) || addresses[0];
   const coinBalance = user?.loyaltyPoints ?? 0;
@@ -86,866 +85,470 @@ export default function CheckoutPage() {
   }, [selectedAddressId]);
 
   const handleToggleCoins = () => {
-    if (coinsRedeemed > 0) {
-      removeCoinsRedemption();
-      setCoinsDiscount(0);
-      toast.add("Coins removed");
-    } else {
+    if (coinsRedeemed > 0) { removeCoinsRedemption(); setCoinsDiscount(0); toast.add("Coins removed"); }
+    else {
       const redeem = Math.min(maxRedeemable, 500);
-      if (redeem < 100) {
-        toast.add("Need at least 100 coins to redeem", "error");
-        return;
-      }
-      const discount = (redeem / 100) * 50;
-      applyCoinsRedemption(redeem);
-      setCoinsDiscount(discount);
+      if (redeem < 100) { toast.add("Need at least 100 coins to redeem", "error"); return; }
+      const discount = (redeem / 100) * 50; applyCoinsRedemption(redeem); setCoinsDiscount(discount);
       toast.add(`${redeem} coins applied — ₹${discount} off`);
     }
   };
 
   const openRazorpayCheckout = async () => {
-    const total = getTotal();
-    setConfirmingOrder(true);
-
+    const total = getTotal(); setConfirmingOrder(true);
     const sfmOrderId = "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-
     try {
       const loaded = await loadRazorpayScript();
-      if (!loaded) {
-        setConfirmingOrder(false);
-        setShowUPIModal(true);
-        return;
-      }
-
+      if (!loaded) { setConfirmingOrder(false); setShowUPIModal(true); return; }
       const res = await fetch("/api/payment/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: total,
-          currency: "INR",
-          receipt: sfmOrderId,
-          notes: {
-            order_id: sfmOrderId,
-            customer_name: currentUser?.name ?? "",
-            customer_phone: currentUser?.phone ?? "",
-            customer_email: currentUser?.email ?? "",
-          },
-        }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total, currency: "INR", receipt: sfmOrderId, notes: { order_id: sfmOrderId, customer_name: currentUser?.name ?? "", customer_phone: currentUser?.phone ?? "", customer_email: currentUser?.email ?? "" } }),
       });
-      if (!res.ok) {
-        setConfirmingOrder(false);
-        setShowUPIModal(true);
-        return;
-      }
-
+      if (!res.ok) { setConfirmingOrder(false); setShowUPIModal(true); return; }
       const order = await res.json();
-
       const razorpay = new (window as any).Razorpay({
-        key: order.key_id,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Siliguri Fresh Mart",
-        description: `Order ${sfmOrderId}`,
-        order_id: order.id,
-        image: "https://siligurifreshmart.com/favicon.ico",
-        theme: { color: "#16a34a" },
-        prefill: {
-          name: currentUser?.name,
-          email: currentUser?.email,
-          contact: currentUser?.phone,
-          method: "upi",
-        },
+        key: order.key_id, amount: order.amount, currency: order.currency, name: "Siliguri Fresh Mart", description: `Order ${sfmOrderId}`, order_id: order.id,
+        image: "https://siligurifreshmart.com/favicon.ico", theme: { color: "#16a34a" },
+        prefill: { name: currentUser?.name, email: currentUser?.email, contact: currentUser?.phone, method: "upi" },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-          const verifyRes = await fetch("/api/payment/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
-          });
-          if (verifyRes.ok) {
-            setPaymentConfirmed(true);
-            placeOrder("paid", sfmOrderId);
-          } else {
-            toast.add("Payment verification failed. Contact support.", "error");
-            setConfirmingOrder(false);
-          }
+          const verifyRes = await fetch("/api/payment/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(response) });
+          if (verifyRes.ok) { setPaymentConfirmed(true); placeOrder("paid", sfmOrderId); }
+          else { toast.add("Payment verification failed. Contact support.", "error"); setConfirmingOrder(false); }
         },
-        modal: {
-          ondismiss: () => {
-            setConfirmingOrder(false);
-            toast.add("Payment cancelled. You can retry or choose COD.", "error");
-          },
-        },
+        modal: { ondismiss: () => { setConfirmingOrder(false); toast.add("Payment cancelled. You can retry or choose COD.", "error"); } },
       });
-
-      razorpay.on("payment.failed", (response: { error: { code: string; description: string } }) => {
-        setConfirmingOrder(false);
-        toast.add(`Payment failed: ${response.error.description}`, "error");
-      });
-
+      razorpay.on("payment.failed", (response: { error: { code: string; description: string } }) => { setConfirmingOrder(false); toast.add(`Payment failed: ${response.error.description}`, "error"); });
       razorpay.open();
-    } catch {
-      setConfirmingOrder(false);
-      setShowUPIModal(true);
-    }
+    } catch { setConfirmingOrder(false); setShowUPIModal(true); }
   };
 
   const handlePlaceOrder = () => {
-    if (!isAuthenticated) {
-      toast.add("Sign up required to place orders", "error");
-      return;
-    }
-    if (!selectedAddress) {
-      toast.add("Please add or select a delivery address", "error");
-      setAddressMissing(true);
-      addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => setAddressMissing(false), 3000);
-      return;
-    }
-    if (!requiredDetailsFilled) {
-      toast.add("Please fill Area and Landmark details", "error");
-      setShowAddressForm(true);
-      setAddressMissing(true);
-      addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => setAddressMissing(false), 3000);
-      return;
-    }
-
-    if (selectedPayment === "razorpay") {
-      openRazorpayCheckout();
-      return;
-    }
-
+    if (!isAuthenticated) { toast.add("Sign up required to place orders", "error"); return; }
+    if (!selectedAddress) { toast.add("Please add or select a delivery address", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+    if (!requiredDetailsFilled) { toast.add("Please fill Area and Landmark details", "error"); setShowAddressForm(true); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+    if (selectedPayment === "razorpay") { openRazorpayCheckout(); return; }
     placeOrder("unpaid");
   };
 
   const placeOrder = (paymentStatus: "paid" | "unpaid", orderId?: string) => {
-    setConfirmingOrder(true);
-
-    const total = getTotal();
-
+    setConfirmingOrder(true); const total = getTotal();
     (async () => {
       const addressCords = liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {};
       const finalId = await createOrder({
-        id: orderId,
-        items,
-        total,
-        address: {
-          ...selectedAddress,
-          ...addressCords,
-          area: detailForm.area.trim() || selectedAddress.area || undefined,
-          landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined,
-          building: detailForm.building.trim() || selectedAddress.building || undefined,
-          flat: detailForm.flat.trim() || selectedAddress.flat || undefined,
-          floor: detailForm.floor.trim() || selectedAddress.floor || undefined,
-          street: detailForm.street.trim() || selectedAddress.street || undefined,
-          deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined,
-        },
-        paymentMethod: selectedPayment === "razorpay" ? "upi" : "cod",
-        paymentStatus,
-        customerName: currentUser?.name ?? "Guest",
-        customerPhone: currentUser?.phone ?? "",
-        customerEmail: currentUser?.email ?? "",
-        userId: currentUser?.id,
+        id: orderId, items, total,
+        address: { ...selectedAddress, ...addressCords, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined, street: detailForm.street.trim() || selectedAddress.street || undefined, deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined },
+        paymentMethod: selectedPayment === "razorpay" ? "upi" : "cod", paymentStatus,
+        customerName: currentUser?.name ?? "Guest", customerPhone: currentUser?.phone ?? "", customerEmail: currentUser?.email ?? "", userId: currentUser?.id,
       });
-
-      if (coinsRedeemed > 0) {
-        redeemCoins(coinsRedeemed);
-      }
-      earnCoins(total);
-
-      clearCart();
-      setPaymentConfirmed(false);
-      setShowUPIModal(false);
+      if (coinsRedeemed > 0) redeemCoins(coinsRedeemed);
+      earnCoins(total); clearCart(); setPaymentConfirmed(false); setShowUPIModal(false);
       const earned = Math.floor(total / 100) * 10;
-      toast.add(`Order placed! +${earned} coins earned. Delivery in 30 min - 1 hr.`);
+      toast.add(`Order placed! +${earned} coins earned.`);
       router.push(`/track/${finalId}`);
-    })().catch(() => {
-      setConfirmingOrder(false);
-      toast.add("Failed to place order. Please try again.", "error");
-    });
+    })().catch(() => { setConfirmingOrder(false); toast.add("Failed to place order. Please try again.", "error"); });
+  };
+
+  const saveAddressDetails = () => {
+    if (!selectedAddress) return;
+    useUserStore.getState().updateAddress({ ...selectedAddress, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined, street: detailForm.street.trim() || selectedAddress.street || undefined, deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined });
   };
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center py-20 text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-          <Package className="h-8 w-8 text-gray-400" />
-        </div>
-        <h2 className="text-xl font-bold">Your cart is empty</h2>
-        <p className="mt-1 text-sm text-muted">Add items to get started</p>
-        <Button variant="fresh" className="mt-6 rounded-full" onClick={() => router.push("/")}>
-          Continue Shopping
-        </Button>
+      <div className="flex min-h-screen flex-col items-center justify-center py-20 text-center">
+        <span className="text-5xl mb-4">🛒</span>
+        <h2 className="text-xl font-bold text-white">Your cart is empty</h2>
+        <p className="mt-1 text-sm text-[#80949b]">Add items to get started</p>
+        <Button className="mt-6 rounded-full bg-[#2ecc71] hover:bg-[#27ae60] text-[#0a1f1c] font-bold" onClick={() => router.push("/")}>Continue Shopping</Button>
       </div>
     );
   }
 
   if (hydrated && !isAuthenticated) {
     return (
-      <div className="mx-auto max-w-sm py-16 text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-red/10">
-          <Shield className="h-10 w-10 text-brand-red" />
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center max-w-sm px-4">
+          <span className="text-5xl mb-4 block">🔒</span>
+          <h2 className="text-2xl font-extrabold text-white">Sign Up Required</h2>
+          <p className="mt-2 text-sm text-[#80949b]">Create an account to place orders.</p>
+          <div className="mt-6 space-y-3">
+            <Link href="/auth/signup"><Button className="w-full rounded-xl bg-[#2ecc71] hover:bg-[#27ae60] text-[#0a1f1c] font-bold py-3">Create Account</Button></Link>
+            <Link href="/auth/login"><Button variant="outline" className="w-full rounded-xl border-white/10 text-white hover:bg-white/5 py-3">Log In</Button></Link>
+          </div>
         </div>
-        <h2 className="text-2xl font-extrabold">Sign Up Required</h2>
-        <p className="mt-2 text-sm text-muted">
-          You must create an account before placing an order.
-        </p>
-        <div className="mt-6 space-y-3">
-          <Link href="/auth/signup">
-            <Button variant="default" className="w-full rounded-full">
-              <Plus className="mr-2 h-4 w-4" /> Create Account
-            </Button>
-          </Link>
-          <Link href="/auth/login">
-            <Button variant="outline" className="w-full rounded-full">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Log In
-            </Button>
-          </Link>
-        </div>
-        <p className="mt-4 text-xs text-muted">
-          <Lock className="mr-1 inline h-3 w-3" />
-          Your data is encrypted and never shared
-        </p>
       </div>
     );
   }
 
-  const saveAddressDetails = () => {
-    if (!selectedAddress) return;
-    const updated: Address = {
-      ...selectedAddress,
-      area: detailForm.area.trim() || selectedAddress.area || undefined,
-      landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined,
-      building: detailForm.building.trim() || selectedAddress.building || undefined,
-      flat: detailForm.flat.trim() || selectedAddress.flat || undefined,
-      floor: detailForm.floor.trim() || selectedAddress.floor || undefined,
-      street: detailForm.street.trim() || selectedAddress.street || undefined,
-      deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined,
-    };
-    useUserStore.getState().updateAddress(updated);
+  const subtotal = getSubtotal();
+  const total = getTotal();
+  const deliveryFee = getDeliveryFee();
+  const saving = couponDiscount + getCoinsDiscount();
+  const catBadge = (cat: string) => {
+    if (["fish","chicken","mutton","seafood"].includes(cat)) return { label:"FRESH", cls:"fresh" };
+    if (["fruits","vegetables"].includes(cat)) return { label:"ORGANIC", cls:"organic" };
+    if (["dairy","eggs"].includes(cat)) return { label:"FARM", cls:"farm" };
+    return null;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50/50">
-      {/* Premium Header */}
-      <div className="sticky top-0 z-10 border-b border-white/5 bg-[#0d1b2a]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <button onClick={() => router.push("/cart")} className="group flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-all">
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-            <span>Cart</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#2ecc71] text-[#0a1f1c]">
-              <ShoppingBag className="h-3 w-3" />
-            </div>
-            <h1 className="text-base font-bold tracking-tight">Checkout</h1>
+    <div className="min-h-screen pb-24">
+      <div className="mx-auto max-w-lg px-4 py-5">
+
+        {/* Brand Bar + Step Pill */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-lg font-extrabold text-white tracking-tight">Siliguri Fresh Mart</h1>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#2ecc71] mt-0.5">From Market to Your Home</p>
           </div>
-          <div className="flex items-center gap-1 text-[10px] text-muted">
-            <Lock className="h-3 w-3" />
-            <span className="hidden sm:inline">Secure</span>
+          <div className="rounded-full bg-[#2ecc71]/15 border border-[#2ecc71]/35 px-3.5 py-1.5 text-[11px] font-bold text-[#2ecc71] tracking-wider">
+            Step {step} of 3
           </div>
         </div>
-      </div>
 
-      <div className="mx-auto max-w-lg px-4 py-5 pb-28">
-
-        {/* ─── Stepper ─── */}
+        {/* Stepper */}
         <div className="flex items-center gap-1 mb-8">
-          {[
-            { n: 1, label: "Cart" },
-            { n: 2, label: "Delivery" },
-            { n: 3, label: "Payment" },
-          ].map((s, i) => (
+          {[ {n:1,l:"Cart"},{n:2,l:"Delivery"},{n:3,l:"Payment"} ].map((s,i) => (
             <div key={s.n} className="flex items-center flex-1 last:flex-none">
-              <div className="flex flex-col items-center gap-1">
-                <div className={`stepper-dot ${step > s.n ? "done" : step === s.n ? "active" : "pending"}`}>
+              <div className="flex items-center gap-1.5">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold border flex-shrink-0 ${
+                  step > s.n ? "bg-[#2ecc71] border-[#2ecc71] text-[#0a1f1c]" : step === s.n ? "bg-[#2ecc71]/20 border-[#2ecc71] text-[#2ecc71]" : "bg-white/5 border-white/10 text-[#80949b]"
+                }`}>
                   {step > s.n ? "✓" : s.n}
                 </div>
-                <span className={`text-[10px] font-semibold ${step >= s.n ? "text-[#2ecc71]" : "text-[#5a7278]"}`}>{s.label}</span>
+                <span className={`text-[10px] font-semibold uppercase tracking-wider hidden sm:inline ${step >= s.n ? "text-white" : "text-[#80949b]"}`}>{s.l}</span>
               </div>
-              {i < 2 && <div className={`stepper-line mx-1 ${step > s.n ? "done" : "pending"}`} />}
+              {i < 2 && <div className={`flex-1 h-px mx-1.5 ${step > s.n ? "bg-[#2ecc71]/40" : "bg-white/10"}`} />}
             </div>
           ))}
         </div>
 
-        <div className="space-y-4">
-
-            {/* Step 1 — Delivery Address */}
-            <div ref={addressRef} className={`dark-card p-5 transition-all duration-500 ${addressMissing ? "ring-2 ring-[#e74c3c]/50 address-shake" : ""}`}>
-                {/* Error banner */}
-                {addressMissing && (
-                  <div className="flex items-center gap-2 bg-[#e74c3c]/10 border border-[#e74c3c]/20 rounded-xl px-4 py-3 mb-4">
-                    <span className="text-lg">⚠️</span>
-                    <div>
-                      <p className="text-xs font-bold text-[#e74c3c]">Address Required!</p>
-                      <p className="text-[10px] text-[#e74c3c]/70">Fill delivery details to continue</p>
+        {/* ── STEP 1: CART ── */}
+        {step === 1 && (
+          <>
+            {/* Cart Items */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">🛒</span>
+                <div>
+                  <h2 className="text-sm font-bold text-white">Your Cart</h2>
+                  <p className="text-[10px] text-[#80949b]">Review before checkout</p>
+                </div>
+                <div className="ml-auto rounded-full bg-[#2ecc71]/15 border border-[#2ecc71]/25 px-3 py-1 text-[10px] font-bold text-[#2ecc71]">
+                  {items.reduce((n,i) => n + i.quantity, 0)} items
+                </div>
+              </div>
+              <div className="divide-y divide-white/5">
+                {items.map((item) => {
+                  const lineKey = cartLineKey(item);
+                  const b = catBadge(item.product.category);
+                  return (
+                    <div key={cartLineId(lineKey)} className="group flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02] transition-colors relative">
+                      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
+                        <img src={item.product.image} alt="" className="w-full h-full object-cover rounded-xl" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[13px] font-bold text-white truncate">{item.product.name}</span>
+                          {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
+                        </div>
+                        <p className="text-[11px] text-[#80949b] mt-0.5">{item.selectedWeight || item.product.unit}</p>
+                        <p className="text-[10px] text-[#5a7278] mt-1">
+                          {item.product.originalPrice && item.product.originalPrice > item.product.price ? (
+                            <>MRP <span className="line-through">₹{item.product.originalPrice}</span> &nbsp;</>
+                          ) : null}
+                          <span className="text-[#2ecc71] font-bold">₹{item.product.price}/unit</span>
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <span className="text-sm font-extrabold text-white">₹{(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity).toFixed(0)}</span>
+                        <div className="flex items-center gap-0 rounded-lg bg-white/8">
+                          <button onClick={() => { const k = cartLineKey(item); if (item.quantity <= 1) removeItem(k); else updateQuantity(k, item.quantity - 1); }} className="w-7 h-7 flex items-center justify-center text-white/70 hover:bg-white/10 rounded-l-lg text-sm font-bold">−</button>
+                          <span className="min-w-[28px] text-center text-[13px] font-bold text-white">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)} className="w-7 h-7 flex items-center justify-center text-white/70 hover:bg-white/10 rounded-r-lg text-sm font-bold">+</button>
+                        </div>
+                      </div>
+                      <button onClick={() => removeItem(cartLineKey(item))} className="absolute top-2 right-4 w-5 h-5 rounded-md bg-[#e74c3c]/10 border border-[#e74c3c]/20 flex items-center justify-center text-[10px] text-[#e74c3c] opacity-0 group-hover:opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">✕</button>
                     </div>
-                  </div>
-                )}
+                  );
+                })}
+              </div>
+            </div>
 
-                {/* Header */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">📍</span>
-                    <div>
-                      <h2 className="text-sm font-bold text-white">Delivery Address</h2>
-                      <p className="text-[10px] text-[#80949b]">Where should we deliver?</p>
+            {/* Coupon */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">🏷️</span>
+                <h2 className="text-sm font-bold text-white">Coupon / Promo</h2>
+              </div>
+              <div className="flex gap-2 p-4">
+                <input placeholder="Enter coupon code" className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10 uppercase tracking-wider" maxLength={20} />
+                <button onClick={handleToggleCoins} className="px-4 py-2.5 rounded-xl bg-[#2ecc71]/20 border border-[#2ecc71]/30 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/30 transition-colors whitespace-nowrap">
+                  {coinsRedeemed > 0 ? "Remove" : "Apply"}
+                </button>
+              </div>
+            </div>
+
+            {/* Bill Summary */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">🧾</span>
+                <h2 className="text-sm font-bold text-white">Bill Summary</h2>
+              </div>
+              <div className="p-5 space-y-3">
+                <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white font-semibold">{formatPrice(subtotal)}</span></div>
+                {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>🏷️ Coupon</span><span className="font-semibold">-{formatPrice(couponDiscount)}</span></div>}
+                <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">🚚 FREE</span></div>
+                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>💰 You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
+                <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-white">Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
+              </div>
+              <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-4 py-2.5 text-[11px] text-white/70">
+                <span>🕐</span> Estimated delivery <strong className="text-white mx-1">within 45–60 min</strong> after order confirmation.
+              </div>
+            </div>
+
+            {/* CTA */}
+            <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] text-white font-extrabold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-[#2ecc71]/30 hover:opacity-95 transition-all active:scale-[0.98] group">
+              Proceed to Delivery <span className="transition-transform group-hover:translate-x-1">→</span>
+            </button>
+            <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
+              {["🔒 Secure Checkout","🌿 100% Fresh","🚚 Free Delivery"].map((t) => (
+                <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider">{t}</span>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ── STEP 2: DELIVERY ── */}
+        {step === 2 && (
+          <>
+            {/* Contact */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">👤</span>
+                <div><h2 className="text-sm font-bold text-white">Contact</h2><p className="text-[10px] text-[#80949b]">So we can reach you</p></div>
+              </div>
+              <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Full Name <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <input type="text" defaultValue={currentUser?.name || ""} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Rajan Sharma" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Phone <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <div className="flex"><div className="bg-[#2ecc71]/15 border border-white/15 border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2ecc71] whitespace-nowrap flex items-center gap-1">🇮🇳 +91</div><input type="tel" className="flex-1 bg-white/5 border border-white/15 rounded-r-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="98765 43210" /></div>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Email <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
+                  <input type="email" defaultValue={currentUser?.email || ""} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="you@example.com" />
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Address */}
+            <div ref={addressRef} className={`glass rounded-2xl overflow-hidden border mb-3.5 transition-all duration-500 ${addressMissing ? "border-[#e74c3c]/50 ring-2 ring-[#e74c3c]/20 address-shake" : "border-white/10"}`}>
+              {addressMissing && (
+                <div className="flex items-center gap-2 bg-[#e74c3c]/10 border-b border-[#e74c3c]/20 px-4 py-2.5"><span className="text-lg">⚠️</span><span className="text-xs font-bold text-[#e74c3c]">Address required — please fill delivery details</span></div>
+              )}
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">🏠</span>
+                <div><h2 className="text-sm font-bold text-white">Delivery Address</h2><p className="text-[10px] text-[#80949b]">Where should we deliver?</p></div>
+              </div>
+              <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">House / Flat <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="12B, Ground Floor" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Building <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
+                  <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Green Valley Apts" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Street / Road <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <input value={detailForm.street} onChange={(e) => setDetailForm(f => ({ ...f, street: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Sevoke Road, Near City Centre" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Area <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <input value={detailForm.area} onChange={(e) => setDetailForm(f => ({ ...f, area: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Hakimpara, Pradhan Nagar..." />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Pincode <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))} maxLength={6} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="734001" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Landmark <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
+                  <input value={detailForm.landmark} onChange={(e) => setDetailForm(f => ({ ...f, landmark: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Opposite SBI Bank" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">City <span className="text-[#e74c3c] text-xs">*</span></label>
+                  <input value={newAddress.city} onChange={(e) => setNewAddress(f => ({ ...f, city: e.target.value }))} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10" placeholder="Siliguri" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">Delivery Note <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
+                  <textarea value={detailForm.deliveryInstructions} onChange={(e) => setDetailForm(f => ({ ...f, deliveryInstructions: e.target.value }))} rows={2} className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10 resize-none" placeholder="Ring bell twice · Leave at door..." />
+                </div>
+              </div>
+              <div className="px-5 pb-5">
+                <div className="h-px bg-white/10 my-2" />
+                <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-2 block">Address Type</label>
+                <div className="flex gap-2 flex-wrap">
+                  {["🏠 Home","🏢 Work","📍 Other"].map((t) => {
+                    const val = t.split(" ")[1].toLowerCase();
+                    return (
+                      <button key={val} onClick={() => setAddrType(val)}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-semibold transition-all ${
+                          addrType === val ? "bg-[#2ecc71]/15 border-[#2ecc71]/50 text-[#2ecc71]" : "bg-white/5 border-white/10 text-[#80949b] hover:bg-white/10"
+                        }`}
+                      >{t}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Pin Your Location */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">📌</span>
+                <div><h2 className="text-sm font-bold text-white">Pin Your Location</h2><p className="text-[10px] text-[#80949b]">Helps our rider reach you exactly</p></div>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/10 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-white/70 mb-4"><span>💡</span> Tap <strong className="text-white mx-0.5">Detect</strong> to auto-locate or click anywhere on the map.</div>
+                <div className="w-full h-48 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+                  {liveLocation ? (
+                    <div className="text-center">
+                      <span className="text-3xl">📍</span>
+                      <p className="text-xs text-[#2ecc71] mt-2 font-semibold">GPS Location Saved</p>
+                      <p className="text-[10px] text-[#80949b] mt-1">{liveLocation.lat.toFixed(5)}, {liveLocation.lng.toFixed(5)}</p>
                     </div>
-                  </div>
-                  {selectedAddress ? (
-                    <span className={`product-badge ${requiredDetailsFilled ? "fresh" : ""}`} style={!requiredDetailsFilled ? {background: "rgba(243,156,18,0.15)", color: "#f39c12"} : {}}>
-                      {requiredDetailsFilled ? "✓ Ready" : "Add details"}
-                    </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-[#f39c12] bg-[#f39c12]/10 px-2.5 py-0.5 rounded-full">Required</span>
+                    <div className="text-center opacity-60"><span className="text-3xl">🗺️</span><p className="text-xs text-[#80949b] mt-2">Tap Detect to pin your location</p></div>
                   )}
                 </div>
-
-                {!selectedAddress ? (
-                  <div className="p-5 space-y-4">
-                    <div className="text-center py-2">
-                      <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/8 to-brand-blue/8"}`}>
-                        <MapPin className={`h-10 w-10 transition-all duration-500 ${addressMissing ? "text-brand-red animate-bounce" : "text-brand-fresh-dim/60"}`} />
-                      </div>
-                      <p className="mt-3 text-sm font-bold text-brand-dark">Set Your Delivery Address</p>
-                      <p className="mt-0.5 text-xs text-muted max-w-xs mx-auto leading-relaxed">Let us know where you are so our delivery partner can find you quickly.</p>
-                    </div>
-
-                    {/* Use My Location — prominent */}
-                    <button type="button" onClick={getLocation} disabled={locating}
-                      className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-brand-fresh to-brand-blue p-[1.5px] group disabled:opacity-60"
-                    >
-                      <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-white px-4 py-3.5 group-hover:bg-transparent group-hover:text-white transition-all duration-300">
-                        <Navigation className={`h-5 w-5 text-brand-fresh-dim group-hover:text-white transition-all ${locating ? "animate-spin" : "group-hover:scale-110"}`} />
-                        <span className="text-sm font-bold text-brand-dark group-hover:text-white transition-all">
-                            {locating ? "Detecting your location..." : liveLocation ? "✓ GPS Location Saved" : "📍 Pin My Location on Map"}
-                        </span>
-                      </div>
-                    </button>
-                    {geoError && (
-                      <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 px-4 py-2 text-center">
-                        <p className="text-[10px] text-brand-red">{geoError}</p>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-3 pt-1">
-                      <div className="h-px flex-1 bg-border/50" />
-                      <span className="text-[10px] text-muted font-medium uppercase tracking-widest">or type manually</span>
-                      <div className="h-px flex-1 bg-border/50" />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">City *</label>
-                        <div className="mt-1 relative">
-                          <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
-                          <input value={newAddress.city} onChange={(e) => setNewAddress(f => ({ ...f, city: e.target.value }))}
-                            placeholder="Siliguri"
-                            className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3.5 py-3 text-sm placeholder:text-[#5a7278] text-white focus:border-[#2ecc71]/50 focus:ring-1 focus:ring-[#2ecc71]/20 outline-none transition-all" />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Pincode *</label>
-                        <div className="mt-1 relative">
-                          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
-                          <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))}
-                            placeholder="734009"
-                            className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3.5 py-3 text-sm placeholder:text-[#5a7278] text-white focus:border-[#2ecc71]/50 focus:ring-1 focus:ring-[#2ecc71]/20 outline-none transition-all" />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Area / Locality *</label>
-                      <div className="mt-1 relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
-                        <input value={newAddress.area} onChange={(e) => setNewAddress(f => ({ ...f, area: e.target.value }))}
-                          placeholder="e.g. Salbari, Dabgram"
-                          className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3.5 py-3 text-sm placeholder:text-[#5a7278] text-white focus:border-[#2ecc71]/50 focus:ring-1 focus:ring-[#2ecc71]/20 outline-none transition-all" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
-                        <input value={newAddress.landmark} onChange={(e) => setNewAddress(f => ({ ...f, landmark: e.target.value }))}
-                          placeholder="Near City Centre"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building (optional)</label>
-                        <input value={newAddress.building} onChange={(e) => setNewAddress(f => ({ ...f, building: e.target.value }))}
-                          placeholder="Green Tower"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
-                        <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
-                          placeholder="3B"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
-                        <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
-                          placeholder="2nd"
-                          className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Street / Road (optional)</label>
-                      <input value={newAddress.street} onChange={(e) => setNewAddress(f => ({ ...f, street: e.target.value }))}
-                        placeholder="e.g. Hill Cart Road"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Delivery Instructions (optional)</label>
-                      <textarea value={newAddress.deliveryInstructions} onChange={(e) => setNewAddress(f => ({ ...f, deliveryInstructions: e.target.value }))}
-                        placeholder="Gate code, floor directions, or any special instructions..."
-                        rows={2}
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all resize-none" />
-                    </div>
-                    <Button variant="default" size="lg" className="w-full rounded-2xl py-3.5 text-sm font-bold shadow-xl shadow-brand-dark/15 hover:shadow-2xl hover:shadow-brand-dark/20 transition-all"
-                      disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
-                      onClick={() => {
-                        if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
-                          toast.add("Please fill all required fields", "error");
-                          return;
-                        }
-                        const addr: Address = {
-                          id: crypto.randomUUID(),
-                          label: "Home",
-                          line1: `${newAddress.building.trim()}, ${newAddress.area.trim()}`,
-                          city: newAddress.city.trim(),
-                          pincode: newAddress.pincode.trim(),
-                          street: newAddress.street.trim() || undefined,
-                          area: newAddress.area.trim(),
-                          landmark: newAddress.landmark.trim(),
-                          building: newAddress.building.trim(),
-                          flat: newAddress.flat.trim() || undefined,
-                          floor: newAddress.floor.trim() || undefined,
-                          deliveryInstructions: newAddress.deliveryInstructions.trim() || undefined,
-                          isDefault: addresses.length === 0,
-                          ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}),
-                        };
-                        useUserStore.getState().addAddress(addr);
-                        setSelectedAddressId(addr.id);
-                        setDetailForm({
-                          street: addr.street ?? "",
-                          area: addr.area ?? "",
-                          landmark: addr.landmark ?? "",
-                          building: addr.building ?? "",
-                          flat: addr.flat ?? "",
-                          floor: addr.floor ?? "",
-                          deliveryInstructions: addr.deliveryInstructions ?? "",
-                        });
-                        toast.add("✓ Address saved! Ready to check out");
-                      }}
-                    >
-                      <CheckCircle className="mr-2 h-5 w-5" /> Save &amp; Continue to Payment
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="p-5">
-                    {addresses.length > 1 && (
-                      <div className="mb-4 flex flex-wrap gap-2">
-                        {addresses.map((addr) => {
-                          const isSelected = selectedAddressId === addr.id || (!selectedAddressId && addr.isDefault);
-                          return (
-                            <button
-                              key={addr.id}
-                              onClick={() => setSelectedAddressId(addr.id)}
-                              className={`rounded-xl border px-3.5 py-3 text-left text-xs transition-all ${
-                                isSelected
-                                  ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/5 to-brand-blue/5 ring-2 ring-brand-fresh/15 shadow-md"
-                                  : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
-                              }`}
-                            >
-                              <span className="font-semibold">{addr.label}</span>
-                              <span className="block text-muted mt-0.5 text-[10px]">{addr.line1?.slice(0, 22)}...</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    <div className={`rounded-2xl p-4 transition-all duration-300 ${addressMissing ? "bg-brand-red/5 border-2 border-brand-red/30 ring-2 ring-brand-red/15" : "bg-gradient-to-br from-gray-50 via-white to-brand-fresh/[0.02] border border-border/20"}`}>
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-brand-fresh/10">
-                              <MapPin className="h-3.5 w-3.5 text-brand-fresh-dim" />
-                            </div>
-                            <p className="text-sm font-bold text-brand-dark">{selectedAddress.line1}</p>
-                          </div>
-                          <p className="text-xs text-muted pl-9.5">
-                            {selectedAddress.city}{selectedAddress.pincode ? ` — ${selectedAddress.pincode}` : ""}
-                          </p>
-                          {selectedAddress.area && (
-                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
-                              <Layers className="h-3 w-3" /> {selectedAddress.area}
-                            </p>
-                          )}
-                          {selectedAddress.landmark && (
-                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
-                              <Dot className="h-3 w-3 text-brand-fresh" /> Near {selectedAddress.landmark}
-                            </p>
-                          )}
-                          {selectedAddress.building && (
-                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />
-                              {selectedAddress.building}
-                              {selectedAddress.flat ? `, Flat ${selectedAddress.flat}` : ""}
-                              {selectedAddress.floor ? `, Floor ${selectedAddress.floor}` : ""}
-                            </p>
-                          )}
-                          {selectedAddress.street && (
-                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
-                              <Navigation className="h-3 w-3" /> {selectedAddress.street}
-                            </p>
-                          )}
-                          {selectedAddress.deliveryInstructions && (
-                            <p className="text-xs text-muted pl-9.5 flex items-start gap-1">
-                              <Dot className="h-3 w-3 mt-1 shrink-0 text-brand-orange" />
-                              <span className="italic">{selectedAddress.deliveryInstructions}</span>
-                            </p>
-                          )}
-                          {selectedAddress.lat && selectedAddress.lng && (
-                            <div className="pl-9.5 pt-1">
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-fresh/10 border border-brand-fresh/15 px-2.5 py-0.5 text-[10px] font-semibold text-brand-fresh-dim">
-                                <Navigation className="h-3 w-3" /> GPS Location Saved
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => setShowAddressForm(!showAddressForm)}
-                          className="shrink-0 rounded-xl border-2 border-brand-fresh/20 bg-white px-4 py-2 text-xs font-bold text-brand-fresh-dim hover:bg-brand-fresh hover:text-white hover:border-brand-fresh transition-all shadow-sm"
-                        >
-                          {showAddressForm ? "Done" : "Edit Details"}
-                        </button>
-                      </div>
-                    </div>
-
-                    {showAddressForm && (
-                      <div className="mt-4 space-y-3 border-t-2 border-brand-fresh/10 pt-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-1 w-1 rounded-full bg-brand-fresh" />
-                          <p className="text-[11px] font-bold text-muted uppercase tracking-wider">Delivery Details</p>
-                        </div>
-                        <button type="button" onClick={getLocation} disabled={locating}
-                          className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-brand-fresh to-brand-blue p-[1.5px] group disabled:opacity-60"
-                        >
-                          <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-white px-4 py-3.5 group-hover:bg-transparent group-hover:text-white transition-all duration-300">
-                            <Navigation className={`h-5 w-5 text-brand-fresh-dim group-hover:text-white transition-all ${locating ? "animate-spin" : "group-hover:scale-110"}`} />
-                            <span className="text-sm font-bold text-brand-dark group-hover:text-white transition-all">
-                              {locating ? "Detecting location..." : liveLocation ? "✓ GPS Location Saved" : "📍 Pin My Location on Map"}
-                            </span>
-                          </div>
-                        </button>
-                        {geoError && (
-                          <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 px-4 py-2 text-center">
-                            <p className="text-[10px] text-brand-red">{geoError}</p>
-                          </div>
-                        )}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Area / Locality *</label>
-                            <div className="mt-1 relative">
-                              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
-                              <input value={detailForm.area} onChange={(e) => setDetailForm(f => ({ ...f, area: e.target.value }))}
-                                placeholder="e.g. Salbari"
-                                className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3.5 py-3 text-sm placeholder:text-[#5a7278] text-white focus:border-[#2ecc71]/50 focus:ring-1 focus:ring-[#2ecc71]/20 outline-none transition-all" />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
-                            <input value={detailForm.landmark} onChange={(e) => setDetailForm(f => ({ ...f, landmark: e.target.value }))}
-                              placeholder="Near City Centre"
-                              className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building (optional)</label>
-                            <div className="mt-1 relative">
-                              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
-                              <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))}
-                                placeholder="Green Tower"
-                                className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3.5 py-3 text-sm placeholder:text-[#5a7278] text-white focus:border-[#2ecc71]/50 focus:ring-1 focus:ring-[#2ecc71]/20 outline-none transition-all" />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
-                            <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
-                              placeholder="3B"
-                              className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                          </div>
-                          <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
-                            <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
-                              placeholder="2nd"
-                              className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Street / Road (optional)</label>
-                          <input value={detailForm.street} onChange={(e) => setDetailForm(f => ({ ...f, street: e.target.value }))}
-                            placeholder="e.g. Hill Cart Road"
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Delivery Instructions (optional)</label>
-                          <textarea value={detailForm.deliveryInstructions} onChange={(e) => setDetailForm(f => ({ ...f, deliveryInstructions: e.target.value }))}
-                            placeholder="Gate code, floor directions, or any special instructions..."
-                            rows={2}
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white/5 backdrop-blur border-white/10 text-white placeholder:text-[#5a7278] focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all resize-none" />
-                        </div>
-                        <Button variant="fresh" size="sm" className="rounded-xl text-xs font-bold shadow-lg shadow-brand-fresh/20 hover:shadow-xl hover:shadow-brand-fresh/30 transition-all"
-                          onClick={() => {
-                            if (!detailForm.area.trim() || !detailForm.landmark.trim()) {
-                              toast.add("Please fill Area and Landmark", "error");
-                              return;
-                            }
-                            saveAddressDetails();
-                            setShowAddressForm(false);
-                            toast.add("✓ Delivery details saved!");
-                          }}
-                        >
-                          <CheckCircle className="mr-1.5 h-4 w-4" /> Save Details
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-            </div>
-
-            {/* Order Items */}
-            <div className="dark-card">
-            <div className="flex items-center gap-3 p-5 border-b border-white/5">
-              <span className="text-lg">📦</span>
-              <div>
-                <h2 className="text-sm font-bold text-white">Items Ordered</h2>
-                <p className="text-[10px] text-[#80949b]">{items.length} {items.length === 1 ? "item" : "items"}</p>
-              </div>
-            </div>
-            <div className="divide-y divide-white/5">
-                {items.map((item, idx) => (
-                  <div key={cartLineId(cartLineKey(item))} className="flex items-center gap-3.5 px-5 py-3.5 hover:bg-white/[0.02] transition-colors">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/[0.08] to-brand-blue/[0.08] text-xs font-bold text-brand-fresh-dim border border-brand-fresh/10">
-                      {item.quantity}
-                    </div>
-                    <div className="min-w-0 flex-1">
-<p className="text-sm font-medium text-white">{item.product.name}</p>
-                    <p className="text-[10px] text-[#80949b]">{item.selectedWeight || item.product.unit}</p>
-                    </div>
-                    <span className="text-sm font-semibold tabular-nums">
-                      {formatPrice(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity)}
-                    </span>
-                  </div>
-                ))}
+                <div className="flex gap-2">
+                  <button onClick={getLocation} disabled={locating} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#4A8FE7]/20 border border-[#4A8FE7]/30 text-[#8FC4FF] text-xs font-bold hover:bg-[#4A8FE7]/30 transition-colors disabled:opacity-50">
+                    {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span>🎯</span>}
+                    {locating ? "Detecting..." : "Detect Location"}
+                  </button>
+                  <button disabled={!liveLocation} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#2ecc71]/20 border border-[#2ecc71]/30 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/30 transition-colors disabled:opacity-50">
+                    <span>⚡</span> Fetch Details
+                  </button>
+                </div>
+                {geoError && <p className="text-[10px] text-[#e74c3c] mt-2 text-center">{geoError}</p>}
               </div>
             </div>
 
-            {/* Loyalty Coins */}
-            {coinBalance >= 100 && (
-              <div className="dark-card accent-card">
-                <button onClick={() => setShowCoins(!showCoins)} className="flex w-full items-center justify-between p-5">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/20 to-orange-400/20">
-                      <Coins className="h-4 w-4 text-amber-600" />
-                    </div>
-                    <div className="text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-bold">Loyalty Coins</span>
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                          {coinBalance.toLocaleString()} available
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-muted">Redeem for discounts on this order</p>
-                    </div>
+            {/* Total Bar */}
+            <div className="flex items-center justify-between glass rounded-xl border border-white/10 px-5 py-3 mb-3.5">
+              <div><span className="text-[11px] text-[#80949b] block">Order Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
+              <div className="text-right"><span className="text-xs text-[#2ecc71] font-bold block">🚚 FREE</span><span className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</span></div>
+            </div>
+
+            {/* Navigation */}
+            <div className="flex gap-3">
+              <button onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-1.5 px-6 py-4 rounded-2xl border-2 border-white/10 text-sm font-semibold text-[#80949b] hover:bg-white/5 transition-colors">← Back</button>
+              <button onClick={() => {
+                if (!detailForm.area.trim() || !detailForm.landmark.trim()) { toast.add("Please fill Area and Landmark", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+                if (!selectedAddress) {
+                  const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}) };
+                  useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
+                } else { saveAddressDetails(); }
+                setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
+              }} className="flex flex-1 items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] text-white font-extrabold text-[15px] shadow-lg shadow-[#2ecc71]/30 hover:opacity-95 transition-all active:scale-[0.98] group">
+                Proceed to Payment <span className="transition-transform group-hover:translate-x-1">→</span>
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── STEP 3: PAYMENT ── */}
+        {step === 3 && (
+          <>
+            {/* Delivering To */}
+            {selectedAddress && (
+              <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+                <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                  <span className="text-lg">🏠</span>
+                  <div><h2 className="text-sm font-bold text-white">Delivering To</h2><p className="text-[10px] text-[#80949b]">Confirm before you pay</p></div>
+                </div>
+                <div className="flex items-start justify-between p-5 gap-3">
+                  <div className="text-[13px] text-[#c2d0c9] leading-relaxed">
+                    <span className="text-[11px] text-[#2ecc71] font-bold uppercase tracking-wider block mb-1">{selectedAddress.label?.toUpperCase() || "HOME"}</span>
+                    {currentUser?.name} · {currentUser?.phone}<br />
+                    {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.street ? `${selectedAddress.street}, ` : ""}{selectedAddress.landmark && `Near ${selectedAddress.landmark}, `}{selectedAddress.city} — {selectedAddress.pincode}
                   </div>
-                  <ChevronDown className={`h-4 w-4 text-muted transition-transform duration-300 ${showCoins ? "rotate-180" : ""}`} />
+                  <button onClick={() => setStep(2)} className="text-xs font-bold text-[#60a5fa] whitespace-nowrap hover:underline">Change</button>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Method */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">💳</span>
+                <div><h2 className="text-sm font-bold text-white">Payment Method</h2><p className="text-[10px] text-[#80949b]">Choose how to pay</p></div>
+              </div>
+              <div className="p-4 space-y-2">
+                <button onClick={() => setSelectedPayment("razorpay")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "razorpay" ? "border-[#2ecc71] bg-[#2ecc71]/5" : "border-white/5 bg-white/[0.02] hover:border-white/10"}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "razorpay" ? "bg-[#4A8FE7]/15 text-[#93c5fd]" : "bg-white/5"}`}>⚡</div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2"><span className="text-sm font-bold text-white">Razorpay</span>{selectedPayment === "razorpay" && <span className="product-badge fresh text-[9px]">RECOMMENDED</span>}</div>
+                    <p className="text-[11px] text-[#80949b]">UPI · Cards · NetBanking · Wallets</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "razorpay" ? "border-[#2ecc71]" : "border-white/20"}`}>
+                    {selectedPayment === "razorpay" && <div className="w-2.5 h-2.5 rounded-full bg-[#2ecc71]" />}
+                  </div>
                 </button>
-                <div className={`overflow-hidden transition-all duration-300 ${showCoins ? "max-h-40" : "max-h-0"}`}>
-                  <div className="border-t border-amber-200/20 px-5 pb-4 pt-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-muted">
-                          {coinsRedeemed > 0
-                            ? `${coinsRedeemed.toLocaleString()} coins — saves ${formatPrice(getCoinsDiscount())}`
-                            : `Redeem up to ${formatPrice(Math.min(maxRedeemable, 500) / 100 * 50)}`}
-                        </p>
-                        <div className="mt-1 flex gap-1">
-                          <Gift className="h-3 w-3 text-amber-500" />
-                          <span className="text-[10px] font-medium text-amber-600">
-                            {coinsRedeemed > 0
-                              ? "Discount applied!"
-                              : `${formatPrice(Math.min(maxRedeemable, 500) / 100 * 50)} max savings`}
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={handleToggleCoins}
-                        className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-all shadow-sm ${
-                          coinsRedeemed > 0
-                            ? "bg-brand-red/10 text-brand-red hover:bg-brand-red/20"
-                            : "bg-gradient-to-r from-amber-400/20 to-orange-400/20 text-amber-700 hover:from-amber-400/30 hover:to-orange-400/30"
-                        }`}
-                      >
-                        {coinsRedeemed > 0 ? "Remove" : "Apply Coins"}
-                      </button>
-                    </div>
+                <button onClick={() => setSelectedPayment("cod")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "cod" ? "border-[#2ecc71] bg-[#2ecc71]/5" : "border-white/5 bg-white/[0.02] hover:border-white/10"}`}>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg">💵</div>
+                  <div className="flex-1 text-left"><span className="text-sm font-bold text-white">Cash on Delivery</span><p className="text-[11px] text-[#80949b]">Pay the rider when your order arrives</p></div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "cod" ? "border-[#2ecc71]" : "border-white/20"}`}>
+                    {selectedPayment === "cod" && <div className="w-2.5 h-2.5 rounded-full bg-[#2ecc71]" />}
                   </div>
-                </div>
+                </button>
               </div>
-            )}
-          </div>
-
-          {/* Payment Method */}
-          <div className="dark-card p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-lg">💰</span>
-              <h2 className="text-sm font-bold text-white">Payment Method</h2>
             </div>
-            <div className="space-y-3">
-              <button
-                onClick={() => setSelectedPayment("razorpay")}
-                className={`relative flex w-full items-center gap-3 rounded-xl border-2 p-3.5 text-left transition-all ${
-                  selectedPayment === "razorpay"
-                    ? "border-[#2ecc71] bg-[#2ecc71]/5"
-                    : "border-white/5 bg-white/[0.02] hover:border-white/10"
-                }`}
-              >
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${selectedPayment === "razorpay" ? "bg-[#2ecc71]/15" : "bg-white/5"}`}>
-                  <Zap className={`h-5 w-5 ${selectedPayment === "razorpay" ? "text-[#2ecc71]" : "text-[#80949b]"}`} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-white">Razorpay</p>
-                    {selectedPayment === "razorpay" && (
-                      <span className="product-badge fresh">RECOMMENDED</span>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-[#80949b]">UPI · Cards · NetBanking · Wallet</p>
-                </div>
-                <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                  selectedPayment === "razorpay" ? "border-[#2ecc71] bg-[#2ecc71]" : "border-white/20"
-                }`}>
-                  {selectedPayment === "razorpay" && <CheckCircle className="h-3 w-3 text-[#0a1f1c]" />}
-                </div>
-              </button>
 
-              <button
-                onClick={() => setSelectedPayment("cod")}
-                className={`relative flex w-full items-center gap-3 rounded-xl border-2 p-3.5 text-left transition-all ${
-                  selectedPayment === "cod"
-                    ? "border-[#2ecc71] bg-[#2ecc71]/5"
-                    : "border-white/5 bg-white/[0.02] hover:border-white/10"
-                }`}
-              >
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${selectedPayment === "cod" ? "bg-[#2ecc71]/15" : "bg-white/5"}`}>
-                  <Banknote className={`h-5 w-5 ${selectedPayment === "cod" ? "text-[#2ecc71]" : "text-[#80949b]"}`} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-white">Cash on Delivery</p>
-                  <p className="text-[11px] text-[#80949b]">Pay when you receive</p>
-                </div>
-                <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                  selectedPayment === "cod" ? "border-[#2ecc71] bg-[#2ecc71]" : "border-white/20"
-                }`}>
-                  {selectedPayment === "cod" && <CheckCircle className="h-3 w-3 text-[#0a1f1c]" />}
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="dark-card p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-lg">📋</span>
-              <h2 className="text-sm font-bold text-white">Bill Summary</h2>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between items-center">
-                <span className="text-[#80949b] text-xs">Subtotal ({items.reduce((n, i) => n + i.quantity, 0)} items)</span>
-                <span className="text-white text-xs font-medium tabular-nums">{formatPrice(getSubtotal())}</span>
+            {/* Bill Summary */}
+            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
+                <span className="text-lg">🧾</span>
+                <div><h2 className="text-sm font-bold text-white">Bill Summary</h2><p className="text-[10px] text-[#80949b]">Transparent pricing</p></div>
               </div>
-              {couponDiscount > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center gap-1 text-[11px] text-[#2ecc71]">
-                    <Sparkles className="h-3 w-3" /> Coupon
-                  </span>
-                  <span className="text-xs font-medium text-[#2ecc71]">-{formatPrice(couponDiscount)}</span>
-                </div>
-              )}
-              {getCoinsDiscount() > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center gap-1 text-[11px] text-[#f1c40f]">
-                    <Coins className="h-3 w-3" /> Coins
-                  </span>
-                  <span className="text-xs font-medium text-[#f1c40f]">-{formatPrice(getCoinsDiscount())}</span>
-                </div>
-              )}
-              <div className="flex justify-between items-center">
-                <span className="text-[#80949b] text-xs">Delivery</span>
-                <span className="text-xs font-medium">
-                  {getDeliveryFee() === 0
-                    ? <span className="flex items-center gap-1 text-[#2ecc71]"><Truck className="h-3 w-3" /> FREE</span>
-                    : <span className="text-white">{formatPrice(getDeliveryFee())}</span>
-                  }
-                </span>
+              <div className="p-5 space-y-3">
+                <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white">{formatPrice(subtotal)}</span></div>
+                {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>🏷️ Coupon</span><span>-{formatPrice(couponDiscount)}</span></div>}
+                <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">FREE</span></div>
+                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>💰 You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
+                <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-base font-extrabold text-white">Total Payable</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
               </div>
-              <div className="flex justify-between items-center border-t border-white/5 pt-3 text-base font-bold">
-                <span className="text-white">Total Payable</span>
-                <span className="text-[#2ecc71] tabular-nums">{formatPrice(getTotal())}</span>
+              <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/5 px-4 py-2.5 text-[11px] text-[#80949b]">
+                🔒 Your payment is encrypted and processed securely.
               </div>
-              {coinsEarned > 0 && (
-                <div className="flex items-center justify-center gap-1.5 rounded-xl bg-[#2ecc71]/5 py-2">
-                  <Gift className="h-3.5 w-3.5 text-[#2ecc71]" />
-                  <span className="text-[10px] font-semibold text-[#2ecc71]">
-                    +{coinsEarned} loyalty coins earned
-                  </span>
-                </div>
-              )}
             </div>
-          </div>
 
-          {/* Place Order */}
-          <button
-            className="btn-glow flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold"
-            onClick={handlePlaceOrder}
-            disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled}
-          >
-            {confirmingOrder ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
-            ) : selectedPayment === "razorpay" ? (
-              <>🔒 Pay ₹{getTotal().toLocaleString()} via Razorpay</>
-            ) : (
-              <>📦 Place Order — {formatPrice(getTotal())}</>
-            )}
-          </button>
-          <p className="text-center text-[10px] text-[#5a7278] mt-2">
-            🔒 Secured by Razorpay · 🌿 100% Fresh Guarantee
-          </p>
-          <div className="mt-2">
-            <ReturnPolicyBanner />
-          </div>
-</div>
+            {/* Pay CTA */}
+            <button onClick={handlePlaceOrder} disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled} className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#16a34a] to-[#4ade80] text-[#06140e] font-extrabold text-lg shadow-lg shadow-[#2ecc71]/25 hover:opacity-95 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+              {confirmingOrder ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : <>Pay {formatPrice(total)} →</>}
+            </button>
+            <div className="flex items-center justify-center gap-4 mt-4 flex-wrap mb-4">
+              {["🔒 Secure Checkout","🌿 100% Fresh","🚚 Free Delivery"].map((t) => (
+                <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider">{t}</span>
+              ))}
+            </div>
+            <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full py-3 rounded-2xl border-2 border-white/10 text-sm font-semibold text-[#80949b] hover:bg-white/5 transition-colors mb-2">← Back to Delivery</button>
+          </>
+        )}
+      </div>
 
-      {/* Sticky Bottom Bar */}
+      {/* Sticky Bottom Bar (mobile) */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/5 bg-[#0d1b2a]/95 backdrop-blur-xl px-4 py-3 safe-bottom">
         <div className="mx-auto max-w-lg flex items-center justify-between">
           <div>
-            <p className="text-lg font-extrabold text-white tabular-nums">{formatPrice(getTotal())}</p>
-            <p className="text-[10px] text-[#80949b]">{items.reduce((n, i) => n + i.quantity, 0)} items</p>
+            <p className="text-lg font-extrabold text-white tabular-nums">{formatPrice(total)}</p>
+            <p className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</p>
           </div>
-          <button
-            className="btn-glow rounded-xl py-3 px-6 text-sm font-bold"
-            onClick={handlePlaceOrder}
-            disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled}
-          >
-            {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> :
-              selectedPayment === "razorpay" ? `Pay ₹${getTotal().toLocaleString()}` : "Place Order"}
+          <button onClick={handlePlaceOrder} disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/20 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+            {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "razorpay" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>
       </div>
@@ -953,49 +556,33 @@ export default function CheckoutPage() {
       {/* UPI Fallback Modal */}
       {showUPIModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-3 pb-6 sm:px-0 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-[#0d1b2a] p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
-                  <Smartphone className="h-4 w-4 text-brand-fresh-dim" />
-                </div>
-                <h3 className="text-sm font-bold">Pay via UPI</h3>
+                <span className="text-xl">📱</span>
+                <h3 className="text-sm font-bold text-white">Pay via UPI</h3>
               </div>
-              <button onClick={() => { setShowUPIModal(false); if (!paymentConfirmed) setSelectedPayment("cod"); }}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-border/40 hover:bg-gray-50 transition-all">
-                <X className="h-4 w-4" />
+              <button onClick={() => { setShowUPIModal(false); if (!paymentConfirmed) setSelectedPayment("cod"); }} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 hover:bg-white/5 transition-all">
+                <X className="h-4 w-4 text-[#80949b]" />
               </button>
             </div>
-
-            <p className="text-xs text-muted mb-4 leading-relaxed">
-              Send the exact amount to the UPI ID below using GPay, PhonePe, or Paytm, then confirm.
-            </p>
-
-            <div className="rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-br from-brand-fresh/[0.03] to-white p-5 text-center mb-4">
-              <p className="text-[10px] font-medium text-muted mb-1.5">UPI ID</p>
-              <p className="text-sm font-bold text-brand-dark tracking-wide">{PAYMENT_UPI_ID}</p>
-              <button
-                onClick={() => { navigator.clipboard.writeText(PAYMENT_UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2500); }}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white border border-border/40 px-3 py-1 text-[10px] font-semibold text-brand-fresh-dim hover:text-brand-fresh hover:border-brand-fresh/30 transition-all"
-              >
+            <p className="text-xs text-[#80949b] mb-4">Send the exact amount to the UPI ID below using GPay, PhonePe, or Paytm.</p>
+            <div className="rounded-2xl border-2 border-dashed border-[#2ecc71]/30 bg-[#2ecc71]/5 p-5 text-center mb-4">
+              <p className="text-[10px] font-medium text-[#80949b] mb-1.5">UPI ID</p>
+              <p className="text-sm font-bold text-white tracking-wide">{PAYMENT_UPI_ID}</p>
+              <button onClick={() => { navigator.clipboard.writeText(PAYMENT_UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2500); }} className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-[10px] font-semibold text-[#2ecc71] hover:bg-[#2ecc71]/10 transition-all">
                 <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy UPI ID"}
               </button>
             </div>
-
-            <div className="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/30 px-4 py-3 text-center mb-5">
-              <p className="text-[10px] font-medium text-amber-700">Amount to pay</p>
-              <p className="text-xl font-extrabold text-brand-dark tabular-nums">{formatPrice(getTotal())}</p>
+            <div className="rounded-xl bg-[#f39c12]/10 border border-[#f39c12]/20 px-4 py-3 text-center mb-5">
+              <p className="text-[10px] text-[#f39c12]">Amount to pay</p>
+              <p className="text-xl font-extrabold text-white tabular-nums">{formatPrice(getTotal())}</p>
             </div>
-
-            <button
-              onClick={() => { setPaymentConfirmed(true); setShowUPIModal(false); placeOrder("paid"); }}
-              className="w-full rounded-full bg-gradient-to-r from-brand-fresh to-brand-blue py-3 text-sm font-bold text-white shadow-lg shadow-brand-fresh/20 hover:shadow-xl transition-all"
-            >
+            <button onClick={() => { setPaymentConfirmed(true); setShowUPIModal(false); placeOrder("paid"); }} className="w-full rounded-xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] py-3 text-sm font-bold text-white shadow-lg shadow-[#2ecc71]/20 hover:opacity-95 transition-all">
               <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm
             </button>
-
-            <p className="mt-4 text-[10px] text-center text-muted flex items-center justify-center gap-1">
-              <ExternalLink className="h-3 w-3" /> Open GPay / PhonePe / Paytm to complete payment
+            <p className="mt-4 text-[10px] text-center text-[#80949b] flex items-center justify-center gap-1">
+              <ExternalLink className="h-3 w-3" /> Open GPay / PhonePe / Paytm to complete
             </p>
           </div>
         </div>

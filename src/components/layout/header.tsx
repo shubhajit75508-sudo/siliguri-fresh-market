@@ -23,17 +23,10 @@ export function Header() {
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Siliguri Fresh Mart"
-              width={44}
-              height={44}
-              className="h-11 w-11 object-contain"
-              priority
-            />
-            <div className="leading-none">
-              <div className="text-[17px] font-bold tracking-tight">Siliguri</div>
-              <div className="mt-0.5 text-[13px] font-semibold text-brand-fresh-dim">Fresh Mart</div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2ecc71]/20 text-lg">🛍️</div>
+            <div className="flex flex-col">
+              <span className="text-[15px] font-extrabold text-white leading-tight">Siliguri</span>
+              <span className="text-[10px] font-bold text-[#2ecc71] uppercase tracking-wider leading-tight">Fresh Mart</span>
             </div>
           </Link>
 
@@ -101,10 +94,10 @@ export function Header() {
         {/* Mobile */}
         <div className="flex h-14 items-center gap-3 lg:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="SFM" width={36} height={36} className="h-9 w-9 object-contain" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2ecc71]/20 text-base">🛍️</div>
             <div className="leading-none">
-              <div className="text-sm font-bold">Siliguri</div>
-              <div className="text-[11px] font-semibold text-brand-fresh-dim">Fresh Mart</div>
+              <div className="text-sm font-bold text-white">Siliguri</div>
+              <div className="text-[10px] font-bold text-[#2ecc71] uppercase tracking-wider">Fresh Mart</div>
             </div>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">
