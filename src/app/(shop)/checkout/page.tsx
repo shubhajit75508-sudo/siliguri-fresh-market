@@ -204,7 +204,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-32">
       <div className="mx-auto max-w-lg px-4 py-5">
 
         {/* Brand Bar + Step Pill */}
@@ -274,13 +274,15 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex flex-col items-end gap-2 flex-shrink-0">
                         <span className="text-sm font-extrabold text-white">₹{(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity).toFixed(0)}</span>
-                        <div className="flex items-center gap-0 rounded-lg bg-white/8">
+                        <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-0 rounded-lg bg-white/8">
                           <button onClick={() => { const k = cartLineKey(item); if (item.quantity <= 1) removeItem(k); else updateQuantity(k, item.quantity - 1); }} className="w-7 h-7 flex items-center justify-center text-white/70 hover:bg-white/10 rounded-l-lg text-sm font-bold">−</button>
                           <span className="min-w-[28px] text-center text-[13px] font-bold text-white">{item.quantity}</span>
                           <button onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)} className="w-7 h-7 flex items-center justify-center text-white/70 hover:bg-white/10 rounded-r-lg text-sm font-bold">+</button>
                         </div>
+                          <button onClick={() => removeItem(cartLineKey(item))} className="w-6 h-6 rounded-md bg-[#e74c3c]/10 border border-[#e74c3c]/20 flex items-center justify-center text-[10px] text-[#e74c3c] hover:bg-[#e74c3c]/20 transition-colors">✕</button>
+                        </div>
                       </div>
-                      <button onClick={() => removeItem(cartLineKey(item))} className="absolute top-2 right-4 w-5 h-5 rounded-md bg-[#e74c3c]/10 border border-[#e74c3c]/20 flex items-center justify-center text-[10px] text-[#e74c3c] opacity-0 group-hover:opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">✕</button>
                     </div>
                   );
                 })}
@@ -324,10 +326,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* CTA */}
-            <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] text-white font-extrabold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-[#2ecc71]/30 hover:opacity-95 transition-all active:scale-[0.98] group">
-              Proceed to Delivery <span className="transition-transform group-hover:translate-x-1">→</span>
-            </button>
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
               {["🔒 Secure Checkout","🌿 100% Fresh","🚚 Free Delivery"].map((t) => (
                 <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider">{t}</span>
@@ -456,21 +454,6 @@ export default function CheckoutPage() {
               <div><span className="text-[11px] text-[#80949b] block">Order Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
               <div className="text-right"><span className="text-xs text-[#2ecc71] font-bold block">🚚 FREE</span><span className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</span></div>
             </div>
-
-            {/* Navigation */}
-            <div className="flex gap-3">
-              <button onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-1.5 px-6 py-4 rounded-2xl border-2 border-white/10 text-sm font-semibold text-[#80949b] hover:bg-white/5 transition-colors">← Back</button>
-              <button onClick={() => {
-                if (!detailForm.area.trim() || !detailForm.landmark.trim()) { toast.add("Please fill Area and Landmark", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
-                if (!selectedAddress) {
-                  const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}) };
-                  useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
-                } else { saveAddressDetails(); }
-                setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
-              }} className="flex flex-1 items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] text-white font-extrabold text-[15px] shadow-lg shadow-[#2ecc71]/30 hover:opacity-95 transition-all active:scale-[0.98] group">
-                Proceed to Payment <span className="transition-transform group-hover:translate-x-1">→</span>
-              </button>
-            </div>
           </>
         )}
 
@@ -540,10 +523,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Pay CTA */}
-            <button onClick={handlePlaceOrder} disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled} className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#16a34a] to-[#4ade80] text-[#06140e] font-extrabold text-lg shadow-lg shadow-[#2ecc71]/25 hover:opacity-95 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
-              {confirmingOrder ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : <>Pay {formatPrice(total)} →</>}
-            </button>
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap mb-4">
               {["🔒 Secure Checkout","🌿 100% Fresh","🚚 Free Delivery"].map((t) => (
                 <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider">{t}</span>
@@ -561,7 +540,14 @@ export default function CheckoutPage() {
             <p className="text-lg font-extrabold text-white tabular-nums">{formatPrice(total)}</p>
             <p className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</p>
           </div>
-          <button onClick={step === 1 ? () => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); } : handlePlaceOrder} disabled={step === 1 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/20 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          <button onClick={step === 1 ? () => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); } : step === 2 ? () => {
+            if (!detailForm.area.trim() || !detailForm.landmark.trim()) { toast.add("Please fill Area and Landmark", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+            if (!selectedAddress) {
+              const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}) };
+              useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
+            } else { saveAddressDetails(); }
+            setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
+          } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/20 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "razorpay" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>

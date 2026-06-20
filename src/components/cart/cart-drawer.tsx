@@ -143,14 +143,14 @@ export function CartDrawer() {
                             </p>
                             <button
                               onClick={() => removeItem(lineKey)}
-                              className="text-[11px] font-semibold text-[#80949b] transition-all hover:text-[#e74c3c] sm:opacity-0 sm:group-hover:opacity-100"
+                              className="text-[11px] font-semibold text-[#80949b] transition-all hover:text-[#e74c3c] opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                             >
                               Remove
                             </button>
                           </div>
                         </div>
                         {/* Quantity stepper */}
-                        <div className="absolute right-3 top-3 sm:static sm:self-end">
+                        <div className="self-end">
                           <div className="flex items-center gap-1 rounded-xl bg-white/8 px-1 py-1">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}

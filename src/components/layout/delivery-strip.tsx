@@ -51,7 +51,7 @@ export function DeliveryStrip() {
   const cityLabel = deliveryPincode === "734001" ? "Siliguri" : `Pincode`;
 
   return (
-    <div className="border-b border-border bg-surface-2">
+    <div className="border-b border-white/5 bg-[#0a1f1c]">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
         <div className="relative" ref={ref}>
           <button
