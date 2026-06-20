@@ -59,7 +59,7 @@ export default function CheckoutPage() {
   const [addressMissing, setAddressMissing] = useState(false);
   const addressRef = useRef<HTMLDivElement>(null);
 
-  const { location: liveLocation, locating, error: geoError, resolvedAddress, getLocation } = useGeolocation();
+  const { location: liveLocation, locating, error: geoError, resolvedAddress, resolvedFields, getLocation } = useGeolocation();
 
   const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "" });
 
@@ -81,6 +81,23 @@ export default function CheckoutPage() {
       });
     }
   }, [selectedAddressId]);
+
+  useEffect(() => {
+    if (resolvedFields && liveLocation) {
+      setNewAddress(f => ({
+        city: resolvedFields.city || f.city,
+        pincode: resolvedFields.pincode || f.pincode,
+        area: resolvedFields.area || f.area,
+        landmark: resolvedFields.landmark || f.landmark,
+        building: resolvedFields.building || f.building,
+        flat: f.flat,
+        floor: f.floor,
+      }));
+      if (!selectedAddress) {
+        setAddressMissing(false);
+      }
+    }
+  }, [resolvedFields]);
 
   const handleToggleCoins = () => {
     if (coinsRedeemed > 0) {

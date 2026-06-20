@@ -7,11 +7,20 @@ interface GeoLocation {
   lng: number;
 }
 
+interface ResolvedAddress {
+  area?: string;
+  landmark?: string;
+  building?: string;
+  city?: string;
+  pincode?: string;
+}
+
 interface UseGeolocationReturn {
   location: GeoLocation | null;
   locating: boolean;
   error: string;
   resolvedAddress: string;
+  resolvedFields: ResolvedAddress | null;
   getLocation: () => void;
   reset: () => void;
 }
@@ -21,6 +30,7 @@ export function useGeolocation(): UseGeolocationReturn {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState("");
   const [resolvedAddress, setResolvedAddress] = useState("");
+  const [resolvedFields, setResolvedFields] = useState<ResolvedAddress | null>(null);
 
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -39,6 +49,9 @@ export function useGeolocation(): UseGeolocationReturn {
           .then((data) => {
             if (data?.display_name) {
               setResolvedAddress(data.display_name);
+            }
+            if (data?.address) {
+              setResolvedFields(data.address);
             }
           })
           .catch(() => {});
@@ -59,7 +72,8 @@ export function useGeolocation(): UseGeolocationReturn {
     setLocation(null);
     setError("");
     setResolvedAddress("");
+    setResolvedFields(null);
   }, []);
 
-  return { location, locating, error, resolvedAddress, getLocation, reset };
+  return { location, locating, error, resolvedAddress, resolvedFields, getLocation, reset };
 }

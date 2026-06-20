@@ -20,7 +20,16 @@ export async function GET(req: NextRequest) {
       ? `${addr.house_number}${road ? ` ${road}` : ""}`
       : road;
     const line = building || neighbourhood || addr.city_district || addr.town || addr.city || data.display_name;
-    return NextResponse.json({ display_name: line, full: data });
+    return NextResponse.json({
+      display_name: line,
+      address: {
+        area: neighbourhood || addr.suburb || addr.city_district || addr.town || addr.county || "",
+        landmark: road || addr.amenity || addr.leisure || "",
+        building: addr.house_number || addr.building || "",
+        city: addr.city || addr.town || addr.county || "",
+        pincode: addr.postcode || "",
+      },
+    });
   } catch {
     return NextResponse.json({ error: "Geocode failed" }, { status: 502 });
   }
