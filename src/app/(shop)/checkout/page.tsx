@@ -328,14 +328,14 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50/50">
       {/* Premium Header */}
-      <div className="sticky top-0 z-10 border-b border-border/30 bg-white/80 backdrop-blur-xl">
+      <div className="sticky top-0 z-10 border-b border-white/5 bg-[#0d1b2a]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <button onClick={() => router.push("/cart")} className="group flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-all">
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             <span>Cart</span>
           </button>
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-brand-fresh to-brand-blue text-white shadow-sm">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#2ecc71] text-[#0a1f1c]">
               <ShoppingBag className="h-3 w-3" />
             </div>
             <h1 className="text-base font-bold tracking-tight">Checkout</h1>
