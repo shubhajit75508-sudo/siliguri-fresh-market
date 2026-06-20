@@ -346,261 +346,338 @@ export default function CheckoutPage() {
           {/* ─── Main Column ─── */}
           <div className="space-y-5 lg:col-span-3">
 
-            {/* Delivery Address */}
-            <div ref={addressRef} className={`group rounded-2xl border bg-white shadow-sm transition-all duration-500 ${addressMissing ? "border-brand-red/60 ring-4 ring-brand-red/20 shadow-lg shadow-brand-red/10 animate-pulse" : "border-border/50 hover:shadow-md"}`}>
-              {addressMissing && (
-                <div className="flex items-center gap-2 bg-gradient-to-r from-brand-red/10 to-brand-red/5 px-5 py-2.5 border-b border-brand-red/20">
-                  <AlertTriangle className="h-4 w-4 text-brand-red animate-bounce" />
-                  <span className="text-xs font-semibold text-brand-red">Address required — please fill in your delivery details</span>
-                </div>
-              )}
-              <div className="flex items-center justify-between border-b border-border/30 px-5 py-4">
-                <div className="flex items-center gap-2.5">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10"}`}>
-                    <MapPin className={`h-4 w-4 transition-colors duration-500 ${addressMissing ? "text-brand-red" : "text-brand-fresh-dim"}`} />
+            {/* Step 1 — Delivery Address */}
+            <div ref={addressRef} className={`relative rounded-3xl overflow-hidden transition-all duration-500 ${addressMissing ? "ring-4 ring-brand-red/25 shadow-2xl shadow-brand-red/15" : "shadow-xl hover:shadow-2xl"}`}>
+              {/* Animated gradient border */}
+              <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br p-[2px] ${addressMissing ? "from-brand-red via-brand-red/50 to-brand-orange animate-pulse" : "from-brand-fresh/40 via-brand-blue/30 to-brand-fresh/40"}`}>
+                <div className="h-full w-full rounded-3xl bg-white" />
+              </div>
+              {/* Glass inner */}
+              <div className="relative rounded-3xl bg-white/90 backdrop-blur-sm">
+                {/* Error banner */}
+                {addressMissing && (
+                  <div className="flex items-center gap-3 bg-gradient-to-r from-brand-red/15 via-brand-red/10 to-brand-orange/5 px-5 py-3 border-b border-brand-red/20">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-red/20">
+                      <AlertTriangle className="h-4 w-4 text-brand-red animate-bounce" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-brand-red">Address Required</p>
+                      <p className="text-[10px] text-brand-red/70">Fill in your delivery details to continue</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-sm font-bold">Delivery Address</h2>
-                    <p className="text-[10px] text-muted">Where should we deliver?</p>
-                  </div>
-                </div>
-                {selectedAddress && (
-                  <Badge variant={requiredDetailsFilled ? "fresh" : "orange"} className="text-[10px] px-3 py-1">
-                    {requiredDetailsFilled ? "Ready" : "Details needed"}
-                  </Badge>
                 )}
-                {!selectedAddress && addressMissing && (
-                  <Badge variant="red" className="text-[10px] px-3 py-1 animate-pulse">
-                    Missing
-                  </Badge>
+
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border/20">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center rounded-full bg-brand-dark text-white text-[10px] font-bold w-6 h-6">
+                      1
+                    </div>
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/15 to-brand-blue/15"}`}>
+                      <MapPin className={`h-5 w-5 transition-colors duration-500 ${addressMissing ? "text-brand-red" : "text-brand-fresh-dim"}`} />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-extrabold tracking-tight">Delivery Address</h2>
+                      <p className="text-[10px] text-muted font-medium">Set your drop-off location</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {selectedAddress ? (
+                      <Badge variant={requiredDetailsFilled ? "fresh" : "orange"} className="text-[10px] px-2.5 py-0.5">
+                        {requiredDetailsFilled ? "✓ Ready" : "Add details"}
+                      </Badge>
+                    ) : (
+                      <Badge variant="orange" className="text-[10px] px-2.5 py-0.5">Paused</Badge>
+                    )}
+                  </div>
+                </div>
+
+                {!selectedAddress ? (
+                  <div className="p-5 space-y-4">
+                    <div className="text-center py-2">
+                      <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/8 to-brand-blue/8"}`}>
+                        <MapPin className={`h-10 w-10 transition-all duration-500 ${addressMissing ? "text-brand-red animate-bounce" : "text-brand-fresh-dim/60"}`} />
+                      </div>
+                      <p className="mt-3 text-sm font-bold text-brand-dark">Set Your Delivery Address</p>
+                      <p className="mt-0.5 text-xs text-muted max-w-xs mx-auto leading-relaxed">Let us know where you are so our delivery partner can find you quickly.</p>
+                    </div>
+
+                    {/* Use My Location — prominent */}
+                    <button type="button" onClick={getLocation} disabled={locating}
+                      className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-brand-fresh to-brand-blue p-[1.5px] group disabled:opacity-60"
+                    >
+                      <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-white px-4 py-3.5 group-hover:bg-transparent group-hover:text-white transition-all duration-300">
+                        <Navigation className={`h-5 w-5 text-brand-fresh-dim group-hover:text-white transition-all ${locating ? "animate-spin" : "group-hover:scale-110"}`} />
+                        <span className="text-sm font-bold text-brand-dark group-hover:text-white transition-all">
+                          {locating ? "Detecting your location..." : liveLocation ? "✓ Location Detected" : "📍 Use My Current Location"}
+                        </span>
+                      </div>
+                    </button>
+                    {resolvedAddress && (
+                      <div className="rounded-xl bg-brand-fresh/5 border border-brand-fresh/10 px-4 py-2.5 text-center">
+                        <p className="text-[11px] text-brand-fresh-dim font-medium">{resolvedAddress}</p>
+                      </div>
+                    )}
+                    {geoError && (
+                      <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 px-4 py-2 text-center">
+                        <p className="text-[10px] text-brand-red">{geoError}</p>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-3 pt-1">
+                      <div className="h-px flex-1 bg-border/50" />
+                      <span className="text-[10px] text-muted font-medium uppercase tracking-widest">or type manually</span>
+                      <div className="h-px flex-1 bg-border/50" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">City *</label>
+                        <div className="mt-1 relative">
+                          <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
+                          <input value={newAddress.city} onChange={(e) => setNewAddress(f => ({ ...f, city: e.target.value }))}
+                            placeholder="Siliguri"
+                            className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Pincode *</label>
+                        <div className="mt-1 relative">
+                          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
+                          <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))}
+                            placeholder="734009"
+                            className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Area / Locality *</label>
+                      <div className="mt-1 relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
+                        <input value={newAddress.area} onChange={(e) => setNewAddress(f => ({ ...f, area: e.target.value }))}
+                          placeholder="e.g. Salbari, Dabgram"
+                          className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
+                        <input value={newAddress.landmark} onChange={(e) => setNewAddress(f => ({ ...f, landmark: e.target.value }))}
+                          placeholder="Near City Centre"
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building *</label>
+                        <input value={newAddress.building} onChange={(e) => setNewAddress(f => ({ ...f, building: e.target.value }))}
+                          placeholder="Green Tower"
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt</label>
+                        <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
+                          placeholder="3B"
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor</label>
+                        <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
+                          placeholder="2nd"
+                          className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                      </div>
+                    </div>
+                    <Button variant="default" size="lg" className="w-full rounded-2xl py-3.5 text-sm font-bold shadow-xl shadow-brand-dark/15 hover:shadow-2xl hover:shadow-brand-dark/20 transition-all"
+                      disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
+                      onClick={() => {
+                        if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
+                          toast.add("Please fill all required fields", "error");
+                          return;
+                        }
+                        const addr: Address = {
+                          id: crypto.randomUUID(),
+                          label: "Home",
+                          line1: `${newAddress.building.trim()}, ${newAddress.area.trim()}`,
+                          city: newAddress.city.trim(),
+                          pincode: newAddress.pincode.trim(),
+                          area: newAddress.area.trim(),
+                          landmark: newAddress.landmark.trim(),
+                          building: newAddress.building.trim(),
+                          flat: newAddress.flat.trim() || undefined,
+                          floor: newAddress.floor.trim() || undefined,
+                          isDefault: addresses.length === 0,
+                          ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}),
+                        };
+                        useUserStore.getState().addAddress(addr);
+                        setSelectedAddressId(addr.id);
+                        setDetailForm({
+                          area: addr.area ?? "",
+                          landmark: addr.landmark ?? "",
+                          building: addr.building ?? "",
+                          flat: addr.flat ?? "",
+                          floor: addr.floor ?? "",
+                        });
+                        toast.add("✓ Address saved! Ready to check out");
+                      }}
+                    >
+                      <CheckCircle className="mr-2 h-5 w-5" /> Save &amp; Continue to Payment
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-5">
+                    {addresses.length > 1 && (
+                      <div className="mb-4 flex flex-wrap gap-2">
+                        {addresses.map((addr) => {
+                          const isSelected = selectedAddressId === addr.id || (!selectedAddressId && addr.isDefault);
+                          return (
+                            <button
+                              key={addr.id}
+                              onClick={() => setSelectedAddressId(addr.id)}
+                              className={`rounded-xl border px-3.5 py-2.5 text-left text-xs transition-all ${
+                                isSelected
+                                  ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/5 to-brand-blue/5 ring-2 ring-brand-fresh/15 shadow-md"
+                                  : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
+                              }`}
+                            >
+                              <span className="font-semibold">{addr.label}</span>
+                              <span className="block text-muted mt-0.5 text-[10px]">{addr.line1?.slice(0, 22)}...</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className={`rounded-2xl p-4 transition-all duration-300 ${addressMissing ? "bg-brand-red/5 border-2 border-brand-red/30 ring-2 ring-brand-red/15" : "bg-gradient-to-br from-gray-50 via-white to-brand-fresh/[0.02] border border-border/20"}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-brand-fresh/10">
+                              <MapPin className="h-3.5 w-3.5 text-brand-fresh-dim" />
+                            </div>
+                            <p className="text-sm font-bold text-brand-dark">{selectedAddress.line1}</p>
+                          </div>
+                          <p className="text-xs text-muted pl-9.5">
+                            {selectedAddress.city}{selectedAddress.pincode ? ` — ${selectedAddress.pincode}` : ""}
+                          </p>
+                          {selectedAddress.area && (
+                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
+                              <Layers className="h-3 w-3" /> {selectedAddress.area}
+                            </p>
+                          )}
+                          {selectedAddress.landmark && (
+                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
+                              <Dot className="h-3 w-3 text-brand-fresh" /> Near {selectedAddress.landmark}
+                            </p>
+                          )}
+                          {selectedAddress.building && (
+                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
+                              <Building2 className="h-3 w-3" />
+                              {selectedAddress.building}
+                              {selectedAddress.flat ? `, Flat ${selectedAddress.flat}` : ""}
+                              {selectedAddress.floor ? `, Floor ${selectedAddress.floor}` : ""}
+                            </p>
+                          )}
+                          {selectedAddress.lat && selectedAddress.lng && (
+                            <div className="pl-9.5 pt-1">
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-fresh/10 border border-brand-fresh/15 px-2.5 py-0.5 text-[10px] font-semibold text-brand-fresh-dim">
+                                <Navigation className="h-3 w-3" /> GPS Location Saved
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setShowAddressForm(!showAddressForm)}
+                          className="shrink-0 rounded-xl border-2 border-brand-fresh/20 bg-white px-4 py-2 text-xs font-bold text-brand-fresh-dim hover:bg-brand-fresh hover:text-white hover:border-brand-fresh transition-all shadow-sm"
+                        >
+                          {showAddressForm ? "Done" : "Edit Details"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {showAddressForm && (
+                      <div className="mt-4 space-y-3 border-t-2 border-brand-fresh/10 pt-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1 w-1 rounded-full bg-brand-fresh" />
+                          <p className="text-[11px] font-bold text-muted uppercase tracking-wider">Delivery Details</p>
+                        </div>
+                        <button type="button" onClick={getLocation} disabled={locating}
+                          className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-brand-fresh to-brand-blue p-[1.5px] group disabled:opacity-60"
+                        >
+                          <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-white px-4 py-3.5 group-hover:bg-transparent group-hover:text-white transition-all duration-300">
+                            <Navigation className={`h-5 w-5 text-brand-fresh-dim group-hover:text-white transition-all ${locating ? "animate-spin" : "group-hover:scale-110"}`} />
+                            <span className="text-sm font-bold text-brand-dark group-hover:text-white transition-all">
+                              {locating ? "Detecting location..." : liveLocation ? "✓ Location Detected" : "📍 Use My Current Location"}
+                            </span>
+                          </div>
+                        </button>
+                        {resolvedAddress && (
+                          <div className="rounded-xl bg-brand-fresh/5 border border-brand-fresh/10 px-4 py-2.5 text-center">
+                            <p className="text-[11px] text-brand-fresh-dim font-medium">{resolvedAddress}</p>
+                          </div>
+                        )}
+                        {geoError && (
+                          <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 px-4 py-2 text-center">
+                            <p className="text-[10px] text-brand-red">{geoError}</p>
+                          </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Area / Locality *</label>
+                            <div className="mt-1 relative">
+                              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
+                              <input value={detailForm.area} onChange={(e) => setDetailForm(f => ({ ...f, area: e.target.value }))}
+                                placeholder="e.g. Salbari"
+                                className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
+                            <input value={detailForm.landmark} onChange={(e) => setDetailForm(f => ({ ...f, landmark: e.target.value }))}
+                              placeholder="Near City Centre"
+                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building *</label>
+                            <div className="mt-1 relative">
+                              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
+                              <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))}
+                                placeholder="Green Tower"
+                                className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt</label>
+                            <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
+                              placeholder="3B"
+                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor</label>
+                            <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
+                              placeholder="2nd"
+                              className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                          </div>
+                        </div>
+                        <Button variant="fresh" size="sm" className="rounded-xl text-xs font-bold shadow-lg shadow-brand-fresh/20 hover:shadow-xl hover:shadow-brand-fresh/30 transition-all"
+                          onClick={() => {
+                            if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim()) {
+                              toast.add("Please fill Area, Landmark and Building", "error");
+                              return;
+                            }
+                            saveAddressDetails();
+                            setShowAddressForm(false);
+                            toast.add("✓ Delivery details saved!");
+                          }}
+                        >
+                          <CheckCircle className="mr-1.5 h-4 w-4" /> Save Details
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-
-              {!selectedAddress ? (
-                <div className="p-5 space-y-4">
-                  <div className="text-center">
-                    <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full transition-all duration-500 ${addressMissing ? "bg-brand-red/10 scale-110" : "bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10"}`}>
-                      <MapPin className={`h-8 w-8 transition-all duration-500 ${addressMissing ? "text-brand-red animate-bounce" : "text-brand-fresh-dim"}`} />
-                    </div>
-                    <p className="mt-3 text-sm font-bold">Where should we deliver?</p>
-                    <p className="mt-0.5 text-xs text-muted">Fill in your details below to get started</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-medium text-muted">City *</label>
-                      <input value={newAddress.city} onChange={(e) => setNewAddress(f => ({ ...f, city: e.target.value }))}
-                        placeholder="Siliguri"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-medium text-muted">Pincode *</label>
-                      <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))}
-                        placeholder="734009"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-medium text-muted">Area / Locality *</label>
-                    <input value={newAddress.area} onChange={(e) => setNewAddress(f => ({ ...f, area: e.target.value }))}
-                      placeholder="e.g. Salbari"
-                      className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-medium text-muted">Landmark *</label>
-                      <input value={newAddress.landmark} onChange={(e) => setNewAddress(f => ({ ...f, landmark: e.target.value }))}
-                        placeholder="Near City Centre"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-medium text-muted">Building *</label>
-                      <input value={newAddress.building} onChange={(e) => setNewAddress(f => ({ ...f, building: e.target.value }))}
-                        placeholder="Green Tower"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-medium text-muted">Flat</label>
-                      <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
-                        placeholder="3B"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-medium text-muted">Floor</label>
-                      <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
-                        placeholder="2nd"
-                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                    </div>
-                  </div>
-                  <button type="button" onClick={getLocation} disabled={locating}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-3 text-sm font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
-                  >
-                    <Navigation className={`h-5 w-5 ${locating ? "animate-spin" : ""}`} />
-                    {locating ? "Getting location..." : liveLocation ? "✓ Location acquired" : "📍 Use My Current Location"}
-                  </button>
-                  {resolvedAddress && (
-                    <p className="text-[10px] text-muted text-center bg-gray-50 rounded-lg px-3 py-2">{resolvedAddress}</p>
-                  )}
-                  {geoError && (
-                    <p className="text-[10px] text-brand-red text-center bg-brand-red/5 rounded-lg px-3 py-2">{geoError}</p>
-                  )}
-                  <Button variant="default" size="sm" className="w-full rounded-xl py-3 shadow-lg shadow-brand-dark/20"
-                    disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
-                    onClick={() => {
-                      if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
-                        toast.add("Please fill all required fields", "error");
-                        return;
-                      }
-                      const addr: Address = {
-                        id: crypto.randomUUID(),
-                        label: "Home",
-                        line1: `${newAddress.building.trim()}, ${newAddress.area.trim()}`,
-                        city: newAddress.city.trim(),
-                        pincode: newAddress.pincode.trim(),
-                        area: newAddress.area.trim(),
-                        landmark: newAddress.landmark.trim(),
-                        building: newAddress.building.trim(),
-                        flat: newAddress.flat.trim() || undefined,
-                        floor: newAddress.floor.trim() || undefined,
-                        isDefault: addresses.length === 0,
-                        ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}),
-                      };
-                      useUserStore.getState().addAddress(addr);
-                      setSelectedAddressId(addr.id);
-                      setDetailForm({
-                        area: addr.area ?? "",
-                        landmark: addr.landmark ?? "",
-                        building: addr.building ?? "",
-                        flat: addr.flat ?? "",
-                        floor: addr.floor ?? "",
-                      });
-                      toast.add("Address saved! Ready to order.");
-                    }}
-                  >
-                    <CheckCircle className="mr-1.5 h-4 w-4" /> Save & Continue
-                  </Button>
-                </div>
-              ) : (
-                <div className="p-5">
-                  {addresses.length > 1 && (
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {addresses.map((addr) => {
-                        const isSelected = selectedAddressId === addr.id || (!selectedAddressId && addr.isDefault);
-                        return (
-                          <button
-                            key={addr.id}
-                            onClick={() => setSelectedAddressId(addr.id)}
-                            className={`rounded-xl border px-3.5 py-2.5 text-left text-xs transition-all ${
-                              isSelected
-                                ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/5 to-brand-blue/5 ring-1 ring-brand-fresh/20 shadow-sm"
-                                : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
-                            }`}
-                          >
-                            <span className="font-semibold">{addr.label}</span>
-                            <span className="block text-muted mt-0.5">{addr.line1?.slice(0, 22)}...</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  <div className={`rounded-xl p-4 transition-all duration-300 ${addressMissing ? "bg-brand-red/5 border border-brand-red/30 ring-1 ring-brand-red/20" : "bg-gradient-to-r from-gray-50 to-white border border-border/30"}`}>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-fresh/10">
-                            <MapPin className="h-3 w-3 text-brand-fresh-dim" />
-                          </div>
-                          <p className="text-sm font-semibold">{selectedAddress.line1}</p>
-                        </div>
-                        <p className="text-xs text-muted pl-8">{selectedAddress.city} — {selectedAddress.pincode}</p>
-                        {selectedAddress.landmark && (
-                          <p className="text-xs text-muted pl-8 flex items-center gap-1">
-                            <Dot className="h-3 w-3 text-brand-fresh" /> Near {selectedAddress.landmark}
-                          </p>
-                        )}
-                        {selectedAddress.lat && selectedAddress.lng && (
-                          <p className="text-[10px] text-brand-fresh-dim pl-8 flex items-center gap-1 mt-1">
-                            <Navigation className="h-3 w-3" /> GPS coordinates saved
-                          </p>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => setShowAddressForm(!showAddressForm)}
-                        className="shrink-0 rounded-lg border border-border/40 bg-white px-3 py-1.5 text-[11px] font-semibold text-brand-fresh-dim hover:text-brand-fresh hover:border-brand-fresh/30 transition-all shadow-sm"
-                      >
-                        {showAddressForm ? "Done" : "Edit"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {showAddressForm && (
-                    <div className="mt-4 space-y-3 border-t border-border/30 pt-4">
-                      <p className="text-[11px] font-semibold text-muted">Delivery details</p>
-                      <button type="button" onClick={getLocation} disabled={locating}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-3 text-sm font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
-                      >
-                        <Navigation className={`h-5 w-5 ${locating ? "animate-spin" : ""}`} />
-                        {locating ? "Getting location..." : liveLocation ? "✓ Location acquired" : "📍 Use My Current Location"}
-                      </button>
-                      {resolvedAddress && (
-                        <p className="text-[10px] text-muted text-center bg-gray-50 rounded-lg px-3 py-2">{resolvedAddress}</p>
-                      )}
-                      {geoError && (
-                        <p className="text-[10px] text-brand-red text-center bg-brand-red/5 rounded-lg px-3 py-2">{geoError}</p>
-                      )}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[10px] font-medium text-muted">Area / Locality *</label>
-                          <input value={detailForm.area} onChange={(e) => setDetailForm(f => ({ ...f, area: e.target.value }))}
-                            placeholder="e.g. Salbari"
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-medium text-muted">Landmark *</label>
-                          <input value={detailForm.landmark} onChange={(e) => setDetailForm(f => ({ ...f, landmark: e.target.value }))}
-                            placeholder="Near City Centre"
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <label className="text-[10px] font-medium text-muted">Building *</label>
-                          <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))}
-                            placeholder="Green Tower"
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-medium text-muted">Flat</label>
-                          <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
-                            placeholder="3B"
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-medium text-muted">Floor</label>
-                          <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
-                            placeholder="2nd"
-                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
-                        </div>
-                      </div>
-                      <Button variant="fresh" size="sm" className="rounded-full text-xs shadow-sm"
-                        onClick={() => {
-                          if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim()) {
-                            toast.add("Please fill Area, Landmark and Building", "error");
-                            return;
-                          }
-                          saveAddressDetails();
-                          setShowAddressForm(false);
-                          toast.add("Delivery details saved");
-                        }}
-                      >
-                        <CheckCircle className="mr-1 h-3.5 w-3.5" /> Save Details
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Order Items */}
