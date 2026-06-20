@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -8,7 +8,7 @@ import {
   Smartphone, Building2, Hash, Layers, Package, Copy, X, ExternalLink,
   ArrowLeft, Loader2, Wallet, Banknote, CreditCard as CardIcon, Trash2,
   Plus, Minus, Ticket, Zap, ShoppingBag, Sparkles, Gift, Truck,
-  ChevronDown, CircleDot, Dot,
+  ChevronDown, CircleDot, Dot, Navigation, AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import { useUserStore } from "@/store/user-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrderStore } from "@/store/order-store";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
 import { ReturnPolicyBanner } from "@/components/ui/return-policy";
@@ -55,6 +56,12 @@ export default function CheckoutPage() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "" });
   const [showCoins, setShowCoins] = useState(false);
+  const [addressMissing, setAddressMissing] = useState(false);
+  const addressRef = useRef<HTMLDivElement>(null);
+
+  const { location: liveLocation, locating, error: geoError, resolvedAddress, getLocation } = useGeolocation();
+
+  const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "" });
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses.find((a) => a.isDefault) || addresses[0];
   const coinBalance = user?.loyaltyPoints ?? 0;
@@ -185,12 +192,18 @@ export default function CheckoutPage() {
       return;
     }
     if (!selectedAddress) {
-      toast.add("Please add a delivery address in your account first", "error");
+      toast.add("Please add or select a delivery address", "error");
+      setAddressMissing(true);
+      addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => setAddressMissing(false), 3000);
       return;
     }
     if (!requiredDetailsFilled) {
       toast.add("Please fill Area, Landmark, and Building details", "error");
       setShowAddressForm(true);
+      setAddressMissing(true);
+      addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => setAddressMissing(false), 3000);
       return;
     }
 
@@ -208,12 +221,14 @@ export default function CheckoutPage() {
     const total = getTotal();
 
     (async () => {
+      const addressCords = liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {};
       const finalId = await createOrder({
         id: orderId,
         items,
         total,
         address: {
           ...selectedAddress,
+          ...addressCords,
           area: detailForm.area.trim() || selectedAddress.area || undefined,
           landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined,
           building: detailForm.building.trim() || selectedAddress.building || undefined,
@@ -332,7 +347,7 @@ export default function CheckoutPage() {
           <div className="space-y-5 lg:col-span-3">
 
             {/* Delivery Address */}
-            <div className="group rounded-2xl border border-border/50 bg-white shadow-sm transition-all hover:shadow-md">
+            <div ref={addressRef} className={`group rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${addressMissing ? "border-brand-red/60 ring-2 ring-brand-red/20 animate-pulse" : "border-border/50"}`}>
               <div className="flex items-center justify-between border-b border-border/30 px-5 py-4">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
@@ -351,17 +366,109 @@ export default function CheckoutPage() {
               </div>
 
               {!selectedAddress ? (
-                <div className="p-8 text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
-                    <MapPin className="h-7 w-7 text-muted" />
+                <div className="p-5 space-y-4">
+                  <div className="text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
+                      <MapPin className="h-7 w-7 text-muted" />
+                    </div>
+                    <p className="mt-3 text-sm font-medium">No saved addresses found</p>
+                    <p className="mt-0.5 text-xs text-muted">Fill in your delivery details below</p>
                   </div>
-                  <p className="mt-3 text-sm font-medium">No saved addresses found</p>
-                  <p className="mt-0.5 text-xs text-muted">Add one to continue with checkout</p>
-                  <Link href="/account/addresses">
-                    <Button variant="fresh" size="sm" className="mt-4 rounded-full shadow-sm">
-                      <Plus className="mr-1 h-3.5 w-3.5" /> Add Address
-                    </Button>
-                  </Link>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium text-muted">City *</label>
+                      <input value={newAddress.city} onChange={(e) => setNewAddress(f => ({ ...f, city: e.target.value }))}
+                        placeholder="Siliguri"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-muted">Pincode *</label>
+                      <input value={newAddress.pincode} onChange={(e) => setNewAddress(f => ({ ...f, pincode: e.target.value }))}
+                        placeholder="734009"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-medium text-muted">Area / Locality *</label>
+                    <input value={newAddress.area} onChange={(e) => setNewAddress(f => ({ ...f, area: e.target.value }))}
+                      placeholder="e.g. Salbari"
+                      className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium text-muted">Landmark *</label>
+                      <input value={newAddress.landmark} onChange={(e) => setNewAddress(f => ({ ...f, landmark: e.target.value }))}
+                        placeholder="Near City Centre"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-muted">Building *</label>
+                      <input value={newAddress.building} onChange={(e) => setNewAddress(f => ({ ...f, building: e.target.value }))}
+                        placeholder="Green Tower"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium text-muted">Flat</label>
+                      <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
+                        placeholder="3B"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-muted">Floor</label>
+                      <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
+                        placeholder="2nd"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <button type="button" onClick={getLocation} disabled={locating}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-2.5 text-xs font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
+                  >
+                    <Navigation className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
+                    {locating ? "Getting location..." : liveLocation ? "📍 Location acquired" : "Use My Current Location"}
+                  </button>
+                  {resolvedAddress && (
+                    <p className="text-[10px] text-muted text-center">{resolvedAddress}</p>
+                  )}
+                  {geoError && (
+                    <p className="text-[10px] text-brand-red text-center">{geoError}</p>
+                  )}
+                  <Button variant="default" size="sm" className="w-full rounded-xl shadow-lg"
+                    disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
+                    onClick={() => {
+                      if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
+                        toast.add("Please fill all required fields", "error");
+                        return;
+                      }
+                      const addr: Address = {
+                        id: crypto.randomUUID(),
+                        label: "Home",
+                        line1: `${newAddress.building.trim()}, ${newAddress.area.trim()}`,
+                        city: newAddress.city.trim(),
+                        pincode: newAddress.pincode.trim(),
+                        area: newAddress.area.trim(),
+                        landmark: newAddress.landmark.trim(),
+                        building: newAddress.building.trim(),
+                        flat: newAddress.flat.trim() || undefined,
+                        floor: newAddress.floor.trim() || undefined,
+                        isDefault: addresses.length === 0,
+                        ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}),
+                      };
+                      useUserStore.getState().addAddress(addr);
+                      setSelectedAddressId(addr.id);
+                      setDetailForm({
+                        area: addr.area ?? "",
+                        landmark: addr.landmark ?? "",
+                        building: addr.building ?? "",
+                        flat: addr.flat ?? "",
+                        floor: addr.floor ?? "",
+                      });
+                      toast.add("Address saved! Ready to order.");
+                    }}
+                  >
+                    <CheckCircle className="mr-1 h-4 w-4" /> Save & Continue
+                  </Button>
                 </div>
               ) : (
                 <div className="p-5">
@@ -415,6 +522,18 @@ export default function CheckoutPage() {
                   {showAddressForm && (
                     <div className="mt-4 space-y-3 border-t border-border/30 pt-4">
                       <p className="text-[11px] font-semibold text-muted">Delivery details</p>
+                      <button type="button" onClick={getLocation} disabled={locating}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-brand-blue/[0.03] px-4 py-2.5 text-xs font-semibold text-brand-fresh-dim hover:bg-brand-fresh/5 hover:border-brand-fresh/50 transition-all disabled:opacity-50"
+                      >
+                        <Navigation className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
+                        {locating ? "Getting location..." : liveLocation ? "📍 Location acquired" : "Use My Current Location"}
+                      </button>
+                      {resolvedAddress && (
+                        <p className="text-[10px] text-muted text-center">{resolvedAddress}</p>
+                      )}
+                      {geoError && (
+                        <p className="text-[10px] text-brand-red text-center">{geoError}</p>
+                      )}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-[10px] font-medium text-muted">Area / Locality *</label>
