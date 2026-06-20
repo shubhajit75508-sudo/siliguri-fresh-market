@@ -9,30 +9,46 @@ export async function GET() {
   const supabase = createClient(url, key);
 
   const results: string[] = [];
+  const sql: string[] = [];
 
-  try {
-    const { error: e1 } = await supabase.rpc("exec_sql", {
-      sql: "ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'unpaid';",
-    });
-    results.push(e1 ? `payment_status: ${e1.message}` : "payment_status: OK");
+  const add = (label: string, statement: string) => {
+    sql.push(statement);
+    try { supabase.rpc("exec_sql", { sql: statement }).then(({ error }) => {
+      results.push(error ? `${label}: ${error.message}` : `${label}: OK`);
+    }); } catch { results.push(`${label}: skipped (exec_sql unavailable)`); }
+  };
 
-    const { error: e2 } = await supabase.rpc("exec_sql", {
-      sql: "ALTER TABLE public.orders DROP CONSTRAINT IF EXISTS orders_status_check; ALTER TABLE public.orders ADD CONSTRAINT orders_status_check CHECK (status IN ('pending','received','out_for_delivery','delivered','cancelled'));",
-    });
-    results.push(e2 ? `status check: ${e2.message}` : "status check: OK");
-  } catch (e: unknown) {
-    const err = e as Error;
-    return NextResponse.json({
-      note: "exec_sql RPC not available. Run SQL manually in Supabase Dashboard.",
-      error: err.message,
-      sql: [
-        "ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'unpaid';",
-        "ALTER TABLE public.orders DROP CONSTRAINT IF EXISTS orders_status_check;",
-        "ALTER TABLE public.orders ADD CONSTRAINT orders_status_check CHECK (status IN ('pending','received','out_for_delivery','delivered','cancelled'));",
-        "ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;",
-      ],
-    });
-  }
+  add("payment_status column",
+    "ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'unpaid';"
+  );
+  add("status check constraint",
+    "ALTER TABLE public.orders DROP CONSTRAINT IF EXISTS orders_status_check; ALTER TABLE public.orders ADD CONSTRAINT orders_status_check CHECK (status IN ('pending','received','out_for_delivery','delivered','cancelled'));"
+  );
+  add("delivery_locations table",
+    `CREATE TABLE IF NOT EXISTS public.delivery_locations (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      delivery_boy_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+      order_id TEXT NOT NULL,
+      lat DOUBLE PRECISION NOT NULL,
+      lng DOUBLE PRECISION NOT NULL,
+      heading DOUBLE PRECISION DEFAULT 0,
+      speed DOUBLE PRECISION DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );`
+  );
+  add("unique index boy+order",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_delivery_locations_boy_order ON public.delivery_locations(delivery_boy_id, order_id);"
+  );
+  add("index delivery_boy_id",
+    "CREATE INDEX IF NOT EXISTS idx_delivery_locations_boy ON public.delivery_locations(delivery_boy_id);"
+  );
+  add("index order_id",
+    "CREATE INDEX IF NOT EXISTS idx_delivery_locations_order ON public.delivery_locations(order_id);"
+  );
+  add("realtime publication",
+    "ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;"
+  );
 
-  return NextResponse.json({ success: true, results });
+  return NextResponse.json({ sql, results });
 }

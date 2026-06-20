@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Package,
@@ -10,10 +10,14 @@ import {
   Clock,
   XCircle,
   AlertTriangle,
+  Navigation,
 } from "lucide-react";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
+import dynamic from "next/dynamic";
+
+const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
 const stages = [
   { id: "received", label: "Order Received", icon: Package },
@@ -32,18 +36,55 @@ export default function TrackOrderPage({
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReturn, setShowReturn] = useState(false);
+  const [boyLocation, setBoyLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [distance, setDistance] = useState("");
 
-  useEffect(() => {
+  const fetchOrder = useCallback(() => {
     fetch(`/api/orders/${orderId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((json) => setOrder(json.order))
       .catch(() => setOrder(null))
       .finally(() => setLoading(false));
   }, [orderId]);
+
+  useEffect(() => { fetchOrder(); }, [fetchOrder]);
+
+  useEffect(() => {
+    if (!order || order.status === "cancelled" || order.status === "delivered") return;
+
+    const fetchLocation = () => {
+      fetch(`/api/delivery/location?order_id=${orderId}`)
+        .then((r) => r.ok ? r.json() : null)
+        .then((json) => {
+          if (json?.location) {
+            setBoyLocation({ lat: json.location.lat, lng: json.location.lng });
+            if (order.address?.lat && order.address?.lng) {
+              const d = calcDistance(json.location.lat, json.location.lng, order.address.lat, order.address.lng);
+              setDistance(d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`);
+            }
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchLocation();
+    const interval = setInterval(fetchLocation, 10000);
+    return () => clearInterval(interval);
+  }, [order, orderId]);
+
   const isCancelled = order?.status === "cancelled";
   const currentStage = order ? (stageIndex[order.status] ?? 0) : 0;
   const isDelivered = order?.status === "delivered";
   const deliveredAt = order?.createdAt;
+  const isOutForDelivery = order?.status === "out_for_delivery";
+
+  const customerLoc = order?.address?.lat && order?.address?.lng
+    ? [order.address.lat, order.address.lng] as [number, number]
+    : null;
+
+  const mapCenter: [number, number] = boyLocation
+    ? [boyLocation.lat, boyLocation.lng] as unknown as [number, number]
+    : customerLoc ?? [26.7319, 88.4256];
 
   if (loading) {
     return (
@@ -73,14 +114,13 @@ export default function TrackOrderPage({
           <h1 className="text-2xl font-extrabold">Order {orderId}</h1>
           <p className="mt-2 text-sm text-muted">This order has been cancelled</p>
         </div>
-
         <div className="mt-12 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-red/10">
             <XCircle className="h-10 w-10 text-brand-red" />
           </div>
           <h3 className="mt-4 text-lg font-bold">Order Cancelled</h3>
           <p className="mt-2 max-w-sm text-sm text-muted">
-            Your order <span className="font-semibold text-brand-dark">{orderId}</span> was cancelled. No payment has been processed.
+            Your order <span className="font-semibold text-brand-dark">{orderId}</span> was cancelled.
           </p>
           {order.paymentStatus === "paid" && (
             <div className="mt-4 flex items-center gap-2 rounded-xl bg-brand-orange/10 px-4 py-2.5 text-sm text-brand-orange">
@@ -89,7 +129,6 @@ export default function TrackOrderPage({
             </div>
           )}
         </div>
-
         <div className="mt-8 rounded-2xl border border-border bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
@@ -113,26 +152,44 @@ export default function TrackOrderPage({
       <div className="text-center">
         <Badge variant="fresh" className="mb-3">Live Tracking</Badge>
         <h1 className="text-2xl font-extrabold">Order {orderId}</h1>
-        <p className="mt-1 text-muted">Estimated delivery: 30 min — 1 hour</p>
+        {isOutForDelivery && distance && (
+          <p className="mt-1 text-sm text-muted flex items-center justify-center gap-1">
+            <Truck className="h-4 w-4 text-brand-fresh" /> {distance} away
+          </p>
+        )}
+        {!isOutForDelivery && !isDelivered && (
+          <p className="mt-1 text-sm text-muted">Estimated delivery: 30 min — 1 hour</p>
+        )}
       </div>
 
-      {/* Map placeholder */}
-      <div className="relative mt-8 h-48 overflow-hidden rounded-2xl glass-card sm:h-64">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="mx-auto h-8 w-8 text-brand-fresh" />
-            <p className="mt-2 text-sm font-medium">Delivery partner is on the way</p>
-            <p className="text-xs text-muted">2.3 km away · Hill Cart Road</p>
+      {/* Live Map */}
+      <div className="relative mt-6 overflow-hidden rounded-2xl border border-border/60 shadow-sm">
+        {isOutForDelivery ? (
+          <LiveMap
+            center={mapCenter}
+            markers={[
+              ...(boyLocation ? [{ position: [boyLocation.lat, boyLocation.lng] as [number, number], icon: "boy" as const, label: "Delivery Partner" }] : []),
+              ...(customerLoc ? [{ position: customerLoc, icon: "customer" as const, label: "Your Location" }] : []),
+            ]}
+            className="h-72 w-full"
+          />
+        ) : (
+          <div className="flex h-48 flex-col items-center justify-center bg-gradient-to-br from-brand-fresh/5 to-brand-blue/5 sm:h-64">
+            <Package className="h-10 w-10 text-brand-fresh/60" />
+            <p className="mt-2 text-sm font-medium text-muted">
+              {order.status === "received" ? "Preparing your order..." : "Delivered!"}
+            </p>
           </div>
-        </div>
-        <motion.div
-          animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="absolute right-1/4 top-1/3"
-        >
-          <Truck className="h-6 w-6 text-brand-blue" />
-        </motion.div>
+        )}
+        {isOutForDelivery && boyLocation && (
+          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-fresh" />
+            </span>
+            Live
+          </div>
+        )}
       </div>
 
       {/* Return / replacement */}
@@ -195,4 +252,14 @@ export default function TrackOrderPage({
       </div>
     </div>
   );
+}
+
+function calcDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }

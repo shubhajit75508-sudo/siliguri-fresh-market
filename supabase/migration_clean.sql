@@ -162,6 +162,25 @@ CREATE TABLE IF NOT EXISTS public.delivery_assignments (
   delivered_at  TIMESTAMPTZ
 );
 
+-- 1k. delivery_locations (real-time GPS tracking, like Blinkit)
+CREATE TABLE IF NOT EXISTS public.delivery_locations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  delivery_boy_id TEXT NOT NULL REFERENCES public.delivery_boys(id),
+  order_id        TEXT NOT NULL REFERENCES public.orders(id),
+  lat             DOUBLE PRECISION NOT NULL,
+  lng             DOUBLE PRECISION NOT NULL,
+  heading         DOUBLE PRECISION DEFAULT 0,
+  speed           DOUBLE PRECISION DEFAULT 0,
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_delivery_locations_boy_order ON public.delivery_locations(delivery_boy_id, order_id);
+CREATE INDEX IF NOT EXISTS idx_delivery_locations_boy ON public.delivery_locations(delivery_boy_id);
+CREATE INDEX IF NOT EXISTS idx_delivery_locations_order ON public.delivery_locations(order_id);
+
+-- Enable Realtime for live tracking
+ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS public.delivery_locations;
+
 -- =============================================================================
 -- 2. INDEXES
 -- =============================================================================
