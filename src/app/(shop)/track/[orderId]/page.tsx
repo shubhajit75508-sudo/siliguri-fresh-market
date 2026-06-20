@@ -44,7 +44,47 @@ export default function TrackOrderPage({
   const fetchOrder = useCallback(() => {
     fetch(`/api/orders/${orderId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((json) => setOrder(json.order))
+      .then((json) => {
+        const raw = json.order as Record<string, unknown>;
+        if (!raw) { setOrder(null); return; }
+        setOrder({
+          id: raw.id as string,
+          items: ((raw.items as any[]) ?? []).map((i: any) => ({
+            product: {
+              id: i.product?.id ?? "",
+              slug: i.product?.slug ?? i.product?.id ?? "",
+              name: i.product?.name ?? "Item",
+              description: i.product?.description ?? "",
+              category: i.product?.category ?? "fish",
+              price: i.product?.price ?? 0,
+              image: i.product?.image ?? "",
+              unit: i.product?.unit ?? "piece",
+              inStock: i.product?.inStock ?? i.product?.in_stock ?? true,
+              rating: i.product?.rating ?? 0,
+              reviewCount: i.product?.reviewCount ?? i.product?.review_count ?? 0,
+              freshnessScore: i.product?.freshnessScore ?? i.product?.freshness_score ?? 4,
+              deliveryEta: i.product?.deliveryEta ?? i.product?.delivery_eta ?? 60,
+            },
+            quantity: i.quantity ?? 1,
+          })) ?? [],
+          status: raw.status as Order["status"],
+          total: raw.total as number,
+          createdAt: raw.created_at as string,
+          address: (raw.address_snapshot ?? raw.address ?? {}) as Order["address"],
+          eta: (raw.eta as number) ?? 30,
+          customerName: (raw.customer_name as string) ?? "",
+          customerPhone: (raw.customer_phone as string) ?? "",
+          customerEmail: (raw.customer_email as string) ?? "",
+          paymentMethod: (raw.payment_method as string) ?? "cod",
+          paymentStatus: (raw.payment_status as Order["paymentStatus"]) ?? "unpaid",
+          deliveryBoyId: (raw.delivery_boy_id as string) ?? undefined,
+          deliveryBoyName: (raw.delivery_boy_name as string) ?? undefined,
+          deliveryStatus: (raw.delivery_status as Order["deliveryStatus"]) ?? undefined,
+          deliveryCode: (raw.delivery_code as string) ?? "",
+          returnRequested: raw.return_requested as boolean | undefined,
+          returnApproved: raw.return_approved as boolean | undefined,
+        });
+      })
       .catch(() => setOrder(null))
       .finally(() => setLoading(false));
   }, [orderId]);
