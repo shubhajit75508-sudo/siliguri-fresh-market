@@ -7,7 +7,8 @@ import {
   MapPin, CreditCard, CheckCircle, ChevronRight, Coins, Shield, Lock,
   Smartphone, Building2, Hash, Layers, Package, Copy, X, ExternalLink,
   ArrowLeft, Loader2, Wallet, Banknote, CreditCard as CardIcon, Trash2,
-  Plus, Minus, Ticket, Zap,
+  Plus, Minus, Ticket, Zap, ShoppingBag, Sparkles, Gift, Truck,
+  ChevronDown, CircleDot, Dot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -303,78 +304,108 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white">
-      {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-border/40 bg-white/80 backdrop-blur-xl">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50/50">
+      {/* Premium Header */}
+      <div className="sticky top-0 z-10 border-b border-border/30 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <button onClick={() => router.push("/cart")} className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Cart
+          <button onClick={() => router.push("/cart")} className="group flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-all">
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            <span>Cart</span>
           </button>
-          <h1 className="text-base font-bold tracking-tight">Checkout</h1>
-          <div className="w-12" />
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-brand-fresh to-brand-blue text-white shadow-sm">
+              <ShoppingBag className="h-3 w-3" />
+            </div>
+            <h1 className="text-base font-bold tracking-tight">Checkout</h1>
+          </div>
+          <div className="flex items-center gap-1 text-[10px] text-muted">
+            <Lock className="h-3 w-3" />
+            <span className="hidden sm:inline">Secure</span>
+          </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-6">
-        <div className="grid gap-5 lg:grid-cols-5 lg:gap-8">
-          {/* Main */}
-          <div className="space-y-4 lg:col-span-3">
-            {/* Address */}
-            <section className="rounded-2xl border border-border/60 bg-white shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/40 px-4 py-3.5">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-brand-fresh" />
-                  <h2 className="text-sm font-bold">Delivery Address</h2>
+      <div className="mx-auto max-w-6xl px-3 py-5 sm:px-4 sm:py-8">
+        <div className="grid gap-6 lg:grid-cols-5 lg:gap-8">
+
+          {/* ─── Main Column ─── */}
+          <div className="space-y-5 lg:col-span-3">
+
+            {/* Delivery Address */}
+            <div className="group rounded-2xl border border-border/50 bg-white shadow-sm transition-all hover:shadow-md">
+              <div className="flex items-center justify-between border-b border-border/30 px-5 py-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
+                    <MapPin className="h-4 w-4 text-brand-fresh-dim" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold">Delivery Address</h2>
+                    <p className="text-[10px] text-muted">Where should we deliver?</p>
+                  </div>
                 </div>
                 {selectedAddress && (
-                  <Badge variant={requiredDetailsFilled ? "fresh" : "orange"} className="text-[10px]">
+                  <Badge variant={requiredDetailsFilled ? "fresh" : "orange"} className="text-[10px] px-3 py-1">
                     {requiredDetailsFilled ? "Ready" : "Details needed"}
                   </Badge>
                 )}
               </div>
 
               {!selectedAddress ? (
-                <div className="p-6 text-center">
-                  <MapPin className="mx-auto h-8 w-8 text-muted" />
-                  <p className="mt-2 text-sm text-muted">No saved addresses.</p>
+                <div className="p-8 text-center">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
+                    <MapPin className="h-7 w-7 text-muted" />
+                  </div>
+                  <p className="mt-3 text-sm font-medium">No saved addresses found</p>
+                  <p className="mt-0.5 text-xs text-muted">Add one to continue with checkout</p>
                   <Link href="/account/addresses">
-                    <Button variant="fresh" size="sm" className="mt-3 rounded-full">Add Address</Button>
+                    <Button variant="fresh" size="sm" className="mt-4 rounded-full shadow-sm">
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Add Address
+                    </Button>
                   </Link>
                 </div>
               ) : (
-                <div className="p-4">
+                <div className="p-5">
                   {addresses.length > 1 && (
-                    <div className="mb-3 flex flex-wrap gap-2">
+                    <div className="mb-4 flex flex-wrap gap-2">
                       {addresses.map((addr) => {
                         const isSelected = selectedAddressId === addr.id || (!selectedAddressId && addr.isDefault);
                         return (
                           <button
                             key={addr.id}
                             onClick={() => setSelectedAddressId(addr.id)}
-                            className={`rounded-xl border px-3 py-2 text-left text-xs transition-all ${
+                            className={`rounded-xl border px-3.5 py-2.5 text-left text-xs transition-all ${
                               isSelected
-                                ? "border-brand-fresh bg-brand-fresh/5 ring-1 ring-brand-fresh/30"
-                                : "border-border/60 hover:border-gray-300 bg-white"
+                                ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/5 to-brand-blue/5 ring-1 ring-brand-fresh/20 shadow-sm"
+                                : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
                             }`}
                           >
                             <span className="font-semibold">{addr.label}</span>
-                            <span className="block text-muted">{addr.line1?.slice(0, 25)}...</span>
+                            <span className="block text-muted mt-0.5">{addr.line1?.slice(0, 22)}...</span>
                           </button>
                         );
                       })}
                     </div>
                   )}
 
-                  <div className="rounded-xl bg-surface/50 p-3.5">
+                  <div className="rounded-xl bg-gradient-to-r from-gray-50 to-white border border-border/30 p-4">
                     <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-sm font-semibold">{selectedAddress.line1}</p>
-                        <p className="text-xs text-muted">{selectedAddress.city} — {selectedAddress.pincode}</p>
-                        {selectedAddress.landmark && <p className="text-xs text-muted">Near {selectedAddress.landmark}</p>}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-fresh/10">
+                            <MapPin className="h-3 w-3 text-brand-fresh-dim" />
+                          </div>
+                          <p className="text-sm font-semibold">{selectedAddress.line1}</p>
+                        </div>
+                        <p className="text-xs text-muted pl-8">{selectedAddress.city} — {selectedAddress.pincode}</p>
+                        {selectedAddress.landmark && (
+                          <p className="text-xs text-muted pl-8 flex items-center gap-1">
+                            <Dot className="h-3 w-3 text-brand-fresh" /> Near {selectedAddress.landmark}
+                          </p>
+                        )}
                       </div>
                       <button
                         onClick={() => setShowAddressForm(!showAddressForm)}
-                        className="shrink-0 text-xs font-semibold text-brand-fresh-dim hover:text-brand-fresh"
+                        className="shrink-0 rounded-lg border border-border/40 bg-white px-3 py-1.5 text-[11px] font-semibold text-brand-fresh-dim hover:text-brand-fresh hover:border-brand-fresh/30 transition-all shadow-sm"
                       >
                         {showAddressForm ? "Done" : "Edit"}
                       </button>
@@ -382,37 +413,43 @@ export default function CheckoutPage() {
                   </div>
 
                   {showAddressForm && (
-                    <div className="mt-3 space-y-2.5 border-t border-border/40 pt-3">
-                      <div className="grid grid-cols-2 gap-2.5">
+                    <div className="mt-4 space-y-3 border-t border-border/30 pt-4">
+                      <p className="text-[11px] font-semibold text-muted">Delivery details</p>
+                      <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-[10px] font-medium text-muted">Area / Locality *</label>
                           <input value={detailForm.area} onChange={(e) => setDetailForm(f => ({ ...f, area: e.target.value }))}
-                            placeholder="Salbari" className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
+                            placeholder="e.g. Salbari"
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
                         </div>
                         <div>
                           <label className="text-[10px] font-medium text-muted">Landmark *</label>
                           <input value={detailForm.landmark} onChange={(e) => setDetailForm(f => ({ ...f, landmark: e.target.value }))}
-                            placeholder="Near City Centre" className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
+                            placeholder="Near City Centre"
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-3 gap-3">
                         <div>
                           <label className="text-[10px] font-medium text-muted">Building *</label>
                           <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))}
-                            placeholder="Green Tower" className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
+                            placeholder="Green Tower"
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
                         </div>
                         <div>
                           <label className="text-[10px] font-medium text-muted">Flat</label>
                           <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
-                            placeholder="3B" className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
+                            placeholder="3B"
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
                         </div>
                         <div>
                           <label className="text-[10px] font-medium text-muted">Floor</label>
                           <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
-                            placeholder="2nd" className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
+                            placeholder="2nd"
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/50 focus:ring-1 focus:ring-brand-fresh/20 outline-none transition-all" />
                         </div>
                       </div>
-                      <Button variant="fresh" size="sm" className="rounded-full text-xs"
+                      <Button variant="fresh" size="sm" className="rounded-full text-xs shadow-sm"
                         onClick={() => {
                           if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim()) {
                             toast.add("Please fill Area, Landmark and Building", "error");
@@ -423,110 +460,138 @@ export default function CheckoutPage() {
                           toast.add("Delivery details saved");
                         }}
                       >
-                        <CheckCircle className="mr-1 h-3.5 w-3.5" /> Save
+                        <CheckCircle className="mr-1 h-3.5 w-3.5" /> Save Details
                       </Button>
                     </div>
                   )}
                 </div>
               )}
-            </section>
+            </div>
 
-            {/* Items */}
-            <section className="rounded-2xl border border-border/60 bg-white shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/40 px-4 py-3.5">
-                <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4 text-brand-fresh" />
-                  <h2 className="text-sm font-bold">Items ({items.length})</h2>
+            {/* Order Items */}
+            <div className="rounded-2xl border border-border/50 bg-white shadow-sm transition-all hover:shadow-md">
+              <div className="flex items-center justify-between border-b border-border/30 px-5 py-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
+                    <Package className="h-4 w-4 text-brand-fresh-dim" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold">Items Ordered</h2>
+                    <p className="text-[10px] text-muted">{items.length} {items.length === 1 ? "item" : "items"}</p>
+                  </div>
                 </div>
-                <span className="text-xs text-muted">{formatPrice(getSubtotal())}</span>
+                <span className="text-sm font-bold text-brand-dark tabular-nums">{formatPrice(getSubtotal())}</span>
               </div>
-              <div className="divide-y divide-border/30">
-                {items.map((item) => (
-                  <div key={cartLineId(cartLineKey(item))} className="flex items-center gap-3 px-4 py-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10 text-xs font-bold text-brand-fresh-dim">
+              <div className="divide-y divide-border/20">
+                {items.map((item, idx) => (
+                  <div key={cartLineId(cartLineKey(item))} className="flex items-center gap-3.5 px-5 py-3.5 transition-colors hover:bg-gray-50/50">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/[0.08] to-brand-blue/[0.08] text-xs font-bold text-brand-fresh-dim border border-brand-fresh/10">
                       {item.quantity}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{item.product.name}</p>
+                      <p className="text-sm font-medium">{item.product.name}</p>
                       <p className="text-[10px] text-muted">{item.selectedWeight || item.product.unit}</p>
                     </div>
-                    <span className="text-sm font-semibold">
+                    <span className="text-sm font-semibold tabular-nums">
                       {formatPrice(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity)}
                     </span>
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
 
-            {/* Coins */}
+            {/* Loyalty Coins */}
             {coinBalance >= 100 && (
-              <section className="rounded-2xl border border-brand-orange/20 bg-gradient-to-br from-brand-orange/[0.03] to-white shadow-sm">
-                <button onClick={() => setShowCoins(!showCoins)} className="flex w-full items-center justify-between px-4 py-3.5">
-                  <div className="flex items-center gap-2">
-                    <Coins className="h-4 w-4 text-brand-orange" />
-                    <span className="text-sm font-bold">Loyalty Coins</span>
-                    <span className="text-xs text-muted">{coinBalance.toLocaleString()} available</span>
+              <div className="rounded-2xl border border-amber-200/40 bg-gradient-to-br from-amber-50/60 to-white shadow-sm transition-all hover:shadow-md">
+                <button onClick={() => setShowCoins(!showCoins)} className="flex w-full items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400/20 to-orange-400/20">
+                      <Coins className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-bold">Loyalty Coins</span>
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          {coinBalance.toLocaleString()} available
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-muted">Redeem for discounts on this order</p>
+                    </div>
                   </div>
-                  <ChevronRight className={`h-4 w-4 text-muted transition-transform ${showCoins ? "rotate-90" : ""}`} />
+                  <ChevronDown className={`h-4 w-4 text-muted transition-transform duration-300 ${showCoins ? "rotate-180" : ""}`} />
                 </button>
-                {showCoins && (
-                  <div className="border-t border-brand-orange/10 px-4 pb-4 pt-3">
+                <div className={`overflow-hidden transition-all duration-300 ${showCoins ? "max-h-40" : "max-h-0"}`}>
+                  <div className="border-t border-amber-200/20 px-5 pb-4 pt-3">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs text-muted">
                           {coinsRedeemed > 0
-                            ? `${coinsRedeemed} coins — saves ${formatPrice(getCoinsDiscount())}`
+                            ? `${coinsRedeemed.toLocaleString()} coins — saves ${formatPrice(getCoinsDiscount())}`
                             : `Redeem up to ${formatPrice(Math.min(maxRedeemable, 500) / 100 * 50)}`}
                         </p>
+                        <div className="mt-1 flex gap-1">
+                          <Gift className="h-3 w-3 text-amber-500" />
+                          <span className="text-[10px] font-medium text-amber-600">
+                            {coinsRedeemed > 0
+                              ? "Discount applied!"
+                              : `${formatPrice(Math.min(maxRedeemable, 500) / 100 * 50)} max savings`}
+                          </span>
+                        </div>
                       </div>
                       <button
                         onClick={handleToggleCoins}
-                        className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                        className={`rounded-full px-5 py-1.5 text-xs font-semibold transition-all shadow-sm ${
                           coinsRedeemed > 0
-                            ? "bg-brand-red/10 text-brand-red"
-                            : "bg-brand-fresh/10 text-brand-fresh-dim hover:bg-brand-fresh/20"
+                            ? "bg-brand-red/10 text-brand-red hover:bg-brand-red/20"
+                            : "bg-gradient-to-r from-amber-400/20 to-orange-400/20 text-amber-700 hover:from-amber-400/30 hover:to-orange-400/30"
                         }`}
                       >
-                        {coinsRedeemed > 0 ? "Remove" : "Apply"}
+                        {coinsRedeemed > 0 ? "Remove" : "Apply Coins"}
                       </button>
                     </div>
                   </div>
-                )}
-              </section>
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Sidebar - Payment + Summary */}
+          {/* ─── Sidebar ─── */}
           <div className="lg:col-span-2">
-            <div className="sticky top-20 space-y-4">
-              {/* Payment */}
-              <section className="rounded-2xl border border-border/60 bg-white shadow-sm">
-                <div className="border-b border-border/40 px-4 py-3.5">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-brand-fresh" />
-                    <h2 className="text-sm font-bold">Payment</h2>
+            <div className="sticky top-20 space-y-5">
+
+              {/* Payment Method */}
+              <div className="rounded-2xl border border-border/50 bg-white shadow-sm">
+                <div className="border-b border-border/30 px-5 py-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
+                      <CreditCard className="h-4 w-4 text-brand-fresh-dim" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold">Payment</h2>
+                      <p className="text-[10px] text-muted">Choose how to pay</p>
+                    </div>
                   </div>
                 </div>
-                <div className="p-4 space-y-3">
+                <div className="p-5 space-y-3">
                   <button
                     onClick={() => setSelectedPayment("razorpay")}
-                    className={`relative flex w-full items-center gap-3 rounded-xl border-2 p-3.5 text-left transition-all ${
+                    className={`relative flex w-full items-center gap-3.5 rounded-xl border-2 p-4 text-left transition-all ${
                       selectedPayment === "razorpay"
-                        ? "border-brand-fresh bg-brand-fresh/[0.04] ring-1 ring-brand-fresh/30"
-                        : "border-border/60 hover:border-gray-300 bg-white"
+                        ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/[0.04] to-brand-blue/[0.02] ring-1 ring-brand-fresh/20 shadow-sm"
+                        : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
                     }`}
                   >
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                      selectedPayment === "razorpay" ? "bg-brand-fresh/10 text-brand-fresh-dim" : "bg-surface text-muted"
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-all ${
+                      selectedPayment === "razorpay" ? "bg-brand-fresh/10 shadow-sm" : "bg-gray-50"
                     }`}>
-                      <Zap className="h-5 w-5" />
+                      <Zap className={`h-5 w-5 ${selectedPayment === "razorpay" ? "text-brand-fresh-dim" : "text-gray-400"}`} />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold">Razorpay</p>
-                      <p className="text-xs text-muted">UPI, Card, NetBanking, Wallet</p>
+                      <p className="text-[11px] text-muted">UPI, Card, NetBanking, Wallet</p>
                     </div>
-                    <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                      selectedPayment === "razorpay" ? "border-brand-fresh bg-brand-fresh" : "border-gray-300"
+                    <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
+                      selectedPayment === "razorpay" ? "border-brand-fresh bg-brand-fresh shadow-sm" : "border-gray-300"
                     }`}>
                       {selectedPayment === "razorpay" && <CheckCircle className="h-3 w-3 text-white" />}
                     </div>
@@ -534,96 +599,105 @@ export default function CheckoutPage() {
 
                   <button
                     onClick={() => setSelectedPayment("cod")}
-                    className={`relative flex w-full items-center gap-3 rounded-xl border-2 p-3.5 text-left transition-all ${
+                    className={`relative flex w-full items-center gap-3.5 rounded-xl border-2 p-4 text-left transition-all ${
                       selectedPayment === "cod"
-                        ? "border-brand-fresh bg-brand-fresh/[0.04] ring-1 ring-brand-fresh/30"
-                        : "border-border/60 hover:border-gray-300 bg-white"
+                        ? "border-brand-fresh bg-gradient-to-r from-brand-fresh/[0.04] to-brand-blue/[0.02] ring-1 ring-brand-fresh/20 shadow-sm"
+                        : "border-border/40 hover:border-gray-300 bg-white shadow-sm"
                     }`}
                   >
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                      selectedPayment === "cod" ? "bg-brand-fresh/10 text-brand-fresh-dim" : "bg-surface text-muted"
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-all ${
+                      selectedPayment === "cod" ? "bg-brand-fresh/10 shadow-sm" : "bg-gray-50"
                     }`}>
-                      <Banknote className="h-5 w-5" />
+                      <Banknote className={`h-5 w-5 ${selectedPayment === "cod" ? "text-brand-fresh-dim" : "text-gray-400"}`} />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold">Cash on Delivery</p>
-                      <p className="text-xs text-muted">Pay when you receive</p>
+                      <p className="text-[11px] text-muted">Pay when you receive</p>
                     </div>
-                    <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                      selectedPayment === "cod" ? "border-brand-fresh bg-brand-fresh" : "border-gray-300"
+                    <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
+                      selectedPayment === "cod" ? "border-brand-fresh bg-brand-fresh shadow-sm" : "border-gray-300"
                     }`}>
                       {selectedPayment === "cod" && <CheckCircle className="h-3 w-3 text-white" />}
                     </div>
                   </button>
                 </div>
-              </section>
+              </div>
 
               {/* Order Summary */}
-              <section className="rounded-2xl border border-border/60 bg-white shadow-sm">
-                <div className="border-b border-border/40 px-4 py-3.5">
+              <div className="rounded-2xl border border-border/50 bg-white shadow-sm">
+                <div className="border-b border-border/30 bg-gradient-to-r from-brand-dark/[0.02] to-transparent px-5 py-4">
                   <h2 className="text-sm font-bold">Order Summary</h2>
                 </div>
-                <div className="p-4 space-y-2.5 text-sm">
-                  <div className="flex justify-between">
+                <div className="p-5 space-y-3 text-sm">
+                  <div className="flex justify-between items-center">
                     <span className="text-muted text-xs">Subtotal ({items.reduce((n, i) => n + i.quantity, 0)} items)</span>
-                    <span className="text-xs font-medium">{formatPrice(getSubtotal())}</span>
+                    <span className="text-xs font-medium tabular-nums">{formatPrice(getSubtotal())}</span>
                   </div>
                   {couponDiscount > 0 && (
-                    <div className="flex justify-between text-brand-fresh text-xs">
-                      <span>Coupon</span>
-                      <span>-{formatPrice(couponDiscount)}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-1 text-[11px] text-brand-fresh">
+                        <Sparkles className="h-3 w-3" /> Coupon
+                      </span>
+                      <span className="text-xs font-medium text-brand-fresh">-{formatPrice(couponDiscount)}</span>
                     </div>
                   )}
                   {getCoinsDiscount() > 0 && (
-                    <div className="flex justify-between text-brand-orange text-xs">
-                      <span>Coins</span>
-                      <span>-{formatPrice(getCoinsDiscount())}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-1 text-[11px] text-amber-600">
+                        <Coins className="h-3 w-3" /> Coins
+                      </span>
+                      <span className="text-xs font-medium text-amber-600">-{formatPrice(getCoinsDiscount())}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted">Delivery</span>
-                    <span className="font-medium">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted text-xs">Delivery</span>
+                    <span className="text-xs font-medium">
                       {getDeliveryFee() === 0
-                        ? <span className="text-brand-fresh">FREE</span>
+                        ? <span className="flex items-center gap-1 text-brand-fresh"><Truck className="h-3 w-3" /> FREE</span>
                         : formatPrice(getDeliveryFee())
                       }
                     </span>
                   </div>
-                  <div className="flex justify-between border-t border-border/40 pt-2.5 text-base font-bold">
+                  <div className="flex justify-between items-center border-t border-border/30 pt-3 text-base font-bold">
                     <span>Total</span>
-                    <span className="text-brand-dark">{formatPrice(getTotal())}</span>
+                    <span className="text-brand-dark tabular-nums">{formatPrice(getTotal())}</span>
                   </div>
                   {coinsEarned > 0 && (
-                    <p className="pt-1 text-center text-[10px] text-brand-fresh">
-                      +{coinsEarned} coins earned
-                    </p>
+                    <div className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-fresh/[0.06] to-brand-blue/[0.04] py-2">
+                      <Gift className="h-3.5 w-3.5 text-brand-fresh-dim" />
+                      <span className="text-[10px] font-semibold text-brand-fresh-dim">
+                        +{coinsEarned} loyalty coins earned
+                      </span>
+                    </div>
                   )}
                 </div>
 
-                <div className="px-4 pb-4">
+                <div className="px-5 pb-5">
                   <Button
-                    variant="fresh"
-                    className="w-full rounded-xl py-3.5 text-sm font-bold shadow-lg shadow-brand-fresh/20"
+                    variant="default"
+                    className="w-full rounded-xl py-3.5 text-sm font-bold shadow-lg shadow-brand-dark/20 transition-all hover:shadow-xl"
                     onClick={handlePlaceOrder}
                     disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled}
                   >
                     {confirmingOrder ? (
                       <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
                     ) : selectedPayment === "razorpay" ? (
-                      <><Zap className="mr-2 h-4 w-4" /> Pay ₹{getTotal()} via Razorpay</>
+                      <><Zap className="mr-2 h-4 w-4" /> Pay ₹{getTotal().toLocaleString()} via Razorpay</>
                     ) : (
                       <><Banknote className="mr-2 h-4 w-4" /> Place Order — {formatPrice(getTotal())}</>
                     )}
                   </Button>
-                  <div className="mt-2 flex items-center justify-center gap-1 text-[10px] text-muted">
+                  <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-muted">
                     <Lock className="h-3 w-3" /> Secured by Razorpay
+                    <span className="mx-1.5">·</span>
+                    <Shield className="h-3 w-3" /> 30-min delivery
                   </div>
                 </div>
 
-                <div className="border-t border-border/40 px-4 py-3">
+                <div className="border-t border-border/30 px-5 py-3">
                   <ReturnPolicyBanner />
                 </div>
-              </section>
+              </div>
             </div>
           </div>
         </div>
@@ -631,40 +705,50 @@ export default function CheckoutPage() {
 
       {/* UPI Fallback Modal */}
       {showUPIModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-3 pb-6 sm:px-0">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold">Pay via UPI</h3>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-3 pb-6 sm:px-0 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
+                  <Smartphone className="h-4 w-4 text-brand-fresh-dim" />
+                </div>
+                <h3 className="text-sm font-bold">Pay via UPI</h3>
+              </div>
               <button onClick={() => { setShowUPIModal(false); if (!paymentConfirmed) setSelectedPayment("cod"); }}
-                className="rounded-full p-1 hover:bg-gray-100">
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-border/40 hover:bg-gray-50 transition-all">
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-xs text-muted mb-3">
-              Send the exact amount to the UPI ID below, then confirm.
+
+            <p className="text-xs text-muted mb-4 leading-relaxed">
+              Send the exact amount to the UPI ID below using GPay, PhonePe, or Paytm, then confirm.
             </p>
-            <div className="rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-brand-fresh/[0.03] p-4 text-center mb-4">
-              <p className="text-[10px] font-medium text-muted mb-2">UPI ID</p>
+
+            <div className="rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-br from-brand-fresh/[0.03] to-white p-5 text-center mb-4">
+              <p className="text-[10px] font-medium text-muted mb-1.5">UPI ID</p>
               <p className="text-sm font-bold text-brand-dark tracking-wide">{PAYMENT_UPI_ID}</p>
               <button
-                onClick={() => { navigator.clipboard.writeText(PAYMENT_UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-brand-fresh-dim hover:text-brand-fresh"
+                onClick={() => { navigator.clipboard.writeText(PAYMENT_UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2500); }}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white border border-border/40 px-3 py-1 text-[10px] font-semibold text-brand-fresh-dim hover:text-brand-fresh hover:border-brand-fresh/30 transition-all"
               >
                 <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy UPI ID"}
               </button>
             </div>
-            <div className="rounded-xl bg-brand-orange/10 px-3 py-2.5 text-center mb-4">
-              <p className="text-[10px] font-medium text-brand-orange">Amount to pay</p>
-              <p className="text-lg font-extrabold text-brand-dark">{formatPrice(getTotal())}</p>
+
+            <div className="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/30 px-4 py-3 text-center mb-5">
+              <p className="text-[10px] font-medium text-amber-700">Amount to pay</p>
+              <p className="text-xl font-extrabold text-brand-dark tabular-nums">{formatPrice(getTotal())}</p>
             </div>
+
             <button
               onClick={() => { setPaymentConfirmed(true); setShowUPIModal(false); placeOrder("paid"); }}
-              className="w-full rounded-full bg-brand-fresh py-3 text-sm font-bold text-white hover:bg-brand-fresh-dim transition-colors"
+              className="w-full rounded-full bg-gradient-to-r from-brand-fresh to-brand-blue py-3 text-sm font-bold text-white shadow-lg shadow-brand-fresh/20 hover:shadow-xl transition-all"
             >
               <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm
             </button>
-            <p className="mt-3 text-[10px] text-center text-muted">
-              <ExternalLink className="mr-0.5 inline h-3 w-3" /> Open GPay / PhonePe / Paytm and pay now
+
+            <p className="mt-4 text-[10px] text-center text-muted flex items-center justify-center gap-1">
+              <ExternalLink className="h-3 w-3" /> Open GPay / PhonePe / Paytm to complete payment
             </p>
           </div>
         </div>
