@@ -18,7 +18,7 @@ export function Header() {
   const itemCount = hydrated ? getItemCount() : 0;
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-xl backdrop-saturate-150">
+    <header className="sticky top-0 z-50 bg-[#0d1b2a]/95 shadow-[0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl backdrop-saturate-150">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
