@@ -377,7 +377,7 @@ export default function CheckoutPage() {
                       <MapPin className={`h-5 w-5 transition-colors duration-500 ${addressMissing ? "text-brand-red" : "text-brand-fresh-dim"}`} />
                     </div>
                     <div>
-                      <h2 className="text-sm font-extrabold tracking-tight">Delivery Address</h2>
+                      <h2 className="text-sm font-extrabold tracking-tight">1. Delivery Address</h2>
                       <p className="text-[10px] text-muted font-medium">Set your drop-off location</p>
                     </div>
                   </div>
@@ -718,7 +718,7 @@ export default function CheckoutPage() {
                     <Package className="h-4 w-4 text-brand-fresh-dim" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-bold">Items Ordered</h2>
+                    <h2 className="text-sm font-bold">2. Items Ordered</h2>
                     <p className="text-[10px] text-muted">{items.length} {items.length === 1 ? "item" : "items"}</p>
                   </div>
                 </div>
@@ -809,7 +809,7 @@ export default function CheckoutPage() {
                       <CreditCard className="h-4 w-4 text-brand-fresh-dim" />
                     </div>
                     <div>
-                      <h2 className="text-sm font-bold">Payment</h2>
+                      <h2 className="text-sm font-bold">3. Payment</h2>
                       <p className="text-[10px] text-muted">Choose how to pay</p>
                     </div>
                   </div>
@@ -868,7 +868,7 @@ export default function CheckoutPage() {
               {/* Order Summary */}
               <div className="rounded-2xl border border-border/50 bg-white shadow-sm">
                 <div className="border-b border-border/30 bg-gradient-to-r from-brand-dark/[0.02] to-transparent px-5 py-4">
-                  <h2 className="text-sm font-bold">Order Summary</h2>
+                  <h2 className="text-sm font-bold">4. Order Summary</h2>
                 </div>
                 <div className="p-5 space-y-3 text-sm">
                   <div className="flex justify-between items-center">
@@ -942,6 +942,34 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Blinkit-Style Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/60 bg-white/95 backdrop-blur-xl px-4 py-3 safe-bottom lg:hidden">
+        <div className="mx-auto max-w-2xl flex items-center justify-between">
+          <div>
+            <p className="text-lg font-extrabold text-brand-dark tabular-nums">{formatPrice(getTotal())}</p>
+            <p className="text-[10px] text-muted">View price details</p>
+          </div>
+          <Button
+            variant={selectedAddress && requiredDetailsFilled ? "default" : "default"}
+            className="rounded-xl py-3 px-8 text-sm font-bold shadow-lg shadow-brand-dark/20 disabled:opacity-50"
+            onClick={handlePlaceOrder}
+            disabled={confirmingOrder || !selectedAddress || !requiredDetailsFilled}
+          >
+            {confirmingOrder ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : !selectedAddress ? (
+              "Add Address"
+            ) : !requiredDetailsFilled ? (
+              "Fill Details"
+            ) : selectedPayment === "razorpay" ? (
+              `Pay ₹${getTotal().toLocaleString()}`
+            ) : (
+              "Place Order"
+            )}
+          </Button>
         </div>
       </div>
 
