@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     total: o.total as number,
     status: (o.delivery_status as string) === "picked_up" ? "picked_up" as const : (o.delivery_status as string) === "delivered" ? "delivered" as const : (o.delivery_status as string) === "accepted" ? "accepted" as const : "assigned" as const,
     assignedAt: o.created_at as string,
-    deliveryCode: (o.delivery_code as string) ?? undefined,
+    deliveryCode: (o.delivery_code as string) ?? "",
   }));
 
   return NextResponse.json({ assignments });

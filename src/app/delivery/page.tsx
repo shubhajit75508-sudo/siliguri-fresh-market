@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, ShieldQuestion, KeyRound } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 
 const statusLabels: Record<string, string> = {
   assigned: "Assigned",
@@ -24,13 +24,34 @@ const statusColors: Record<string, "blue" | "orange" | "fresh" | "default"> = {
 
 export default function DeliveryDashboard() {
   const { boy, assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
-  const { acceptDelivery, pickUpDelivery, confirmDelivery } = useOrderStore();
+  const { acceptDelivery, pickUpDelivery, confirmDelivery, orders: storeOrders } = useOrderStore();
 
   const [tracking, setTracking] = useState(false);
   const [gpsError, setGpsError] = useState("");
   const watchIdRef = useRef<number | null>(null);
 
-  const active = assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered");
+  const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [loadingAssignments, setLoadingAssignments] = useState(true);
+
+  // Build a map of orderId → deliveryCode from order store + API codes
+  const codeMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const o of storeOrders) {
+      if (o.deliveryCode) map[o.id] = o.deliveryCode;
+    }
+    for (const [id, code] of Object.entries(deliveryCodes)) {
+      if (code) map[id] = code;
+    }
+    return map;
+  }, [storeOrders, deliveryCodes]);
+
+  const active = assignments
+    .filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered")
+    .map((a) => ({
+      ...a,
+      deliveryCode: a.deliveryCode || codeMap[a.orderId] || "",
+    }));
   const activeOrderIds = active.map((a) => a.orderId);
 
   const sendLocation = useCallback(async (lat: number, lng: number) => {
@@ -76,13 +97,19 @@ export default function DeliveryDashboard() {
     };
   }, [boy, activeOrderIds.join(","), sendLocation]);
 
-  const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
-  const [codeError, setCodeError] = useState<string | null>(null);
-  const [loadingAssignments, setLoadingAssignments] = useState(true);
-
   useEffect(() => {
     if (boy) {
       useDeliveryStore.getState().loadAssignments().finally(() => setLoadingAssignments(false));
+      // Also fetch delivery codes directly from orders table
+      fetch("/api/delivery/orders").then(r => r.ok ? r.json() : null).then(json => {
+        if (json?.orders) {
+          const map: Record<string, string> = {};
+          for (const o of json.orders) {
+            if (o.delivery_code) map[o.id] = o.delivery_code;
+          }
+          if (Object.keys(map).length) setDeliveryCodes(prev => ({ ...prev, ...map }));
+        }
+      }).catch(() => {});
     } else {
       setLoadingAssignments(false);
     }
