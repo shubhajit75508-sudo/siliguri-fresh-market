@@ -46,15 +46,28 @@ export function useGeolocation(): UseGeolocationReturn {
         ? "Location denied — enable in browser settings"
         : err.code === 2
         ? "Location unavailable — check GPS/WiFi"
-        : "Location timed out — try again";
+        : err.code === 3
+        ? "Timed out — please try again"
+        : err.message;
       setError(msg);
-      setLocating(false);
+      // Retry once with different options
+      if (err.code === 3) {
+        navigator.geolocation.getCurrentPosition(
+          onSuccess,
+          (e2) => {
+            setError(e2.code === 1 ? "Location denied" : "Location unavailable — try manual entry");
+            setLocating(false);
+          },
+          { enableHighAccuracy: false, timeout: 15000 }
+        );
+      } else {
+        setLocating(false);
+      }
     };
 
     navigator.geolocation.getCurrentPosition(onSuccess, onError, {
       enableHighAccuracy: false,
-      timeout: 8000,
-      maximumAge: 60000,
+      timeout: 10000,
     });
   }, []);
 

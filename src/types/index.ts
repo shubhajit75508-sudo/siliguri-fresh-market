@@ -53,6 +53,7 @@ export interface Address {
   label: string;
   line1: string;
   line2?: string;
+  street?: string;
   area?: string;
   landmark?: string;
   building?: string;
@@ -63,6 +64,7 @@ export interface Address {
   lat?: number;
   lng?: number;
   isDefault: boolean;
+  deliveryInstructions?: string;
 }
 
 export type OrderStatus = "received" | "out_for_delivery" | "delivered" | "cancelled";

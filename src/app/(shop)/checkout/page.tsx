@@ -54,14 +54,14 @@ export default function CheckoutPage() {
   const [showUPIModal, setShowUPIModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "" });
+  const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [showCoins, setShowCoins] = useState(false);
   const [addressMissing, setAddressMissing] = useState(false);
   const addressRef = useRef<HTMLDivElement>(null);
 
   const { location: liveLocation, locating, error: geoError, getLocation } = useGeolocation();
 
-  const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "" });
+  const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses.find((a) => a.isDefault) || addresses[0];
   const coinBalance = user?.loyaltyPoints ?? 0;
@@ -78,6 +78,8 @@ export default function CheckoutPage() {
         building: selectedAddress.building ?? "",
         flat: selectedAddress.flat ?? "",
         floor: selectedAddress.floor ?? "",
+        street: selectedAddress.street ?? "",
+        deliveryInstructions: selectedAddress.deliveryInstructions ?? "",
       });
     }
   }, [selectedAddressId]);
@@ -234,6 +236,8 @@ export default function CheckoutPage() {
           building: detailForm.building.trim() || selectedAddress.building || undefined,
           flat: detailForm.flat.trim() || selectedAddress.flat || undefined,
           floor: detailForm.floor.trim() || selectedAddress.floor || undefined,
+          street: detailForm.street.trim() || selectedAddress.street || undefined,
+          deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined,
         },
         paymentMethod: selectedPayment === "razorpay" ? "upi" : "cod",
         paymentStatus,
@@ -314,6 +318,8 @@ export default function CheckoutPage() {
       building: detailForm.building.trim() || selectedAddress.building || undefined,
       flat: detailForm.flat.trim() || selectedAddress.flat || undefined,
       floor: detailForm.floor.trim() || selectedAddress.floor || undefined,
+      street: detailForm.street.trim() || selectedAddress.street || undefined,
+      deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined,
     };
     useUserStore.getState().updateAddress(updated);
   };
@@ -347,13 +353,7 @@ export default function CheckoutPage() {
           <div className="space-y-5 lg:col-span-3">
 
             {/* Step 1 — Delivery Address */}
-            <div ref={addressRef} className={`relative rounded-3xl overflow-hidden transition-all duration-500 ${addressMissing ? "ring-8 ring-brand-red/30 shadow-2xl shadow-brand-red/25 address-shake" : "shadow-xl hover:shadow-2xl"}`}>
-              {/* Animated gradient border */}
-              <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br p-[3px] ${addressMissing ? "from-brand-red via-red-500 to-brand-orange animate-pulse" : "from-brand-fresh/40 via-brand-blue/30 to-brand-fresh/40"}`}>
-                <div className="h-full w-full rounded-3xl bg-white" />
-              </div>
-              {/* Glass inner */}
-              <div className="relative rounded-3xl bg-white/90 backdrop-blur-sm">
+            <div ref={addressRef} className={`rounded-2xl border-2 bg-white transition-all duration-500 ${addressMissing ? "border-brand-red/60 ring-8 ring-brand-red/30 shadow-2xl shadow-brand-red/25 address-shake" : "border-border/40 shadow-md hover:shadow-lg"}`}>
                 {/* Error banner */}
                 {addressMissing && (
                   <div className="flex items-center gap-3 bg-gradient-to-r from-brand-red/20 via-brand-red/12 to-brand-orange/8 px-5 py-3.5 border-b-2 border-brand-red/30">
@@ -425,7 +425,7 @@ export default function CheckoutPage() {
                       <div className="h-px flex-1 bg-border/50" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">City *</label>
                         <div className="mt-1 relative">
@@ -454,7 +454,7 @@ export default function CheckoutPage() {
                           className="w-full rounded-xl border border-border/50 bg-white pl-9 pr-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Landmark *</label>
                         <input value={newAddress.landmark} onChange={(e) => setNewAddress(f => ({ ...f, landmark: e.target.value }))}
@@ -468,19 +468,32 @@ export default function CheckoutPage() {
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
                         <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
                           placeholder="3B"
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                       <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
                         <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
                           placeholder="2nd"
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Street / Road (optional)</label>
+                      <input value={newAddress.street} onChange={(e) => setNewAddress(f => ({ ...f, street: e.target.value }))}
+                        placeholder="e.g. Hill Cart Road"
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Delivery Instructions (optional)</label>
+                      <textarea value={newAddress.deliveryInstructions} onChange={(e) => setNewAddress(f => ({ ...f, deliveryInstructions: e.target.value }))}
+                        placeholder="Gate code, floor directions, or any special instructions..."
+                        rows={2}
+                        className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all resize-none" />
                     </div>
                     <Button variant="default" size="lg" className="w-full rounded-2xl py-3.5 text-sm font-bold shadow-xl shadow-brand-dark/15 hover:shadow-2xl hover:shadow-brand-dark/20 transition-all"
                       disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
@@ -495,22 +508,26 @@ export default function CheckoutPage() {
                           line1: `${newAddress.building.trim()}, ${newAddress.area.trim()}`,
                           city: newAddress.city.trim(),
                           pincode: newAddress.pincode.trim(),
+                          street: newAddress.street.trim() || undefined,
                           area: newAddress.area.trim(),
                           landmark: newAddress.landmark.trim(),
                           building: newAddress.building.trim(),
                           flat: newAddress.flat.trim() || undefined,
                           floor: newAddress.floor.trim() || undefined,
+                          deliveryInstructions: newAddress.deliveryInstructions.trim() || undefined,
                           isDefault: addresses.length === 0,
                           ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}),
                         };
                         useUserStore.getState().addAddress(addr);
                         setSelectedAddressId(addr.id);
                         setDetailForm({
+                          street: addr.street ?? "",
                           area: addr.area ?? "",
                           landmark: addr.landmark ?? "",
                           building: addr.building ?? "",
                           flat: addr.flat ?? "",
                           floor: addr.floor ?? "",
+                          deliveryInstructions: addr.deliveryInstructions ?? "",
                         });
                         toast.add("✓ Address saved! Ready to check out");
                       }}
@@ -572,6 +589,17 @@ export default function CheckoutPage() {
                               {selectedAddress.floor ? `, Floor ${selectedAddress.floor}` : ""}
                             </p>
                           )}
+                          {selectedAddress.street && (
+                            <p className="text-xs text-muted pl-9.5 flex items-center gap-1">
+                              <Navigation className="h-3 w-3" /> {selectedAddress.street}
+                            </p>
+                          )}
+                          {selectedAddress.deliveryInstructions && (
+                            <p className="text-xs text-muted pl-9.5 flex items-start gap-1">
+                              <Dot className="h-3 w-3 mt-1 shrink-0 text-brand-orange" />
+                              <span className="italic">{selectedAddress.deliveryInstructions}</span>
+                            </p>
+                          )}
                           {selectedAddress.lat && selectedAddress.lng && (
                             <div className="pl-9.5 pt-1">
                               <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-fresh/10 border border-brand-fresh/15 px-2.5 py-0.5 text-[10px] font-semibold text-brand-fresh-dim">
@@ -610,7 +638,7 @@ export default function CheckoutPage() {
                             <p className="text-[10px] text-brand-red">{geoError}</p>
                           </div>
                         )}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Area / Locality *</label>
                             <div className="mt-1 relative">
@@ -627,7 +655,7 @@ export default function CheckoutPage() {
                               className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div>
                             <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building (optional)</label>
                             <div className="mt-1 relative">
@@ -638,17 +666,30 @@ export default function CheckoutPage() {
                             </div>
                           </div>
                           <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
                             <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
                               placeholder="3B"
                               className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
                           <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
                             <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
                               placeholder="2nd"
                               className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Street / Road (optional)</label>
+                          <input value={detailForm.street} onChange={(e) => setDetailForm(f => ({ ...f, street: e.target.value }))}
+                            placeholder="e.g. Hill Cart Road"
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Delivery Instructions (optional)</label>
+                          <textarea value={detailForm.deliveryInstructions} onChange={(e) => setDetailForm(f => ({ ...f, deliveryInstructions: e.target.value }))}
+                            placeholder="Gate code, floor directions, or any special instructions..."
+                            rows={2}
+                            className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-3 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all resize-none" />
                         </div>
                         <Button variant="fresh" size="sm" className="rounded-xl text-xs font-bold shadow-lg shadow-brand-fresh/20 hover:shadow-xl hover:shadow-brand-fresh/30 transition-all"
                           onClick={() => {
@@ -667,7 +708,6 @@ export default function CheckoutPage() {
                     )}
                   </div>
                 )}
-              </div>
             </div>
 
             {/* Order Items */}
