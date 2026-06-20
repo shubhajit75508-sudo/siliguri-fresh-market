@@ -11,6 +11,8 @@ import {
   XCircle,
   AlertTriangle,
   Navigation,
+  Copy,
+  KeyRound,
 } from "lucide-react";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -191,6 +193,30 @@ export default function TrackOrderPage({
           </div>
         )}
       </div>
+
+      {/* Delivery Code */}
+      {order.deliveryCode && (isOutForDelivery || order.status === "delivered") && (
+        <div className="mt-6 rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-br from-brand-fresh/[0.04] to-white p-5 text-center shadow-sm">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <KeyRound className="h-4 w-4 text-brand-fresh-dim" />
+            <p className="text-xs font-semibold text-muted">
+              {isDelivered ? "Delivery code used" : "Share this code with your delivery partner"}
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-3xl sm:text-4xl font-extrabold tracking-[0.15em] text-brand-dark select-all">
+              {order.deliveryCode}
+            </span>
+            <button
+              onClick={() => { navigator.clipboard.writeText(order.deliveryCode!); }}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-white shadow-sm hover:bg-gray-50 transition-all"
+              title="Copy code"
+            >
+              <Copy className="h-4 w-4 text-muted" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Return / replacement */}
       {isDelivered && (

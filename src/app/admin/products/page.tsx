@@ -92,6 +92,7 @@ export default function AdminProductsPage() {
       image: "",
       category: "fish",
       description: "",
+      weight: [],
     });
   };
 
@@ -177,7 +178,8 @@ export default function AdminProductsPage() {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>
             </select>
-            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-2" />
+            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
+            <input placeholder="Weights (comma-separated, e.g. 500g, 1kg, 2kg)" value={(form.weight || []).join(", ")} onChange={(e) => setForm({ ...form, weight: e.target.value.split(",").map((w) => w.trim()).filter(Boolean) })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
             <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={3} />
           </div>
           <div className="mt-4 flex gap-2">
@@ -217,6 +219,7 @@ export default function AdminProductsPage() {
                         <input value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Name" />
                         <input value={form.price || 0} type="number" onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Price" />
                         <input value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Image URL" />
+                        <input value={(form.weight || []).join(", ")} onChange={(e) => setForm({ ...form, weight: e.target.value.split(",").map((w) => w.trim()).filter(Boolean) })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Weights: 500g, 1kg, 2kg" />
                         <div className="flex gap-2">
                           <button onClick={saveEdit} className="rounded-lg bg-brand-fresh px-4 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /></button>
                           <button onClick={() => setEditingId(null)} className="rounded-lg border border-border px-4 py-2 text-xs text-muted"><X className="h-3 w-3" /></button>

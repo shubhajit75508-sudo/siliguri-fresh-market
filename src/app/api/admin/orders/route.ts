@@ -42,6 +42,7 @@ export async function PUT(req: NextRequest) {
 
   const dbUpdates: Record<string, unknown> = {};
   if (updates.status !== undefined) dbUpdates.status = updates.status;
+  if (updates.payment_status !== undefined) dbUpdates.payment_status = updates.payment_status;
   if (updates.delivery_status !== undefined) dbUpdates.delivery_status = updates.delivery_status;
   if (updates.delivery_boy_id !== undefined) {
     dbUpdates.delivery_boy_id = await resolveBoyId(supabaseAdmin, updates.delivery_boy_id, updates.delivery_boy_email);
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",
     delivery_boy_id: body.delivery_boy_id ?? null,
+    delivery_code: body.delivery_code ?? "",
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),

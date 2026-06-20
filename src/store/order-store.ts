@@ -14,6 +14,15 @@ async function apiPut(data: Record<string, unknown>): Promise<boolean> {
   } catch (e) { console.error("[apiPut] network error:", e); return false; }
 }
 
+async function apiPost(path: string, data: Record<string, unknown>): Promise<{ ok: boolean; json?: Record<string, unknown> }> {
+  if (!isSupabaseConfigured()) return { ok: true };
+  try {
+    const res = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    const json = await res.json();
+    return { ok: res.ok, json };
+  } catch { return { ok: false }; }
+}
+
 interface OrderStats {
   totalOrders: number;
   revenueToday: number;
@@ -44,7 +53,7 @@ interface OrderState {
   assignDeliveryBoy: (orderId: string, boyId: string, boyName: string, boyEmail?: string) => Promise<{ assignment: DeliveryAssignment } | void>;
   acceptDelivery: (orderId: string) => Promise<void>;
   pickUpDelivery: (orderId: string) => Promise<void>;
-  confirmDelivery: (orderId: string) => Promise<void>;
+  confirmDelivery: (orderId: string, code?: string) => Promise<void>;
   requestReturn: (orderId: string) => Promise<void>;
   approveReturn: (orderId: string) => Promise<void>;
   getStats: () => OrderStats;
@@ -85,6 +94,7 @@ export const useOrderStore = create<OrderState>()(
               deliveryBoyName: r.delivery_boy_name as string | undefined,
               returnRequested: Boolean(r.return_requested),
               returnApproved: Boolean(r.return_approved),
+              deliveryCode: (r.delivery_code as string) ?? "",
             }));
             set((state) => {
               const local = state.orders;
@@ -125,6 +135,7 @@ export const useOrderStore = create<OrderState>()(
               deliveryBoyName: r.delivery_boy_name as string | undefined,
               returnRequested: Boolean(r.return_requested),
               returnApproved: Boolean(r.return_approved),
+              deliveryCode: (r.delivery_code as string) ?? "",
             }));
             set({ orders: userOrders, loaded: true });
           } catch (e) { console.error("loadUserOrders failed:", e); if (!get().loaded) set({ loaded: true }); }
@@ -145,6 +156,7 @@ export const useOrderStore = create<OrderState>()(
           const id = data.id ?? "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
           const createdAt = new Date().toISOString();
           const eta = 30 + Math.floor(Math.random() * 31);
+          const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
 
           if (isSupabaseConfigured()) {
             try {
@@ -165,6 +177,7 @@ export const useOrderStore = create<OrderState>()(
                   eta,
                   delivery_status: "pending",
                   user_id: data.userId ?? null,
+                  delivery_code: deliveryCode,
                 }),
               });
               if (!res.ok) {
@@ -194,6 +207,7 @@ export const useOrderStore = create<OrderState>()(
               paymentStatus: data.paymentStatus,
               deliveryStatus: "pending" as DeliveryStatus,
               userId: data.userId,
+              deliveryCode,
             }],
           }));
           return id;
@@ -237,6 +251,7 @@ export const useOrderStore = create<OrderState>()(
               customerName: order.customerName,
               customerPhone: order.customerPhone,
               paymentStatus: order.paymentStatus,
+              deliveryCode: order.deliveryCode,
               address: {
                 id: order.id + "-addr",
                 label: "Delivery",
@@ -283,17 +298,29 @@ export const useOrderStore = create<OrderState>()(
           if (!ok) set({ orders: prev });
         },
 
-        confirmDelivery: async (orderId) => {
+        confirmDelivery: async (orderId, code) => {
           const prev = get().orders;
-          set((state) => ({
-            orders: state.orders.map((o) =>
-              o.id === orderId
-                ? { ...o, deliveryStatus: "delivered" as DeliveryStatus, status: "delivered" as Order["status"] }
-                : o
-            ),
-          }));
-          const ok = await apiPut({ id: orderId, delivery_status: "delivered", status: "delivered" });
-          if (!ok) set({ orders: prev });
+          try {
+            const res = await fetch("/api/delivery/confirm", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId, code }),
+            });
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error || "Verification failed");
+            }
+            set((state) => ({
+              orders: state.orders.map((o) =>
+                o.id === orderId
+                  ? { ...o, deliveryStatus: "delivered" as DeliveryStatus, status: "delivered" as Order["status"], paymentStatus: o.paymentMethod === "cod" ? "paid" as const : o.paymentStatus }
+                  : o
+              ),
+            }));
+          } catch (e) {
+            set({ orders: prev });
+            throw e;
+          }
         },
 
         requestReturn: async (orderId) => {

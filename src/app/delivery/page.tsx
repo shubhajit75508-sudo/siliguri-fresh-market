@@ -4,7 +4,7 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2 } from "lucide-react";
+import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, ShieldQuestion, KeyRound } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
 
@@ -76,6 +76,9 @@ export default function DeliveryDashboard() {
     };
   }, [boy, activeOrderIds.join(","), sendLocation]);
 
+  const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
+  const [codeError, setCodeError] = useState<string | null>(null);
+
   const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
   const outForDelivery = active.filter((a) => a.status === "picked_up");
 
@@ -146,6 +149,11 @@ export default function DeliveryDashboard() {
                 <Badge variant="fresh">Paid</Badge>
               ) : (
                 <Badge variant="orange">COD</Badge>
+              )}
+              {a.deliveryCode && a.status !== "delivered" && (
+                <Badge variant="blue" className="text-xs tracking-widest font-mono">
+                  #{a.deliveryCode}
+                </Badge>
               )}
             </div>
             <p className="mt-0.5 text-sm text-muted">{a.customerPhone}</p>
@@ -237,21 +245,46 @@ export default function DeliveryDashboard() {
               </Button>
             )}
             {a.status === "picked_up" && (
-              <Button
-                variant="fresh"
-                size="sm"
-                onClick={async () => {
-                  const prevOrders = useOrderStore.getState().orders;
-                  try {
-                    await confirmDelivery(a.orderId);
-                    deliveryConfirm(a.id);
-                  } catch {
-                    useOrderStore.setState({ orders: prevOrders });
-                  }
-                }}
-              >
-                <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivery
-              </Button>
+              <div className="w-full space-y-2">
+                <div className="flex items-center gap-2">
+                  <KeyRound className="h-3.5 w-3.5 text-muted" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="Enter delivery code"
+                    value={deliveryCodes[a.orderId] || ""}
+                    onChange={(e) => {
+                      setDeliveryCodes({ ...deliveryCodes, [a.orderId]: e.target.value.replace(/\D/g, "").slice(0, 4) });
+                      setCodeError(null);
+                    }}
+                    className="flex-1 rounded-xl border border-border bg-white px-3 py-2 text-sm text-center tracking-[0.25em] font-bold outline-none focus:border-brand-fresh/50"
+                  />
+                </div>
+                {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
+                <Button
+                  variant="fresh"
+                  size="sm"
+                  className="w-full"
+                  disabled={(deliveryCodes[a.orderId] || "").length < 4}
+                  onClick={async () => {
+                    const enteredCode = deliveryCodes[a.orderId];
+                    if (!enteredCode || enteredCode.length < 4) return;
+                    const prevOrders = useOrderStore.getState().orders;
+                    try {
+                      await confirmDelivery(a.orderId, enteredCode);
+                      deliveryConfirm(a.id);
+                      setDeliveryCodes({ ...deliveryCodes, [a.orderId]: "" });
+                      setCodeError(null);
+                    } catch (e) {
+                      useOrderStore.setState({ orders: prevOrders });
+                      setCodeError(e instanceof Error ? e.message : "Invalid code. Try again.");
+                    }
+                  }}
+                >
+                  <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivery
+                </Button>
+              </div>
             )}
           </div>
         </div>

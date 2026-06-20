@@ -88,6 +88,7 @@ export interface Order {
   deliveryStatus?: DeliveryStatus;
   returnRequested?: boolean;
   returnApproved?: boolean;
+  deliveryCode?: string;
 }
 
 export interface User {
@@ -138,4 +139,5 @@ export interface DeliveryAssignment {
   status: "assigned" | "accepted" | "picked_up" | "delivered";
   assignedAt: string;
   deliveredAt?: string;
+  deliveryCode?: string;
 }
