@@ -64,12 +64,14 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
       useDeliveryStore.getState().setAssignments(mine);
     }
 
-    const orderToAssignment = (o: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number }) => ({
+    const orderToAssignment = (o: { id: string; delivery_boy_id?: string; customer_name: string; customer_phone: string; address_snapshot: Record<string, unknown>; items: { product: { name: string }; quantity: number }[]; total: number; delivery_code?: string; payment_status?: string; delivery_status?: string }) => ({
       id: "da-" + crypto.randomUUID(),
       orderId: o.id,
       deliveryBoyId: boy.id,
       customerName: o.customer_name,
       customerPhone: o.customer_phone,
+      paymentStatus: (o.payment_status as "paid" | "unpaid") ?? "unpaid",
+      deliveryCode: o.delivery_code ?? undefined,
       address: {
         id: o.id + "-addr",
         label: "Delivery" as const,
@@ -88,7 +90,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
       },
       items: o.items?.map((i: { product: { name: string }; quantity: number }) => ({ name: i.product.name, quantity: i.quantity })) ?? [],
       total: o.total,
-      status: "assigned" as const,
+      status: (o.delivery_status === "picked_up" || o.delivery_status === "delivered" || o.delivery_status === "accepted" ? o.delivery_status : "assigned") as "assigned" | "accepted" | "picked_up" | "delivered",
       assignedAt: new Date().toISOString(),
     });
 

@@ -21,50 +21,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing boy_id param" }, { status: 400 });
   }
 
-  const { data: assignments, error } = await supabaseAdmin
-    .from("delivery_assignments")
-    .select("*")
+  const { data: ordersData, error } = await supabaseAdmin
+    .from("orders")
+    .select("id, customer_name, customer_phone, total, items, delivery_code, payment_status, delivery_status, address_snapshot, created_at, delivery_boy_id")
     .eq("delivery_boy_id", boyId)
-    .order("assigned_at", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const orderIds = (assignments ?? []).map((a) => a.order_id).filter(Boolean);
+  const assignments = (ordersData ?? []).map((o: Record<string, unknown>) => ({
+    id: o.id as string,
+    orderId: o.id as string,
+    deliveryBoyId: o.delivery_boy_id as string,
+    customerName: o.customer_name as string,
+    customerPhone: o.customer_phone as string,
+    paymentStatus: (o.payment_status as "paid" | "unpaid") ?? "unpaid",
+    address: (o.address_snapshot as Record<string, unknown>) ?? {},
+    items: (o.items as { name: string; quantity: number }[]) ?? [],
+    total: o.total as number,
+    status: (o.delivery_status as string) === "picked_up" ? "picked_up" as const : (o.delivery_status as string) === "delivered" ? "delivered" as const : (o.delivery_status as string) === "accepted" ? "accepted" as const : "assigned" as const,
+    assignedAt: o.created_at as string,
+    deliveryCode: (o.delivery_code as string) ?? undefined,
+  }));
 
-  const orderMap: Record<string, { delivery_code: string; payment_status: string }> = {};
-  if (orderIds.length > 0) {
-    const { data: orders } = await supabaseAdmin
-      .from("orders")
-      .select("id, delivery_code, payment_status")
-      .in("id", orderIds);
-
-    if (orders) {
-      for (const o of orders) {
-        orderMap[o.id] = { delivery_code: o.delivery_code ?? "", payment_status: o.payment_status ?? "unpaid" };
-      }
-    }
-  }
-
-  const mapped = (assignments ?? []).map((a: Record<string, unknown>) => {
-    const orderInfo = orderMap[a.order_id as string];
-    return {
-      id: a.id as string,
-      orderId: a.order_id as string,
-      deliveryBoyId: a.delivery_boy_id as string,
-      customerName: a.customer_name as string,
-      customerPhone: a.customer_phone as string,
-      paymentStatus: (orderInfo?.payment_status as "paid" | "unpaid") ?? undefined,
-      address: a.address as Record<string, unknown>,
-      items: a.items as { name: string; quantity: number }[],
-      total: a.total as number,
-      status: a.status as string,
-      assignedAt: a.assigned_at as string,
-      deliveredAt: a.delivered_at as string | undefined,
-      deliveryCode: orderInfo?.delivery_code ?? undefined,
-    };
-  });
-
-  return NextResponse.json({ assignments: mapped });
+  return NextResponse.json({ assignments });
 }
