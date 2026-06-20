@@ -248,52 +248,58 @@ export default function TrackOrderPage({
   const inWindow = isDelivered && deliveredAt && isWithinReplacementWindow(deliveredAt);
 
   return (
-    <div className="py-6">
+      <div className="py-6">
       <div className="text-center">
-        <Badge variant="fresh" className="mb-3">Live Tracking</Badge>
-        <h1 className="text-2xl font-extrabold">Order {orderId}</h1>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2ecc71]/10 px-3 py-1 text-[11px] font-semibold text-[#2ecc71] mb-3">
+          <span className="live-dot relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#2ecc71] opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#2ecc71]" />
+          </span>
+          LIVE TRACKING
+        </span>
+        <h1 className="text-2xl font-extrabold text-white">Order {orderId}</h1>
         {isOutForDelivery && (
           <div className="mt-2 flex flex-col items-center gap-1">
             {distance && (
-              <p className="text-sm text-muted flex items-center justify-center gap-1">
-                <Truck className="h-4 w-4 text-brand-fresh" /> {distance} away
+              <p className="text-sm text-[#80949b] flex items-center justify-center gap-1">
+                🚚 {distance} away
               </p>
             )}
             {etaMinutes !== null && etaMinutes > 0 && (
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-fresh/10 to-brand-blue/10 border border-brand-fresh/20 px-4 py-1.5">
-                <Clock className="h-4 w-4 text-brand-fresh-dim" />
-                <span className="text-sm font-bold text-brand-dark tabular-nums">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-4 py-1.5">
+                <Clock className="h-4 w-4 text-[#2ecc71]" />
+                <span className="text-sm font-bold text-white tabular-nums">
                   Arriving in ~{etaMinutes} min
                 </span>
               </div>
             )}
             {lastUpdated && (
-              <p className="text-[10px] text-muted/60">
+              <p className="text-[10px] text-[#5a7278]">
                 Updated {new Date(lastUpdated).toLocaleTimeString()}
               </p>
             )}
           </div>
         )}
         {!isOutForDelivery && !isDelivered && (
-          <p className="mt-1 text-sm text-muted">Estimated delivery: 30 min — 1 hour</p>
+          <p className="mt-1 text-sm text-[#80949b]">Estimated delivery: 30 min — 1 hour</p>
         )}
       </div>
 
-      {/* Cancel Order - only for received orders before packing */}
+      {/* Cancel Order */}
       {order.status === "received" && (
         <div className="mt-4">
           <button
             onClick={() => setShowCancel(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-red/20 bg-brand-red/5 px-4 py-3 text-sm font-semibold text-brand-red hover:bg-brand-red/10 hover:border-brand-red/30 transition-all"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#e74c3c]/20 bg-[#e74c3c]/5 px-4 py-3 text-sm font-semibold text-[#e74c3c] hover:bg-[#e74c3c]/10 transition-all"
           >
-            <Ban className="h-4 w-4" /> Cancel Order
+            ❌ Cancel Order
           </button>
-          <p className="mt-1 text-center text-[10px] text-muted">You can cancel before it&apos;s packed</p>
+          <p className="mt-1 text-center text-[10px] text-[#5a7278]">You can cancel before it&apos;s packed</p>
         </div>
       )}
 
       {/* Live Map */}
-      <div className="relative mt-6 overflow-hidden rounded-2xl border border-border/60 shadow-sm">
+      <div className="relative mt-4 overflow-hidden rounded-2xl border border-white/5">
         {isOutForDelivery ? (
           <LiveMap
             center={mapCenter}
@@ -312,14 +318,14 @@ export default function TrackOrderPage({
           </div>
         )}
         {isOutForDelivery && boyLocation && (
-          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-fresh" />
+          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 rounded-xl bg-[#0d1b2a]/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
+            <span className="live-dot relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#2ecc71] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#2ecc71]" />
             </span>
-            Live
+            <span className="text-white">Live</span>
             {speed > 0 && (
-              <span className="text-muted ml-1 font-mono">{(speed * 3.6).toFixed(1)} km/h</span>
+              <span className="text-[#80949b] ml-1 font-mono">{(speed * 3.6).toFixed(1)} km/h</span>
             )}
           </div>
         )}
@@ -327,23 +333,23 @@ export default function TrackOrderPage({
 
       {/* Delivery Code */}
       {order.deliveryCode && (isOutForDelivery || order.status === "delivered") && (
-        <div className="mt-6 rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-gradient-to-br from-brand-fresh/[0.04] to-white p-5 text-center shadow-sm">
+        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2ecc71]/30 bg-[#2ecc71]/5 p-5 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <KeyRound className="h-4 w-4 text-brand-fresh-dim" />
-            <p className="text-xs font-semibold text-muted">
-              {isDelivered ? "Delivery code used" : "Share this code with your delivery partner"}
+            <KeyRound className="h-4 w-4 text-[#2ecc71]" />
+            <p className="text-xs font-semibold text-[#80949b]">
+              {isDelivered ? "Delivery code used" : "Share this code with delivery partner"}
             </p>
           </div>
           <div className="flex items-center justify-center gap-3">
-            <span className="text-3xl sm:text-4xl font-extrabold tracking-[0.15em] text-brand-dark select-all">
+            <span className="text-3xl sm:text-4xl font-extrabold tracking-[0.15em] text-white select-all">
               {order.deliveryCode}
             </span>
             <button
               onClick={() => { navigator.clipboard.writeText(order.deliveryCode!); }}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-white shadow-sm hover:bg-gray-50 transition-all"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
               title="Copy code"
             >
-              <Copy className="h-4 w-4 text-muted" />
+              <Copy className="h-4 w-4 text-[#80949b]" />
             </button>
           </div>
         </div>
@@ -423,25 +429,25 @@ export default function TrackOrderPage({
                   animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 1, repeat: Infinity }}
                   className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    isActive ? "bg-brand-fresh text-white" : "bg-brand-dark/5 text-muted"
+                    isActive ? "bg-[#2ecc71] text-[#0a1f1c]" : "bg-white/5 text-[#80949b]"
                   }`}
                 >
                   <Icon className="h-5 w-5" />
                 </motion.div>
                 {i < stages.length - 1 && (
-                  <div className={`h-12 w-0.5 ${i < currentStage ? "bg-brand-fresh" : "bg-brand-dark/10"}`} />
+                  <div className={`h-12 w-0.5 ${i < currentStage ? "bg-[#2ecc71]" : "bg-white/10"}`} />
                 )}
               </div>
               <div className="pb-8 pt-2">
-                <p className={`text-sm font-semibold ${isActive ? "text-brand-dark" : "text-muted"}`}>
+                <p className={`text-sm font-semibold ${isActive ? "text-white" : "text-[#80949b]"}`}>
                   {stage.label}
                 </p>
                 {isCurrent && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-brand-fresh">
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-[#2ecc71]">
                     {order.status === "received" ? "Preparing your order..." : order.status === "out_for_delivery" && order.deliveryStatus === "picked_up" ? "On the way to you!" : "In progress..."}
                   </motion.p>
                 )}
-                {isActive && !isCurrent && <p className="text-xs text-muted">Completed</p>}
+                {isActive && !isCurrent && <p className="text-xs text-[#5a7278]">Completed</p>}
               </div>
             </div>
           );

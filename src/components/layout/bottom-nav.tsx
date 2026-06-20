@@ -23,7 +23,7 @@ export function BottomNav() {
   if (pathname.startsWith("/admin") || pathname.startsWith("/checkout")) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/80 bg-white/92 backdrop-blur-xl safe-bottom lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#0d1b2a]/95 backdrop-blur-xl safe-bottom lg:hidden">
       <div className="flex items-end justify-around px-1 pb-2 pt-1">
         {items.map((item) => {
           const active = item.href === "/" ? pathname === "/" : item.href === "/account" ? (pathname === "/account" || (pathname.startsWith("/account/") && !pathname.startsWith("/account/wishlist"))) : pathname.startsWith(item.href);
@@ -34,25 +34,25 @@ export function BottomNav() {
               href={item.href}
               className={cn(
                 "flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-medium",
-                active ? "text-brand-dark" : "text-muted"
+                active ? "text-white" : "text-[#80949b]"
               )}
             >
-              <Icon className={cn("h-[22px] w-[22px]", active && "text-brand-fresh-dim")} strokeWidth={active ? 2.5 : 2} />
+              <Icon className={cn("h-[22px] w-[22px]", active && "text-[#2ecc71]")} strokeWidth={active ? 2.5 : 2} />
               {item.label}
             </Link>
           );
         })}
 
         <button onClick={openCart} className="relative -mt-4 flex flex-col items-center">
-          <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-brand-dark text-white shadow-lg shadow-brand-dark/30">
+          <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/30">
             <ShoppingBag className="h-5 w-5" strokeWidth={2.5} />
             {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-white text-[10px] font-bold text-brand-dark">
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0d1b2a] bg-white text-[10px] font-bold text-[#0a1f1c]">
                 {count}
               </span>
             )}
           </div>
-          <span className="mt-1 text-[10px] font-semibold text-brand-dark">Cart</span>
+          <span className="mt-1 text-[10px] font-semibold text-white">Cart</span>
         </button>
       </div>
     </nav>
