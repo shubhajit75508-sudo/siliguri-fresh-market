@@ -13,6 +13,7 @@ import {
   Navigation,
   Copy,
   KeyRound,
+  ShoppingBag,
 } from "lucide-react";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +24,12 @@ const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false 
 
 const stages = [
   { id: "received", label: "Order Received", icon: Package },
+  { id: "picked_up", label: "Picked Up", icon: ShoppingBag },
   { id: "out_for_delivery", label: "Out For Delivery", icon: Truck },
   { id: "delivered", label: "Delivered", icon: CheckCircle },
 ];
 
-const stageIndex: Record<string, number> = { received: 0, out_for_delivery: 1, delivered: 2 };
+const stageIndex: Record<string, number> = { received: 0, picked_up: 1, out_for_delivery: 2, delivered: 3 };
 
 export default function TrackOrderPage({
   params,
@@ -115,7 +117,12 @@ export default function TrackOrderPage({
   }, [order, orderId]);
 
   const isCancelled = order?.status === "cancelled";
-  const currentStage = order ? (stageIndex[order.status] ?? 0) : 0;
+  const currentStage = (() => {
+    if (order?.status === "delivered") return 3;
+    if (order?.deliveryStatus === "picked_up") return 2;
+    if (order?.status === "out_for_delivery") return 1;
+    return 0;
+  })();
   const isDelivered = order?.status === "delivered";
   const deliveredAt = order?.createdAt;
   const isOutForDelivery = order?.status === "out_for_delivery";
@@ -307,7 +314,7 @@ export default function TrackOrderPage({
                 </p>
                 {isCurrent && (
                   <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-brand-fresh">
-                    {order.status === "received" ? "Preparing your order..." : "In progress..."}
+                    {order.status === "received" ? "Preparing your order..." : order.status === "out_for_delivery" && order.deliveryStatus === "picked_up" ? "On the way to you!" : "In progress..."}
                   </motion.p>
                 )}
                 {isActive && !isCurrent && <p className="text-xs text-muted">Completed</p>}
