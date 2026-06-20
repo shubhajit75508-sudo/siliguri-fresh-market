@@ -78,9 +78,27 @@ export default function DeliveryDashboard() {
 
   const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
   const [codeError, setCodeError] = useState<string | null>(null);
+  const [loadingAssignments, setLoadingAssignments] = useState(true);
+
+  useEffect(() => {
+    if (boy) {
+      useDeliveryStore.getState().loadAssignments().finally(() => setLoadingAssignments(false));
+    } else {
+      setLoadingAssignments(false);
+    }
+  }, [boy?.id]);
 
   const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
   const outForDelivery = active.filter((a) => a.status === "picked_up");
+
+  if (loadingAssignments) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Loader2 className="mb-4 h-8 w-8 animate-spin text-muted" />
+        <p className="text-sm text-muted">Loading deliveries...</p>
+      </div>
+    );
+  }
 
   if (active.length === 0) {
     return (

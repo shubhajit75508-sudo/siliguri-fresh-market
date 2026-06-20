@@ -59,71 +59,76 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="mx-auto max-w-sm py-16 px-4">
-      <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-dark/10">
-          <LogIn className="h-7 w-7 text-brand-dark" />
-        </div>
-        <h1 className="text-2xl font-extrabold">Log In</h1>
-        <p className="mt-1 text-sm text-muted">Log in to your account</p>
-      </div>
-
-      {error && (
-        <div className="mb-6 rounded-xl bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label className="text-xs font-medium text-muted">Email</label>
-          <input
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoFocus
-            className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-medium text-muted">Password</label>
-          <div className="mt-1 flex">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full rounded-l-xl border border-r-0 border-border bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-white px-3 text-muted hover:text-brand-dark"
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-10">
+      <div className="w-full max-w-sm">
+        <div className="rounded-2xl bg-gradient-to-b from-white to-surface/60 p-8 shadow-lg shadow-black/5 ring-1 ring-black/5">
+          <div className="mb-6 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-dark to-brand-dark/80 shadow-md shadow-brand-dark/20">
+              <LogIn className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-2xl font-extrabold">Welcome Back</h1>
+            <p className="mt-1 text-sm text-muted">Log in to your account</p>
           </div>
+
+          {error && (
+            <div className="mb-6 rounded-xl bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="text-xs font-medium text-muted">Email</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoFocus
+                className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted">Password</label>
+              <div className="mt-1 flex">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full rounded-l-xl border border-r-0 border-border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-white px-3 text-muted transition-colors hover:text-brand-dark"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <p className="mt-1 text-[10px] text-muted">Minimum 8 characters</p>
+            </div>
+
+            <div className="flex justify-end">
+              <Link href="/auth/forgot-password" className="text-xs font-medium text-muted transition-colors hover:text-brand-dark">
+                Forgot Password?
+              </Link>
+            </div>
+
+            <Button type="submit" variant="default" className="w-full shadow-md shadow-brand-dark/20" disabled={submitting}>
+              {submitting ? "Logging in..." : "Log In"}
+            </Button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-muted">
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/signup" className="font-semibold text-brand-dark transition-colors hover:underline">
+              Sign Up
+            </Link>
+          </p>
         </div>
-
-        <div className="flex justify-end">
-          <Link href="/auth/forgot-password" className="text-xs font-medium text-muted hover:text-brand-dark">
-            Forgot Password?
-          </Link>
-        </div>
-
-        <Button type="submit" variant="default" className="w-full" disabled={submitting}>
-          {submitting ? "Logging in..." : "Log In"}
-        </Button>
-      </form>
-
-      <p className="mt-6 text-center text-sm text-muted">
-        Don&apos;t have an account?{" "}
-        <Link href="/auth/signup" className="font-semibold text-brand-dark hover:underline">
-          Sign Up
-        </Link>
-      </p>
+      </div>
     </div>
   );
 }
