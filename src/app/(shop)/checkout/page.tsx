@@ -59,7 +59,7 @@ export default function CheckoutPage() {
   const [addressMissing, setAddressMissing] = useState(false);
   const addressRef = useRef<HTMLDivElement>(null);
 
-  const { location: liveLocation, locating, error: geoError, resolvedAddress, resolvedFields, getLocation } = useGeolocation();
+  const { location: liveLocation, locating, error: geoError, getLocation } = useGeolocation();
 
   const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "" });
 
@@ -81,24 +81,6 @@ export default function CheckoutPage() {
       });
     }
   }, [selectedAddressId]);
-
-  useEffect(() => {
-    if (resolvedFields && liveLocation) {
-      setNewAddress(f => ({
-        city: resolvedFields.city || f.city,
-        pincode: resolvedFields.pincode || f.pincode,
-        area: resolvedFields.area || f.area,
-        landmark: resolvedFields.landmark || f.landmark,
-        building: resolvedFields.building || f.building,
-        flat: f.flat,
-        floor: f.floor,
-      }));
-      if (!selectedAddress) {
-        setAddressMissing(false);
-        toast.add("GPS location detected! Verify and fill remaining details.");
-      }
-    }
-  }, [resolvedFields]);
 
   const handleToggleCoins = () => {
     if (coinsRedeemed > 0) {
@@ -427,15 +409,10 @@ export default function CheckoutPage() {
                       <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-white px-4 py-3.5 group-hover:bg-transparent group-hover:text-white transition-all duration-300">
                         <Navigation className={`h-5 w-5 text-brand-fresh-dim group-hover:text-white transition-all ${locating ? "animate-spin" : "group-hover:scale-110"}`} />
                         <span className="text-sm font-bold text-brand-dark group-hover:text-white transition-all">
-                          {locating ? "Detecting your location..." : liveLocation ? "✓ Location Detected" : "📍 Use My Current Location"}
+                            {locating ? "Detecting your location..." : liveLocation ? "✓ GPS Location Saved" : "📍 Pin My Location on Map"}
                         </span>
                       </div>
                     </button>
-                    {resolvedAddress && (
-                      <div className="rounded-xl bg-brand-fresh/5 border border-brand-fresh/10 px-4 py-2.5 text-center">
-                        <p className="text-[11px] text-brand-fresh-dim font-medium">{resolvedAddress}</p>
-                      </div>
-                    )}
                     {geoError && (
                       <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 px-4 py-2 text-center">
                         <p className="text-[10px] text-brand-red">{geoError}</p>
@@ -624,15 +601,10 @@ export default function CheckoutPage() {
                           <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-white px-4 py-3.5 group-hover:bg-transparent group-hover:text-white transition-all duration-300">
                             <Navigation className={`h-5 w-5 text-brand-fresh-dim group-hover:text-white transition-all ${locating ? "animate-spin" : "group-hover:scale-110"}`} />
                             <span className="text-sm font-bold text-brand-dark group-hover:text-white transition-all">
-                              {locating ? "Detecting location..." : liveLocation ? "✓ Location Detected" : "📍 Use My Current Location"}
+                              {locating ? "Detecting location..." : liveLocation ? "✓ GPS Location Saved" : "📍 Pin My Location on Map"}
                             </span>
                           </div>
                         </button>
-                        {resolvedAddress && (
-                          <div className="rounded-xl bg-brand-fresh/5 border border-brand-fresh/10 px-4 py-2.5 text-center">
-                            <p className="text-[11px] text-brand-fresh-dim font-medium">{resolvedAddress}</p>
-                          </div>
-                        )}
                         {geoError && (
                           <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 px-4 py-2 text-center">
                             <p className="text-[10px] text-brand-red">{geoError}</p>
