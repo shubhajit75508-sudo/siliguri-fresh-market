@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
     is_flash_deal: body.isFlashDeal ?? false,
     is_trending: body.isTrending ?? false,
     tags: body.tags ?? null,
+    weight: body.weight ?? null,
     weights: body.weight ?? null,
     cuts: body.cuts ?? null,
     cleaning_options: body.cleaningOptions ?? null,
@@ -93,7 +94,7 @@ export async function PUT(req: NextRequest) {
   if (updates.isFlashDeal !== undefined) dbUpdates.is_flash_deal = updates.isFlashDeal;
   if (updates.isTrending !== undefined) dbUpdates.is_trending = updates.isTrending;
   if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
-  if (updates.weight !== undefined) dbUpdates.weights = updates.weight;
+  if (updates.weight !== undefined) { dbUpdates.weight = updates.weight; dbUpdates.weights = updates.weight; }
   if (updates.cuts !== undefined) dbUpdates.cuts = updates.cuts;
   if (updates.cleaningOptions !== undefined) dbUpdates.cleaning_options = updates.cleaningOptions;
   if (updates.nutrition !== undefined) dbUpdates.nutrition = updates.nutrition;
