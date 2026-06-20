@@ -3,11 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Plus, Minus, Tag, ArrowRight, ShoppingBag, Percent, Sparkles } from "lucide-react";
+import { X, Plus, Minus, Tag, ArrowRight, ShoppingBag, Percent, Sparkles, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { useCouponStore } from "@/store/coupon-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
+import { useProducts } from "@/lib/hooks/use-products";
+import { ProductCard } from "@/components/product/product-card";
 
 export function CartDrawer() {
   const {
@@ -31,6 +33,8 @@ export function CartDrawer() {
   const deliveryFee = getDeliveryFee();
 
   const { coupons } = useCouponStore();
+  const { data: allProducts = [] } = useProducts();
+  const suggestedProducts = allProducts.filter((p) => p.inStock).slice(0, 4);
 
   const handleApplyCoupon = () => {
     if (couponCode) removeCoupon();
@@ -111,7 +115,7 @@ export function CartDrawer() {
                         layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="group relative flex gap-3 rounded-2xl border border-border/50 bg-white p-3 shadow-sm transition-all hover:shadow-md"
+                        className="group flex items-start gap-2 rounded-2xl border border-border/50 bg-white p-2.5 shadow-sm transition-all hover:shadow-md"
                       >
                         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-50">
                           <Image
@@ -136,13 +140,13 @@ export function CartDrawer() {
                             </p>
                             <button
                               onClick={() => removeItem(lineKey)}
-                              className="text-[10px] font-medium text-gray-400 opacity-0 transition-all hover:text-brand-red group-hover:opacity-100"
+                              className="text-[10px] font-medium text-gray-400 transition-all hover:text-brand-red sm:opacity-0 sm:group-hover:opacity-100"
                             >
                               Remove
                             </button>
                           </div>
                         </div>
-                        <div className="absolute right-3 top-3 sm:static sm:self-end">
+                        <div className="self-end shrink-0">
                           <div className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-brand-dark to-brand-dark/90 px-1 py-1 shadow-md">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}
@@ -200,6 +204,33 @@ export function CartDrawer() {
                       </div>
                     )}
                   </motion.button>
+
+                  {/* Suggestions */}
+                  {suggestedProducts.length > 0 && (
+                    <div className="pt-2">
+                      <div className="mb-2 flex items-center gap-1.5">
+                        <Eye className="h-3.5 w-3.5 text-muted" />
+                        <span className="text-xs font-semibold text-muted">Add more items</span>
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-none">
+                        {suggestedProducts.map((p) => (
+                          <div key={p.id} className="min-w-[140px] max-w-[140px] snap-start shrink-0">
+                            <div className="rounded-xl border border-border/40 bg-white overflow-hidden shadow-sm">
+                              <Link href={`/product/${p.slug}`} onClick={closeCart} className="block relative aspect-square bg-gray-50">
+                                <Image src={p.image} alt={p.name} fill className="object-cover" sizes="140px" />
+                              </Link>
+                              <div className="p-2">
+                                <Link href={`/product/${p.slug}`} onClick={closeCart} className="block">
+                                  <p className="text-[11px] font-semibold leading-tight line-clamp-2">{p.name}</p>
+                                </Link>
+                                <p className="mt-0.5 text-[10px] font-semibold text-brand-dark">{formatPrice(p.price)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -2,12 +2,14 @@
 
 import { use, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
-import { Heart, ShoppingCart, ArrowLeft, Star, Flame } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, Star, Flame, ChevronRight } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { formatPrice, getWeightMultiplier, getAvailableWeights } from "@/lib/utils";
-import { useProductBySlug } from "@/lib/hooks/use-products";
+import { useProductBySlug, useProductsByCategory } from "@/lib/hooks/use-products";
+import { ProductCard } from "@/components/product/product-card";
 
 export default function ProductDetailPage({
   params,
@@ -31,6 +33,8 @@ export default function ProductDetailPage({
   const displayPrice = product.price * mult;
 
   const isFlashDeal = product.discount && product.discount > 0;
+  const { data: categoryProducts = [] } = useProductsByCategory(product.category);
+  const similarProducts = categoryProducts.filter((p) => p.id !== product.id).slice(0, 8);
 
   return (
     <div className="py-4">
@@ -146,6 +150,39 @@ export default function ProductDetailPage({
           </div>
         </div>
       </div>
+
+      {/* Similar Products */}
+      {similarProducts.length > 0 && (
+        <section className="mt-10 sm:mt-14">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-fresh/10 to-brand-blue/10">
+                <Star className="h-4 w-4 text-brand-fresh-dim" />
+              </div>
+              <h2 className="text-lg font-bold tracking-tight">
+                More from <span className="text-brand-fresh-dim capitalize">{product.category}</span>
+              </h2>
+            </div>
+            <Link
+              href={`/category/${product.category}`}
+              className="flex items-center gap-0.5 text-xs font-semibold text-brand-fresh-dim hover:underline"
+            >
+              See all <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          {/* Mobile: horizontal scroll */}
+          <div className="-mx-3 sm:-mx-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-none sm:scrollbar-auto">
+            <div className="flex gap-3 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-3 sm:px-4 sm:gap-4 sm:w-auto w-max min-w-full">
+              {similarProducts.map((p) => (
+                <div key={p.id} className="w-[160px] sm:w-auto shrink-0 snap-start">
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
