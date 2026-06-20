@@ -21,7 +21,12 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields: deliveryBoyId, orderId, lat, lng" }, { status: 400 });
     }
 
-    await supabaseAdmin.from("delivery_locations").upsert({
+    // Delete old location for this boy+order, then insert new
+    await supabaseAdmin.from("delivery_locations").delete()
+      .eq("delivery_boy_id", deliveryBoyId)
+      .eq("order_id", orderId);
+
+    await supabaseAdmin.from("delivery_locations").insert({
       delivery_boy_id: deliveryBoyId,
       order_id: orderId,
       lat,
@@ -29,9 +34,6 @@ export async function PUT(req: NextRequest) {
       heading: heading ?? 0,
       speed: speed ?? 0,
       updated_at: new Date().toISOString(),
-    }, {
-      onConflict: "delivery_boy_id, order_id",
-      ignoreDuplicates: false,
     });
 
     return NextResponse.json({ success: true });
