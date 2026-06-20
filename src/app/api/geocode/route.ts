@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       display_name: line,
       address: {
-        area: area || town || line,
+        area: area || "",
         landmark,
         building,
         city,

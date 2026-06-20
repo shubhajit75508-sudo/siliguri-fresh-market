@@ -68,7 +68,7 @@ export default function CheckoutPage() {
   const maxRedeemable = Math.floor(coinBalance / 100) * 100;
   const coinsEarned = Math.floor(getTotal() / 100) * 10;
   const isAuthenticated = !!(currentUser && (currentUser.role === "customer" || currentUser.role === "admin"));
-  const requiredDetailsFilled = !!(detailForm.area.trim()) && !!(detailForm.landmark.trim()) && !!(detailForm.building.trim());
+  const requiredDetailsFilled = !!(detailForm.area.trim()) && !!(detailForm.landmark.trim());
 
   useEffect(() => {
     if (selectedAddress) {
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
       return;
     }
     if (!requiredDetailsFilled) {
-      toast.add("Please fill Area, Landmark, and Building details", "error");
+      toast.add("Please fill Area and Landmark details", "error");
       setShowAddressForm(true);
       setAddressMissing(true);
       addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -485,7 +485,7 @@ export default function CheckoutPage() {
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building *</label>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building (optional)</label>
                         <input value={newAddress.building} onChange={(e) => setNewAddress(f => ({ ...f, building: e.target.value }))}
                           placeholder="Green Tower"
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
@@ -493,22 +493,22 @@ export default function CheckoutPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt</label>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
                         <input value={newAddress.flat} onChange={(e) => setNewAddress(f => ({ ...f, flat: e.target.value }))}
                           placeholder="3B"
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor</label>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
                         <input value={newAddress.floor} onChange={(e) => setNewAddress(f => ({ ...f, floor: e.target.value }))}
                           placeholder="2nd"
                           className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                       </div>
                     </div>
                     <Button variant="default" size="lg" className="w-full rounded-2xl py-3.5 text-sm font-bold shadow-xl shadow-brand-dark/15 hover:shadow-2xl hover:shadow-brand-dark/20 transition-all"
-                      disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
+                      disabled={!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()}
                       onClick={() => {
-                        if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.building.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
+                        if (!newAddress.area.trim() || !newAddress.landmark.trim() || !newAddress.city.trim() || !newAddress.pincode.trim()) {
                           toast.add("Please fill all required fields", "error");
                           return;
                         }
@@ -657,7 +657,7 @@ export default function CheckoutPage() {
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                           <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building *</label>
+                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Building (optional)</label>
                             <div className="mt-1 relative">
                               <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted/40" />
                               <input value={detailForm.building} onChange={(e) => setDetailForm(f => ({ ...f, building: e.target.value }))}
@@ -666,13 +666,13 @@ export default function CheckoutPage() {
                             </div>
                           </div>
                           <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt</label>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Flat / Apt (optional)</label>
                             <input value={detailForm.flat} onChange={(e) => setDetailForm(f => ({ ...f, flat: e.target.value }))}
                               placeholder="3B"
                               className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
                           </div>
                           <div>
-                            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor</label>
+                        <label className="text-[10px] font-semibold text-muted uppercase tracking-wide">Floor (optional)</label>
                             <input value={detailForm.floor} onChange={(e) => setDetailForm(f => ({ ...f, floor: e.target.value }))}
                               placeholder="2nd"
                               className="mt-1 w-full rounded-xl border border-border/50 bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-brand-fresh/60 focus:ring-2 focus:ring-brand-fresh/15 outline-none transition-all" />
@@ -680,8 +680,8 @@ export default function CheckoutPage() {
                         </div>
                         <Button variant="fresh" size="sm" className="rounded-xl text-xs font-bold shadow-lg shadow-brand-fresh/20 hover:shadow-xl hover:shadow-brand-fresh/30 transition-all"
                           onClick={() => {
-                            if (!detailForm.area.trim() || !detailForm.landmark.trim() || !detailForm.building.trim()) {
-                              toast.add("Please fill Area, Landmark and Building", "error");
+                            if (!detailForm.area.trim() || !detailForm.landmark.trim()) {
+                              toast.add("Please fill Area and Landmark", "error");
                               return;
                             }
                             saveAddressDetails();
