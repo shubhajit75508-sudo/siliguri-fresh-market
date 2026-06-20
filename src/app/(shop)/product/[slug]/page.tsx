@@ -24,7 +24,7 @@ export default function ProductDetailPage({
   if (isLoading) return <div className="py-6 space-y-4"><div className="skeleton h-80 w-full rounded-[24px]" /><div className="skeleton h-6 w-48 rounded-xl" /><div className="skeleton h-4 w-96 rounded-xl" /><div className="skeleton h-12 w-64 rounded-xl" /></div>;
   if (!product) notFound();
 
-  const weights = getAvailableWeights(product.price, product.category);
+  const weights = getAvailableWeights(product.price, product.category, product.weight);
 
   const displayWeight = selectedWeight || weights[0];
   const mult = getWeightMultiplier(displayWeight);

@@ -29,7 +29,8 @@ export function getWeightMultiplier(weight?: string): number {
   return unit === "g" ? val / 1000 : val;
 }
 
-export function getAvailableWeights(_price: number, category: string): string[] {
+export function getAvailableWeights(_price: number, category: string, customWeights?: string[]): string[] {
+  if (customWeights && customWeights.length > 0) return customWeights;
   if (category === "fish" || category === "chicken" || category === "mutton") {
     return ["500g", "1kg", "1.5kg", "2kg"];
   }

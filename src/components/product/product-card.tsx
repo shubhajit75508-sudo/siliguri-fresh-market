@@ -1,12 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Clock, Leaf, Plus, Minus } from "lucide-react";
 import { cartLineKey, useCartStore } from "@/store/cart-store";
 import { useToast } from "@/components/ui/toaster";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getAvailableWeights } from "@/lib/utils";
 import type { Product } from "@/types";
 
 interface ProductCardProps {
@@ -20,6 +21,9 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const toast = useToast();
   const cartQuantity = getProductQuantity(product.id);
 
+  const weights = getAvailableWeights(product.price, product.category, product.weight);
+  const [selectedWeight, setSelectedWeight] = useState(weights[0]);
+
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -27,7 +31,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
       toast.add(`${product.name} is out of stock`, "error");
       return;
     }
-    addItem(product);
+    addItem(product, 1, { weight: selectedWeight });
     toast.add(`${product.name} added to cart`);
   };
 
@@ -121,9 +125,28 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           </div>
 
           <h3 className="line-clamp-1 text-[15px] font-bold tracking-tight">{product.name}</h3>
-          <p className="mt-0.5 text-[12px] text-muted">
-            {product.weight?.[0] || `1 ${product.unit}`}
-          </p>
+
+          {weights.length > 1 ? (
+            <div className="mt-1 flex flex-wrap gap-1">
+              {weights.map((w) => (
+                <button
+                  key={w}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedWeight(w); }}
+                  className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                    selectedWeight === w
+                      ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh"
+                      : "border-border bg-gray-50 text-muted hover:border-gray-400"
+                  }`}
+                >
+                  {w}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-0.5 text-[12px] text-muted">
+              {product.weight?.[0] || `1 ${product.unit}`}
+            </p>
+          )}
           <p className="mt-1 text-[13px] font-semibold text-brand-dark">{formatPrice(product.price)}</p>
 
           <div className="mt-auto pt-3">
