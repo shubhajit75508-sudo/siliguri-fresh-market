@@ -323,16 +323,16 @@ export default function DeliveryDashboard() {
                 <div className="flex items-center gap-2">
                   <KeyRound className="h-3.5 w-3.5 text-[#80949b]" />
                   <input
-                    type="text"
-                    inputMode="numeric"
+                    type="tel"
                     maxLength={4}
-                    placeholder="Enter delivery code"
+                    placeholder="Enter 4-digit code"
                     value={deliveryCodes[a.orderId] || ""}
                     onChange={(e) => {
-                      setDeliveryCodes({ ...deliveryCodes, [a.orderId]: e.target.value.replace(/\D/g, "").slice(0, 4) });
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                      setDeliveryCodes((prev) => ({ ...prev, [a.orderId]: val }));
                       setCodeError(null);
                     }}
-                    className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-center tracking-[0.25em] font-bold text-white outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/20"
+                    className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-white placeholder:text-white/25 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/20"
                   />
                 </div>
                 {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
