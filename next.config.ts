@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://checkout.razorpay.com https://cdn.razorpay.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.razorpay.com",
+              "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.razorpay.com https://*.tile.openstreetmap.org https://raw.githubusercontent.com",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com https://cdn.razorpay.com",
               "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com",
