@@ -190,11 +190,11 @@ export default function DeliveryDashboard() {
 
   function DeliveryCard({ a }: { a: typeof active[0] }) {
     return (
-      <div className="mb-3 rounded-2xl border border-border bg-[#0d1b2a] p-4 shadow-sm">
+      <div className="mb-3 rounded-2xl border border-white/5 bg-[#0d1b2a] p-4 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <p className="font-bold">{a.customerName}</p>
+              <p className="font-bold text-white">{a.customerName}</p>
               <Badge variant={statusColors[a.status] ?? "blue"}>
                 {statusLabels[a.status] ?? a.status}
               </Badge>
@@ -204,28 +204,28 @@ export default function DeliveryDashboard() {
                 <Badge variant="orange">COD</Badge>
               )}
             </div>
-            <p className="mt-0.5 text-sm text-muted">{a.customerPhone}</p>
-            <p className="text-[10px] font-mono text-muted mt-0.5">Order: {a.orderId}</p>
+            <p className="mt-0.5 text-sm text-[#80949b]">{a.customerPhone}</p>
+            <p className="text-[10px] font-mono text-[#80949b] mt-0.5">Order: {a.orderId}</p>
           </div>
           <p className="text-sm font-bold">{formatPrice(a.total)}</p>
         </div>
 
-        <div className="mt-3 rounded-xl bg-surface p-3 text-sm">
+        <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm">
           <div className="flex items-start gap-2">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#80949b]" />
             <div>
-              <p className="font-medium">{a.address.line1}</p>
-              {a.address.area && <p className="text-muted">Area: {a.address.area}</p>}
-              {a.address.landmark && <p className="text-muted">Landmark: {a.address.landmark}</p>}
+              <p className="font-medium text-white">{a.address.line1}</p>
+              {a.address.area && <p className="text-[#80949b]">Area: {a.address.area}</p>}
+              {a.address.landmark && <p className="text-[#80949b]">Landmark: {a.address.landmark}</p>}
               {a.address.building && (
-                <p className="text-muted">
+                <p className="text-[#80949b]">
                   {a.address.building}
                   {a.address.flat ? `, Flat ${a.address.flat}` : ""}
                   {a.address.floor ? `, Floor ${a.address.floor}` : ""}
                 </p>
               )}
-              {a.address.line2 && <p className="text-muted">{a.address.line2}</p>}
-              <p className="text-muted">{a.address.city} — {a.address.pincode}</p>
+              {a.address.line2 && <p className="text-[#80949b]">{a.address.line2}</p>}
+              <p className="text-[#80949b]">{a.address.city} — {a.address.pincode}</p>
             </div>
           </div>
           {a.address.lat && a.address.lng && (
@@ -267,20 +267,20 @@ export default function DeliveryDashboard() {
         </div>
 
         <details className="mt-3">
-          <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-muted">
+          <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#80949b]">
             <ShoppingBag className="h-3.5 w-3.5" /> {a.items.length} item{a.items.length > 1 ? "s" : ""}
           </summary>
-          <ul className="mt-2 space-y-1 pl-5 text-sm text-muted">
+          <ul className="mt-2 space-y-1 pl-5 text-sm text-[#80949b]">
             {a.items.map((item, i) => (
               <li key={i}>{item.name} × {item.quantity}</li>
             ))}
           </ul>
         </details>
 
-        <div className="mt-4 flex items-center gap-3 border-t border-border pt-3">
+        <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3">
           <a
             href={`tel:${a.customerPhone}`}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-4 py-2 text-xs font-medium text-muted hover:bg-surface"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-[#80949b] hover:bg-white/5"
           >
             <Phone className="h-3.5 w-3.5" /> Call
           </a>
@@ -321,7 +321,7 @@ export default function DeliveryDashboard() {
             {a.status === "picked_up" && (
               <div className="w-full space-y-2">
                 <div className="flex items-center gap-2">
-                  <KeyRound className="h-3.5 w-3.5 text-muted" />
+                  <KeyRound className="h-3.5 w-3.5 text-[#80949b]" />
                   <input
                     type="text"
                     inputMode="numeric"
@@ -332,7 +332,7 @@ export default function DeliveryDashboard() {
                       setDeliveryCodes({ ...deliveryCodes, [a.orderId]: e.target.value.replace(/\D/g, "").slice(0, 4) });
                       setCodeError(null);
                     }}
-                    className="flex-1 rounded-xl border border-border bg-[#0d1b2a] px-3 py-2 text-sm text-center tracking-[0.25em] font-bold outline-none focus:border-brand-fresh/50"
+                    className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-center tracking-[0.25em] font-bold text-white outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/20"
                   />
                 </div>
                 {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
