@@ -108,8 +108,8 @@ export default function DeliveryDashboard() {
   if (loadingAssignments) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Loader2 className="mb-4 h-8 w-8 animate-spin text-muted" />
-        <p className="text-sm text-muted">Loading deliveries...</p>
+        <Loader2 className="mb-4 h-8 w-8 animate-spin text-[#80949b]" />
+        <p className="text-sm text-[#80949b]">Loading deliveries...</p>
       </div>
     );
   }
@@ -117,16 +117,16 @@ export default function DeliveryDashboard() {
   if (active.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="mb-4 h-12 w-12 text-muted" />
-        <h2 className="text-lg font-bold">No Deliveries Assigned</h2>
-        <p className="mt-1 text-sm text-muted">You&apos;ll see new orders here as they come in</p>
+        <span className="text-4xl mb-4">📦</span>
+        <h2 className="text-lg font-bold text-white">No Deliveries Assigned</h2>
+        <p className="mt-1 text-sm text-[#80949b]">You&apos;ll see new orders here as they come in</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4 pb-8">
-      <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-brand-fresh/30 bg-gradient-to-r from-brand-fresh/[0.03] to-white" : "border-brand-red/30 bg-gradient-to-r from-brand-red/[0.03] to-white"}`}>
+      <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-[#2ecc71]/30 bg-[#2ecc71]/5" : "border-[#e74c3c]/30 bg-[#e74c3c]/5"}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tracking ? "bg-brand-fresh/10" : "bg-brand-red/10"}`}>
@@ -134,7 +134,7 @@ export default function DeliveryDashboard() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold">Active Deliveries ({active.length})</h2>
+                <h2 className="text-sm font-bold text-white">Active Deliveries ({active.length})</h2>
                 {tracking ? (
                   <span className="flex items-center gap-1.5 text-[10px] text-brand-fresh font-semibold bg-brand-fresh/10 px-2 py-0.5 rounded-full">
                     <span className="relative flex h-1.5 w-1.5">
@@ -150,7 +150,7 @@ export default function DeliveryDashboard() {
                 )}
               </div>
               {currentPosition && (
-                <p className="text-[10px] text-muted mt-0.5 font-mono">
+                <p className="text-[10px] text-[#80949b] mt-0.5 font-mono">
                   {currentPosition[0].toFixed(5)}, {currentPosition[1].toFixed(5)}
                 </p>
               )}
@@ -158,7 +158,7 @@ export default function DeliveryDashboard() {
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold tabular-nums">{active.length}</p>
-            <p className="text-[10px] text-muted -mt-0.5">active</p>
+            <p className="text-[10px] text-[#80949b] -mt-0.5">active</p>
           </div>
         </div>
         {gpsError && (
@@ -168,7 +168,7 @@ export default function DeliveryDashboard() {
 
       {pickupStatuses.length > 0 && (
         <div>
-          <h3 className="mb-2 text-sm font-semibold text-muted uppercase tracking-wide">Pickup</h3>
+          <h3 className="mb-2 text-sm font-semibold text-[#80949b] uppercase tracking-wide">Pickup</h3>
           {pickupStatuses.map((a) => (
             <DeliveryCard key={a.id} a={a} />
           ))}
