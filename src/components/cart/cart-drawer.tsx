@@ -3,10 +3,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Plus, Minus, ArrowRight, Sparkles, Truck, Shield } from "lucide-react";
+import { X, Plus, Minus, ArrowRight, Truck, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
-import { useCouponStore } from "@/store/coupon-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
 
 export function CartDrawer() {
@@ -20,32 +19,11 @@ export function CartDrawer() {
     getTotal,
     getDeliveryFee,
     getItemCount,
-    couponCode,
-    couponDiscount,
-    applyCoupon,
-    removeCoupon,
   } = useCartStore();
 
   const subtotal = getSubtotal();
   const total = getTotal();
   const deliveryFee = getDeliveryFee();
-
-  const { coupons } = useCouponStore();
-
-  const handleApplyCoupon = () => {
-    if (couponCode) removeCoupon();
-    else {
-      const activeCoupon = coupons[0];
-      if (activeCoupon && subtotal >= activeCoupon.minOrder) {
-        const discount = activeCoupon.type === "percentage"
-          ? Math.round(subtotal * activeCoupon.discount / 100)
-          : activeCoupon.discount;
-        applyCoupon(activeCoupon.code, discount);
-      } else {
-        applyCoupon("FRESH50", 50);
-      }
-    }
-  };
 
   const badge = (cat: string) => {
     if (["fish", "chicken", "mutton", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
@@ -172,31 +150,6 @@ export function CartDrawer() {
                       </motion.div>
                     );
                   })}
-
-                  {/* Coupon */}
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleApplyCoupon}
-                    className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 transition-all ${
-                      couponCode
-                        ? "border-[#2ecc71]/30 bg-[#2ecc71]/5"
-                        : "border-dashed border-white/10 bg-white/[0.02] hover:border-[#2ecc71]/30"
-                    }`}
-                  >
-                    <span className="text-lg">{couponCode ? "🎫" : "🏷️"}</span>
-                    <div className="flex-1 text-left">
-                      <p className={`text-sm font-semibold ${couponCode ? "text-[#2ecc71]" : "text-white"}`}>
-                        {couponCode ? `Coupon ${couponCode} applied` : "Have a coupon?"}
-                      </p>
-                      <p className="text-[11px] text-[#80949b]">
-                        {couponCode
-                          ? `You save ${formatPrice(couponDiscount)}`
-                          : "Tap to apply FRESH50"
-                        }
-                      </p>
-                    </div>
-                    {couponCode && <Sparkles className="h-4 w-4 text-[#2ecc71]" />}
-                  </motion.button>
                 </div>
               )}
             </div>
@@ -209,12 +162,6 @@ export function CartDrawer() {
                     <span className="text-[#80949b]">Subtotal</span>
                     <span className="text-white font-medium">{formatPrice(subtotal)}</span>
                   </div>
-                  {couponDiscount > 0 && (
-                    <div className="flex justify-between text-xs">
-                      <span className="text-[#2ecc71]">Savings</span>
-                      <span className="text-[#2ecc71] font-medium">-{formatPrice(couponDiscount)}</span>
-                    </div>
-                  )}
                   <div className="flex justify-between text-xs">
                     <span className="text-[#80949b]">Delivery</span>
                     <span className={deliveryFee === 0 ? "text-[#2ecc71] font-medium" : "text-white font-medium"}>

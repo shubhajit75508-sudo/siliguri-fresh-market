@@ -289,25 +289,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Coupon */}
-            <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
-              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">🏷️</span>
-                <h2 className="text-sm font-bold text-white">Coupon / Promo</h2>
-              </div>
-              <div className="flex gap-2 p-4">
-                <input placeholder="Enter coupon code" value={couponCode} onChange={(e) => { setCouponCode(e.target.value); setCouponMsg(null); }} onKeyDown={(e) => { if (e.key === "Enter") handleApplyCoupon(); }} className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10 uppercase tracking-wider" maxLength={20} />
-                <button onClick={couponDiscount > 0 ? removeCoupon : handleApplyCoupon} className="px-4 py-2.5 rounded-xl bg-[#2ecc71]/20 border border-[#2ecc71]/30 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/30 transition-colors whitespace-nowrap">
-                  {couponDiscount > 0 ? "Remove" : "Apply"}
-                </button>
-              </div>
-              {couponMsg && (
-                <div className={`px-5 pb-3 text-[11px] font-semibold ${couponMsg.ok ? "text-[#2ecc71]" : "text-[#e74c3c]"}`}>
-                  {couponMsg.ok ? "✅" : "❌"} {couponMsg.text}
-                </div>
-              )}
-            </div>
-
             {/* Bill Summary */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
@@ -316,7 +297,6 @@ export default function CheckoutPage() {
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white font-semibold">{formatPrice(subtotal)}</span></div>
-                {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>🏷️ Coupon</span><span className="font-semibold">-{formatPrice(couponDiscount)}</span></div>}
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">🚚 FREE</span></div>
                 {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>💰 You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
                 <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-white">Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
@@ -513,7 +493,6 @@ export default function CheckoutPage() {
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white">{formatPrice(subtotal)}</span></div>
-                {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>🏷️ Coupon</span><span>-{formatPrice(couponDiscount)}</span></div>}
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">FREE</span></div>
                 {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>💰 You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
                 <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-base font-extrabold text-white">Total Payable</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
