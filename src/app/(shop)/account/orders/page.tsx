@@ -127,10 +127,9 @@ export default function OrdersPage() {
                 {order.status === "received" && (
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCancelId(order.id); }}
-                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-brand-red/20 bg-brand-red/5 py-2 text-xs font-semibold text-brand-red hover:bg-brand-red/10 transition-colors"
+                    className="mt-2 text-[11px] text-[#80949b] hover:text-[#e74c3c] underline underline-offset-2 transition-colors"
                   >
-                    <Ban className="h-3.5 w-3.5" />
-                    Cancel Order
+                    Cancel
                   </button>
                 )}
                 {order.status === "delivered" && (

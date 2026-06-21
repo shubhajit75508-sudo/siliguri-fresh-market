@@ -277,14 +277,13 @@ export default function TrackOrderPage({
 
       {/* Cancel Order */}
       {order.status === "received" && (
-        <div className="mt-4">
+        <div className="mt-4 flex justify-end">
           <button
             onClick={() => setShowCancel(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#e74c3c]/20 bg-[#e74c3c]/5 px-4 py-3 text-sm font-semibold text-[#e74c3c] hover:bg-[#e74c3c]/10 transition-all"
+            className="text-[11px] text-[#80949b] hover:text-[#e74c3c] underline underline-offset-2 transition-colors"
           >
-            ❌ Cancel Order
+            Cancel Order
           </button>
-          <p className="mt-1 text-center text-[10px] text-[#5a7278]">You can cancel before it&apos;s packed</p>
         </div>
       )}
 
