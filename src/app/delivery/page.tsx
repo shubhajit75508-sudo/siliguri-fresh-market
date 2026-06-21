@@ -4,10 +4,11 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed } from "lucide-react";
+import { Navigation, MapPin, Phone, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
 import LiveMap from "@/components/maps/LiveMap";
+import type { DeliveryAssignment } from "@/types";
 
 const statusLabels: Record<string, string> = {
   assigned: "Assigned",
@@ -22,6 +23,170 @@ const statusColors: Record<string, "blue" | "orange" | "fresh" | "default"> = {
   picked_up: "fresh",
   delivered: "fresh",
 };
+
+// Extracted as standalone component so GPS re-renders don't unmount it
+function DeliveryCard({
+  a, deliveryCodes, setDeliveryCodes, codeError, setCodeError,
+  currentPosition, customerLocations,
+  onAccept, onPickUp, onConfirm,
+}: {
+  a: DeliveryAssignment;
+  deliveryCodes: Record<string, string>;
+  setDeliveryCodes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  codeError: string | null;
+  setCodeError: React.Dispatch<React.SetStateAction<string | null>>;
+  currentPosition: [number, number] | null;
+  customerLocations: Record<string, [number, number]>;
+  onAccept: (orderId: string) => void;
+  onPickUp: (orderId: string) => void;
+  onConfirm: (orderId: string, code: string) => Promise<void>;
+}) {
+  return (
+    <div className="mb-3 rounded-2xl border border-white/5 bg-[#0d1b2a] p-4 shadow-sm">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-white">{a.customerName}</p>
+            <Badge variant={statusColors[a.status] ?? "blue"}>
+              {statusLabels[a.status] ?? a.status}
+            </Badge>
+            {a.paymentStatus === "paid" ? (
+              <Badge variant="fresh">Paid</Badge>
+            ) : (
+              <Badge variant="orange">COD</Badge>
+            )}
+          </div>
+          <p className="mt-0.5 text-sm text-[#80949b]">{a.customerPhone}</p>
+          <p className="text-[10px] font-mono text-[#80949b] mt-0.5">Order: {a.orderId}</p>
+        </div>
+        <p className="text-sm font-bold text-white">{formatPrice(a.total)}</p>
+      </div>
+
+      <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm">
+        <div className="flex items-start gap-2">
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#80949b]" />
+          <div>
+            <p className="font-medium text-white">{a.address.line1}</p>
+            {a.address.area && <p className="text-[#80949b]">Area: {a.address.area}</p>}
+            {a.address.landmark && <p className="text-[#80949b]">Landmark: {a.address.landmark}</p>}
+            {a.address.building && (
+              <p className="text-[#80949b]">
+                {a.address.building}
+                {a.address.flat ? `, Flat ${a.address.flat}` : ""}
+                {a.address.floor ? `, Floor ${a.address.floor}` : ""}
+              </p>
+            )}
+            {a.address.line2 && <p className="text-[#80949b]">{a.address.line2}</p>}
+            <p className="text-[#80949b]">{a.address.city} — {a.address.pincode}</p>
+          </div>
+        </div>
+        {a.address.lat && a.address.lng && (
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${a.address.lat},${a.address.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-brand-blue/10 px-3 py-1.5 text-xs font-medium text-brand-blue hover:bg-brand-blue/20"
+          >
+            <Navigation className="h-3.5 w-3.5" /> Navigate
+          </a>
+        )}
+        {currentPosition && customerLocations[a.orderId] && (
+          <div className="mt-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-semibold text-[#80949b] uppercase tracking-wide">Live Tracking</span>
+              <span className="text-[10px] font-mono text-brand-fresh">
+                {(() => {
+                  const [blat, blng] = currentPosition;
+                  const [clat, clng] = customerLocations[a.orderId];
+                  const R = 6371; const dLat = (clat - blat) * Math.PI / 180; const dLng = (clng - blng) * Math.PI / 180;
+                  const calcA = Math.sin(dLat / 2) ** 2 + Math.cos(blat * Math.PI / 180) * Math.cos(clat * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+                  const dist = R * 2 * Math.atan2(Math.sqrt(calcA), Math.sqrt(1 - calcA));
+                  return dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
+                })()} away
+              </span>
+            </div>
+            <LiveMap
+              center={currentPosition}
+              zoom={15}
+              markers={[
+                { position: currentPosition, icon: "boy", label: "You" },
+                { position: customerLocations[a.orderId], icon: "customer", label: a.customerName },
+              ]}
+              className="h-40 w-full rounded-xl"
+            />
+          </div>
+        )}
+      </div>
+
+      <details className="mt-3">
+        <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#80949b]">
+          <ShoppingBag className="h-3.5 w-3.5" /> {a.items.length} item{a.items.length > 1 ? "s" : ""}
+        </summary>
+        <ul className="mt-2 space-y-1 pl-5 text-sm text-[#80949b]">
+          {a.items.map((item, i) => (
+            <li key={i}>{item.name} × {item.quantity}</li>
+          ))}
+        </ul>
+      </details>
+
+      <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3">
+        <a
+          href={`tel:${a.customerPhone}`}
+          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-[#80949b] hover:bg-white/5"
+        >
+          <Phone className="h-3.5 w-3.5" /> Call
+        </a>
+
+        <div className="ml-auto flex gap-2">
+          {a.status === "assigned" && (
+            <Button variant="default" size="sm" onClick={() => onAccept(a.orderId)}>
+              <CheckCircle className="mr-1 h-4 w-4" /> Accept
+            </Button>
+          )}
+          {a.status === "accepted" && (
+            <Button variant="default" size="sm" onClick={() => onPickUp(a.orderId)}>
+              <Truck className="mr-1 h-4 w-4" /> Mark Picked Up
+            </Button>
+          )}
+          {a.status === "picked_up" && (
+            <div className="w-full space-y-2">
+              <div className="flex items-center gap-2">
+                <KeyRound className="h-3.5 w-3.5 text-[#80949b]" />
+                <input
+                  type="tel"
+                  maxLength={4}
+                  placeholder="Enter 4-digit code"
+                  value={deliveryCodes[a.orderId] || ""}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                    setDeliveryCodes((prev) => ({ ...prev, [a.orderId]: val }));
+                    setCodeError(null);
+                  }}
+                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-white placeholder:text-white/25 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/20"
+                />
+              </div>
+              {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
+              <Button
+                variant="fresh"
+                size="sm"
+                className="w-full"
+                disabled={(deliveryCodes[a.orderId] || "").length < 4}
+                onClick={async () => {
+                  const enteredCode = deliveryCodes[a.orderId];
+                  if (!enteredCode || enteredCode.length < 4) return;
+                  try { await onConfirm(a.orderId, enteredCode); }
+                  catch { setCodeError("Invalid code. Try again."); }
+                }}
+              >
+                <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivery
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function DeliveryDashboard() {
   const { boy, assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
@@ -105,6 +270,35 @@ export default function DeliveryDashboard() {
   const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
   const outForDelivery = active.filter((a) => a.status === "picked_up");
 
+  const handleAccept = (orderId: string) => {
+    acceptDelivery(orderId);
+    useDeliveryStore.getState().setAssignments(
+      useDeliveryStore.getState().assignments.map((x) =>
+        x.orderId === orderId ? { ...x, status: "accepted" as const } : x
+      )
+    );
+  };
+  const handlePickUp = (orderId: string) => {
+    pickUpDelivery(orderId);
+    useDeliveryStore.getState().setAssignments(
+      useDeliveryStore.getState().assignments.map((x) =>
+        x.orderId === orderId ? { ...x, status: "picked_up" as const } : x
+      )
+    );
+  };
+  const handleConfirm = async (orderId: string, code: string) => {
+    const prevOrders = useOrderStore.getState().orders;
+    try {
+      await confirmDelivery(orderId, code);
+      deliveryConfirm(assignments.find((x) => x.orderId === orderId)?.id || "");
+      setDeliveryCodes((prev) => ({ ...prev, [orderId]: "" }));
+      setCodeError(null);
+    } catch (e) {
+      useOrderStore.setState({ orders: prevOrders });
+      setCodeError(e instanceof Error ? e.message : "Invalid code. Try again.");
+    }
+  };
+
   if (loadingAssignments) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -170,7 +364,7 @@ export default function DeliveryDashboard() {
         <div>
           <h3 className="mb-2 text-sm font-semibold text-[#80949b] uppercase tracking-wide">Pickup</h3>
           {pickupStatuses.map((a) => (
-            <DeliveryCard key={a.id} a={a} />
+            <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAccept} onPickUp={handlePickUp} onConfirm={handleConfirm} />
           ))}
         </div>
       )}
@@ -181,188 +375,10 @@ export default function DeliveryDashboard() {
             <Truck className="h-4 w-4" /> Out for Delivery
           </h3>
           {outForDelivery.map((a) => (
-            <DeliveryCard key={a.id} a={a} />
+            <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAccept} onPickUp={handlePickUp} onConfirm={handleConfirm} />
           ))}
         </div>
       )}
     </div>
   );
-
-  function DeliveryCard({ a }: { a: typeof active[0] }) {
-    return (
-      <div className="mb-3 rounded-2xl border border-white/5 bg-[#0d1b2a] p-4 shadow-sm">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-white">{a.customerName}</p>
-              <Badge variant={statusColors[a.status] ?? "blue"}>
-                {statusLabels[a.status] ?? a.status}
-              </Badge>
-              {a.paymentStatus === "paid" ? (
-                <Badge variant="fresh">Paid</Badge>
-              ) : (
-                <Badge variant="orange">COD</Badge>
-              )}
-            </div>
-            <p className="mt-0.5 text-sm text-[#80949b]">{a.customerPhone}</p>
-            <p className="text-[10px] font-mono text-[#80949b] mt-0.5">Order: {a.orderId}</p>
-          </div>
-          <p className="text-sm font-bold">{formatPrice(a.total)}</p>
-        </div>
-
-        <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm">
-          <div className="flex items-start gap-2">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#80949b]" />
-            <div>
-              <p className="font-medium text-white">{a.address.line1}</p>
-              {a.address.area && <p className="text-[#80949b]">Area: {a.address.area}</p>}
-              {a.address.landmark && <p className="text-[#80949b]">Landmark: {a.address.landmark}</p>}
-              {a.address.building && (
-                <p className="text-[#80949b]">
-                  {a.address.building}
-                  {a.address.flat ? `, Flat ${a.address.flat}` : ""}
-                  {a.address.floor ? `, Floor ${a.address.floor}` : ""}
-                </p>
-              )}
-              {a.address.line2 && <p className="text-[#80949b]">{a.address.line2}</p>}
-              <p className="text-[#80949b]">{a.address.city} — {a.address.pincode}</p>
-            </div>
-          </div>
-          {a.address.lat && a.address.lng && (
-            <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${a.address.lat},${a.address.lng}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-brand-blue/10 px-3 py-1.5 text-xs font-medium text-brand-blue hover:bg-brand-blue/20"
-            >
-              <Navigation className="h-3.5 w-3.5" /> Navigate
-            </a>
-          )}
-          {currentPosition && customerLocations[a.orderId] && (
-            <div className="mt-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-semibold text-muted uppercase tracking-wide">Live Tracking</span>
-                <span className="text-[10px] font-mono text-brand-fresh">
-                  {(() => {
-                    const [blat, blng] = currentPosition;
-                    const [clat, clng] = customerLocations[a.orderId];
-                    const R = 6371; const dLat = (clat - blat) * Math.PI / 180; const dLng = (clng - blng) * Math.PI / 180;
-                    const calcA = Math.sin(dLat / 2) ** 2 + Math.cos(blat * Math.PI / 180) * Math.cos(clat * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
-                    const dist = R * 2 * Math.atan2(Math.sqrt(calcA), Math.sqrt(1 - calcA));
-                    return dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
-                  })()} away
-                </span>
-              </div>
-              <LiveMap
-                center={currentPosition}
-                zoom={15}
-                markers={[
-                  { position: currentPosition, icon: "boy", label: "You" },
-                  { position: customerLocations[a.orderId], icon: "customer", label: a.customerName },
-                ]}
-                className="h-40 w-full rounded-xl"
-              />
-            </div>
-          )}
-        </div>
-
-        <details className="mt-3">
-          <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#80949b]">
-            <ShoppingBag className="h-3.5 w-3.5" /> {a.items.length} item{a.items.length > 1 ? "s" : ""}
-          </summary>
-          <ul className="mt-2 space-y-1 pl-5 text-sm text-[#80949b]">
-            {a.items.map((item, i) => (
-              <li key={i}>{item.name} × {item.quantity}</li>
-            ))}
-          </ul>
-        </details>
-
-        <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3">
-          <a
-            href={`tel:${a.customerPhone}`}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-[#80949b] hover:bg-white/5"
-          >
-            <Phone className="h-3.5 w-3.5" /> Call
-          </a>
-
-          <div className="ml-auto flex gap-2">
-            {a.status === "assigned" && (
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => {
-                  acceptDelivery(a.orderId);
-                  useDeliveryStore.getState().setAssignments(
-                    useDeliveryStore.getState().assignments.map((x) =>
-                      x.id === a.id ? { ...x, status: "accepted" as const } : x
-                    )
-                  );
-                }}
-              >
-                <CheckCircle className="mr-1 h-4 w-4" /> Accept
-              </Button>
-            )}
-            {a.status === "accepted" && (
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => {
-                  pickUpDelivery(a.orderId);
-                  useDeliveryStore.getState().setAssignments(
-                    useDeliveryStore.getState().assignments.map((x) =>
-                      x.id === a.id ? { ...x, status: "picked_up" as const } : x
-                    )
-                  );
-                }}
-              >
-                <Truck className="mr-1 h-4 w-4" /> Mark Picked Up
-              </Button>
-            )}
-            {a.status === "picked_up" && (
-              <div className="w-full space-y-2">
-                <div className="flex items-center gap-2">
-                  <KeyRound className="h-3.5 w-3.5 text-[#80949b]" />
-                  <input
-                    type="tel"
-                    maxLength={4}
-                    placeholder="Enter 4-digit code"
-                    value={deliveryCodes[a.orderId] || ""}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "").slice(0, 4);
-                      setDeliveryCodes((prev) => ({ ...prev, [a.orderId]: val }));
-                      setCodeError(null);
-                    }}
-                    className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-white placeholder:text-white/25 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/20"
-                  />
-                </div>
-                {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
-                <Button
-                  variant="fresh"
-                  size="sm"
-                  className="w-full"
-                  disabled={(deliveryCodes[a.orderId] || "").length < 4}
-                  onClick={async () => {
-                    const enteredCode = deliveryCodes[a.orderId];
-                    if (!enteredCode || enteredCode.length < 4) return;
-                    const prevOrders = useOrderStore.getState().orders;
-                    try {
-                      await confirmDelivery(a.orderId, enteredCode);
-                      deliveryConfirm(a.id);
-                      setDeliveryCodes({ ...deliveryCodes, [a.orderId]: "" });
-                      setCodeError(null);
-                    } catch (e) {
-                      useOrderStore.setState({ orders: prevOrders });
-                      setCodeError(e instanceof Error ? e.message : "Invalid code. Try again.");
-                    }
-                  }}
-                >
-                  <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivery
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
 }
