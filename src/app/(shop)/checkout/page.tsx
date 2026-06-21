@@ -59,6 +59,7 @@ export default function CheckoutPage() {
 
   const [newAddress, setNewAddress] = useState({ city: "", pincode: "", area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [addrType, setAddrType] = useState("home");
+  const [editingAddress, setEditingAddress] = useState(true);
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses.find((a) => a.isDefault) || addresses[0];
   const coinBalance = user?.loyaltyPoints ?? 0;
@@ -84,6 +85,10 @@ export default function CheckoutPage() {
       }));
     }
   }, [selectedAddress]);
+
+  useEffect(() => {
+    if (selectedAddress) setEditingAddress(false);
+  }, []);
 
   const handleToggleCoins = () => {
     if (coinsRedeemed > 0) { removeCoinsRedemption(); setCoinsDiscount(0); toast.add("Coins removed"); }
@@ -349,6 +354,8 @@ export default function CheckoutPage() {
               {addressMissing && (
                 <div className="flex items-center gap-2 bg-[#e74c3c]/10 border-b border-[#e74c3c]/20 px-4 py-2.5"><span className="text-lg">⚠️</span><span className="text-xs font-bold text-[#e74c3c]">Address required — please fill delivery details</span></div>
               )}
+              {(!selectedAddress || editingAddress) ? (
+                <>
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
                 <span className="text-lg">🏠</span>
                 <div><h2 className="text-sm font-bold text-white">Delivery Address</h2><p className="text-[10px] text-[#80949b]">Where should we deliver?</p></div>
@@ -403,6 +410,41 @@ export default function CheckoutPage() {
                   })}
                 </div>
               </div>
+              {selectedAddress && (
+                <div className="px-5 pb-5">
+                  <button onClick={() => { saveAddressDetails(); setEditingAddress(false); }} className="w-full py-2.5 rounded-xl bg-[#2ecc71]/10 border border-[#2ecc71]/20 text-[#2ecc71] text-xs font-bold hover:bg-[#2ecc71]/20 transition-colors">
+                    ✓ Done Editing
+                  </button>
+                </div>
+              )}
+                </>
+              ) : (
+                <div className="p-5">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">🏠</span>
+                      <div>
+                        <h2 className="text-sm font-bold text-white">Delivery Address</h2>
+                        <p className="text-[10px] text-[#2ecc71] font-bold uppercase tracking-wider mt-0.5">{selectedAddress?.label?.toUpperCase() || "HOME"}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => { setEditingAddress(true); setAddressMissing(false); }} className="text-xs font-bold text-[#60a5fa] hover:underline">Edit</button>
+                  </div>
+                  {selectedAddress && (
+                    <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm text-[#c2d0c9] leading-relaxed">
+                      {selectedAddress.building && <span>{selectedAddress.building}{selectedAddress.flat ? `, Flat ${selectedAddress.flat}` : ""}{selectedAddress.floor ? `, Floor ${selectedAddress.floor}` : ""}</span>}
+                      {selectedAddress.street && <span>{selectedAddress.building ? ", " : ""}{selectedAddress.street}</span>}
+                      {(selectedAddress.building || selectedAddress.street) && <br />}
+                      {selectedAddress.area && <span>{selectedAddress.area}</span>}
+                      {selectedAddress.landmark && <span>, Near {selectedAddress.landmark}</span>}
+                      <br />
+                      <span>{selectedAddress.city} — {selectedAddress.pincode}</span>
+                      {selectedAddress.deliveryInstructions && <p className="text-[11px] text-[#80949b] mt-1 italic">📝 {selectedAddress.deliveryInstructions}</p>}
+                      {selectedAddress.lat && selectedAddress.lng && <p className="text-[10px] text-[#2ecc71] mt-1">📍 GPS coordinates saved</p>}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Pin Your Location */}
@@ -530,6 +572,7 @@ export default function CheckoutPage() {
               const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {}) };
               useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
             } else { saveAddressDetails(); }
+            setEditingAddress(false);
             setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
           } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2ecc71] text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/20 hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "razorpay" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
