@@ -46,7 +46,7 @@ export async function PUT(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) {
-    return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
+    return NextResponse.json({ location: null });
   }
 
   const orderId = req.nextUrl.searchParams.get("order_id");
@@ -55,17 +55,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing order_id param" }, { status: 400 });
   }
 
-  const { data, error } = await supabaseAdmin
-    .from("delivery_locations")
-    .select("*")
-    .eq("order_id", orderId)
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("delivery_locations")
+      .select("*")
+      .eq("order_id", orderId)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) throw error;
+    return NextResponse.json({ location: data ?? null });
+  } catch {
+    return NextResponse.json({ location: null });
   }
-
-  return NextResponse.json({ location: data ?? null });
 }

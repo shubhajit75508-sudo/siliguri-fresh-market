@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   CheckCircle, Copy, X, ExternalLink, Loader2,
   ShoppingCart, Receipt, User, Home, Building2, Pin, Leaf, Zap, Banknote, CreditCard, Smartphone,
-  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, FileText,
+  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, FileText, Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, cartLineId, cartLineKey } from "@/store/cart-store";
@@ -269,7 +269,11 @@ export default function CheckoutPage() {
                   return (
                     <div key={cartLineId(lineKey)} className="group flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02] transition-colors relative">
                       <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
+                        {item.product.image ? (
                         <img src={item.product.image} alt="" className="w-full h-full object-cover rounded-xl" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      ) : (
+                        <Package className="h-6 w-6 text-[#80949b]" />
+                      )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
