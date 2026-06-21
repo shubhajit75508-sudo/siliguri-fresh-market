@@ -1,21 +1,20 @@
 "use client";
 
 import { Suspense } from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import { useUserStore } from "@/store/user-store";
-import { useGeolocation } from "@/lib/hooks/use-geolocation";
-import { MapPin, Loader2, UserPlus, ShoppingBag, Eye, EyeOff, Check, X } from "lucide-react";
+import { Loader2, UserPlus, ShoppingBag, Eye, EyeOff, Check, X } from "lucide-react";
 
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signup, login } = useAuthStore();
-  const { setUser, addAddress } = useUserStore();
+  const { setUser } = useUserStore();
   const toast = useToast();
   const [form, setForm] = useState({
     name: "",
@@ -23,21 +22,12 @@ function SignupForm() {
     phone: "",
     password: "",
     confirmPassword: "",
-    address: "",
     role: "customer" as "admin" | "delivery" | "customer",
   });
-  const { location, locating, error: locationError, resolvedAddress, getLocation: getLiveLocation } = useGeolocation();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
-  useEffect(() => {
-    if (resolvedAddress && !form.address) {
-      setForm((prev) => ({ ...prev, address: resolvedAddress }));
-      toast.add("Address filled from live location");
-    }
-  }, [resolvedAddress]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +38,6 @@ function SignupForm() {
     if (!form.phone.trim()) { setError("Phone is required"); return; }
     if (form.password.length < 8) { setError("Password must be at least 8 characters"); return; }
     if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return; }
-    if (!form.address.trim()) { setError("Address is required"); return; }
 
     setSubmitting(true);
     let result;
@@ -58,9 +47,9 @@ function SignupForm() {
         password: form.password,
         name: form.name,
         phone: form.phone,
-        address: form.address,
+        address: "",
+        location: null,
         role: form.role,
-        location,
       });
     } catch {
       setSubmitting(false);
@@ -69,18 +58,6 @@ function SignupForm() {
     }
 
     if (result.success) {
-      if (form.address) {
-        addAddress({
-          id: "addr-" + crypto.randomUUID().slice(0, 8),
-          label: "Home",
-          line1: form.address,
-          city: "",
-          pincode: "",
-          lat: location?.lat,
-          lng: location?.lng,
-          isDefault: true,
-        });
-      }
       const loginResult = await login(form.email, form.password);
       if (loginResult.success) {
         setUser({
@@ -202,38 +179,6 @@ function SignupForm() {
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-muted">Delivery Address</label>
-              <div className="mt-1 flex gap-2">
-                <input
-                  placeholder="Area, street, landmark"
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })}
-                  required
-                  className="flex-1 rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
-                />
-                <button
-                  type="button"
-                  onClick={getLiveLocation}
-                  disabled={locating}
-                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-surface disabled:opacity-50"
-                >
-                  {locating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <MapPin className="h-4 w-4 text-white" />
-                  )}
-                  {locating ? "Locating..." : "Live"}
-                </button>
-              </div>
-              {location && (
-                <span className="text-xs text-brand-fresh">
-                  {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                </span>
-              )}
-              {locationError && <p className="mt-1 text-xs text-brand-red">{locationError}</p>}
             </div>
 
             <div>

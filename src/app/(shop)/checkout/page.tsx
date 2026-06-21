@@ -77,8 +77,13 @@ export default function CheckoutPage() {
         street: selectedAddress.street ?? "",
         deliveryInstructions: selectedAddress.deliveryInstructions ?? "",
       });
+      setNewAddress(f => ({
+        ...f,
+        city: selectedAddress.city || f.city,
+        pincode: selectedAddress.pincode || f.pincode,
+      }));
     }
-  }, [selectedAddressId]);
+  }, [selectedAddress]);
 
   const handleToggleCoins = () => {
     if (coinsRedeemed > 0) { removeCoinsRedemption(); setCoinsDiscount(0); toast.add("Coins removed"); }
