@@ -3,13 +3,8 @@
 import { use, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  Clock,
-  XCircle,
-  AlertTriangle,
-  Copy,
-  KeyRound,
-  Ban,
-  Loader2,
+  Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
+  Package, ShoppingBag, Truck, CheckCircle,
 } from "lucide-react";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +17,10 @@ import dynamic from "next/dynamic";
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
 const stages = [
-  { id: "received", label: "Order Received", icon: "📦", sub: "Preparing your order…" },
-  { id: "picked_up", label: "Picked Up", icon: "🛍️", sub: "Picked up by rider" },
-  { id: "out_for_delivery", label: "Out For Delivery", icon: "🚚", sub: "On the way to you" },
-  { id: "delivered", label: "Delivered", icon: "✅", sub: "Enjoy your fresh groceries!" },
+  { id: "received", label: "Order Received", icon: Package, sub: "Preparing your order…" },
+  { id: "picked_up", label: "Picked Up", icon: ShoppingBag, sub: "Picked up by rider" },
+  { id: "out_for_delivery", label: "Out For Delivery", icon: Truck, sub: "On the way to you" },
+  { id: "delivered", label: "Delivered", icon: CheckCircle, sub: "Enjoy your fresh groceries!" },
 ];
 
 export default function TrackOrderPage({
@@ -181,7 +176,7 @@ export default function TrackOrderPage({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <span className="text-5xl mb-4">📦</span>
+        <Package className="h-12 w-12 mb-4 text-[#80949b]" />
         <h2 className="text-lg font-bold">Loading order...</h2>
         <p className="mt-1 text-sm text-muted">Looking up order {orderId}</p>
       </div>
@@ -191,7 +186,7 @@ export default function TrackOrderPage({
   if (!order) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <span className="text-5xl mb-4">📦</span>
+        <Package className="h-12 w-12 mb-4 text-[#80949b]" />
         <h2 className="text-lg font-bold">Order not found</h2>
         <p className="mt-1 text-sm text-muted">No order with ID {orderId}</p>
       </div>
@@ -252,7 +247,7 @@ export default function TrackOrderPage({
           <div className="mt-2 flex flex-col items-center gap-1">
             {distance && (
               <p className="text-sm text-[#80949b] flex items-center justify-center gap-1">
-                🚚 {distance} away
+                <Truck className="h-4 w-4 inline text-[#2ecc71]" /> {distance} away
               </p>
             )}
             {etaMinutes !== null && etaMinutes > 0 && (
@@ -407,8 +402,8 @@ export default function TrackOrderPage({
 
       {/* Status Card */}
       <div className="glass rounded-2xl border border-white/10 p-8 text-center mt-6 mb-6">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-[#2ecc71]/15 flex items-center justify-center text-3xl mb-4">
-          {isDelivered ? "✅" : isOutForDelivery ? "🚚" : "📦"}
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-[#2ecc71]/15 flex items-center justify-center mb-4">
+          {isDelivered ? <CheckCircle className="h-8 w-8" /> : isOutForDelivery ? <Truck className="h-8 w-8" /> : <Package className="h-8 w-8" />}
         </div>
         <p className="text-sm font-bold text-[#c2d0c9]">
           {isDelivered ? "Delivered!" : isOutForDelivery && order?.deliveryStatus === "picked_up" ? "On the way to you!" : "Preparing your order…"}
@@ -430,7 +425,7 @@ export default function TrackOrderPage({
                     isActive ? "bg-[#2ecc71] text-[#0a1f1c]" : "bg-white/5 border border-white/10 text-[#80949b]"
                   }`}
                 >
-                  {stage.icon}
+                  {(() => { const Icon = stage.icon; return <Icon className="h-5 w-5" />; })()}
                 </motion.div>
                 {i < stages.length - 1 && (
                   <div className={`h-12 w-0.5 ${i < currentStage ? "bg-[#2ecc71]" : "bg-white/10"}`} />

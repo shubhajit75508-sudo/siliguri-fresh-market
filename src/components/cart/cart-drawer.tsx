@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Plus, Minus, ArrowRight, Truck, Shield } from "lucide-react";
+import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
@@ -57,7 +57,7 @@ export function CartDrawer() {
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
               <div>
-                <h2 className="text-lg font-extrabold text-white">🛒 Your Cart</h2>
+                <h2 className="text-lg font-extrabold text-white"><ShoppingCart className="h-5 w-5 inline mr-1.5" />Your Cart</h2>
                 <p className="text-xs text-[#80949b] mt-0.5">{getItemCount()} items</p>
               </div>
               <button
@@ -72,7 +72,7 @@ export function CartDrawer() {
             <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-8">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center py-20 text-center">
-                  <span className="text-5xl mb-4">🛒</span>
+                  <ShoppingCart className="h-12 w-12 mb-4 text-[#80949b]" />
                   <h3 className="text-lg font-bold text-white">Cart is empty</h3>
                   <p className="mt-1 text-sm text-[#80949b]">Add fresh items to get started</p>
                   <Link href="/" onClick={closeCart}>
@@ -181,7 +181,7 @@ export function CartDrawer() {
                 </Link>
                 <div className="mt-3 flex items-center justify-center gap-3 text-[10px] text-[#5a7278]">
                   <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Secure</span>
-                  <span>🌿 100% Fresh</span>
+                  <span><Leaf className="h-3 w-3 inline" /> 100% Fresh</span>
                   <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
                 </div>
               </div>

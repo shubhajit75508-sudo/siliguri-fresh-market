@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   CheckCircle, Copy, X, ExternalLink, Loader2,
+  ShoppingCart, Receipt, User, Home, Building2, Pin, Leaf, Zap, Banknote, CreditCard, Smartphone,
+  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, cartLineId, cartLineKey } from "@/store/cart-store";
@@ -179,7 +181,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center py-20 text-center">
-        <span className="text-5xl mb-4">🛒</span>
+        <ShoppingCart className="h-12 w-12 mb-4" />
         <h2 className="text-xl font-bold text-white">Your cart is empty</h2>
         <p className="mt-1 text-sm text-[#80949b]">Add items to get started</p>
         <Button className="mt-6 rounded-full bg-[#2ecc71] hover:bg-[#27ae60] text-[#0a1f1c] font-bold" onClick={() => router.push("/")}>Continue Shopping</Button>
@@ -191,7 +193,7 @@ export default function CheckoutPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center max-w-sm px-4">
-          <span className="text-5xl mb-4 block">🔒</span>
+          <Lock className="h-12 w-12 mb-4" />
           <h2 className="text-2xl font-extrabold text-white">Sign Up Required</h2>
           <p className="mt-2 text-sm text-[#80949b]">Create an account to place orders.</p>
           <div className="mt-6 space-y-3">
@@ -251,7 +253,7 @@ export default function CheckoutPage() {
             {/* Cart Items */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">🛒</span>
+                <ShoppingCart className="h-5 w-5" />
                 <div>
                   <h2 className="text-sm font-bold text-white">Your Cart</h2>
                   <p className="text-[10px] text-[#80949b]">Review before checkout</p>
@@ -290,7 +292,7 @@ export default function CheckoutPage() {
                           <span className="min-w-[28px] text-center text-[13px] font-bold text-white">{item.quantity}</span>
                           <button onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)} className="w-7 h-7 flex items-center justify-center text-white/70 hover:bg-white/10 rounded-r-lg text-sm font-bold">+</button>
                         </div>
-                          <button onClick={() => removeItem(cartLineKey(item))} className="w-6 h-6 rounded-md bg-[#e74c3c]/10 border border-[#e74c3c]/20 flex items-center justify-center text-[10px] text-[#e74c3c] hover:bg-[#e74c3c]/20 transition-colors">✕</button>
+                          <button onClick={() => removeItem(cartLineKey(item))} className="w-6 h-6 rounded-md bg-[#e74c3c]/10 border border-[#e74c3c]/20 flex items-center justify-center text-[10px] text-[#e74c3c] hover:bg-[#e74c3c]/20 transition-colors"><X className="h-3 w-3" /></button>
                         </div>
                       </div>
                     </div>
@@ -302,23 +304,25 @@ export default function CheckoutPage() {
             {/* Bill Summary */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">🧾</span>
+                <Receipt className="h-5 w-5" />
                 <h2 className="text-sm font-bold text-white">Bill Summary</h2>
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white font-semibold">{formatPrice(subtotal)}</span></div>
-                <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">🚚 FREE</span></div>
-                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>💰 You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
+                <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">FREE</span></div>
+                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
                 <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-white">Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-4 py-2.5 text-[11px] text-white/70">
-                <span>🕐</span> Estimated delivery <strong className="text-white mx-1">within 45–60 min</strong> after order confirmation.
+                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-white mx-1">within 45–60 min</strong> after order confirmation.
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-              {["🔒 Secure Checkout","🌿 100% Fresh","🚚 Free Delivery"].map((t) => (
-                <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider">{t}</span>
+              {["Secure Checkout","100% Fresh","Free Delivery"].map((t) => (
+                <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider flex items-center gap-1">
+                  {t === "Secure Checkout" ? <Lock className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}{t}
+                </span>
               ))}
             </div>
           </>
@@ -330,7 +334,7 @@ export default function CheckoutPage() {
             {/* Contact */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">👤</span>
+                <User className="h-5 w-5" />
                 <div><h2 className="text-sm font-bold text-white">Contact</h2><p className="text-[10px] text-[#80949b]">So we can reach you</p></div>
               </div>
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -352,12 +356,12 @@ export default function CheckoutPage() {
             {/* Delivery Address */}
             <div ref={addressRef} className={`glass rounded-2xl overflow-hidden border mb-3.5 transition-all duration-500 ${addressMissing ? "border-[#e74c3c]/50 ring-2 ring-[#e74c3c]/20 address-shake" : "border-white/10"}`}>
               {addressMissing && (
-                <div className="flex items-center gap-2 bg-[#e74c3c]/10 border-b border-[#e74c3c]/20 px-4 py-2.5"><span className="text-lg">⚠️</span><span className="text-xs font-bold text-[#e74c3c]">Address required — please fill delivery details</span></div>
+                <div className="flex items-center gap-2 bg-[#e74c3c]/10 border-b border-[#e74c3c]/20 px-4 py-2.5"><AlertTriangle className="h-5 w-5" /><span className="text-xs font-bold text-[#e74c3c]">Address required — please fill delivery details</span></div>
               )}
               {(!selectedAddress || editingAddress) ? (
                 <>
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">🏠</span>
+                <Home className="h-5 w-5" />
                 <div><h2 className="text-sm font-bold text-white">Delivery Address</h2><p className="text-[10px] text-[#80949b]">Where should we deliver?</p></div>
               </div>
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -398,7 +402,7 @@ export default function CheckoutPage() {
                 <div className="h-px bg-white/10 my-2" />
                 <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-2 block">Address Type</label>
                 <div className="flex gap-2 flex-wrap">
-                  {["🏠 Home","🏢 Work","📍 Other"].map((t) => {
+                  {["Home","Work","Other"].map((t) => {
                     const val = t.split(" ")[1].toLowerCase();
                     return (
                       <button key={val} onClick={() => setAddrType(val)}
@@ -422,7 +426,7 @@ export default function CheckoutPage() {
                 <div className="p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="text-xl">🏠</span>
+                      <Home className="h-6 w-6" />
                       <div>
                         <h2 className="text-sm font-bold text-white">Delivery Address</h2>
                         <p className="text-[10px] text-[#2ecc71] font-bold uppercase tracking-wider mt-0.5">{selectedAddress?.label?.toUpperCase() || "HOME"}</p>
@@ -439,8 +443,8 @@ export default function CheckoutPage() {
                       {selectedAddress.landmark && <span>, Near {selectedAddress.landmark}</span>}
                       <br />
                       <span>{selectedAddress.city} — {selectedAddress.pincode}</span>
-                      {selectedAddress.deliveryInstructions && <p className="text-[11px] text-[#80949b] mt-1 italic">📝 {selectedAddress.deliveryInstructions}</p>}
-                      {selectedAddress.lat && selectedAddress.lng && <p className="text-[10px] text-[#2ecc71] mt-1">📍 GPS coordinates saved</p>}
+                      {selectedAddress.deliveryInstructions && <p className="text-[11px] text-[#80949b] mt-1 italic">{selectedAddress.deliveryInstructions}</p>}
+                      {selectedAddress.lat && selectedAddress.lng && <p className="text-[10px] text-[#2ecc71] mt-1">GPS coordinates saved</p>}
                     </div>
                   )}
                 </div>
@@ -450,25 +454,25 @@ export default function CheckoutPage() {
             {/* Pin Your Location */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">📌</span>
+                <Pin className="h-5 w-5" />
                 <div><h2 className="text-sm font-bold text-white">Pin Your Location</h2><p className="text-[10px] text-[#80949b]">Helps our rider reach you exactly</p></div>
               </div>
               <div className="p-5">
-                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/10 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-white/70 mb-4"><span>💡</span> Tap <strong className="text-white mx-0.5">Detect</strong> to auto-locate or click anywhere on the map.</div>
+                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/10 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-white/70 mb-4"><Lightbulb className="h-4 w-4" /> Tap <strong className="text-white mx-0.5">Detect</strong> to auto-locate or click anywhere on the map.</div>
                 <div className="w-full h-48 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3">
                   {liveLocation ? (
                     <div className="text-center">
-                      <span className="text-3xl">📍</span>
+                      <Pin className="h-8 w-8" />
                       <p className="text-xs text-[#2ecc71] mt-2 font-semibold">GPS Location Saved</p>
                       <p className="text-[10px] text-[#80949b] mt-1">{liveLocation.lat.toFixed(5)}, {liveLocation.lng.toFixed(5)}</p>
                     </div>
                   ) : (
-                    <div className="text-center opacity-60"><span className="text-3xl">🗺️</span><p className="text-xs text-[#80949b] mt-2">Tap Detect to pin your location</p></div>
+                    <div className="text-center opacity-60"><Map className="h-8 w-8" /><p className="text-xs text-[#80949b] mt-2">Tap Detect to pin your location</p></div>
                   )}
                 </div>
                 <div className="flex gap-2">
                   <button onClick={getLocation} disabled={locating} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#4A8FE7]/20 border border-[#4A8FE7]/30 text-[#8FC4FF] text-xs font-bold hover:bg-[#4A8FE7]/30 transition-colors disabled:opacity-50">
-                    {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span>🎯</span>}
+                    {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crosshair className="h-4 w-4" />}
                     {locating ? "Detecting..." : "Detect Location"}
                   </button>
                 </div>
@@ -479,7 +483,7 @@ export default function CheckoutPage() {
             {/* Total Bar */}
             <div className="flex items-center justify-between glass rounded-xl border border-white/10 px-5 py-3 mb-3.5">
               <div><span className="text-[11px] text-[#80949b] block">Order Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
-              <div className="text-right"><span className="text-xs text-[#2ecc71] font-bold block">🚚 FREE</span><span className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</span></div>
+              <div className="text-right"><span className="text-xs text-[#2ecc71] font-bold block">FREE</span><span className="text-[10px] text-[#80949b]">{items.reduce((n,i) => n + i.quantity, 0)} items</span></div>
             </div>
           </>
         )}
@@ -491,7 +495,7 @@ export default function CheckoutPage() {
             {selectedAddress && (
               <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
                 <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                  <span className="text-lg">🏠</span>
+                  <Home className="h-5 w-5" />
                   <div><h2 className="text-sm font-bold text-white">Delivering To</h2><p className="text-[10px] text-[#80949b]">Confirm before you pay</p></div>
                 </div>
                 <div className="flex items-start justify-between p-5 gap-3">
@@ -508,12 +512,12 @@ export default function CheckoutPage() {
             {/* Payment Method */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">💳</span>
+                <CreditCard className="h-5 w-5" />
                 <div><h2 className="text-sm font-bold text-white">Payment Method</h2><p className="text-[10px] text-[#80949b]">Choose how to pay</p></div>
               </div>
               <div className="p-4 space-y-2">
                 <button onClick={() => setSelectedPayment("razorpay")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "razorpay" ? "border-[#2ecc71] bg-[#2ecc71]/5" : "border-white/5 bg-white/[0.02] hover:border-white/10"}`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "razorpay" ? "bg-[#4A8FE7]/15 text-[#93c5fd]" : "bg-white/5"}`}>⚡</div>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "razorpay" ? "bg-[#4A8FE7]/15 text-[#93c5fd]" : "bg-white/5"}`}><Zap className="h-5 w-5" /></div>
                   <div className="flex-1 text-left">
                     <div className="flex items-center gap-2"><span className="text-sm font-bold text-white">Razorpay</span>{selectedPayment === "razorpay" && <span className="product-badge fresh text-[9px]">RECOMMENDED</span>}</div>
                     <p className="text-[11px] text-[#80949b]">UPI · Cards · NetBanking · Wallets</p>
@@ -523,7 +527,7 @@ export default function CheckoutPage() {
                   </div>
                 </button>
                 <button onClick={() => setSelectedPayment("cod")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "cod" ? "border-[#2ecc71] bg-[#2ecc71]/5" : "border-white/5 bg-white/[0.02] hover:border-white/10"}`}>
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg">💵</div>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg"><Banknote className="h-5 w-5" /></div>
                   <div className="flex-1 text-left"><span className="text-sm font-bold text-white">Cash on Delivery</span><p className="text-[11px] text-[#80949b]">Pay the rider when your order arrives</p></div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "cod" ? "border-[#2ecc71]" : "border-white/20"}`}>
                     {selectedPayment === "cod" && <div className="w-2.5 h-2.5 rounded-full bg-[#2ecc71]" />}
@@ -535,23 +539,25 @@ export default function CheckoutPage() {
             {/* Bill Summary */}
             <div className="glass rounded-2xl overflow-hidden border border-white/10 mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-white/5">
-                <span className="text-lg">🧾</span>
+                <Receipt className="h-5 w-5" />
                 <div><h2 className="text-sm font-bold text-white">Bill Summary</h2><p className="text-[10px] text-[#80949b]">Transparent pricing</p></div>
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white">{formatPrice(subtotal)}</span></div>
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">FREE</span></div>
-                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>💰 You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
+                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
                 <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-base font-extrabold text-white">Total Payable</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/5 px-4 py-2.5 text-[11px] text-[#80949b]">
-                🔒 Your payment is encrypted and processed securely.
+                Your payment is encrypted and processed securely.
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap mb-4">
-              {["🔒 Secure Checkout","🌿 100% Fresh","🚚 Free Delivery"].map((t) => (
-                <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider">{t}</span>
+              {["Secure Checkout","100% Fresh","Free Delivery"].map((t) => (
+                <span key={t} className="text-[10px] font-semibold text-[#80949b] tracking-wider flex items-center gap-1">
+                  {t === "Secure Checkout" ? <Lock className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}{t}
+                </span>
               ))}
             </div>
             <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full py-3 rounded-2xl border-2 border-white/10 text-sm font-semibold text-[#80949b] hover:bg-white/5 transition-colors mb-2">← Back to Delivery</button>
@@ -586,7 +592,7 @@ export default function CheckoutPage() {
           <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-[#0d1b2a] p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <span className="text-xl">📱</span>
+                <Smartphone className="h-6 w-6" />
                 <h3 className="text-sm font-bold text-white">Pay via UPI</h3>
               </div>
               <button onClick={() => { setShowUPIModal(false); if (!paymentConfirmed) setSelectedPayment("cod"); }} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 hover:bg-white/5 transition-all">

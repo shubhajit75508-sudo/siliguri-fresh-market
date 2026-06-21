@@ -4,7 +4,7 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigation, MapPin, Phone, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed } from "lucide-react";
+import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
 import LiveMap from "@/components/maps/LiveMap";
@@ -311,7 +311,7 @@ export default function DeliveryDashboard() {
   if (active.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <span className="text-4xl mb-4">📦</span>
+        <Package className="h-10 w-10 text-[#80949b]" />
         <h2 className="text-lg font-bold text-white">No Deliveries Assigned</h2>
         <p className="mt-1 text-sm text-[#80949b]">You&apos;ll see new orders here as they come in</p>
       </div>

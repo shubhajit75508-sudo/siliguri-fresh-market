@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Clock, Plus, Minus } from "lucide-react";
+import { Clock, Plus, Minus, Star } from "lucide-react";
 import { cartLineKey, useCartStore } from "@/store/cart-store";
 import { useToast } from "@/components/ui/toaster";
 import { formatPrice, getAvailableWeights } from "@/lib/utils";
@@ -125,7 +125,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
             {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
             <span className="rounded-full bg-black/40 backdrop-blur px-2 py-0.5 text-[10px] font-semibold text-white">
-              ⭐ {product.rating}
+              <Star className="h-3 w-3 inline text-[#f1c40f]" /> {product.rating}
             </span>
           </div>
         </div>
