@@ -127,7 +127,7 @@ export function HeroSection() {
             {[
               { icon: Clock, text: "30-min ETA" },
               { icon: ShieldCheck, text: "Freshness 100%" },
-              { icon: Truck, text: "Free delivery" },
+              { icon: Truck, text: "Free over ₹299" },
             ].map((item) => (
               <div
                 key={item.text}

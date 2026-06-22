@@ -4,10 +4,13 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
-  { q: "How fast is delivery?", a: "10–30 minutes across Siliguri. Fish and meat orders are always prioritised." },
-  { q: "How do you ensure freshness?", a: "Daily sourcing from local markets with freshness scores and catch dates on every item." },
-  { q: "Can I choose fish cuts and cleaning?", a: "Yes — pick species, weight, cut, and cleaning just like at the market." },
-  { q: "What is SFM Prime?", a: "₹99/month for free delivery, exclusive discounts, and priority support." },
+  { q: "How fast is delivery?", a: "Most orders are delivered within 30–45 minutes across Siliguri. Fish and meat items are prioritised for freshness." },
+  { q: "Is delivery free?", a: "Yes! Delivery is free on all orders above ₹299. A small ₹40 fee applies for orders under ₹299." },
+  { q: "How do you ensure freshness?", a: "We source daily from Siliguri's local markets. Every product shows its freshness score and catch/source date." },
+  { q: "Can I choose fish cuts and cleaning?", a: "Absolutely — select your species, weight, cut (whole, steaks, curry cut), and cleaning preference just like at the market." },
+  { q: "What if I receive a damaged or spoiled item?", a: "No worries — you can request a replacement within 3 hours of delivery. Just go to your order and tap Request Replacement." },
+  { q: "How do I cancel my order?", a: "You can cancel anytime before the order is packed. Once it's picked up for delivery, cancellations are not available." },
+  { q: "What payment methods do you accept?", a: "We accept UPI, credit/debit cards, netbanking, wallets via Razorpay, and Cash on Delivery." },
 ];
 
 export function FAQSection() {
