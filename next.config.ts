@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.supabase.co" },
       { protocol: "https", hostname: "*.razorpay.com" },
       { protocol: "https", hostname: "raw.githubusercontent.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
     unoptimized: true,
   },

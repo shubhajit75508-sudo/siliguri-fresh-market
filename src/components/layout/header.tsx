@@ -22,7 +22,7 @@ export function Header() {
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2ecc71]/20"><ShoppingBag className="h-5 w-5 text-[#0a1f1c]" /></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2ecc71]/20">            <img src="https://res.cloudinary.com/dz0rkctza/image/upload/v1782135822/WhatsApp_Image_2026-06-08_at_4.36.53_PM_wm2ny2.jpg" alt="SFM" className="h-10 w-10 object-contain rounded-xl" /></div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold text-white leading-tight">Siliguri</span>
               <span className="text-[10px] font-bold text-[#2ecc71] uppercase tracking-wider leading-tight">Fresh Mart</span>
@@ -93,7 +93,7 @@ export function Header() {
         {/* Mobile */}
         <div className="flex h-14 items-center gap-3 lg:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2ecc71]/20"><ShoppingBag className="h-4 w-4 text-[#0a1f1c]" /></div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2ecc71]/20"><img src="https://res.cloudinary.com/dz0rkctza/image/upload/v1782135822/WhatsApp_Image_2026-06-08_at_4.36.53_PM_wm2ny2.jpg" alt="SFM" className="h-9 w-9 object-contain rounded-lg" /></div>
             <div className="leading-none">
               <div className="text-sm font-bold text-white">Siliguri</div>
               <div className="text-[10px] font-bold text-[#2ecc71] uppercase tracking-wider">Fresh Mart</div>
