@@ -99,6 +99,16 @@ export function proxy(req: NextRequest) {
     // Allow OPTIONS for CORS
     if (req.method === "OPTIONS") return NextResponse.next();
 
+    // Customer order creation — allow any authenticated user
+    if (pathname === "/api/admin/orders" && req.method === "POST") {
+      const cookie = req.cookies.get("sfm-auth-session");
+      if (cookie?.value) {
+        const payload = verifySignedCookie(cookie.value);
+        if (payload) return NextResponse.next();
+      }
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // Check API key header (for external services like Razorpay webhooks bypassing middleware if needed)
     const apiKey = req.headers.get("x-api-key");
     if (apiKey && process.env.API_SECRET_KEY && apiKey === process.env.API_SECRET_KEY) return NextResponse.next();
