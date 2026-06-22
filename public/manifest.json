@@ -1,26 +1,28 @@
 {
   "name": "Siliguri Fresh Mart",
-  "short_name": "SFM",
-  "description": "Fresh market delivered to your doorstep in minutes",
-  "start_url": "/",
+  "short_name": "Fresh Mart",
+  "description": "Fresh fish, meat & groceries delivered to your doorstep in Siliguri. Free delivery over ₹299.",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
-  "background_color": "#003D2B",
-  "theme_color": "#003D2B",
+  "background_color": "#0a1f1c",
+  "theme_color": "#2ecc71",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "https://res.cloudinary.com/dy9lll7y5/image/upload/w_192,h_192,c_fill/v1782149339/file_0000000087d8720badb85aa7c5d2a499_ynyyyu.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo.png",
+      "src": "https://res.cloudinary.com/dy9lll7y5/image/upload/w_512,h_512,c_fill/v1782149339/file_0000000087d8720badb85aa7c5d2a499_ynyyyu.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["shopping", "food"],
-  "lang": "en-IN"
+  "screenshots": [],
+  "categories": ["shopping", "food", "grocery"],
+  "lang": "en-IN",
+  "prefer_related_applications": false
 }

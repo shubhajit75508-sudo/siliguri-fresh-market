@@ -27,8 +27,13 @@ export const metadata: Metadata = {
   ],
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "https://res.cloudinary.com/dy9lll7y5/image/upload/w_192,h_192,c_fill/v1782149339/file_0000000087d8720badb85aa7c5d2a499_ynyyyu.png",
+    apple: "https://res.cloudinary.com/dy9lll7y5/image/upload/w_192,h_192,c_fill/v1782149339/file_0000000087d8720badb85aa7c5d2a499_ynyyyu.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Fresh Mart",
   },
   openGraph: {
     title: "Siliguri Fresh Mart",
@@ -43,7 +48,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#1a6b47",
+  themeColor: "#0a1f1c",
 };
 
 export default function RootLayout({
@@ -55,6 +60,15 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
         <AppProvider>{children}</AppProvider>
+        <script dangerouslySetInnerHTML={{ __html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js').then(() => {
+                console.log('[SW] Registered');
+              }).catch(() => {});
+            });
+          }
+        `}} />
       </body>
     </html>
   );
