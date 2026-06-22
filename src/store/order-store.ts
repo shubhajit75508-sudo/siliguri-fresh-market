@@ -285,23 +285,25 @@ export const useOrderStore = create<OrderState>()(
 
         acceptDelivery: async (orderId) => {
           const prev = get().orders;
+          const order = prev.find((o) => o.id === orderId);
           set((state) => ({
             orders: state.orders.map((o) =>
               o.id === orderId ? { ...o, deliveryStatus: "accepted" as DeliveryStatus } : o
             ),
           }));
-          const ok = await apiPut({ id: orderId, delivery_status: "accepted" });
+          const ok = await apiPut({ id: orderId, delivery_status: "accepted", customer_email: order?.customerEmail || "" });
           if (!ok) set({ orders: prev });
         },
 
         pickUpDelivery: async (orderId) => {
           const prev = get().orders;
+          const order = prev.find((o) => o.id === orderId);
           set((state) => ({
             orders: state.orders.map((o) =>
               o.id === orderId ? { ...o, deliveryStatus: "picked_up" as DeliveryStatus } : o
             ),
           }));
-          const ok = await apiPut({ id: orderId, delivery_status: "picked_up" });
+          const ok = await apiPut({ id: orderId, delivery_status: "picked_up", customer_email: order?.customerEmail || "" });
           if (!ok) set({ orders: prev });
         },
 

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import { ADMIN_EMAILS } from "@/lib/admin-creds";
+import { signCookieSync } from "@/lib/session";
 
 export type UserRole = "admin" | "delivery" | "customer";
 
@@ -167,7 +168,7 @@ export const useAuthStore = create<AuthState>()(
             }
             const adminUser = { ...user, role: "admin" as const, id: userId };
             set({ currentUser: adminUser });
-            document.cookie = `sfm-auth-session=${adminUser.id}|admin; path=/; max-age=${60 * 60 * 24 * 7}`;
+            document.cookie = `sfm-auth-session=${signCookieSync(`${adminUser.id}|admin`)}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
             return { success: true, user: adminUser };
           }
 
@@ -228,7 +229,7 @@ export const useAuthStore = create<AuthState>()(
                   users: exists ? state.users : [...state.users, newUser],
                 };
               });
-              document.cookie = `sfm-auth-session=${newUser.id}|${newUser.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+              document.cookie = `sfm-auth-session=${signCookieSync(`${newUser.id}|${newUser.role}`)}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
               return { success: true, user: newUser };
             }
           }
@@ -247,7 +248,7 @@ export const useAuthStore = create<AuthState>()(
             return { success: false, error: "Incorrect password" };
           }
           set({ currentUser: user });
-          document.cookie = `sfm-auth-session=${user.id}|${user.role}; path=/; max-age=${60 * 60 * 24 * 7}`;
+          document.cookie = `sfm-auth-session=${signCookieSync(`${user.id}|${user.role}`)}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
           return { success: true, user };
         },
 
@@ -255,7 +256,7 @@ export const useAuthStore = create<AuthState>()(
           if (isSupabaseConfigured() && supabase) {
             await supabase.auth.signOut();
           }
-          document.cookie = "sfm-auth-session=; path=/; max-age=0";
+          document.cookie = "sfm-auth-session=; path=/; max-age=0; Secure; SameSite=Strict";
           set({ currentUser: null });
         },
 

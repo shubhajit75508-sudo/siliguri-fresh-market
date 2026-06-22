@@ -10,8 +10,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "*.supabase.co" },
       { protocol: "https", hostname: "*.razorpay.com" },
+      { protocol: "https", hostname: "raw.githubusercontent.com" },
     ],
-    unoptimized: true,
   },
 
   // Security headers

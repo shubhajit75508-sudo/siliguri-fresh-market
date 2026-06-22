@@ -406,14 +406,15 @@ export default function CheckoutPage() {
                 <div className="h-px bg-white/10 my-2" />
                 <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-2 block">Address Type</label>
                 <div className="flex gap-2 flex-wrap">
-                  {["Home","Work","Other"].map((t) => {
-                    const val = t.split(" ")[1].toLowerCase();
+                  {[{ label:"Home", icon: Home },{ label:"Work", icon: Building2 },{ label:"Other", icon: Pin }].map((t) => {
+                    const val = t.label.toLowerCase();
+                    const Icon = t.icon;
                     return (
                       <button key={val} onClick={() => setAddrType(val)}
                         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-semibold transition-all ${
                           addrType === val ? "bg-[#2ecc71]/15 border-[#2ecc71]/50 text-[#2ecc71]" : "bg-white/5 border-white/10 text-[#80949b] hover:bg-white/10"
                         }`}
-                      >{t}</button>
+                      ><Icon className="h-3.5 w-3.5" />{t.label}</button>
                     );
                   })}
                 </div>
