@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
 import { createClient } from "@supabase/supabase-js";
 
 function getSupabaseAdmin() {
@@ -14,7 +13,12 @@ export async function POST(req: NextRequest) {
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
-    return NextResponse.json({ error: `Razorpay not configured. Key ID: ${keyId ? "set" : "missing"}, Secret: ${keySecret ? "set" : "missing"}` }, { status: 501 });
+    return NextResponse.json({ 
+      error: "Razorpay not configured", 
+      keyId: keyId ? "set" : "MISSING", 
+      keySecret: keySecret ? "set" : "MISSING",
+      hint: "Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Vercel env vars"
+    }, { status: 501 });
   }
 
   try {
@@ -24,14 +28,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Amount must be at least ₹1" }, { status: 400 });
     }
 
-    const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-
-    const order = await razorpay.orders.create({
-      amount: Math.round(amount * 100),
-      currency: currency || "INR",
-      receipt: receipt || "rcpt_" + Date.now(),
-      notes: notes || {},
-    });
+    let order;
+    try {
+      const Razorpay = require("razorpay");
+      const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+      order = await razorpay.orders.create({
+        amount: Math.round(amount * 100),
+        currency: currency || "INR",
+        receipt: receipt || "rcpt_" + Date.now(),
+        notes: notes || {},
+      });
+    } catch (razErr: any) {
+      return NextResponse.json({ 
+        error: "Razorpay API error", 
+        detail: razErr?.error?.description || razErr?.message || String(razErr),
+        status: razErr?.statusCode || razErr?.code || "unknown"
+      }, { status: 502 });
+    }
 
     if (receipt && receipt.startsWith("SFM-")) {
       const supabaseAdmin = getSupabaseAdmin();
