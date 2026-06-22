@@ -42,7 +42,7 @@ function verifySignedCookie(token: string): string | null {
   return ok === 0 ? payload : null;
 }
 
-export async function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Redirect legacy login pages
