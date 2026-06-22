@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import Razorpay from "razorpay";
 import { createClient } from "@supabase/supabase-js";
 
 function getSupabaseAdmin() {
@@ -30,7 +31,6 @@ export async function POST(req: NextRequest) {
 
     let order;
     try {
-      const Razorpay = require("razorpay");
       const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
       order = await razorpay.orders.create({
         amount: Math.round(amount * 100),
