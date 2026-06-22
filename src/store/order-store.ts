@@ -190,7 +190,7 @@ export const useOrderStore = create<OrderState>()(
               if (!res.ok) {
                 const errBody = await res.text();
                 console.error("Order DB create failed:", res.status, errBody);
-                throw new Error("Failed to save order");
+                throw new Error(`Order failed (${res.status}): ${errBody.slice(0, 100)}`);
               }
             } catch (e) {
               console.error("Order DB error:", e);

@@ -171,7 +171,7 @@ export default function CheckoutPage() {
       const earned = Math.floor(total / 100) * 10;
       toast.add(`Order placed! +${earned} coins earned.`);
       router.push(`/track/${finalId}`);
-    })().catch(() => { setConfirmingOrder(false); toast.add("Failed to place order. Please try again.", "error"); });
+    })().catch((e) => { setConfirmingOrder(false); toast.add(`Order failed: ${e instanceof Error ? e.message : "Please try again"}`, "error"); });
   };
 
   const saveAddressDetails = () => {
