@@ -54,7 +54,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-6 border-t border-border/80 pt-4 text-center text-[12px] text-muted">
+        <div className="mt-3 border-t border-border/80 pt-2 text-center text-[12px] text-muted">
           © 2026 Siliguri Fresh Mart · Siliguri, West Bengal
         </div>
       </div>
