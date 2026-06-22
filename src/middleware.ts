@@ -16,6 +16,32 @@ function checkRateLimit(key: string, maxRequests: number, windowMs: number): boo
   return true;
 }
 
+function getSecret(): string {
+  return process.env.COOKIE_SECRET || "default-dev-secret-change-in-production";
+}
+
+/** Verify a client-signed cookie matches the hash */
+function verifySignedCookie(token: string): string | null {
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  const [payload, sig] = parts;
+
+  // Re-compute hash matching signCookieSync algorithm in src/lib/session.ts
+  const secret = getSecret();
+  let hash = 0;
+  const s = payload + secret;
+  for (let i = 0; i < s.length; i++) { hash = ((hash << 5) - hash) + s.charCodeAt(i); hash |= 0; }
+  const expected = Math.abs(hash).toString(36);
+
+  // Constant-time comparison
+  if (sig.length !== expected.length) return null;
+  let ok = 0;
+  for (let i = 0; i < sig.length; i++) {
+    ok |= sig.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return ok === 0 ? payload : null;
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -48,22 +74,18 @@ export async function middleware(req: NextRequest) {
     // Allow OPTIONS for CORS
     if (req.method === "OPTIONS") return NextResponse.next();
 
-    const cookie = req.cookies.get("sfm-auth-session");
-
-    // If no cookie, check for API key header (for external services)
+    // Check API key header (for external services like Razorpay webhooks bypassing middleware if needed)
     const apiKey = req.headers.get("x-api-key");
-    if (apiKey === process.env.API_SECRET_KEY) return NextResponse.next();
+    if (apiKey && process.env.API_SECRET_KEY && apiKey === process.env.API_SECRET_KEY) return NextResponse.next();
 
+    const cookie = req.cookies.get("sfm-auth-session");
     if (!cookie?.value) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify signed cookie
-    const payload = cookie.value.includes(".")
-      ? cookie.value.split(".")[0]
-      : cookie.value;
-
-    if (!payload.endsWith("|admin")) {
+    // Verify signature, then check role
+    const payload = verifySignedCookie(cookie.value);
+    if (!payload || !payload.endsWith("|admin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

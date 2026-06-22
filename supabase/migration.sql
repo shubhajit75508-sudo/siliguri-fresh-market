@@ -121,6 +121,7 @@ CREATE TABLE IF NOT EXISTS public.coupons (
   discount   DOUBLE PRECISION NOT NULL,
   type       TEXT NOT NULL DEFAULT 'flat' CHECK (type IN ('percentage','flat')),
   min_order  DOUBLE PRECISION NOT NULL DEFAULT 0,
+  is_active  BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
