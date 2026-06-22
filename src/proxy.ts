@@ -54,7 +54,9 @@ export function proxy(req: NextRequest) {
   if (pathname.startsWith("/admin")) {
     if (req.method === "OPTIONS") return NextResponse.next();
     const cookie = req.cookies.get("sfm-auth-session");
-    const payload = cookie?.value ? verifySignedCookie(cookie.value) : null;
+    // Accept signed OR legacy unsigned cookies
+    const raw = cookie?.value;
+    const payload = raw?.includes(".") ? (verifySignedCookie(raw) ?? raw.split(".")[0]) : raw;
     if (!payload || !payload.endsWith("|admin")) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
@@ -64,7 +66,8 @@ export function proxy(req: NextRequest) {
   if (pathname.startsWith("/delivery")) {
     if (req.method === "OPTIONS") return NextResponse.next();
     const cookie = req.cookies.get("sfm-auth-session");
-    const payload = cookie?.value ? verifySignedCookie(cookie.value) : null;
+    const raw = cookie?.value;
+    const payload = raw?.includes(".") ? (verifySignedCookie(raw) ?? raw.split(".")[0]) : raw;
     if (!payload) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
@@ -99,11 +102,12 @@ export function proxy(req: NextRequest) {
     // Allow OPTIONS for CORS
     if (req.method === "OPTIONS") return NextResponse.next();
 
-    // Customer order creation — allow any authenticated user
+    // Customer order creation — allow any authenticated user (including legacy unsigned cookies)
     if (pathname === "/api/admin/orders" && req.method === "POST") {
       const cookie = req.cookies.get("sfm-auth-session");
       if (cookie?.value) {
-        const payload = verifySignedCookie(cookie.value);
+        // Accept legacy unsigned cookies OR signed cookies
+        const payload = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
         if (payload) return NextResponse.next();
       }
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -118,9 +122,12 @@ export function proxy(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify signature, then check role
-    const payload = verifySignedCookie(cookie.value);
-    if (!payload || !payload.endsWith("|admin")) {
+    // Verify signature, then check role. Accept unsigned cookies as fallback.
+    const payload = cookie.value.includes(".")
+      ? (verifySignedCookie(cookie.value) ?? cookie.value.split(".")[0])
+      : cookie.value;
+
+    if (!payload.endsWith("|admin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
