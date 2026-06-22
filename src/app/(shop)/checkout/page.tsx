@@ -16,7 +16,7 @@ import { useOrderStore } from "@/store/order-store";
 import { useCouponStore } from "@/store/coupon-store";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
-import { formatPrice, getWeightMultiplier } from "@/lib/utils";
+import { formatPrice, getWeightMultiplier, getPriceForWeight } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
 import type { Address } from "@/types";
 
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                        <span className="text-sm font-extrabold text-white">₹{(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity).toFixed(0)}</span>
+                        <span className="text-sm font-extrabold text-white">₹{(getPriceForWeight(item.product.price, item.selectedWeight || item.product.unit, item.product.weightPrices) * item.quantity).toFixed(0)}</span>
                         <div className="flex items-center gap-1">
                           <div className="flex items-center gap-0 rounded-lg bg-white/8">
                           <button onClick={() => { const k = cartLineKey(item); if (item.quantity <= 1) removeItem(k); else updateQuantity(k, item.quantity - 1); }} className="w-7 h-7 flex items-center justify-center text-white/70 hover:bg-white/10 rounded-l-lg text-sm font-bold">−</button>

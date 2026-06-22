@@ -29,10 +29,20 @@ export function getWeightMultiplier(weight?: string): number {
   return unit === "g" ? val / 1000 : val;
 }
 
-export function getAvailableWeights(_price: number, category: string, customWeights?: string[]): string[] {
+export function getAvailableWeights(_price: number, category: string, customWeights?: string[], weightPrices?: { weight: string; price: number }[]): string[] {
+  if (weightPrices && weightPrices.length > 0) return weightPrices.map(w => w.weight);
   if (customWeights && customWeights.length > 0) return customWeights;
   if (category === "fish" || category === "chicken" || category === "mutton") {
     return ["500g", "1kg", "1.5kg", "2kg"];
   }
   return ["250g", "500g", "1kg"];
+}
+
+/** Get the price for a specific weight from weightPrices, or fall back to base price * multiplier */
+export function getPriceForWeight(basePrice: number, weight: string, weightPrices?: { weight: string; price: number }[]): number {
+  if (weightPrices) {
+    const match = weightPrices.find(w => w.weight.toLowerCase() === weight.toLowerCase());
+    if (match) return match.price;
+  }
+  return basePrice * getWeightMultiplier(weight);
 }

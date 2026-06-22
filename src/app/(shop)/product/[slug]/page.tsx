@@ -6,7 +6,7 @@ import { notFound, useRouter } from "next/navigation";
 import { Heart, ShoppingCart, ArrowLeft, Star, Flame } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
-import { formatPrice, getWeightMultiplier, getAvailableWeights } from "@/lib/utils";
+import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight } from "@/lib/utils";
 import { useProductBySlug } from "@/lib/hooks/use-products";
 
 export default function ProductDetailPage({
@@ -24,11 +24,11 @@ export default function ProductDetailPage({
   if (isLoading) return <div className="py-6 space-y-4"><div className="skeleton h-80 w-full rounded-[24px]" /><div className="skeleton h-6 w-48 rounded-xl" /><div className="skeleton h-4 w-96 rounded-xl" /><div className="skeleton h-12 w-64 rounded-xl" /></div>;
   if (!product) notFound();
 
-  const weights = getAvailableWeights(product.price, product.category, product.weight);
+  const weights = getAvailableWeights(product.price, product.category, product.weight, product.weightPrices);
 
   const displayWeight = selectedWeight || weights[0];
   const mult = getWeightMultiplier(displayWeight);
-  const displayPrice = product.price * mult;
+  const displayPrice = getPriceForWeight(product.price, displayWeight, product.weightPrices);
 
   const isFlashDeal = product.discount && product.discount > 0;
 
