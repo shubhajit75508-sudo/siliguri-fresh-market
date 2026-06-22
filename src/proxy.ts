@@ -17,7 +17,7 @@ function checkRateLimit(key: string, maxRequests: number, windowMs: number): boo
 }
 
 function getSecret(): string {
-  return process.env.COOKIE_SECRET || "default-dev-secret-change-in-production";
+  return process.env.NEXT_PUBLIC_COOKIE_SECRET || process.env.COOKIE_SECRET || "default-dev-secret-change-in-production";
 }
 
 /** Verify a client-signed cookie matches the hash */

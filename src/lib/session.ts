@@ -1,7 +1,8 @@
 // Simple HMAC-signed cookie utility for session security
 
 function getSecret(): string {
-  return process.env.COOKIE_SECRET || "default-dev-secret-change-in-production";
+  // Use NEXT_PUBLIC_ prefix so it's available in browser AND server
+  return process.env.NEXT_PUBLIC_COOKIE_SECRET || process.env.COOKIE_SECRET || "default-dev-secret-change-in-production";
 }
 
 /** Simple client-side cookie signing using a hash */
