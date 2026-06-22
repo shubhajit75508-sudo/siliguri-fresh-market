@@ -45,6 +45,31 @@ function verifySignedCookie(token: string): string | null {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Redirect legacy login pages
+  if (pathname === "/admin/login" || pathname === "/delivery/login") {
+    return NextResponse.redirect(new URL("/auth/login", req.url));
+  }
+
+  // Guard /admin page routes
+  if (pathname.startsWith("/admin")) {
+    if (req.method === "OPTIONS") return NextResponse.next();
+    const cookie = req.cookies.get("sfm-auth-session");
+    const payload = cookie?.value ? verifySignedCookie(cookie.value) : null;
+    if (!payload || !payload.endsWith("|admin")) {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+  }
+
+  // Guard /delivery page routes
+  if (pathname.startsWith("/delivery")) {
+    if (req.method === "OPTIONS") return NextResponse.next();
+    const cookie = req.cookies.get("sfm-auth-session");
+    const payload = cookie?.value ? verifySignedCookie(cookie.value) : null;
+    if (!payload) {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+  }
+
   // Rate limit admin login
   if (pathname === "/api/admin/login" && req.method === "POST") {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
@@ -96,5 +121,12 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/admin/:path*", "/api/admin/login", "/api/delivery/confirm", "/api/payment/create-order"],
+  matcher: [
+    "/api/admin/:path*",
+    "/api/admin/login",
+    "/api/delivery/confirm",
+    "/api/payment/create-order",
+    "/admin/:path*",
+    "/delivery/:path*",
+  ],
 };
