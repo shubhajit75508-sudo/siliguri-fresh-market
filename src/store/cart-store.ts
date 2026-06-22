@@ -32,7 +32,6 @@ interface CartState {
   items: CartItem[];
   couponCode: string | null;
   couponDiscount: number;
-  coinsDiscount: number;
   isOpen: boolean;
   addItem: (
     product: Product,
@@ -46,10 +45,8 @@ interface CartState {
   closeCart: () => void;
   applyCoupon: (code: string, discount: number) => void;
   removeCoupon: () => void;
-  setCoinsDiscount: (discount: number) => void;
   getSubtotal: () => number;
   getDeliveryFee: () => number;
-  getCoinsDiscount: () => number;
   getTotal: () => number;
   getItemCount: () => number;
   getProductQuantity: (productId: string) => number;
@@ -62,7 +59,6 @@ export const useCartStore = create<CartState>()(
         items: [],
         couponCode: null,
         couponDiscount: 0,
-        coinsDiscount: 0,
         isOpen: false,
 
         addItem: (product, quantity = 1, options) => {
@@ -114,7 +110,7 @@ export const useCartStore = create<CartState>()(
                   ),
           })),
 
-        clearCart: () => set({ items: [], couponCode: null, couponDiscount: 0, coinsDiscount: 0 }),
+        clearCart: () => set({ items: [], couponCode: null, couponDiscount: 0 }),
         openCart: () => set({ isOpen: true }),
         closeCart: () => set({ isOpen: false }),
 
@@ -122,8 +118,6 @@ export const useCartStore = create<CartState>()(
           set({ couponCode: code, couponDiscount: discount }),
 
         removeCoupon: () => set({ couponCode: null, couponDiscount: 0 }),
-
-        setCoinsDiscount: (discount) => set({ coinsDiscount: discount }),
 
         getSubtotal: () =>
           get().items.reduce(
@@ -138,14 +132,11 @@ export const useCartStore = create<CartState>()(
           return 29;
         },
 
-        getCoinsDiscount: () => get().coinsDiscount,
-
         getTotal: () => {
           const subtotal = get().getSubtotal();
           const discount = get().couponDiscount;
-          const coinsDiscount = get().coinsDiscount;
           const delivery = get().getDeliveryFee();
-          return Math.max(0, subtotal - discount - coinsDiscount + delivery);
+          return Math.max(0, subtotal - discount + delivery);
         },
 
         getItemCount: () =>

@@ -7,7 +7,6 @@ import {
   Package,
   Heart,
   MapPin,
-  Gift,
   Bell,
   Headphones,
 } from "lucide-react";
@@ -19,7 +18,6 @@ const accountLinks = [
   { href: "/account/orders", icon: Package, label: "Orders" },
   { href: "/account/wishlist", icon: Heart, label: "Wishlist" },
   { href: "/account/addresses", icon: MapPin, label: "Addresses" },
-  { href: "/account/rewards", icon: Gift, label: "Coins" },
   { href: "/account/notifications", icon: Bell, label: "Notifications" },
   { href: "/account/support", icon: Headphones, label: "Support" },
 ];

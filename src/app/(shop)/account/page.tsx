@@ -88,7 +88,6 @@ export default function ProfilePage() {
             { label: "Name", value: displayUser.name },
             { label: "Email", value: displayUser.email },
             { label: "Phone", value: displayUser.phone },
-            { label: "Coins", value: (user?.loyaltyPoints ?? 0).toString() },
           ].map((field) => (
             <div key={field.label}>
               <label className="text-xs font-medium text-muted">{field.label}</label>

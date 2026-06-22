@@ -37,8 +37,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const toast = useToast();
   const hydrated = useHydrated();
-  const { items, getSubtotal, getTotal, getDeliveryFee, getCoinsDiscount, couponDiscount, clearCart, setCoinsDiscount, updateQuantity, removeItem, applyCoupon: applyCartCoupon, removeCoupon } = useCartStore();
-  const { addresses, user, coinsRedeemed, applyCoinsRedemption, removeCoinsRedemption, earnCoins, redeemCoins } = useUserStore();
+  const { items, getSubtotal, getTotal, getDeliveryFee, couponDiscount, clearCart, updateQuantity, removeItem, applyCoupon: applyCartCoupon, removeCoupon } = useCartStore();
+  const { addresses, user } = useUserStore();
   const { currentUser } = useAuthStore();
   const { createOrder } = useOrderStore();
   const { coupons } = useCouponStore();
@@ -65,8 +65,6 @@ export default function CheckoutPage() {
   const [editingAddress, setEditingAddress] = useState(true);
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses.find((a) => a.isDefault) || addresses[0];
-  const coinBalance = user?.loyaltyPoints ?? 0;
-  const maxRedeemable = Math.floor(coinBalance / 100) * 100;
   const isAuthenticated = !!(currentUser && (currentUser.role === "customer" || currentUser.role === "admin"));
   const requiredDetailsFilled = !!(detailForm.area.trim()) && !!(detailForm.landmark.trim());
 
@@ -92,16 +90,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (selectedAddress) setEditingAddress(false);
   }, []);
-
-  const handleToggleCoins = () => {
-    if (coinsRedeemed > 0) { removeCoinsRedemption(); setCoinsDiscount(0); toast.add("Coins removed"); }
-    else {
-      const redeem = Math.min(maxRedeemable, 500);
-      if (redeem < 100) { toast.add("Need at least 100 coins to redeem", "error"); return; }
-      const discount = (redeem / 100) * 50; applyCoinsRedemption(redeem); setCoinsDiscount(discount);
-      toast.add(`${redeem} coins applied — ₹${discount} off`);
-    }
-  };
 
   const handleApplyCoupon = () => {
     const code = couponCode.trim().toUpperCase();
@@ -166,10 +154,8 @@ export default function CheckoutPage() {
         paymentMethod: selectedPayment === "razorpay" ? "upi" : "cod", paymentStatus,
         customerName: currentUser?.name ?? "Guest", customerPhone: currentUser?.phone ?? "", customerEmail: currentUser?.email ?? "", userId: currentUser?.id,
       });
-      if (coinsRedeemed > 0) redeemCoins(coinsRedeemed);
-      earnCoins(total); clearCart(); setPaymentConfirmed(false); setShowUPIModal(false);
-      const earned = Math.floor(total / 100) * 10;
-      toast.add(`Order placed! +${earned} coins earned.`);
+      clearCart(); setPaymentConfirmed(false); setShowUPIModal(false);
+      toast.add("Order placed!");
       router.push(`/track/${finalId}`);
     })().catch((e) => { setConfirmingOrder(false); toast.add(`Order failed: ${e instanceof Error ? e.message : "Please try again"}`, "error"); });
   };
@@ -208,7 +194,6 @@ export default function CheckoutPage() {
 
   const subtotal = getSubtotal();
   const total = getTotal();
-  const saving = couponDiscount + getCoinsDiscount();
   const catBadge = (cat: string) => {
     if (["fish","chicken","mutton","seafood"].includes(cat)) return { label:"FRESH", cls:"fresh" };
     if (["fruits","vegetables"].includes(cat)) return { label:"ORGANIC", cls:"organic" };
@@ -315,7 +300,7 @@ export default function CheckoutPage() {
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white font-semibold">{formatPrice(subtotal)}</span></div>
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">FREE</span></div>
-                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
+                {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>Coupon</span><span className="font-semibold">-{formatPrice(couponDiscount)}</span></div>}
                 <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-white">Total</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-4 py-2.5 text-[11px] text-white/70">
@@ -551,7 +536,7 @@ export default function CheckoutPage() {
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-white">{formatPrice(subtotal)}</span></div>
                 <div className="flex justify-between text-[13px]"><span className="text-[#80949b]">Delivery</span><span className="text-[#2ecc71] font-semibold">FREE</span></div>
-                {saving > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>You&apos;re saving</span><span className="font-semibold">{formatPrice(saving)}</span></div>}
+                {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2ecc71]"><span>Coupon</span><span className="font-semibold">-{formatPrice(couponDiscount)}</span></div>}
                 <div className="border-t border-white/10 pt-3 flex justify-between"><span className="text-base font-extrabold text-white">Total Payable</span><span className="text-lg font-extrabold text-white">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/5 px-4 py-2.5 text-[11px] text-[#80949b]">
