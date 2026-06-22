@@ -152,7 +152,7 @@ export default function CheckoutPage() {
         id: orderId, items, total,
         address: { ...selectedAddress, ...addressCords, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined, street: detailForm.street.trim() || selectedAddress.street || undefined, deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined },
         paymentMethod: selectedPayment === "razorpay" ? "upi" : "cod", paymentStatus,
-        customerName: currentUser?.name ?? "Guest", customerPhone: currentUser?.phone ?? "", customerEmail: currentUser?.email ?? "", userId: currentUser?.id,
+        customerName: currentUser?.name ?? "Guest", customerPhone: currentUser?.phone ?? "", customerEmail: currentUser?.email ?? "", userId: undefined,
       });
       clearCart(); setPaymentConfirmed(false); setShowUPIModal(false);
       toast.add("Order placed!");
