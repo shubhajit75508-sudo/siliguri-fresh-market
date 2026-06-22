@@ -30,9 +30,10 @@ export async function POST(req: NextRequest) {
 
     let order;
     try {
-      // Dynamic import for better ESM/CJS compatibility in serverless
-      const Razorpay = (await import("razorpay")).default || (await import("razorpay"));
-      const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+      // Use require for Razorpay (reliable in serverless ESM context)
+      const RazorpayLib = require("razorpay");
+      const RazorpayClass = RazorpayLib.default || RazorpayLib;
+      const razorpay = new RazorpayClass({ key_id: keyId, key_secret: keySecret });
       order = await razorpay.orders.create({
         amount: Math.round(amount * 100),
         currency: currency || "INR",
@@ -41,10 +42,10 @@ export async function POST(req: NextRequest) {
       });
     } catch (razErr: any) {
       return NextResponse.json({ 
-        error: "Razorpay API error", 
+        error: "Razorpay error", 
         detail: razErr?.error?.description || razErr?.message || String(razErr),
-        fullError: JSON.stringify(razErr, Object.getOwnPropertyNames(razErr)).slice(0, 500),
-        status: razErr?.statusCode || razErr?.code || "unknown"
+        type: typeof razErr,
+        stack: razErr?.stack?.slice(0, 300) || "none"
       }, { status: 502 });
     }
 
