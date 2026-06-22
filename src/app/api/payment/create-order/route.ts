@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
 import { createClient } from "@supabase/supabase-js";
 
 function getSupabaseAdmin() {
@@ -31,6 +30,8 @@ export async function POST(req: NextRequest) {
 
     let order;
     try {
+      // Dynamic import for better ESM/CJS compatibility in serverless
+      const Razorpay = (await import("razorpay")).default || (await import("razorpay"));
       const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
       order = await razorpay.orders.create({
         amount: Math.round(amount * 100),
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ 
         error: "Razorpay API error", 
         detail: razErr?.error?.description || razErr?.message || String(razErr),
+        fullError: JSON.stringify(razErr, Object.getOwnPropertyNames(razErr)).slice(0, 500),
         status: razErr?.statusCode || razErr?.code || "unknown"
       }, { status: 502 });
     }

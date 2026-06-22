@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.razorpay.com" },
       { protocol: "https", hostname: "raw.githubusercontent.com" },
     ],
+    unoptimized: true,
   },
 
   // Security headers
