@@ -66,11 +66,6 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const cookie = req.cookies.get("sfm-auth-session");
-  if (!cookie?.value) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -83,6 +78,7 @@ export async function POST(req: NextRequest) {
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
+    payment_status: body.payment_status ?? "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
