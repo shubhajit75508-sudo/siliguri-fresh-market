@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
-    return NextResponse.json({ error: "Razorpay not configured" }, { status: 501 });
+    return NextResponse.json({ error: `Razorpay not configured. Key ID: ${keyId ? "set" : "missing"}, Secret: ${keySecret ? "set" : "missing"}` }, { status: 501 });
   }
 
   try {
@@ -63,8 +63,9 @@ export async function POST(req: NextRequest) {
       currency: order.currency,
       key_id: keyId,
     });
-  } catch (err) {
-    console.error("Razorpay create order error:", err);
-    return NextResponse.json({ error: "Failed to create payment" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Razorpay create order error:", err?.message || err);
+    const msg = err?.error?.description || err?.message || "Failed to create payment";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
