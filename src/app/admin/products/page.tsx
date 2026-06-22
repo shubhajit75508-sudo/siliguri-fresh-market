@@ -165,12 +165,11 @@ export default function AdminProductsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 rounded-2xl border border-border bg-surface p-5"
         >
-          <h3 className="mb-4 font-bold">New Product</h3>
+          <h3 className="mb-4 font-bold text-white">New Product</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Price (₹)" type="number" value={form.price ?? ""} onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40">
+            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40">
               <option value="fish">Fish</option>
               <option value="chicken">Chicken</option>
               <option value="mutton">Mutton</option>
@@ -178,15 +177,94 @@ export default function AdminProductsPage() {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>
             </select>
-            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
-            <input placeholder="Weights (comma-separated, e.g. 500g, 1kg, 2kg)" value={(form.weight || []).join(", ")} onChange={(e) => setForm({ ...form, weight: e.target.value.split(",").map((w) => w.trim()).filter(Boolean) })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-1" />
-            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={3} />
+            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-1" />
+            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={2} />
           </div>
+
+          {/* Weight-Price List */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-bold text-white">Weight & Pricing</h4>
+              <button
+                type="button"
+                onClick={() => {
+                  const wps = form.weightPrices || [];
+                  setForm({ ...form, weightPrices: [...wps, { weight: "", price: 0 }], price: wps[0]?.price || form.price || 0, weight: [...(form.weight || []), ""] });
+                }}
+                className="text-xs font-bold text-[#2ecc71] hover:underline"
+              >
+                + Add Weight
+              </button>
+            </div>
+            <div className="space-y-2">
+              {(form.weightPrices || []).map((wp, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    placeholder="Weight (e.g. 50g, 1kg)"
+                    value={wp.weight}
+                    onChange={(e) => {
+                      const wps = [...(form.weightPrices || [])];
+                      wps[i] = { ...wps[i], weight: e.target.value };
+                      setForm({ ...form, weightPrices: wps, weight: wps.map(w => w.weight).filter(Boolean) });
+                    }}
+                    className="flex-1 rounded-xl border border-white/10 bg-[#0d1b2a] px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
+                  />
+                  <span className="text-[#80949b] text-sm">₹</span>
+                  <input
+                    placeholder="Price"
+                    type="number"
+                    value={wp.price || ""}
+                    onChange={(e) => {
+                      const wps = [...(form.weightPrices || [])];
+                      wps[i] = { ...wps[i], price: +e.target.value };
+                      setForm({ ...form, weightPrices: wps, price: wps[0]?.price || form.price || 0 });
+                    }}
+                    className="w-24 rounded-xl border border-white/10 bg-[#0d1b2a] px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const wps = (form.weightPrices || []).filter((_, j) => j !== i);
+                      setForm({ ...form, weightPrices: wps, price: wps[0]?.price || 0, weight: wps.map(w => w.weight).filter(Boolean) });
+                    }}
+                    className="text-[#e74c3c] hover:bg-[#e74c3c]/10 rounded-lg p-1.5"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {(form.weightPrices || []).length === 0 && (
+              <p className="text-xs text-[#80949b] mt-1">Add weight options above. First weight's price becomes the default.</p>
+            )}
+            {(form.weightPrices || []).length >= 1 && (form.weightPrices || [])[0].weight && (form.weightPrices || [])[0].price > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const base = (form.weightPrices || [])[0];
+                  const wps = [...(form.weightPrices || [])];
+                  const parseG = (w: string) => { const m = w.match(/^([\d.]+)\s*(g|kg)$/i); return m ? (m[2].toLowerCase()==="kg" ? parseFloat(m[1])*1000 : parseFloat(m[1])) : null; };
+                  const baseG = parseG(base.weight);
+                  if (baseG) {
+                    const multiplier = base.price / baseG;
+                    const suggestions = [{ weight: `${(baseG * 2 >= 1000 ? (baseG * 2 / 1000) + 'kg' : baseG * 2 + 'g')}`, price: Math.round(baseG * 2 * multiplier) }, { weight: `${(baseG * 4 >= 1000 ? (baseG * 4 / 1000) + 'kg' : baseG * 4 + 'g')}`, price: Math.round(baseG * 4 * multiplier) }];
+                    const existing = new Set(wps.map(w => w.weight.toLowerCase()));
+                    for (const s of suggestions) { if (!existing.has(s.weight.toLowerCase())) wps.push(s); }
+                    setForm({ ...form, weightPrices: wps, weight: wps.map(w => w.weight).filter(Boolean), price: wps[0]?.price || form.price || 0 });
+                  }
+                }}
+                className="mt-2 text-[11px] font-bold text-[#4A8FE7] hover:underline"
+              >
+                ⚡ Auto-generate 2× and 4× options
+              </button>
+            )}
+          </div>
+
           <div className="mt-4 flex gap-2">
             <button onClick={saveAdd} className="inline-flex items-center gap-2 rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim">
               <Save className="h-4 w-4" /> Save
             </button>
-            <button onClick={() => { setAdding(false); setForm({}); }} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2 text-sm font-medium text-muted hover:bg-surface">
+            <button onClick={() => { setAdding(false); setForm({}); }} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-5 py-2 text-sm font-medium text-[#80949b] hover:bg-white/5">
               <X className="h-4 w-4" /> Cancel
             </button>
           </div>
@@ -219,7 +297,15 @@ export default function AdminProductsPage() {
                         <input value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Name" />
                         <input value={form.price || 0} type="number" onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Price" />
                         <input value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Image URL" />
-                        <input value={(form.weight || []).join(", ")} onChange={(e) => setForm({ ...form, weight: e.target.value.split(",").map((w) => w.trim()).filter(Boolean) })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Weights: 500g, 1kg, 2kg" />
+                        <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
+                          {(form.weightPrices || []).map((wp, i) => (
+                            <div key={i} className="flex gap-1 items-center">
+                              <input value={wp.weight} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], weight: e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Wt" />
+                              <span className="text-[#80949b] text-xs">₹</span>
+                              <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Price" />
+                            </div>
+                          ))}
+                        </div>
                         <div className="flex gap-2">
                           <button onClick={saveEdit} className="rounded-lg bg-brand-fresh px-4 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /></button>
                           <button onClick={() => setEditingId(null)} className="rounded-lg border border-border px-4 py-2 text-xs text-muted"><X className="h-3 w-3" /></button>

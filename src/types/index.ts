@@ -22,6 +22,7 @@ export interface Product {
   images?: string[];
   unit: string;
   weight?: string[];
+  weightPrices?: { weight: string; price: number }[];
   cuts?: string[];
   freshnessScore: number;
   deliveryEta: number;
