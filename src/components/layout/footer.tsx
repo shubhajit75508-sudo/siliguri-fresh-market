@@ -22,7 +22,7 @@ const links = {
 
 export function Footer() {
   return (
-    <footer className="footer-surface">
+    <footer className="footer-surface pb-20 lg:pb-8">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
