@@ -49,6 +49,7 @@ export default function CheckoutPage() {
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [showUPIModal, setShowUPIModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [upiTxnId, setUpiTxnId] = useState("");
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [addressMissing, setAddressMissing] = useState(false);
   const [step, setStep] = useState(1);
@@ -612,11 +613,25 @@ export default function CheckoutPage() {
                 <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy UPI ID"}
               </button>
             </div>
-            <div className="rounded-xl bg-[#f39c12]/10 border border-[#f39c12]/20 px-4 py-3 text-center mb-5">
+            <div className="rounded-xl bg-[#f39c12]/10 border border-[#f39c12]/20 px-4 py-3 text-center mb-4">
               <p className="text-[10px] text-[#f39c12]">Amount to pay</p>
               <p className="text-xl font-extrabold text-white tabular-nums">{formatPrice(getTotal())}</p>
             </div>
-            <button onClick={() => { setPaymentConfirmed(true); setShowUPIModal(false); placeOrder("paid"); }} className="w-full rounded-xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] py-3 text-sm font-bold text-white shadow-lg shadow-[#2ecc71]/20 hover:opacity-95 transition-all">
+            <div className="mb-4">
+              <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-[#80949b] mb-1.5 block">UPI Reference ID <span className="text-[#e74c3c] text-xs">*</span></label>
+              <input
+                type="text"
+                value={upiTxnId}
+                onChange={(e) => setUpiTxnId(e.target.value)}
+                placeholder="Paste UPI reference from your app"
+                className="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/10"
+              />
+            </div>
+            <button
+              onClick={() => { setPaymentConfirmed(true); setShowUPIModal(false); placeOrder("paid"); }}
+              disabled={!upiTxnId.trim()}
+              className="w-full rounded-xl bg-gradient-to-r from-[#1A5C36] to-[#3CB371] py-3 text-sm font-bold text-white shadow-lg shadow-[#2ecc71]/20 hover:opacity-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
               <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm
             </button>
             <p className="mt-4 text-[10px] text-center text-[#80949b] flex items-center justify-center gap-1">
