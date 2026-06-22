@@ -113,6 +113,9 @@ export function proxy(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // User creation during signup — allow unauthenticated (users table needs populating)
+    if (pathname === "/api/admin/users" && req.method === "POST") return NextResponse.next();
+
     // Check API key header (for external services like Razorpay webhooks bypassing middleware if needed)
     const apiKey = req.headers.get("x-api-key");
     if (apiKey && process.env.API_SECRET_KEY && apiKey === process.env.API_SECRET_KEY) return NextResponse.next();
