@@ -39,31 +39,13 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
 
-  // Don't cache API calls, Supabase, or analytics
+  // Don't cache API calls, analytics, or external images (CSP blocks SW fetch for external domains)
   if (
     url.pathname.startsWith("/api/") ||
     url.hostname.includes("supabase.co") ||
-    url.hostname.includes("google-analytics")
+    url.hostname.includes("google-analytics") ||
+    url.hostname !== self.location.hostname
   ) return;
-
-  // For images, scripts, styles — cache first
-  if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/) ||
-    url.hostname.includes("cloudinary.com") ||
-    url.hostname.includes("unsplash.com") ||
-    url.hostname.includes("openstreetmap.org")
-  ) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          return response;
-        });
-      })
-    );
-    return;
-  }
 
   // For pages — network first, fall back to cache
   event.respondWith(
