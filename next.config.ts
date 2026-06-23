@@ -12,10 +12,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.razorpay.com" },
       { protocol: "https", hostname: "raw.githubusercontent.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "picsum.photos" },
     ],
     unoptimized: true,
-    loader: "custom",
-    loaderFile: "./src/lib/cloudflare-loader.ts",
   },
 
   // Security headers
@@ -42,7 +41,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://checkout.razorpay.com https://cdn.razorpay.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.razorpay.com https://*.tile.openstreetmap.org https://raw.githubusercontent.com https://res.cloudinary.com",
+              "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.razorpay.com https://*.tile.openstreetmap.org https://raw.githubusercontent.com https://res.cloudinary.com https://picsum.photos",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com https://cdn.razorpay.com https://www.google-analytics.com https://nominatim.openstreetmap.org",
               "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com",
