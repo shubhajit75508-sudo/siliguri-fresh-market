@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Clock, Plus, Minus, Star } from "lucide-react";
@@ -77,7 +76,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
     return (
       <div className="product-card flex gap-3 p-3">
         <Link href={`/product/${product.slug}`} className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-2xl bg-white/5">
-          <Image unoptimized src={product.image} alt={product.name} fill className="object-cover product-img" sizes="72px" />
+          <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover product-img" />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <Link href={`/product/${product.slug}`} className="block min-w-0">
@@ -108,12 +107,9 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         className="product-card flex h-full flex-col"
       >
         <div className="relative aspect-[5/4] overflow-hidden bg-white/5">
-          <Image unoptimized
-            src={product.image}
+          <img src={product.image}
             alt={product.name}
-            fill
             className="object-cover product-img transition-transform duration-700 ease-out group-hover:scale-105"
-            sizes="(max-width:640px) 50vw, 25vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 

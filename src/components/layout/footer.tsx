@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 const links = {
@@ -27,7 +26,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3">
-              <Image unoptimized src="/logo.png" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain" />
+              <img src="/logo.png" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain" />
               <div>
                 <p className="text-[16px] font-bold">Siliguri Fresh Mart</p>
                 <p className="text-[12px] font-medium text-brand-fresh-dim">Fresh Mart</p>

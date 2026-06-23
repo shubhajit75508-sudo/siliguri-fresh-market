@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -95,12 +94,9 @@ export function CartDrawer() {
                         className="group relative flex gap-3 rounded-2xl border border-white/5 bg-white/[0.03] p-3"
                       >
                         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/5">
-                          <Image unoptimized
-                            src={item.product.image}
+                          <img src={item.product.image}
                             alt={item.product.name}
-                            fill
                             className="object-cover brightness-90"
-                            sizes="80px"
                           />
                         </div>
                         <div className="flex flex-1 flex-col justify-between">

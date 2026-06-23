@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
 
@@ -11,12 +10,9 @@ export default function FishPage() {
     <div className="py-6 sm:py-8">
       <div className="relative mb-10 overflow-hidden rounded-[32px] shadow-xl">
         <div className="relative min-h-[280px] sm:min-h-[320px]">
-          <Image unoptimized
-            src="https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=1400&q=85"
+          <img src="https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=1400&q=85"
             alt="Fresh fish"
-            fill
             className="object-cover product-img"
-            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/30" />
         </div>

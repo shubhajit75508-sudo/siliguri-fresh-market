@@ -8,7 +8,6 @@ import { useUserStore } from "@/store/user-store";
 import { useQuery } from "@tanstack/react-query";
 import { searchProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
-import Image from "next/image";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 
 const trending = ["Hilsa", "Tiger prawns", "Mutton curry cut", "Country chicken", "Farm tomato"];
@@ -78,7 +77,7 @@ export function SearchBar() {
                     className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left hover:bg-surface"
                   >
                     <div className="relative h-10 w-10 overflow-hidden rounded-lg">
-                      <Image unoptimized src={p.image} alt="" fill className="object-cover product-img" sizes="40px" />
+                      <img src={p.image} alt="" className="absolute inset-0 w-full h-full object-cover product-img" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-semibold">{p.name}</p>

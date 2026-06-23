@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   LayoutDashboard,
   Package,
@@ -101,7 +100,7 @@ export default function AdminLayout({
         )}
       >
         <div className="flex h-16 items-center gap-2 border-b px-6">
-          <Image unoptimized src="/logo.png" alt="SFM" width={32} height={32} />
+          <img src="/logo.png" alt="SFM" width={32} height={32} />
           <div>
             <p className="text-sm font-extrabold text-white">SFM Admin</p>
             <p className="text-[10px] text-muted">Dashboard</p>

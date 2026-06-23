@@ -1,7 +1,6 @@
 "use client";
 
 import { use, useState } from "react";
-import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
 import { Heart, ShoppingCart, ArrowLeft, Star, Flame } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
@@ -47,13 +46,9 @@ export default function ProductDetailPage({
       <div className="grid gap-6 sm:grid-cols-2 sm:gap-10">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden rounded-[24px] bg-surface">
-          <Image unoptimized
-            src={product.image}
+          <img src={product.image}
             alt={product.name}
-            fill
             className="object-cover product-img"
-            sizes="(max-width: 640px) 100vw, 50vw"
-            priority
           />
           {isFlashDeal && (
             <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-red px-3 py-1.5 text-[11px] font-bold text-white shadow-lg">

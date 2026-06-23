@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Clock, ShieldCheck, Truck } from "lucide-react";
@@ -25,13 +24,9 @@ export function HeroSection() {
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl shadow-black/15">
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-[540px]">
-          <Image unoptimized
-            src={hero.image}
+          <img src={hero.image}
             alt="Fresh fish and produce"
-            fill
-            priority
             className="object-cover scale-105 product-img"
-            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/25" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
