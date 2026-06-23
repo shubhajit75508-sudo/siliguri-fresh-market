@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],
     unoptimized: true,
+    loader: "custom",
+    loaderFile: "./src/lib/cloudflare-loader.ts",
   },
 
   // Security headers
