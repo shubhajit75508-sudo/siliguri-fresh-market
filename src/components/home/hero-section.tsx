@@ -25,7 +25,7 @@ export function HeroSection() {
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl shadow-black/15">
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-[540px]">
-          <Image
+          <Image unoptimized
             src={hero.image}
             alt="Fresh fish and produce"
             fill

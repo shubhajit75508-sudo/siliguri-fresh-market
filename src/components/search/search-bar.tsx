@@ -78,7 +78,7 @@ export function SearchBar() {
                     className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left hover:bg-surface"
                   >
                     <div className="relative h-10 w-10 overflow-hidden rounded-lg">
-                      <Image src={p.image} alt="" fill className="object-cover product-img" sizes="40px" />
+                      <Image unoptimized src={p.image} alt="" fill className="object-cover product-img" sizes="40px" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-semibold">{p.name}</p>

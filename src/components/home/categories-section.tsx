@@ -29,7 +29,7 @@ export function CategoriesSection() {
             >
               <Link href={cat.href} className="block">
                 <div className="category-tile relative aspect-square">
-                  <Image src={cat.img} alt={cat.name} fill className="object-cover" sizes="200px" />
+                  <Image unoptimized src={cat.img} alt={cat.name} fill className="object-cover" sizes="200px" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                   <div className="absolute bottom-3 left-3 right-3">
                     <div className="glass-label rounded-2xl px-3 py-2.5">

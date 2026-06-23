@@ -47,7 +47,7 @@ export default function ProductDetailPage({
       <div className="grid gap-6 sm:grid-cols-2 sm:gap-10">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden rounded-[24px] bg-surface">
-          <Image
+          <Image unoptimized
             src={product.image}
             alt={product.name}
             fill

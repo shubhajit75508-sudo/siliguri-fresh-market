@@ -95,7 +95,7 @@ export function CartDrawer() {
                         className="group relative flex gap-3 rounded-2xl border border-white/5 bg-white/[0.03] p-3"
                       >
                         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/5">
-                          <Image
+                          <Image unoptimized
                             src={item.product.image}
                             alt={item.product.name}
                             fill

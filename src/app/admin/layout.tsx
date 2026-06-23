@@ -101,7 +101,7 @@ export default function AdminLayout({
         )}
       >
         <div className="flex h-16 items-center gap-2 border-b px-6">
-          <Image src="/logo.png" alt="SFM" width={32} height={32} />
+          <Image unoptimized src="/logo.png" alt="SFM" width={32} height={32} />
           <div>
             <p className="text-sm font-extrabold text-white">SFM Admin</p>
             <p className="text-[10px] text-muted">Dashboard</p>

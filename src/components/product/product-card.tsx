@@ -77,7 +77,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
     return (
       <div className="product-card flex gap-3 p-3">
         <Link href={`/product/${product.slug}`} className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-2xl bg-white/5">
-          <Image src={product.image} alt={product.name} fill className="object-cover product-img" sizes="72px" />
+          <Image unoptimized src={product.image} alt={product.name} fill className="object-cover product-img" sizes="72px" />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <Link href={`/product/${product.slug}`} className="block min-w-0">
@@ -108,7 +108,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         className="product-card flex h-full flex-col"
       >
         <div className="relative aspect-[5/4] overflow-hidden bg-white/5">
-          <Image
+          <Image unoptimized
             src={product.image}
             alt={product.name}
             fill
