@@ -14,8 +14,10 @@ function checkAuth(req: NextRequest) {
 
   const cookie = req.cookies.get("sfm-auth-session");
   if (cookie?.value) {
-    const [, role] = cookie.value.split("|");
-    if (role === "admin") return null;
+    // Handle signed cookies (payload.hash) — extract role from payload
+    const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
+    const parts = raw.split("|");
+    if (parts.length === 2 && parts[1] === "admin") return null;
   }
 
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

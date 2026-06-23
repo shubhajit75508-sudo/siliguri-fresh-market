@@ -116,6 +116,16 @@ export function proxy(req: NextRequest) {
     // User creation during signup — allow unauthenticated (users table needs populating)
     if (pathname === "/api/admin/users" && req.method === "POST") return NextResponse.next();
 
+    // Product management — allow authenticated admins
+    if (pathname === "/api/admin/products" && (req.method === "POST" || req.method === "PUT")) {
+      const cookie = req.cookies.get("sfm-auth-session");
+      if (cookie?.value) {
+        const payload = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
+        if (payload && payload.endsWith("|admin")) return NextResponse.next();
+      }
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     // Check API key header (for external services like Razorpay webhooks bypassing middleware if needed)
     const apiKey = req.headers.get("x-api-key");
     if (apiKey && process.env.API_SECRET_KEY && apiKey === process.env.API_SECRET_KEY) return NextResponse.next();
