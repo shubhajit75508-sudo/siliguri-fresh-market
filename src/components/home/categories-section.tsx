@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 const cats = [
-  { name: "Fish", href: "/fish", img: "https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=700&q=85" },
-  { name: "Chicken", href: "/category/chicken", img: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=700&q=85" },
-  { name: "Mutton", href: "/category/mutton", img: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=700&q=85" },
-  { name: "Vegetables", href: "/category/vegetables", img: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=700&q=85" },
-  { name: "Fruits", href: "/category/fruits", img: "https://images.unsplash.com/photo-1619566636852-adf3ef00000b?w=700&q=85" },
-  { name: "Dairy & Eggs", href: "/category/dairy", img: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=700&q=85" },
+  { name: "Fish", href: "/fish", img: "https://picsum.photos/seed/fish-cat/400/400" },
+  { name: "Chicken", href: "/category/chicken", img: "https://picsum.photos/seed/chicken-cat/400/400" },
+  { name: "Mutton", href: "/category/mutton", img: "https://picsum.photos/seed/mutton-cat/400/400" },
+  { name: "Vegetables", href: "/category/vegetables", img: "https://picsum.photos/seed/veggies/400/400" },
+  { name: "Fruits", href: "/category/fruits", img: "https://picsum.photos/seed/fruits-cat/400/400" },
+  { name: "Dairy & Eggs", href: "/category/dairy", img: "https://picsum.photos/seed/dairy-cat/400/400" },
 ];
 
 export function CategoriesSection() {
