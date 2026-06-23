@@ -60,15 +60,6 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
         <AppProvider>{children}</AppProvider>
-        <script dangerouslySetInnerHTML={{ __html: `
-          if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-              navigator.serviceWorker.register('/sw.js').then(() => {
-                console.log('[SW] Registered');
-              }).catch(() => {});
-            });
-          }
-        `}} />
       </body>
     </html>
   );
