@@ -7,6 +7,7 @@ import { CategoriesSection } from "@/components/home/categories-section";
 import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
 import { FAQSection } from "@/components/home/faq-section";
+import { TrustBar, WhyChooseUs } from "@/components/home/trust-bar";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 
 function SectionRenderer({ category, title, subtitle }: { category: string; title: string; subtitle: string }) {
@@ -77,7 +78,11 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+      <div className="mt-4 mb-6">
+        <TrustBar />
+      </div>
       <CategoriesSection />
+      <WhyChooseUs />
       <FlashDealsSection />
 
       {enabledSections.map((sec) => {

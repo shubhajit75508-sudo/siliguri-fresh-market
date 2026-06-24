@@ -35,6 +35,11 @@ export function Footer() {
             <p className="mt-5 max-w-[280px] text-[14px] leading-relaxed text-muted">
               From market to your home — in minutes, every day.
             </p>
+            <div className="mt-4 space-y-1 text-[12px] text-muted">
+              <p>📍 Siliguri, West Bengal 734001</p>
+              <p>📞 +91 98765 43210</p>
+              <p>📧 hello@siligurifreshmart.com</p>
+            </div>
           </div>
 
           {Object.entries(links).map(([title, items]) => (
@@ -54,6 +59,7 @@ export function Footer() {
         </div>
 
         <div className="mt-3 border-t border-border/80 pt-2 text-center text-[12px] text-muted">
+          <p className="mb-1">💳 We accept: UPI · Cards · Netbanking · Cash on Delivery</p>
           © 2026 Siliguri Fresh Mart · Siliguri, West Bengal
         </div>
       </div>
