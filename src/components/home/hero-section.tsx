@@ -15,7 +15,7 @@ export function HeroSection() {
   const { settings } = useAdminStore();
   const raw = settings?.hero;
   const hero = {
-    image: raw?.image || "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=1800&q=85",
+    image: raw?.image || "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782317544/file_0000000086c471fd894712adc4d3fa68_vadejf.png",
     title: raw?.title || "Fresh Fish, Chicken,\ndelivered in minutes.",
     subtitle: raw?.subtitle || "From the morning market to your kitchen.",
   };
@@ -24,9 +24,10 @@ export function HeroSection() {
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl shadow-black/15">
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-[540px]">
-          <img src={hero.image}
-            alt="Fresh fish and produce"
-            className="object-cover scale-105 product-img"
+          <img
+            src={hero.image}
+            alt="Siliguri Fresh Mart"
+            className="absolute inset-0 w-full h-full object-cover scale-105 product-img"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/25" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
