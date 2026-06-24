@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   ],
   manifest: "/manifest.json",
   icons: {
-    icon: "https://res.cloudinary.com/dy9lll7y5/image/upload/w_192,h_192,c_fill/v1782149339/file_0000000087d8720badb85aa7c5d2a499_ynyyyu.png",
-    apple: "https://res.cloudinary.com/dy9lll7y5/image/upload/w_192,h_192,c_fill/v1782149339/file_0000000087d8720badb85aa7c5d2a499_ynyyyu.png",
+    icon: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
+    apple: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
   },
   appleWebApp: {
     capable: true,
