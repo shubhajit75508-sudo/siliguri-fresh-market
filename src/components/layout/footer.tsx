@@ -21,7 +21,7 @@ const links = {
 
 export function Footer() {
   return (
-    <footer className="footer-surface pb-28 lg:pb-8 safe-bottom">
+    <footer className="footer-surface pb-36 lg:pb-8 safe-bottom">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
