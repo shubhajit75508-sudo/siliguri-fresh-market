@@ -110,7 +110,11 @@ export default function AdminProductsPage() {
     const originalPrice = discount > 0 && discount < 100
       ? Math.round(form.price! / (1 - discount / 100))
       : form.originalPrice;
-    const product = { ...form, id, slug, originalPrice: originalPrice || undefined } as Product;
+    // Auto-generate unique random rating and review count for new products
+    const nameHash = slug.split("").reduce((h, c) => { h = ((h << 5) - h) + c.charCodeAt(0); return h | 0; }, 0);
+    const rating = form.rating || +(4.2 + (Math.abs(nameHash) % 80) / 100).toFixed(1);
+    const reviewCount = form.reviewCount || 85 + (Math.abs(nameHash + 99) % 850);
+    const product = { ...form, id, slug, originalPrice: originalPrice || undefined, rating, reviewCount } as Product;
     try {
       if (supabaseAvailable) {
         const res = await fetch(API_BASE, {
