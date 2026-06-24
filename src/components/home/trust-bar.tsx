@@ -38,14 +38,14 @@ export function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-4">
-      <h2 className="section-title mb-4">Why Choose Us</h2>
-      <div className="grid gap-3 sm:grid-cols-3">
+    <section className="py-3">
+      <h2 className="section-title mb-3">Why Choose Us</h2>
+      <div className="flex gap-2 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
         {reasons.map((r) => (
-          <div key={r.title} className="glass rounded-2xl border border-white/5 p-5">
-            <span className="text-2xl">{r.icon}</span>
-            <h3 className="mt-3 text-sm font-bold text-white">{r.title}</h3>
-            <p className="mt-1 text-xs text-[#80949b] leading-relaxed">{r.desc}</p>
+          <div key={r.title} className="glass rounded-xl border border-white/5 px-3 py-3 flex-shrink-0 w-[65vw] max-w-[240px] sm:w-auto sm:max-w-none">
+            <span className="text-lg">{r.icon}</span>
+            <h3 className="mt-1.5 text-xs font-bold text-white">{r.title}</h3>
+            <p className="mt-0.5 text-[11px] text-[#80949b] leading-snug hidden sm:block">{r.desc}</p>
           </div>
         ))}
       </div>

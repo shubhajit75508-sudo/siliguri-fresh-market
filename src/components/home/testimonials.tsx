@@ -3,62 +3,62 @@
 import { Star, Leaf, MapPin } from "lucide-react";
 
 type Testimonial = {
-  image: string;
+  productImage: string;
+  productName: string;
   name: string;
   rating: number;
   quote: string;
-  daysAgo: number;
 };
 
 const testimonials: Testimonial[] = [
   {
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&fit=crop&crop=face",
-    name: "Priya Sharma",
+    productImage: "https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=120&q=80",
+    productName: "Fresh Rohu Fish",
+    name: "Priya S.",
     rating: 5,
-    quote: "The freshest fish I've had in Siliguri! The cleaning service is amazing — they cut exactly how I wanted.",
-    daysAgo: 1,
+    quote: "Absolutely fresh and perfectly cleaned. Best fish delivery in Siliguri!",
   },
   {
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=96&h=96&fit=crop&crop=face",
-    name: "Rahul Mukherjee",
+    productImage: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=120&q=80",
+    productName: "Country Chicken",
+    name: "Rahul M.",
     rating: 5,
-    quote: "Ordered at 7am, got it by 7:30! Super fast delivery and the chicken was farm-fresh. Highly recommend!",
-    daysAgo: 2,
+    quote: "Ordered at 7am, got it by 7:30. Super fast and farm-fresh quality.",
   },
   {
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&h=96&fit=crop&crop=face",
-    name: "Anjali Das",
-    rating: 5,
-    quote: "Their fish cleaning is next level. Cut precisely how I wanted. Absolute lifesaver for busy mornings!",
-    daysAgo: 3,
-  },
-  {
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=96&h=96&fit=crop&crop=face",
-    name: "Vikram Chettri",
+    productImage: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=120&q=80",
+    productName: "Mutton Curry Cut",
+    name: "Vikram C.",
     rating: 4,
-    quote: "Great quality mutton, well-packed and delivered on time. The freshness guarantee is real — very impressed.",
-    daysAgo: 4,
+    quote: "Tender, well-packed mutton. Great quality every single time.",
   },
   {
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=96&h=96&fit=crop&crop=face",
-    name: "Sneha Pradhan",
+    productImage: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=120&q=80",
+    productName: "Organic Vegetables",
+    name: "Sneha P.",
     rating: 5,
-    quote: "Best online fresh market in Siliguri! Fruits were perfectly ripe and vegetables were garden-fresh.",
-    daysAgo: 5,
+    quote: "Vegetables were garden-fresh and perfectly ripe. Love the quality!",
   },
   {
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&fit=crop&crop=face",
-    name: "Amit Bose",
+    productImage: "https://images.unsplash.com/photo-1619566636852-adf3ef00000b?w=120&q=80",
+    productName: "Fresh Fruits",
+    name: "Anjali D.",
     rating: 5,
-    quote: "Switched from local market to Siliguri Fresh Mart — never going back. Quality is consistently excellent.",
-    daysAgo: 6,
+    quote: "Fruits were sweet and fresh. Much better than the local market.",
   },
   {
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=96&h=96&fit=crop&crop=face",
-    name: "Ritika Gurung",
+    productImage: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=120&q=80",
+    productName: "Farm Eggs",
+    name: "Amit B.",
+    rating: 5,
+    quote: "Switched from local market — never going back. Consistently excellent.",
+  },
+  {
+    productImage: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=120&q=80",
+    productName: "Tiger Prawns",
+    name: "Ritika G.",
     rating: 4,
-    quote: "Love the cleaning options for fish and chicken. Saves so much time in the kitchen. Five stars for service!",
-    daysAgo: 7,
+    quote: "Love the cleaning options. Saves so much time in the kitchen!",
   },
 ];
 
@@ -87,34 +87,26 @@ export function FreshnessBanner() {
 
 export function Testimonials() {
   return (
-    <section className="py-4">
-      <h2 className="section-title mb-4">What Our Customers Say</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="py-3">
+      <h2 className="section-title mb-3">What Customers Say</h2>
+      <div className="flex gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible sm:pb-0">
         {testimonials.map((t) => (
-          <div key={t.name} className="glass rounded-2xl border border-white/5 p-5 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <img
-                src={t.image}
-                alt={t.name}
-                className="h-11 w-11 rounded-full object-cover ring-2 ring-[#2ecc71]/30 shrink-0"
-                loading="lazy"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{t.name}</p>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <div className="flex gap-[1px]">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3 w-3 ${i < t.rating ? "text-[#2ecc71] fill-current" : "text-[#3d4d54]"}`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-[#80949b] ml-1">{t.daysAgo}d ago</span>
-                </div>
+          <div key={t.name} className="glass rounded-xl border border-white/5 p-3 flex-shrink-0 w-[75vw] max-w-[280px] sm:w-auto sm:max-w-none flex items-center gap-3">
+            <img
+              src={t.productImage}
+              alt={t.productName}
+              className="h-14 w-14 rounded-lg object-cover shrink-0"
+              loading="lazy"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-white truncate">{t.name}</p>
+              <div className="flex gap-[1px] my-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`h-3 w-3 ${i < t.rating ? "text-[#2ecc71] fill-current" : "text-[#3d4d54]"}`} />
+                ))}
               </div>
+              <p className="text-[11px] text-[#80949b] leading-snug line-clamp-2">{t.quote}</p>
             </div>
-            <p className="text-xs text-[#c2d0c9] leading-relaxed">"{t.quote}"</p>
           </div>
         ))}
       </div>

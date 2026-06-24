@@ -85,7 +85,6 @@ export default function HomePage() {
       <CategoriesSection />
       <FreshnessBanner />
       <WhyChooseUs />
-      <Testimonials />
       <DeliveryArea />
       <FlashDealsSection />
 
@@ -116,6 +115,7 @@ export default function HomePage() {
         );
       })}
 
+      <Testimonials />
       <div id="faq">
         <FAQSection />
       </div>
