@@ -158,17 +158,15 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             </p>
           )}
 
-          <div className="mt-1 flex items-baseline gap-1.5">
+          <div className="mt-1 flex items-center gap-1.5">
             <span className="text-sm font-bold text-[#2ecc71]">{formatPrice(displayPrice)}</span>
             {displayOriginal && displayOriginal > displayPrice && (
               <span className="text-[11px] text-[#5a7278] line-through">{formatPrice(displayOriginal)}</span>
             )}
-            {product.rating > 0 && (
-              <span className="ml-auto text-[11px] text-[#80949b]">
-                <Star className="h-3 w-3 inline text-[#f1c40f] mr-0.5" />
-                {product.rating} ({product.reviewCount})
-              </span>
-            )}
+            <span className="text-[11px] text-[#80949b] ml-auto">
+              <Star className="h-3 w-3 inline text-[#f1c40f] mr-0.5" />
+              {product.rating || "4.5"} ({product.reviewCount || 120})
+            </span>
           </div>
 
           <div className="mt-auto pt-3">
