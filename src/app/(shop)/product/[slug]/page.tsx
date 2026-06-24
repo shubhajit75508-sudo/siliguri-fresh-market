@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import { notFound, useRouter } from "next/navigation";
-import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Navigation, Share2, CheckBadge } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Navigation, Share2, BadgeCheck } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
@@ -239,7 +239,7 @@ export default function ProductDetailPage({
                 </span>
               )}
               <span className="inline-flex items-center gap-1 rounded-full bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-2.5 py-0.5 text-[11px] font-bold text-[#2ecc71]">
-                <CheckBadge className="h-3 w-3" /> Verified Seller
+                <BadgeCheck className="h-3 w-3" /> Verified Seller
               </span>
             </div>
             {savings > 0 && (
