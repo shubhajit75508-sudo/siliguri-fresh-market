@@ -117,6 +117,20 @@ interface NotificationRow {
   sent_to?: number;
 }
 
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+  return Math.abs(h);
+}
+
+function seededRating(seed: string): number {
+  return +(4.2 + (hashStr(seed) % 80) / 100).toFixed(1);
+}
+
+function seededCount(seed: string): number {
+  return 85 + (hashStr(seed + "c") % 850);
+}
+
 function mapProduct(row: ProductRow): Product {
   return {
     id: row.id,
@@ -136,8 +150,8 @@ function mapProduct(row: ProductRow): Product {
     cleaningOptions: row.cleaning_options ?? undefined,
     freshnessScore: row.freshness_score,
     deliveryEta: row.delivery_eta,
-    rating: Number(row.rating) || +(4.2 + Math.random() * 0.8).toFixed(1),
-    reviewCount: row.review_count || Math.floor(50 + Math.random() * 900),
+    rating: Number(row.rating) || seededRating(row.slug || row.name),
+    reviewCount: row.review_count || seededCount(row.slug || row.name),
     inStock: row.in_stock,
     isFlashDeal: row.is_flash_deal ?? undefined,
     isTrending: row.is_trending ?? undefined,
