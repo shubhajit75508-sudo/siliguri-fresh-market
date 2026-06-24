@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Clock, Plus, Minus, Star } from "lucide-react";
 import { cartLineKey, useCartStore } from "@/store/cart-store";
 import { useToast } from "@/components/ui/toaster";
-import { formatPrice, getAvailableWeights, getPriceForWeight } from "@/lib/utils";
+import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import type { Product } from "@/types";
 
 interface ProductCardProps {
@@ -30,6 +30,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const weights = getAvailableWeights(product.price, product.category, product.weight, product.weightPrices);
   const [selectedWeight, setSelectedWeight] = useState(weights[0]);
   const displayPrice = getPriceForWeight(product.price, selectedWeight, product.weightPrices);
+  const displayOriginal = getOriginalPriceForWeight(product.price, product.originalPrice, selectedWeight, product.weightPrices);
 
   const b = catBadge(product.category);
 
@@ -159,8 +160,14 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
 
           <div className="mt-1 flex items-baseline gap-1.5">
             <span className="text-sm font-bold text-[#2ecc71]">{formatPrice(displayPrice)}</span>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-[11px] text-[#5a7278] line-through">{formatPrice(product.originalPrice)}</span>
+            {displayOriginal && displayOriginal > displayPrice && (
+              <span className="text-[11px] text-[#5a7278] line-through">{formatPrice(displayOriginal)}</span>
+            )}
+            {product.rating > 0 && (
+              <span className="ml-auto text-[11px] text-[#80949b]">
+                <Star className="h-3 w-3 inline text-[#f1c40f] mr-0.5" />
+                {product.rating} ({product.reviewCount})
+              </span>
             )}
           </div>
 

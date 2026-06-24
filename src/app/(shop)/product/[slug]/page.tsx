@@ -5,7 +5,7 @@ import { notFound, useRouter } from "next/navigation";
 import { Heart, ShoppingCart, ArrowLeft, Star, Flame } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
-import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight } from "@/lib/utils";
+import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import { useProductBySlug } from "@/lib/hooks/use-products";
 
 export default function ProductDetailPage({
@@ -28,6 +28,7 @@ export default function ProductDetailPage({
   const displayWeight = selectedWeight || weights[0];
   const mult = getWeightMultiplier(displayWeight);
   const displayPrice = getPriceForWeight(product.price, displayWeight, product.weightPrices);
+  const displayOriginal = getOriginalPriceForWeight(product.price, product.originalPrice, displayWeight, product.weightPrices);
 
   const isFlashDeal = product.discount && product.discount > 0;
 
@@ -94,8 +95,13 @@ export default function ProductDetailPage({
 
           {/* Price */}
           <div className="mt-6 flex items-baseline gap-3">
-            <span className="text-[28px] font-bold">{formatPrice(displayPrice)}</span>
-            <span className="text-sm text-muted">{displayWeight === weights[0] ? "" : `(${formatPrice(product.price * getWeightMultiplier(weights[0]))} / ${weights[0]})`}</span>
+            <span className="text-[28px] font-bold text-white">{formatPrice(displayPrice)}</span>
+            {displayOriginal && displayOriginal > displayPrice && (
+              <span className="text-base text-[#5a7278] line-through">{formatPrice(displayOriginal)}</span>
+            )}
+            {displayWeight !== weights[0] && (
+              <span className="text-sm text-[#80949b]">({formatPrice(getPriceForWeight(product.price, weights[0], product.weightPrices))} / {weights[0]})</span>
+            )}
           </div>
 
           {/* Add to cart */}

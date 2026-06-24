@@ -46,3 +46,10 @@ export function getPriceForWeight(basePrice: number, weight: string, weightPrice
   }
   return basePrice * getWeightMultiplier(weight);
 }
+
+/** Get the original (pre-discount) price for a weight, scaled proportionally */
+export function getOriginalPriceForWeight(basePrice: number, originalPrice: number | undefined, weight: string, weightPrices?: { weight: string; price: number }[]): number | undefined {
+  if (!originalPrice || originalPrice <= basePrice) return undefined;
+  const ratio = originalPrice / basePrice;
+  return Math.round(getPriceForWeight(basePrice, weight, weightPrices) * ratio);
+}
