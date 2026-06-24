@@ -2,7 +2,7 @@
   "name": "Siliguri Fresh Mart",
   "short_name": "Fresh Mart",
   "description": "Fresh fish, meat & groceries delivered to your doorstep in Siliguri. Free delivery over ₹299.",
-  "start_url": "/?utm_source=pwa",
+  "start_url": "/",
   "id": "/",
   "scope": "/",
   "display": "standalone",
