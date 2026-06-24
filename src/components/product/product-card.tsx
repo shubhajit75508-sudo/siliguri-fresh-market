@@ -122,9 +122,6 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
 
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
             {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
-            <span className="rounded-full bg-black/40 backdrop-blur px-2 py-0.5 text-[10px] font-semibold text-white">
-              <Star className="h-3 w-3 inline text-[#f1c40f]" /> {product.rating}
-            </span>
           </div>
         </div>
 
@@ -165,7 +162,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             )}
             <span className="text-[11px] text-[#80949b] ml-auto">
               <Star className="h-3 w-3 inline text-[#f1c40f] mr-0.5" />
-              {product.rating || "4.5"} ({product.reviewCount || 120})
+              {(product.rating && product.rating > 0 ? product.rating : "4.5")} ({(product.reviewCount && product.reviewCount > 0 ? product.reviewCount : 120)})
             </span>
           </div>
 
