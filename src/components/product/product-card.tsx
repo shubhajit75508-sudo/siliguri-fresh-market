@@ -162,7 +162,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             )}
             <span className="text-[11px] text-[#80949b] ml-auto">
               <Star className="h-3 w-3 inline text-[#f1c40f] mr-0.5" />
-              {(product.rating && product.rating > 0 ? product.rating : "4.5")} ({(product.reviewCount && product.reviewCount > 0 ? product.reviewCount : 120)})
+              {product.rating?.toFixed(1) || "4.5"} ({product.reviewCount || "120"})
             </span>
           </div>
 
