@@ -60,13 +60,17 @@ export default function AdminProductsPage() {
   const saveEdit = async () => {
     if (!editingId || !form.name) return;
     setSaving(true);
+    const discount = form.discount || 0;
+    const originalPrice = discount > 0 && discount < 100 && form.price
+      ? Math.round(form.price / (1 - discount / 100))
+      : form.originalPrice;
     try {
       if (supabaseAvailable) {
         const slug = form.name ? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : undefined;
         const res = await fetch(API_BASE, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: editingId, ...form, slug }),
+          body: JSON.stringify({ id: editingId, ...form, slug, originalPrice: originalPrice || undefined }),
         });
         if (!res.ok) {
           const err = await res.json();
@@ -101,7 +105,12 @@ export default function AdminProductsPage() {
     setSaving(true);
     const id = crypto.randomUUID();
     const slug = createUniqueSlug(form.name);
-    const product = { ...form, id, slug } as Product;
+    // Calculate originalPrice from discount%: sellingPrice = originalPrice * (1 - discount/100)
+    const discount = form.discount || 0;
+    const originalPrice = discount > 0 && discount < 100
+      ? Math.round(form.price! / (1 - discount / 100))
+      : form.originalPrice;
+    const product = { ...form, id, slug, originalPrice: originalPrice || undefined } as Product;
     try {
       if (supabaseAvailable) {
         const res = await fetch(API_BASE, {
