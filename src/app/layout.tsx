@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AppProvider } from "@/providers/app-provider";
 import { RootSplash } from "@/components/ui/root-splash";
+import { ServiceWorker } from "@/components/ui/service-worker";
 import "./globals.css";
 
 const inter = Inter({
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
         <RootSplash />
+        <ServiceWorker />
         <AppProvider>{children}</AppProvider>
       </body>
     </html>
