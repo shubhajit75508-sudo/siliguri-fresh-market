@@ -8,7 +8,7 @@ import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
 import { FAQSection } from "@/components/home/faq-section";
 import { TrustBar } from "@/components/home/trust-bar";
-import { FreshnessBanner, Testimonials, DeliveryArea } from "@/components/home/testimonials";
+import { FreshnessBanner, Testimonials } from "@/components/home/testimonials";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 
 function SectionRenderer({ category, title, subtitle }: { category: string; title: string; subtitle: string }) {
@@ -84,7 +84,6 @@ export default function HomePage() {
       </div>
       <CategoriesSection />
       <FreshnessBanner />
-      <DeliveryArea />
       <FlashDealsSection />
 
       {enabledSections.map((sec) => {

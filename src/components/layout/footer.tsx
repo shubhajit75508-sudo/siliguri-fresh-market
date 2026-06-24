@@ -40,6 +40,11 @@ export function Footer() {
               <p>📞 +91 98765 43210</p>
               <p>📧 hello@siligurifreshmart.com</p>
             </div>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Siliguri Town","Champasari","Sukna","Burdwan Road"].map((area) => (
+                <span key={area} className="text-[10px] text-muted px-2 py-0.5 rounded-full border border-border/60">{area}</span>
+              ))}
+            </div>
           </div>
 
           {Object.entries(links).map(([title, items]) => (

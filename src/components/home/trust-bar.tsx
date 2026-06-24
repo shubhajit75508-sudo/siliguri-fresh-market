@@ -3,24 +3,22 @@
 import { Star, Truck, Shield, Package } from "lucide-react";
 
 const stats = [
-  { icon: Package, value: "5,000+", label: "Orders Delivered" },
-  { icon: Star, value: "4.8/5", label: "Customer Rating" },
-  { icon: Truck, value: "30-min", label: "Avg Delivery" },
-  { icon: Shield, value: "100%", label: "Secure Payment" },
+  { icon: Package, value: "5K+", label: "Orders" },
+  { icon: Star, value: "4.8", label: "Rating" },
+  { icon: Truck, value: "30m", label: "Delivery" },
+  { icon: Shield, value: "100%", label: "Secure" },
 ];
 
 export function TrustBar() {
   return (
-    <div className="glass rounded-2xl border border-white/5 px-6 py-4 flex items-center justify-around flex-wrap gap-4">
+    <div className="glass rounded-2xl border border-white/5 px-4 py-3 grid grid-cols-4 gap-2">
       {stats.map((s) => {
         const Icon = s.icon;
         return (
-          <div key={s.label} className="flex items-center gap-3 text-center sm:text-left">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#2ecc71]/10">
-              <Icon className="h-5 w-5 text-[#2ecc71]" />
-            </span>
+          <div key={s.label} className="flex items-center gap-2 justify-center sm:justify-start">
+            <Icon className="h-4 w-4 text-[#2ecc71] shrink-0" />
             <div>
-              <p className="text-sm font-extrabold text-white">{s.value}</p>
+              <p className="text-[13px] font-extrabold text-white leading-none">{s.value}</p>
               <p className="text-[10px] text-[#80949b] font-medium">{s.label}</p>
             </div>
           </div>
