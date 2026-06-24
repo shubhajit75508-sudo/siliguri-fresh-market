@@ -10,9 +10,9 @@ export default function FishPage() {
     <div className="py-6 sm:py-8">
       <div className="relative mb-10 overflow-hidden rounded-[32px] shadow-xl">
         <div className="relative min-h-[280px] sm:min-h-[320px]">
-          <img src="https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=1400&q=85"
+          <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299704/Picsart_26-06-24_11-09-55-236_cmcwt5.jpg"
             alt="Fresh fish"
-            className="object-cover product-img"
+            className="absolute inset-0 w-full h-full object-cover product-img"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/30" />
         </div>
