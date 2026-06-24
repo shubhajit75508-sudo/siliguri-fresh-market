@@ -7,7 +7,7 @@ import { CategoriesSection } from "@/components/home/categories-section";
 import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
 import { FAQSection } from "@/components/home/faq-section";
-import { TrustBar, WhyChooseUs } from "@/components/home/trust-bar";
+import { TrustBar } from "@/components/home/trust-bar";
 import { FreshnessBanner, Testimonials, DeliveryArea } from "@/components/home/testimonials";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 
@@ -84,7 +84,6 @@ export default function HomePage() {
       </div>
       <CategoriesSection />
       <FreshnessBanner />
-      <WhyChooseUs />
       <DeliveryArea />
       <FlashDealsSection />
 

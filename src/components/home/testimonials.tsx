@@ -12,53 +12,53 @@ type Testimonial = {
 
 const testimonials: Testimonial[] = [
   {
-    productImage: "https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1544943910-04c54e739fe9?w=200&q=80",
     productName: "Fresh Rohu Fish",
-    name: "Priya S.",
+    name: "Priya Sharma",
     rating: 5,
-    quote: "Absolutely fresh and perfectly cleaned. Best fish delivery in Siliguri!",
+    quote: "Khubsurat freshness, darun quality!",
   },
   {
-    productImage: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=200&q=80",
     productName: "Country Chicken",
-    name: "Rahul M.",
+    name: "Rahul Mukherjee",
     rating: 5,
-    quote: "Ordered at 7am, got it by 7:30. Super fast and farm-fresh quality.",
+    quote: "Fatafati packing, on time delivery. Valo!",
   },
   {
-    productImage: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=200&q=80",
     productName: "Mutton Curry Cut",
-    name: "Vikram C.",
+    name: "Vikram Chettri",
     rating: 4,
-    quote: "Tender, well-packed mutton. Great quality every single time.",
+    quote: "Great quality. Ekdom fresh. Best in Siliguri!",
   },
   {
-    productImage: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=200&q=80",
     productName: "Organic Vegetables",
-    name: "Sneha P.",
+    name: "Sneha Pradhan",
     rating: 5,
-    quote: "Vegetables were garden-fresh and perfectly ripe. Love the quality!",
+    quote: "Nice and fresh. Exactly like the photos. Simple!",
   },
   {
-    productImage: "https://images.unsplash.com/photo-1619566636852-adf3ef00000b?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1619566636852-adf3ef00000b?w=200&q=80",
     productName: "Fresh Fruits",
-    name: "Anjali D.",
+    name: "Anjali Das",
     rating: 5,
-    quote: "Fruits were sweet and fresh. Much better than the local market.",
+    quote: "Darun sweet! Much better than market. Great job!",
   },
   {
-    productImage: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=200&q=80",
     productName: "Farm Eggs",
-    name: "Amit B.",
+    name: "Amit Bose",
     rating: 5,
-    quote: "Switched from local market — never going back. Consistently excellent.",
+    quote: "Best online service. Regularly ordering. Nice!",
   },
   {
-    productImage: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=120&q=80",
+    productImage: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=200&q=80",
     productName: "Tiger Prawns",
-    name: "Ritika G.",
+    name: "Ritika Gurung",
     rating: 4,
-    quote: "Love the cleaning options. Saves so much time in the kitchen!",
+    quote: "Valo quality. Cleaned nicely. Very satisfied!",
   },
 ];
 
@@ -87,26 +87,25 @@ export function FreshnessBanner() {
 
 export function Testimonials() {
   return (
-    <section className="py-3">
-      <h2 className="section-title mb-3">What Customers Say</h2>
-      <div className="flex gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible sm:pb-0">
+    <section className="py-6">
+      <h2 className="section-title mb-5">What Customers Say</h2>
+      <div className="flex gap-4 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0">
         {testimonials.map((t) => (
-          <div key={t.name} className="glass rounded-xl border border-white/5 p-3 flex-shrink-0 w-[75vw] max-w-[280px] sm:w-auto sm:max-w-none flex items-center gap-3">
+          <div key={t.name} className="glass rounded-2xl border border-white/5 p-5 flex-shrink-0 w-[80vw] max-w-[320px] sm:w-auto sm:max-w-none flex flex-col items-center text-center gap-3">
             <img
               src={t.productImage}
               alt={t.productName}
-              className="h-14 w-14 rounded-lg object-cover shrink-0"
+              className="h-20 w-20 rounded-2xl object-cover shadow-lg shadow-black/30"
               loading="lazy"
             />
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-white truncate">{t.name}</p>
-              <div className="flex gap-[1px] my-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`h-3 w-3 ${i < t.rating ? "text-[#2ecc71] fill-current" : "text-[#3d4d54]"}`} />
-                ))}
-              </div>
-              <p className="text-[11px] text-[#80949b] leading-snug line-clamp-2">{t.quote}</p>
+            <p className="text-xs font-medium text-[#80949b] uppercase tracking-wide">{t.productName}</p>
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className={`h-4 w-4 ${i < t.rating ? "text-[#2ecc71] fill-current" : "text-[#3d4d54]"}`} />
+              ))}
             </div>
+            <p className="text-sm font-semibold text-white leading-snug px-2">"{t.quote}"</p>
+            <p className="text-xs font-medium text-[#2ecc71]">— {t.name}</p>
           </div>
         ))}
       </div>
