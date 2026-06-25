@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { getCategories } from "@/lib/data";
 
 type Props = { params: Promise<{ slug: string }> };

@@ -1,4 +1,4 @@
-export function WebSiteSchema() {
+﻿export function WebSiteSchema() {
   return (
     <script
       type="application/ld+json"
