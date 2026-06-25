@@ -187,7 +187,7 @@ export default function TrackOrderPage({
   const currentStage = (() => {
     if (order?.status === "delivered") return 3;
     if (order?.status === "out_for_delivery") return 2;
-    if (order?.deliveryStatus === "picked_up") return 1;
+    if (order?.deliveryStatus === "picked_up" || order?.deliveryStatus === "accepted") return 1;
     return 0;
   })();
   const isDelivered = order?.status === "delivered";
@@ -435,7 +435,7 @@ export default function TrackOrderPage({
           {isDelivered ? <CheckCircle className="h-8 w-8" /> : isOutForDelivery ? <Truck className="h-8 w-8" /> : <Package className="h-8 w-8" />}
         </div>
         <p className="text-sm font-bold text-[#c2d0c9]">
-          {isDelivered ? "Delivered!" : order?.deliveryStatus === "picked_up" ? "On the way to you!" : "Preparing your order…"}
+          {isDelivered ? "Delivered!" : order?.deliveryStatus === "picked_up" ? "On the way to you!" : order?.deliveryStatus === "accepted" ? "Picked up by rider!" : "Preparing your order…"}
         </p>
       </div>
 
