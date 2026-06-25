@@ -23,6 +23,15 @@ async function apiPost(path: string, data: Record<string, unknown>): Promise<{ o
   } catch { return { ok: false }; }
 }
 
+async function apiDeliveryUpdate(data: Record<string, unknown>): Promise<boolean> {
+  if (!isSupabaseConfigured()) return true;
+  try {
+    const res = await fetch("/api/delivery/status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    if (!res.ok) { console.warn("[apiDeliveryUpdate] returned %d", res.status); return false; }
+    return true;
+  } catch (e) { console.error("[apiDeliveryUpdate] network error:", e); return false; }
+}
+
 interface OrderStats {
   totalOrders: number;
   revenueToday: number;
@@ -292,7 +301,7 @@ export const useOrderStore = create<OrderState>()(
               o.id === orderId ? { ...o, deliveryStatus: "accepted" as DeliveryStatus } : o
             ),
           }));
-          const ok = await apiPut({ id: orderId, delivery_status: "accepted", customer_email: order?.customerEmail || "" });
+          const ok = await apiDeliveryUpdate({ orderId, deliveryStatus: "accepted", customerEmail: order?.customerEmail || "" });
           if (!ok) set({ orders: prev });
         },
 
@@ -304,7 +313,7 @@ export const useOrderStore = create<OrderState>()(
               o.id === orderId ? { ...o, deliveryStatus: "picked_up" as DeliveryStatus, status: "out_for_delivery" as Order["status"] } : o
             ),
           }));
-          const ok = await apiPut({ id: orderId, delivery_status: "picked_up", status: "out_for_delivery", customer_email: order?.customerEmail || "" });
+          const ok = await apiDeliveryUpdate({ orderId, deliveryStatus: "picked_up", status: "out_for_delivery", customerEmail: order?.customerEmail || "" });
           if (!ok) set({ orders: prev });
         },
 
