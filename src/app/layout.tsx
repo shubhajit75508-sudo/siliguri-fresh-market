@@ -42,8 +42,12 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   icons: {
-    icon: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
-    apple: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
+    icon: [
+      { url: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_16,h_16,c_fill,f_png/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg", sizes: "16x16", type: "image/png" },
+      { url: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_32,h_32,c_fill,f_png/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg", sizes: "32x32", type: "image/png" },
+      { url: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg", sizes: "192x192", type: "image/jpeg" },
+    ],
+    apple: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_180,h_180,c_fill,f_png/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
   },
   appleWebApp: {
     capable: true,
