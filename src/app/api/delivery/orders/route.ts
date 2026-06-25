@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
   const cookie = req.cookies.get("sfm-auth-session");
   if (!cookie) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  const [userId, role] = cookie.value.split("|");
+  const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
+  const [userId, role] = raw.split("|");
   if (!userId || role !== "delivery") return NextResponse.json({ error: "Not authorized" }, { status: 403 });
 
   const { data, error } = await supabaseAdmin

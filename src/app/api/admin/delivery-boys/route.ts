@@ -14,7 +14,8 @@ function checkAuth(req: NextRequest) {
 
   const cookie = req.cookies.get("sfm-auth-session");
   if (cookie?.value) {
-    const [, role] = cookie.value.split("|");
+    const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
+    const [, role] = raw.split("|");
     if (role === "admin") return null;
   }
 

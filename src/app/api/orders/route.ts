@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
   const cookie = req.cookies.get("sfm-auth-session");
   if (!cookie?.value) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const [userId] = cookie.value.split("|");
+  const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
+  const [userId] = raw.split("|");
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabaseAdmin = getAdmin();
