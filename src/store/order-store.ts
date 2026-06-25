@@ -240,12 +240,12 @@ export const useOrderStore = create<OrderState>()(
           set((state) => ({
             orders: state.orders.map((o) =>
               o.id === orderId
-                ? { ...o, deliveryBoyId: boyId, deliveryBoyName: boyName, deliveryStatus: "assigned" as DeliveryStatus, status: "out_for_delivery" as Order["status"] }
+                ? { ...o, deliveryBoyId: boyId, deliveryBoyName: boyName, deliveryStatus: "assigned" as DeliveryStatus }
                 : o
             ),
           }));
 
-          const ok = await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_boy_email: boyEmail, delivery_boy_name: boyName, delivery_status: "assigned", status: "out_for_delivery" });
+          const ok = await apiPut({ id: orderId, delivery_boy_id: boyId, delivery_boy_email: boyEmail, delivery_boy_name: boyName, delivery_status: "assigned" });
           if (!ok) {
             set({ orders: prev });
             return;
@@ -301,10 +301,10 @@ export const useOrderStore = create<OrderState>()(
           const order = prev.find((o) => o.id === orderId);
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === orderId ? { ...o, deliveryStatus: "picked_up" as DeliveryStatus } : o
+              o.id === orderId ? { ...o, deliveryStatus: "picked_up" as DeliveryStatus, status: "out_for_delivery" as Order["status"] } : o
             ),
           }));
-          const ok = await apiPut({ id: orderId, delivery_status: "picked_up", customer_email: order?.customerEmail || "" });
+          const ok = await apiPut({ id: orderId, delivery_status: "picked_up", status: "out_for_delivery", customer_email: order?.customerEmail || "" });
           if (!ok) set({ orders: prev });
         },
 
