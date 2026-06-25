@@ -51,7 +51,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.razorpay.com https://*.tile.openstreetmap.org https://raw.githubusercontent.com https://res.cloudinary.com https://picsum.photos https://fastly.picsum.photos",
               "font-src 'self' data:",
               "media-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com https://cdn.razorpay.com https://www.google-analytics.com https://nominatim.openstreetmap.org",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com https://cdn.razorpay.com https://www.google-analytics.com https://nominatim.openstreetmap.org capacitor://* http://localhost:*",
               "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",

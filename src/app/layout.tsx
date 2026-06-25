@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { AppProvider } from "@/providers/app-provider";
 import { RootSplash } from "@/components/ui/root-splash";
 import { ServiceWorker } from "@/components/ui/service-worker";
+import { CapacitorDeepLink } from "@/components/ui/capacitor-deeplink";
 import { OrganizationSchema, LocalBusinessSchema, WebSiteSchema } from "@/components/seo/schemas";
 import "./globals.css";
 
@@ -95,6 +96,7 @@ export default function RootLayout({
         <WebSiteSchema />
         <RootSplash />
         <ServiceWorker />
+        <CapacitorDeepLink />
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

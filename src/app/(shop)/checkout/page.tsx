@@ -136,11 +136,58 @@ export default function CheckoutPage() {
     } catch { setConfirmingOrder(false); setShowUPIModal(true); }
   };
 
+  const openCapacitorRazorpay = async () => {
+    const total = getTotal();
+    setConfirmingOrder(true);
+    const sfmOrderId = "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+    try {
+      const addressCords = liveLocation ? { lat: liveLocation.lat, lng: liveLocation.lng } : {};
+      await createOrder({
+        id: sfmOrderId, items, total,
+        address: { ...selectedAddress, ...addressCords, area: detailForm.area.trim() || selectedAddress.area || undefined, landmark: detailForm.landmark.trim() || selectedAddress.landmark || undefined, building: detailForm.building.trim() || selectedAddress.building || undefined, flat: detailForm.flat.trim() || selectedAddress.flat || undefined, floor: detailForm.floor.trim() || selectedAddress.floor || undefined, street: detailForm.street.trim() || selectedAddress.street || undefined, deliveryInstructions: detailForm.deliveryInstructions.trim() || selectedAddress.deliveryInstructions || undefined },
+        paymentMethod: "upi", paymentStatus: "unpaid",
+        customerName: currentUser?.name ?? "Guest", customerPhone: currentUser?.phone ?? "", customerEmail: currentUser?.email ?? "", userId: undefined,
+      });
+      const res = await fetch("/api/payment/create-order", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total, currency: "INR", receipt: sfmOrderId, notes: { order_id: sfmOrderId, customer_name: currentUser?.name ?? "", customer_phone: currentUser?.phone ?? "", customer_email: currentUser?.email ?? "" } }),
+      });
+      if (!res.ok) { setConfirmingOrder(false); toast.add("Payment setup failed. Try again.", "error"); return; }
+      const order = await res.json();
+      const payUrl = "/pay?order_id=" + encodeURIComponent(order.id) +
+        "&amount=" + encodeURIComponent(order.amount) +
+        "&sfm_order_id=" + encodeURIComponent(sfmOrderId) +
+        "&name=" + encodeURIComponent(currentUser?.name || "") +
+        "&phone=" + encodeURIComponent(currentUser?.phone || "");
+      const { Browser } = await import("@capacitor/browser");
+      await Browser.open({ url: new URL(payUrl, window.location.origin).toString() });
+      clearCart();
+      setConfirmingOrder(false);
+    } catch {
+      setConfirmingOrder(false);
+      toast.add("Failed to open payment. Try again.", "error");
+    }
+  };
+
   const handlePlaceOrder = () => {
     if (!isAuthenticated) { toast.add("Sign up required to place orders", "error"); return; }
     if (!selectedAddress) { toast.add("Please add or select a delivery address", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
     if (!requiredDetailsFilled) { toast.add("Please fill Area and Landmark details", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => setAddressMissing(false), 3000); return; }
-    if (selectedPayment === "razorpay") { openRazorpayCheckout(); return; }
+    if (selectedPayment === "razorpay") {
+      (async () => {
+        try {
+          const { Capacitor } = await import("@capacitor/core");
+          if (Capacitor.isNativePlatform()) {
+            await openCapacitorRazorpay();
+          } else {
+            await openRazorpayCheckout();
+          }
+        } catch {
+          openRazorpayCheckout();
+        }
+      })();
+      return;
+    }
     placeOrder("unpaid");
   };
 
