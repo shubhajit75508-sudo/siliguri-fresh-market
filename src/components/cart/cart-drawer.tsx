@@ -124,22 +124,22 @@ export function CartDrawer() {
                           </div>
                         </div>
                         {/* Quantity stepper */}
-                        <div className="self-end">
-                          <div className="flex items-center gap-1 rounded-xl bg-white/8 px-1 py-1">
+                        <div className="self-end shrink-0">
+                          <div className="flex items-center gap-0.5 sm:gap-1 rounded-xl bg-white/8 px-0.5 sm:px-1 py-0.5 sm:py-1">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}
-                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
+                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
                             >
-                              <Minus className="h-4 w-4" />
+                              <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </button>
-                            <span className="flex h-10 w-10 items-center justify-center text-sm font-bold text-white tabular-nums">
+                            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center text-sm font-bold text-white tabular-nums">
                               {item.quantity}
                             </span>
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity + 1)}
-                              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
+                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
                             >
-                              <Plus className="h-4 w-4" />
+                              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </button>
                           </div>
                         </div>
