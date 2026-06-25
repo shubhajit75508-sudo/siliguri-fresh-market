@@ -6,7 +6,7 @@ import {
   Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
   Package, ShoppingBag, Truck, CheckCircle,
 } from "lucide-react";
-import type { Order } from "@/types";
+import type { Order, DeliveryStatus } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
@@ -106,6 +106,35 @@ export default function TrackOrderPage({
   };
 
   useEffect(() => { fetchOrder(); }, [fetchOrder]);
+
+  // Poll order status every 15s (once order is loaded, stop when terminal)
+  useEffect(() => {
+    if (!order || order.status === "delivered" || order.status === "cancelled") return;
+    const interval = setInterval(() => {
+      fetch(`/api/orders/${orderId}`)
+        .then((r) => r.ok ? r.json() : null)
+        .then((json) => {
+          if (!json?.order) return;
+          const raw = json.order as Record<string, unknown>;
+          setOrder((prev) => {
+            if (!prev) return prev;
+            const newStatus = raw.status as Order["status"];
+            const newDeliveryStatus = (raw.delivery_status as string) ?? undefined;
+            if (newStatus === prev.status && newDeliveryStatus === prev.deliveryStatus) return prev;
+            return {
+              ...prev,
+              status: newStatus,
+              deliveryStatus: newDeliveryStatus as DeliveryStatus | undefined,
+              deliveryCode: (raw.delivery_code as string) ?? prev.deliveryCode,
+              deliveryBoyId: (raw.delivery_boy_id as string) ?? prev.deliveryBoyId,
+              deliveryBoyName: (raw.delivery_boy_name as string) ?? prev.deliveryBoyName,
+            };
+          });
+        })
+        .catch(() => {});
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [order, orderId]);
 
   useEffect(() => {
     if (!etaMinutes || etaMinutes <= 0) return;

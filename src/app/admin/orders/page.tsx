@@ -31,6 +31,11 @@ export default function AdminOrdersPage() {
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
 
   useEffect(() => { loadOrders(); }, [loadOrders]);
+  useEffect(() => {
+    if (!loaded) return;
+    const interval = setInterval(loadOrders, 30000);
+    return () => clearInterval(interval);
+  }, [loaded, loadOrders]);
 
   const isOutForDelivery = (o: typeof orders[number]) =>
     o.status === "out_for_delivery" || (o.status === "received" && !!o.deliveryBoyId);

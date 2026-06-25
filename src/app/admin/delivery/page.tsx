@@ -20,9 +20,16 @@ interface BoyLocation {
 }
 
 export default function DeliveryPage() {
-  const { orders } = useOrderStore();
+  const { orders, loaded, loadOrders } = useOrderStore();
   const { assignments, deliveryBoys } = useDeliveryStore();
   const [boyLocations, setBoyLocations] = useState<BoyLocation[]>([]);
+
+  useEffect(() => { loadOrders(); }, [loadOrders]);
+  useEffect(() => {
+    if (!loaded) return;
+    const interval = setInterval(loadOrders, 30000);
+    return () => clearInterval(interval);
+  }, [loaded, loadOrders]);
 
   const activeDeliveries = orders.filter(
     (o) => o.deliveryStatus && o.deliveryStatus !== "delivered" && o.deliveryStatus !== "pending"
