@@ -18,8 +18,8 @@ const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false 
 
 const stages = [
   { id: "received", label: "Order Received", icon: Package, sub: "Preparing your order…" },
-  { id: "picked_up", label: "Picked Up", icon: ShoppingBag, sub: "Picked up by rider" },
-  { id: "out_for_delivery", label: "Out For Delivery", icon: Truck, sub: "On the way to you" },
+  { id: "out_for_delivery", label: "Out For Delivery", icon: Truck, sub: "Heading to pickup" },
+  { id: "picked_up", label: "Picked Up", icon: ShoppingBag, sub: "On the way to you" },
   { id: "delivered", label: "Delivered", icon: CheckCircle, sub: "Enjoy your fresh groceries!" },
 ];
 
@@ -157,8 +157,8 @@ export default function TrackOrderPage({
   const isCancelled = order?.status === "cancelled";
   const currentStage = (() => {
     if (order?.status === "delivered") return 3;
-    if (order?.status === "out_for_delivery") return 2;
-    if (order?.deliveryStatus === "picked_up") return 1;
+    if (order?.deliveryStatus === "picked_up") return 2;
+    if (order?.status === "out_for_delivery") return 1;
     return 0;
   })();
   const isDelivered = order?.status === "delivered";
@@ -406,7 +406,7 @@ export default function TrackOrderPage({
           {isDelivered ? <CheckCircle className="h-8 w-8" /> : isOutForDelivery ? <Truck className="h-8 w-8" /> : <Package className="h-8 w-8" />}
         </div>
         <p className="text-sm font-bold text-[#c2d0c9]">
-          {isDelivered ? "Delivered!" : order?.deliveryStatus === "picked_up" ? "On the way to you!" : "Preparing your order…"}
+          {isDelivered ? "Delivered!" : order?.deliveryStatus === "picked_up" ? "On the way to you!" : isOutForDelivery ? "Heading to pickup" : "Preparing your order…"}
         </p>
       </div>
 
