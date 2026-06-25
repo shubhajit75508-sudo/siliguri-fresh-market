@@ -43,8 +43,25 @@ export default function ProductDetailPage({
   const nameHash = product.name.split("").reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 0);
   const boughtToday = 50 + Math.abs(nameHash) % 150;
 
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    ...(product.category ? [{ name: product.category.charAt(0).toUpperCase() + product.category.slice(1), url: "/category/" + product.category }] : []),
+    { name: product.name, url: "/product/" + product.slug },
+  ];
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: "https://www.siligurifreshmart.com" + item.url,
+    })),
+  };
+
   return (
     <div className="py-4">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-1 text-xs text-[#80949b]">
           <button onClick={() => router.push("/")} className="hover:text-white transition-colors">Home</button>
@@ -92,7 +109,7 @@ export default function ProductDetailPage({
                     selectedImage === i ? "border-[#2ecc71] ring-1 ring-[#2ecc71]/30" : "border-white/5 opacity-60 hover:opacity-90"
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={img} alt={product.name + " - Image " + (i + 1)} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

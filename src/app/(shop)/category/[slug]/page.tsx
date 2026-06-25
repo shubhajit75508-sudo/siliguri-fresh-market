@@ -36,8 +36,24 @@ export default function CategoryPage({
     );
   }
 
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: category!.name + " - Buy Online in Siliguri",
+    description: category!.description,
+    numberOfItems: products.length,
+    itemListElement: products.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: "https://www.siligurifreshmart.com/product/" + p.slug,
+      name: p.name,
+      image: p.image,
+    })),
+  };
+
   return (
     <div className="py-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
       <div className="mb-8">
         <span className="text-3xl">{category!.icon}</span>
         <h1 className="mt-2 text-2xl font-extrabold">{category!.name}</h1>

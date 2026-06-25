@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -20,6 +20,13 @@ const nextConfig: NextConfig = {
   // Security headers
   async headers() {
     return [
+      // Block search engines from private routes
+      {
+        source: "/(admin|delivery|auth|api|checkout|account|track)(/.*)?",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [
@@ -58,3 +65,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

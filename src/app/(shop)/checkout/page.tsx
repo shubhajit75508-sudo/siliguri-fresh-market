@@ -256,7 +256,7 @@ export default function CheckoutPage() {
                     <div key={cartLineId(lineKey)} className="group flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02] transition-colors relative">
                       <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
                         {item.product.image ? (
-                        <img src={item.product.image} alt="" className="w-full h-full object-cover rounded-xl" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover rounded-xl" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                       ) : (
                         <Package className="h-6 w-6 text-[#80949b]" />
                       )}

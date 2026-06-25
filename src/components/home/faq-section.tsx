@@ -14,8 +14,18 @@ const faqs = [
 ];
 
 export function FAQSection() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
   return (
     <section className="py-8 sm:py-12" id="faq">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <h2 className="section-title mb-6 animate-in">
         Questions & answers
       </h2>
