@@ -1,0 +1,12 @@
+{
+	"appId": "com.siligurifreshmart.app",
+	"appName": "Siliguri Fresh Mart",
+	"webDir": ".next",
+	"server": {
+		"url": "https://www.siligurifreshmart.com",
+		"cleartext": true
+	},
+	"android": {
+		"allowMixedContent": true
+	}
+}

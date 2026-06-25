@@ -32,7 +32,13 @@ export default function AdminOrdersPage() {
 
   useEffect(() => { loadOrders(); }, [loadOrders]);
 
-  const filtered = activeTab === "all" ? orders : orders.filter((o) => o.status === activeTab);
+  const isOutForDelivery = (o: typeof orders[number]) =>
+    o.status === "out_for_delivery" || (o.status === "received" && !!o.deliveryBoyId);
+  const filtered = activeTab === "all"
+    ? orders
+    : activeTab === "out_for_delivery"
+      ? orders.filter(isOutForDelivery)
+      : orders.filter((o) => o.status === activeTab);
 
   if (!loaded) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-[#5a7278]" /></div>;
@@ -43,7 +49,7 @@ export default function AdminOrdersPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-2xl font-bold">Orders</h2>
-          <p className="text-sm text-muted">{orders.length} total · {orders.filter((o) => o.status === "received").length} pending</p>
+          <p className="text-sm text-muted">{orders.length} total · {orders.filter((o) => o.status === "received" && !o.deliveryBoyId).length} pending</p>
         </div>
       </div>
 
@@ -57,7 +63,7 @@ export default function AdminOrdersPage() {
               activeTab === tab ? "bg-brand-dark text-white" : "bg-white/8 text-[#80949b] hover:bg-gray-200"
             }`}
           >
-            {tab.replace(/_/g, " ")} ({tab === "all" ? orders.length : orders.filter((o) => o.status === tab).length})
+            {tab.replace(/_/g, " ")} ({tab === "all" ? orders.length : tab === "out_for_delivery" ? orders.filter(isOutForDelivery).length : orders.filter((o) => o.status === tab).length})
           </button>
         ))}
       </div>
@@ -97,10 +103,10 @@ export default function AdminOrdersPage() {
                       </Badge>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Badge variant={statusColors[order.status] ?? "default"}>
-                        {order.status.replace(/_/g, " ")}
+                      <Badge variant={statusColors[isOutForDelivery(order) ? "out_for_delivery" : order.status] ?? "default"}>
+                        {(isOutForDelivery(order) ? "out_for_delivery" : order.status).replace(/_/g, " ")}
                       </Badge>
                       {order.returnRequested && !order.returnApproved && (
                         <Badge variant="orange"><RotateCcw className="mr-1 h-3 w-3" /> Return</Badge>
@@ -123,7 +129,7 @@ export default function AdminOrdersPage() {
                       <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
                         <Eye className="h-4 w-4 text-[#80949b]" />
                       </button>
-                      {order.status === "received" && (
+                      {!isOutForDelivery(order) && order.status !== "delivered" && order.status !== "cancelled" && (
                         <>
                           <Button variant="default" size="sm" onClick={() => setAssignModal(order)}>
                             <Truck className="mr-1 h-3 w-3" /> Assign
@@ -133,7 +139,7 @@ export default function AdminOrdersPage() {
                           </Button>
                         </>
                       )}
-                      {order.status === "out_for_delivery" && (
+                      {isOutForDelivery(order) && order.status !== "delivered" && (
                         <>
                           <Button variant="default" size="sm" onClick={() => updateStatus(order.id, "delivered")}>
                             <CheckCircle className="mr-1 h-3 w-3" /> Delivered
@@ -203,8 +209,8 @@ export default function AdminOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted">Status:</span>
-                <Badge variant={statusColors[selectedOrder.status] ?? "default"}>
-                  {selectedOrder.status.replace(/_/g, " ")}
+                <Badge variant={statusColors[isOutForDelivery(selectedOrder) ? "out_for_delivery" : selectedOrder.status] ?? "default"}>
+                  {(isOutForDelivery(selectedOrder) ? "out_for_delivery" : selectedOrder.status).replace(/_/g, " ")}
                 </Badge>
               </div>
               {selectedOrder.deliveryBoyName && (
@@ -246,7 +252,7 @@ export default function AdminOrdersPage() {
               </div>
             </div>
             <div className="mt-6 flex gap-3">
-              {selectedOrder.status === "received" && (
+              {!isOutForDelivery(selectedOrder) && selectedOrder.status !== "delivered" && selectedOrder.status !== "cancelled" && (
                 <>
                   <Button variant="default" onClick={() => { setAssignModal(selectedOrder); setSelectedOrder(null); }}>
                     <Truck className="mr-1 h-3 w-3" /> Assign Delivery
@@ -256,7 +262,7 @@ export default function AdminOrdersPage() {
                   </Button>
                 </>
               )}
-              {selectedOrder.status === "out_for_delivery" && (
+              {isOutForDelivery(selectedOrder) && selectedOrder.status !== "delivered" && (
                 <>
                   <Button variant="default" onClick={() => { updateStatus(selectedOrder.id, "delivered"); setSelectedOrder(null); }}>
                     <CheckCircle className="mr-1 h-3 w-3" /> Mark Delivered
