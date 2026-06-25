@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     "buy chicken online",
   ],
   verification: {
-    google: "7pp2tTjx3nCu23f6ZnMuek5yozk3FY3fIgFdWnoe5BU",
+    google: "yypj9B4kzQiGI6eX0_VAJdFfZbUQGfcwY7LNmfOlobI",
   },
   manifest: "/manifest.json",
   icons: {
