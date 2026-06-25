@@ -21,12 +21,17 @@ function mergeWithAdmin(products: Product[]): Product[] {
 }
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
-  if (isSupabaseConfigured()) return db.fetchProductsByCategory(category);
+  if (isSupabaseConfigured()) {
+    try { return await db.fetchProductsByCategory(category); } catch {}
+  }
   return mergeWithAdmin(mock.getProductsByCategory(category));
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  if (isSupabaseConfigured()) return db.fetchProductBySlug(slug);
+  if (isSupabaseConfigured()) {
+    const dbProduct = await db.fetchProductBySlug(slug);
+    if (dbProduct) return dbProduct;
+  }
   const mockProduct = mock.getProductBySlug(slug);
   if (mockProduct) return mockProduct;
   const admin = getAdminProducts().find((p) => p.slug === slug);
@@ -34,26 +39,36 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getFlashDeals(): Promise<Product[]> {
-  if (isSupabaseConfigured()) return db.fetchFlashDeals();
+  if (isSupabaseConfigured()) {
+    try { return await db.fetchFlashDeals(); } catch {}
+  }
   return mergeWithAdmin(mock.getFlashDeals());
 }
 
 export async function getTrendingProducts(): Promise<Product[]> {
-  if (isSupabaseConfigured()) return db.fetchTrendingProducts();
+  if (isSupabaseConfigured()) {
+    try { return await db.fetchTrendingProducts(); } catch {}
+  }
   return mergeWithAdmin(mock.getTrendingProducts());
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
-  if (isSupabaseConfigured()) return db.searchProductsByQuery(query);
+  if (isSupabaseConfigured()) {
+    try { return await db.searchProductsByQuery(query); } catch {}
+  }
   return mergeWithAdmin(mock.searchProducts(query));
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  if (isSupabaseConfigured()) return db.fetchAllProducts();
+  if (isSupabaseConfigured()) {
+    try { return await db.fetchAllProducts(); } catch {}
+  }
   return mergeWithAdmin(mock.products);
 }
 
 export async function getCategories(): Promise<CategoryInfo[]> {
-  if (isSupabaseConfigured()) return db.fetchCategories();
+  if (isSupabaseConfigured()) {
+    try { return await db.fetchCategories(); } catch {}
+  }
   return mockCategories;
 }
