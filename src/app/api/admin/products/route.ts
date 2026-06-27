@@ -104,7 +104,7 @@ export async function PUT(req: NextRequest) {
   if (updates.river !== undefined) dbUpdates.river = updates.river;
   if (updates.catchDate !== undefined) dbUpdates.catch_date = updates.catchDate;
 
-  const { error } = await supabaseAdmin.from("products").update(dbUpdates).eq("id", id);
+  const { error } = await supabaseAdmin.from("products").update(dbUpdates).filter("id::text", "eq", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }
@@ -120,7 +120,7 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "Missing id param" }, { status: 400 });
 
-  const { error } = await supabaseAdmin.from("products").delete().eq("id", id);
+  const { error } = await supabaseAdmin.from("products").delete().filter("id::text", "eq", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }
