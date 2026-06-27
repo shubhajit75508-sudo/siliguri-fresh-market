@@ -120,16 +120,20 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "Missing id param" }, { status: 400 });
 
-  // Use raw SQL via exec_sql to handle non-UUID IDs (test-xxx)
-  const { error } = await supabaseAdmin.rpc("exec_sql", {
-    sql: `DELETE FROM public.products WHERE id::text = '${id.replace(/'/g, "''")}'`,
-  });
-  // Fallback to standard filter for real UUID IDs if exec_sql is unavailable
-  if (error?.message?.includes("function") || error?.message?.includes("exec_sql")) {
-    const { error: fallbackErr } = await supabaseAdmin.from("products").delete().filter("id::text", "eq", id);
-    if (fallbackErr) return NextResponse.json({ error: fallbackErr.message }, { status: 500 });
-  } else if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  // Use raw fetch to bypass PostgREST UUID type coercion — id::text cast allows non-UUID strings
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/products?id::text=eq.${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+    }
+  );
+  if (!res.ok) {
+    const errBody = await res.text();
+    return NextResponse.json({ error: errBody || "Delete failed" }, { status: 500 });
   }
   return NextResponse.json({ success: true });
 }
