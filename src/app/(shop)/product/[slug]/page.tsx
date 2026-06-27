@@ -33,7 +33,7 @@ export default function ProductDetailPage({
   const displayPrice = getPriceForWeight(product.price, displayWeight, product.weightPrices);
   const displayOriginal = getOriginalPriceForWeight(product.price, product.originalPrice, displayWeight, product.weightPrices);
 
-  const isFlashDeal = product.discount && product.discount > 0;
+  const isFlashDeal = product.isFlashDeal ?? (product.discount && product.discount > 0);
   const savings = displayOriginal && displayOriginal > displayPrice ? displayOriginal - displayPrice : 0;
   const discountPercent = product.discount || 0;
 

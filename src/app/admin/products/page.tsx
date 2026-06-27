@@ -358,6 +358,7 @@ export default function AdminProductsPage() {
                             <span className="text-[11px] font-medium text-muted">Flash</span>
                           </label>
                         </div>
+                        <input value={form.discount || 0} type="number" onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Discount %" />
                         <div className="sm:col-span-2">
                           <input value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Primary Image URL" />
                           {form.image && <img src={form.image} alt="" className="mt-1 h-8 w-8 rounded object-cover" />}
@@ -372,6 +373,7 @@ export default function AdminProductsPage() {
                           </div>
                           <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="mt-1 text-[10px] font-bold text-[#2ecc71] hover:underline">+ Add Image</button>
                         </div>
+                        <textarea value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="sm:col-span-4 rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Description" rows={2} />
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
                           {(form.weightPrices || []).map((wp, i) => (
                             <div key={i} className="flex gap-1 items-center">
