@@ -78,7 +78,11 @@ export default function AdminProductsPage() {
           throw new Error(err.error || "Update failed");
         }
       }
-      updateProduct(editingId, form);
+      if (storeProducts.some((p) => p.id === editingId)) {
+        updateProduct(editingId, form);
+      } else {
+        addProduct({ ...form, id: editingId } as Product);
+      }
       invalidateProducts();
       setEditingId(null);
       setForm({});
