@@ -6,9 +6,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { useFlashDeals } from "@/lib/hooks/use-products";
 
 export function FlashDealsSection() {
-  const { data: deals = [] } = useFlashDeals();
-
-  if (deals.length === 0) return null;
+  const { data: deals = [], isLoading, error } = useFlashDeals();
 
   return (
     <section className="relative overflow-hidden py-8 sm:py-12">
@@ -20,14 +18,18 @@ export function FlashDealsSection() {
           </div>
           <div>
             <h2 className="text-xl font-extrabold">Flash Deals</h2>
-            <p className="text-sm text-muted">Limited stock — grab them while they last</p>
+            <p className="text-sm text-muted">
+              {isLoading ? "Loading..." : error ? "Error loading deals" : `${deals.length} deals available`}
+            </p>
           </div>
         </FadeIn>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {deals.map((p) => (
-            <ProductCard key={p.id} product={p} badge="Flash Deal" />
-          ))}
-        </div>
+        {deals.length > 0 && (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {deals.map((p) => (
+              <ProductCard key={p.id} product={p} badge="Flash Deal" />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

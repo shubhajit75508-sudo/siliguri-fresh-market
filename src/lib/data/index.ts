@@ -45,16 +45,28 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getFlashDeals(): Promise<Product[]> {
-  let products: Product[];
+  // Start with mock flash deals as a guaranteed baseline
+  let products: Product[] = [...mock.getFlashDeals()];
+
+  // Overlay Supabase flash deals (replaces mock entries with same IDs)
   if (isSupabaseConfigured()) {
-    try { products = await db.fetchFlashDeals(); } catch { products = []; }
-  } else {
-    products = mock.getFlashDeals();
+    try {
+      const dbProducts = await db.fetchFlashDeals();
+      const dbIds = new Set(dbProducts.map((p) => p.id));
+      products = [...dbProducts, ...products.filter((p) => !dbIds.has(p.id))];
+    } catch (e) {
+      console.warn("[getFlashDeals] Supabase query failed, using fallback", e);
+    }
   }
+
+  // Overlay admin store flash deals (replaces any with same IDs)
   const admin = getAdminProducts().filter((p) => p.isFlashDeal);
-  if (!admin.length) return products;
-  const adminIds = new Set(admin.map((p) => p.id));
-  return [...admin, ...products.filter((p) => !adminIds.has(p.id))];
+  if (admin.length) {
+    const adminIds = new Set(admin.map((p) => p.id));
+    products = [...admin, ...products.filter((p) => !adminIds.has(p.id))];
+  }
+
+  return products;
 }
 
 export async function getTrendingProducts(): Promise<Product[]> {
