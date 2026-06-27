@@ -269,16 +269,24 @@ export default function AdminOrdersPage() {
                             <span className="font-medium text-white truncate">{item.product.name}</span>
                             <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
                           </div>
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {(prod?.weightPrices || prod?.weight)?.length ? (prod?.weightPrices || []).map(w => (
-                              <span key={w.weight} className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">{w.weight}</span>
-                            )) : null}
-                            {(prod?.cuts || []).map(c => (
-                              <span key={c} className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">{c}</span>
-                            ))}
-                            {(prod?.cleaningOptions || []).map(c => (
-                              <span key={c} className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-purple">{c}</span>
-                            ))}
+                          <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
+                            {item.selectedWeight ? (
+                              <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">Wt: {item.selectedWeight}</span>
+                            ) : (prod?.weightPrices || prod?.weight)?.length ? (
+                              <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">
+                                Wt: {(prod?.weightPrices || prod?.weight || []).map(w => typeof w === "string" ? w : w.weight).join(", ")}
+                              </span>
+                            ) : null}
+                            {prod && (prod.cuts || []).length ? (
+                              <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">
+                                Cut: {(prod.cuts || []).join(", ")}
+                              </span>
+                            ) : null}
+                            {prod && (prod.cleaningOptions || []).length ? (
+                              <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-purple">
+                                Clean: {(prod.cleaningOptions || []).join(", ")}
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                       </li>

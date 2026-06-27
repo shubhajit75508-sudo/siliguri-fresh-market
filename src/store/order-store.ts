@@ -181,7 +181,7 @@ export const useOrderStore = create<OrderState>()(
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   id,
-                  items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity })),
+                  items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity, selectedWeight: i.selectedWeight })),
                   total: data.total,
                   status: "received",
                   payment_method: data.paymentMethod,
