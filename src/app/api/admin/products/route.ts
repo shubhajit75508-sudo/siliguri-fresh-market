@@ -120,7 +120,16 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "Missing id param" }, { status: 400 });
 
-  const { error } = await supabaseAdmin.from("products").delete().filter("id::text", "eq", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // Use raw SQL via exec_sql to handle non-UUID IDs (test-xxx)
+  const { error } = await supabaseAdmin.rpc("exec_sql", {
+    sql: `DELETE FROM public.products WHERE id::text = '${id.replace(/'/g, "''")}'`,
+  });
+  // Fallback to standard filter for real UUID IDs if exec_sql is unavailable
+  if (error?.message?.includes("function") || error?.message?.includes("exec_sql")) {
+    const { error: fallbackErr } = await supabaseAdmin.from("products").delete().filter("id::text", "eq", id);
+    if (fallbackErr) return NextResponse.json({ error: fallbackErr.message }, { status: 500 });
+  } else if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ success: true });
 }
