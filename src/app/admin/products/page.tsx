@@ -65,9 +65,9 @@ export default function AdminProductsPage() {
     const originalPrice = discount > 0 && discount < 100 && form.price
       ? Math.round(form.price / (1 - discount / 100))
       : form.originalPrice;
-    try {
-      if (supabaseAvailable) {
-        const slug = form.name ? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : undefined;
+    if (supabaseAvailable) {
+      const slug = form.name ? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : undefined;
+      try {
         const res = await fetch(API_BASE, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -75,21 +75,20 @@ export default function AdminProductsPage() {
         });
         if (!res.ok) {
           const err = await res.json();
-          throw new Error(err.error || "Update failed");
+          toast.add(err.error || "Update failed", "error");
         }
+      } catch (e) {
+        toast.add(e instanceof Error ? e.message : "Failed to update product", "error");
       }
-      if (storeProducts.some((p) => p.id === editingId)) {
-        updateProduct(editingId, form);
-      } else {
-        addProduct({ ...form, id: editingId } as Product);
-      }
-      invalidateProducts();
-      setEditingId(null);
-      setForm({});
-    } catch (e) {
-      console.error("Product update failed:", e);
-      toast.add(e instanceof Error ? e.message : "Failed to update product", "error");
     }
+    if (storeProducts.some((p) => p.id === editingId)) {
+      updateProduct(editingId, form);
+    } else {
+      addProduct({ ...form, id: editingId } as Product);
+    }
+    invalidateProducts();
+    setEditingId(null);
+    setForm({});
     setSaving(false);
   };
 
@@ -121,8 +120,8 @@ export default function AdminProductsPage() {
     const rating = form.rating || +(4.2 + (Math.abs(nameHash) % 80) / 100).toFixed(1);
     const reviewCount = form.reviewCount || 85 + (Math.abs(nameHash + 99) % 850);
     const product = { ...form, id, slug, originalPrice: originalPrice || undefined, rating, reviewCount } as Product;
-    try {
-      if (supabaseAvailable) {
+    if (supabaseAvailable) {
+      try {
         const res = await fetch(API_BASE, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -130,18 +129,16 @@ export default function AdminProductsPage() {
         });
         if (!res.ok) {
           const err = await res.json();
-          throw new Error(err.error || "Insert failed");
+          toast.add(err.error || "Insert failed", "error");
         }
+      } catch (e) {
+        toast.add(e instanceof Error ? e.message : "Failed to save product", "error");
       }
-      addProduct(product);
-      invalidateProducts();
-      setAdding(false);
-      setForm({});
-    } catch (e) {
-      console.error("Product insert failed:", e);
-      toast.add(e instanceof Error ? e.message : "Failed to save product", "error");
-      existingSlugs.current.delete(slug);
     }
+    addProduct(product);
+    invalidateProducts();
+    setAdding(false);
+    setForm({});
     setSaving(false);
   };
 

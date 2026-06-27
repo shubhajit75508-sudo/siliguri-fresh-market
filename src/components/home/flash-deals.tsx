@@ -20,12 +20,17 @@ export function FlashDealsSection() {
   }, []);
 
   useEffect(() => {
-    try {
-      const products = useAdminStore.getState().products;
-      setAdminRaw(JSON.stringify(products.filter((p) => p.isFlashDeal), null, 2));
-    } catch {
-      setAdminRaw("store not available");
+    function readStore() {
+      try {
+        const products = useAdminStore.getState().products;
+        const summary = products.map((p) => ({ id: p.id, name: p.name, isFlashDeal: p.isFlashDeal }));
+        const flash = products.filter((p) => p.isFlashDeal);
+        setAdminRaw(JSON.stringify({ total: products.length, flashCount: flash.length, all: summary }, null, 2));
+      } catch { setAdminRaw("store not available"); }
     }
+    readStore();
+    const unsub = (useAdminStore as any).persist?.onFinishHydration?.(readStore);
+    return () => unsub?.();
   }, []);
 
   return (
