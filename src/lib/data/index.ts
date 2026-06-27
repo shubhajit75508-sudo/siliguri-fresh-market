@@ -45,24 +45,20 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getFlashDeals(): Promise<Product[]> {
-  // Start with mock flash deals as a guaranteed baseline
-  let products: Product[] = [...mock.getFlashDeals()];
+  let products: Product[] = [];
 
-  // Overlay Supabase flash deals via server API (uses service role key)
   if (isSupabaseConfigured()) {
     try {
       const res = await fetch("/api/products/flash-deals");
       if (res.ok) {
         const dbProducts: Product[] = await res.json();
-        const dbIds = new Set(dbProducts.map((p) => p.id));
-        products = [...dbProducts, ...products.filter((p) => !dbIds.has(p.id))];
+        products = [...products, ...dbProducts];
       }
     } catch {
-      // API failed, keep mock data
+      // API failed
     }
   }
 
-  // Overlay admin store flash deals (replaces any with same IDs)
   const admin = getAdminProducts().filter((p) => p.isFlashDeal);
   if (admin.length) {
     const adminIds = new Set(admin.map((p) => p.id));
