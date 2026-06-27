@@ -3,10 +3,10 @@ import { isSupabaseConfigured } from "@/lib/supabase/client";
 import * as db from "@/lib/supabase/queries";
 import * as mock from "./products";
 import { categories as mockCategories } from "./categories";
+import { useAdminStore } from "@/store/admin-store";
 
 function getAdminProducts(): Product[] {
   try {
-    const { useAdminStore } = require("@/store/admin-store");
     return useAdminStore.getState().products ?? [];
   } catch {
     return [];
