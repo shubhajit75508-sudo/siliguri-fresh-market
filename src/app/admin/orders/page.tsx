@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package } from "lucide-react";
+import { getAllProducts } from "@/lib/data";
+import { useQuery } from "@tanstack/react-query";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import type { Product } from "@/types";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon } from "lucide-react";
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange" | "red"> = {
   received: "default",
@@ -29,6 +33,14 @@ export default function AdminOrdersPage() {
   const [returnModal, setReturnModal] = useState<typeof orders[number] | null>(null);
   const [assignModal, setAssignModal] = useState<typeof orders[number] | null>(null);
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
+
+  const { data: allProducts } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: getAllProducts,
+    enabled: isSupabaseConfigured(),
+  });
+
+  const productMap = new Map(allProducts?.map((p) => [p.id, p]) ?? []);
 
   useEffect(() => { loadOrders(); }, [loadOrders]);
   useEffect(() => {
@@ -242,13 +254,36 @@ export default function AdminOrdersPage() {
               </div>
               <div>
                 <span className="text-muted flex items-center gap-1 mb-1"><Package className="h-3.5 w-3.5" /> Products:</span>
-                <ul className="space-y-1">
-                  {selectedOrder.items.map((item, i) => (
-                    <li key={i} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2 text-xs">
-                      <span>{item.product.name}</span>
-                      <span className="font-medium">{item.quantity} × {formatPrice(item.product.price)}</span>
-                    </li>
-                  ))}
+                <ul className="space-y-1.5">
+                  {selectedOrder.items.map((item, i) => {
+                    const prod = productMap.get(item.product.id) as Product | undefined;
+                    return (
+                      <li key={i} className="flex gap-2.5 rounded-lg bg-white/5 px-3 py-2.5 text-xs">
+                        {item.product.image ? (
+                          <img src={item.product.image} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+                        ) : (
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface"><ImageIcon className="h-4 w-4 text-muted" /></div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-medium text-white truncate">{item.product.name}</span>
+                            <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
+                          </div>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {(prod?.weightPrices || prod?.weight)?.length ? (prod?.weightPrices || []).map(w => (
+                              <span key={w.weight} className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">{w.weight}</span>
+                            )) : null}
+                            {(prod?.cuts || []).map(c => (
+                              <span key={c} className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">{c}</span>
+                            ))}
+                            {(prod?.cleaningOptions || []).map(c => (
+                              <span key={c} className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-purple">{c}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
               <div className="flex justify-between border-t pt-2 text-sm font-bold">
