@@ -1,18 +1,17 @@
 "use client";
 
-import { Zap, Clock, ChevronRight } from "lucide-react";
+import { Zap, Clock } from "lucide-react";
 import { FadeIn } from "@/components/animations/motion-wrapper";
 import { ProductCard } from "@/components/product/product-card";
 import { useFlashDeals } from "@/lib/hooks/use-products";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 
 export function FlashDealsSection() {
   const { data: deals = [], isLoading, error } = useFlashDeals();
-  const [timeLeft, setTimeLeft] = useState("23:59:59");
+  const [timeLeft, setTimeLeft] = useState("05:59:59");
 
   useEffect(() => {
-    const end = Date.now() + 24 * 60 * 60 * 1000;
+    const end = Date.now() + 6 * 60 * 60 * 1000;
     const tick = () => {
       const diff = Math.max(0, end - Date.now());
       const h = Math.floor(diff / 3600000);
@@ -57,13 +56,6 @@ export function FlashDealsSection() {
               </div>
             </div>
           </div>
-          <Link
-            href="/products?flash=1"
-            className="group flex items-center gap-1 text-sm font-semibold text-brand-red hover:text-brand-orange transition-colors"
-          >
-            View All
-            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
         </FadeIn>
 
         {/* Product grid */}
