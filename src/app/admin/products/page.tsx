@@ -435,7 +435,22 @@ export default function AdminProductsPage() {
                   </tr>
                 ) : (
                   <tr key={p.id} className="border-b border-border last:border-0 hover:bg-surface/50">
-                    <td className="px-4 py-3 font-medium">{p.name}</td>
+                    <td className="px-4 py-3">
+                      <div className="font-medium">{p.name}</div>
+                      <div className="mt-1.5 flex flex-wrap gap-1">
+                        {(p.weightPrices || p.weight)?.length ? (p.weightPrices || []).map(w => (
+                          <span key={w.weight} className="rounded-md bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">{w.weight}</span>
+                        )) : null}
+                        {(p.cuts || []).map(c => (
+                          <span key={c} className="rounded-md bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">{c}</span>
+                        ))}
+                        {(p.cleaningOptions || []).map(c => (
+                          <span key={c} className="rounded-md bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-purple">{c}</span>
+                        ))}
+                        {p.species ? <span className="rounded-md bg-brand-orange/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-orange">{p.species}</span> : null}
+                        {p.river ? <span className="rounded-md bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-medium text-cyan-400">{p.river}</span> : null}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
                     <td className="px-4 py-3">₹{p.price}</td>
                     <td className="px-4 py-3">{p.discount ? `${p.discount}%` : "—"}</td>
