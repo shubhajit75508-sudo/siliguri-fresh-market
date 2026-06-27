@@ -94,6 +94,7 @@ export default function AdminProductsPage() {
       name: "",
       price: 0,
       image: "",
+      images: [],
       category: "fish",
       description: "",
       weight: [],
@@ -181,7 +182,21 @@ export default function AdminProductsPage() {
           <h3 className="mb-4 font-bold text-white">New Product</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <div>
+              <input placeholder="Primary Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+              {form.image && <img src={form.image} alt="" className="mt-1.5 h-12 w-12 rounded-lg object-cover" />}
+            </div>
+            <div className="sm:col-span-1">
+              <label className="mb-1.5 block text-xs font-medium text-muted">Additional Images</label>
+              {(form.images || []).map((url, i) => (
+                <div key={i} className="mb-1.5 flex items-center gap-1.5">
+                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded-xl border border-white/10 bg-[#0d1b2a] px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
+                  {url && <img src={url} alt="" className="h-8 w-8 shrink-0 rounded object-cover" />}
+                  <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 rounded-lg p-1.5 text-[#e74c3c] hover:bg-[#e74c3c]/10"><X className="h-4 w-4" /></button>
+                </div>
+              ))}
+              <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="text-xs font-bold text-[#2ecc71] hover:underline">+ Add Image</button>
+            </div>
             <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40">
               <option value="fish">Fish</option>
               <option value="chicken">Chicken</option>
@@ -309,7 +324,20 @@ export default function AdminProductsPage() {
                       <div className="grid gap-3 sm:grid-cols-4">
                         <input value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Name" />
                         <input value={form.price || 0} type="number" onChange={(e) => setForm({ ...form, price: +e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Price" />
-                        <input value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Image URL" />
+                        <div className="sm:col-span-2">
+                          <input value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Primary Image URL" />
+                          {form.image && <img src={form.image} alt="" className="mt-1 h-8 w-8 rounded object-cover" />}
+                          <div className="mt-1.5 space-y-1">
+                            {(form.images || []).map((url, i) => (
+                              <div key={i} className="flex items-center gap-1">
+                                <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded border border-border px-2 py-1 text-xs outline-none" placeholder="Additional image URL" />
+                                {url && <img src={url} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />}
+                                <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 text-[#e74c3c]"><X className="h-3 w-3" /></button>
+                              </div>
+                            ))}
+                          </div>
+                          <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="mt-1 text-[10px] font-bold text-[#2ecc71] hover:underline">+ Add Image</button>
+                        </div>
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
                           {(form.weightPrices || []).map((wp, i) => (
                             <div key={i} className="flex gap-1 items-center">
