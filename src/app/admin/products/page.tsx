@@ -18,7 +18,6 @@ export default function AdminProductsPage() {
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<Partial<Product>>({});
   const [filterCategory, setFilterCategory] = useState("");
-  const [storeLog, setStoreLog] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -180,23 +179,6 @@ export default function AdminProductsPage() {
         >
           <Plus className="h-4 w-4" /> Add Product
         </button>
-      </div>
-
-      <div className="mb-2 flex items-center gap-4 rounded-lg border border-dashed border-amber-400/30 bg-amber-950/10 p-2.5 text-xs">
-        <span className="text-amber-400">Store: <b>{storeProducts.length}</b> products</span>
-        <button onClick={() => {
-          const testId = "test-" + Date.now();
-          addProduct({
-            id: testId, name: "Test Flash", slug: "test-flash-" + Date.now(),
-            description: "test", category: "fish" as const, price: 100, image: "https://placehold.co/150",
-            unit: "kg", freshnessScore: 100, deliveryEta: 30, rating: 4.5, reviewCount: 100,
-            inStock: true, isFlashDeal: true,
-          });
-          setStoreLog(`Added ${testId}`);
-        }} className="rounded-lg border border-amber-400/30 px-2.5 py-1 text-amber-400 hover:bg-amber-950/20">
-          + Test Flash
-        </button>
-        <span className="text-muted truncate">{storeLog}</span>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">

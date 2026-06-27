@@ -4,43 +4,9 @@ import { Zap } from "lucide-react";
 import { FadeIn } from "@/components/animations/motion-wrapper";
 import { ProductCard } from "@/components/product/product-card";
 import { useFlashDeals } from "@/lib/hooks/use-products";
-import { useState, useEffect } from "react";
-import { useAdminStore } from "@/store/admin-store";
 
 export function FlashDealsSection() {
   const { data: deals = [], isLoading, error } = useFlashDeals();
-  const [apiRaw, setApiRaw] = useState<string>("loading...");
-  const [adminRaw, setAdminRaw] = useState<string>("loading...");
-  const [lsRaw, setLsRaw] = useState<string>("");
-
-  useEffect(() => {
-    fetch("/api/products/flash-deals")
-      .then((r) => r.ok ? r.json() : r.text().then((t) => { throw new Error(t); }))
-      .then((d) => setApiRaw(JSON.stringify(d, null, 2)))
-      .catch((e) => setApiRaw(`ERROR: ${e.message}`));
-  }, []);
-
-  useEffect(() => {
-    function readStore() {
-      try {
-        const products = useAdminStore.getState().products;
-        const summary = products.map((p) => ({ id: p.id, name: p.name, isFlashDeal: p.isFlashDeal }));
-        const flash = products.filter((p) => p.isFlashDeal);
-        setAdminRaw(JSON.stringify({ total: products.length, flashCount: flash.length, all: summary }, null, 2));
-      } catch { setAdminRaw("store not available"); }
-    }
-    readStore();
-    const unsub = (useAdminStore as any).persist?.onFinishHydration?.(readStore);
-    return () => unsub?.();
-  }, []);
-
-  useEffect(() => {
-    try {
-      const ls = localStorage.getItem("sfm-admin-v2");
-      const parsed = ls ? JSON.parse(ls) : null;
-      setLsRaw(parsed ? JSON.stringify(parsed, null, 2).slice(0, 2000) : "(null)");
-    } catch { setLsRaw("(error reading)"); }
-  }, []);
 
   return (
     <section className="relative overflow-hidden py-8 sm:py-12">
@@ -53,7 +19,7 @@ export function FlashDealsSection() {
           <div>
             <h2 className="text-xl font-extrabold">Flash Deals</h2>
             <p className="text-sm text-muted">
-              {isLoading ? "Loading..." : error ? `Error: ${error.message}` : `${deals.length} deals`}
+              {isLoading ? "Loading..." : error ? "Error loading deals" : `${deals.length} deals available`}
             </p>
           </div>
         </FadeIn>
@@ -64,18 +30,6 @@ export function FlashDealsSection() {
             ))}
           </div>
         )}
-        <details className="mt-4 rounded-lg border border-dashed border-amber-400/30 bg-amber-950/10 p-3 text-xs font-mono">
-          <summary className="cursor-pointer text-amber-400">API raw response</summary>
-          <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap text-muted">{apiRaw}</pre>
-        </details>
-        <details className="mt-2 rounded-lg border border-dashed border-amber-400/30 bg-amber-950/10 p-3 text-xs font-mono">
-          <summary className="cursor-pointer text-amber-400">Admin store flash deals</summary>
-          <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap text-muted">{adminRaw}</pre>
-        </details>
-        <details className="mt-2 rounded-lg border border-dashed border-sky-400/30 bg-sky-950/10 p-3 text-xs font-mono">
-          <summary className="cursor-pointer text-sky-400">localStorage (sfm-admin-v2)</summary>
-          <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap text-muted">{lsRaw}</pre>
-        </details>
       </div>
     </section>
   );
