@@ -1,35 +1,83 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Zap, Clock, ChevronRight } from "lucide-react";
 import { FadeIn } from "@/components/animations/motion-wrapper";
 import { ProductCard } from "@/components/product/product-card";
 import { useFlashDeals } from "@/lib/hooks/use-products";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export function FlashDealsSection() {
   const { data: deals = [], isLoading, error } = useFlashDeals();
+  const [timeLeft, setTimeLeft] = useState("23:59:59");
+
+  useEffect(() => {
+    const end = Date.now() + 24 * 60 * 60 * 1000;
+    const tick = () => {
+      const diff = Math.max(0, end - Date.now());
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (isLoading) return null;
+  if (error || !deals.length) return null;
 
   return (
     <section className="relative overflow-hidden py-8 sm:py-12">
-      <div className="absolute inset-0 bg-gradient-to-r from-brand-red/5 via-brand-orange/5 to-brand-red/5" />
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-brand-red/10 via-brand-orange/5 to-amber-500/10" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,theme(colors.brand.orange/0.08),transparent_70%)]" />
+      {/* Subtle bottom glow */}
+      <div className="absolute bottom-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-brand-red/30 to-transparent" />
+
       <div className="relative mx-auto max-w-7xl px-4">
-        <FadeIn className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-red/10">
-            <Zap className="h-5 w-5 text-brand-red" />
+        {/* Header with countdown */}
+        <FadeIn className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-red to-brand-orange shadow-lg shadow-brand-red/25">
+              <Zap className="relative z-10 h-5 w-5 text-white" />
+              <div className="absolute inset-0 animate-ping rounded-xl bg-brand-red/20" />
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold">
+                <span className="bg-gradient-to-r from-brand-red to-brand-orange bg-clip-text text-transparent">
+                  Flash Deals
+                </span>
+              </h2>
+              <div className="flex items-center gap-2 text-sm text-muted">
+                <Clock className="h-3.5 w-3.5" />
+                <span className="font-mono tabular-nums">{timeLeft}</span>
+                <span>left</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-extrabold">Flash Deals</h2>
-            <p className="text-sm text-muted">
-              {isLoading ? "Loading..." : error ? "Error loading deals" : `${deals.length} deals available`}
-            </p>
-          </div>
+          <Link
+            href="/products?flash=1"
+            className="group flex items-center gap-1 text-sm font-semibold text-brand-red hover:text-brand-orange transition-colors"
+          >
+            View All
+            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </FadeIn>
-        {deals.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {deals.map((p) => (
-              <ProductCard key={p.id} product={p} badge="Flash Deal" />
-            ))}
-          </div>
-        )}
+
+        {/* Product grid */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {deals.map((p, i) => (
+            <div
+              key={p.id}
+              className="animate-in animate-in-duration-500 animate-in-fade animate-in-slide-up"
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
+              <ProductCard product={p} badge="⚡ Flash Deal" />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
