@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools, persist, createJSONStorage } from "zustand/middleware";
 import type { Product } from "@/types";
 
 interface SectionConfig {
@@ -92,6 +92,7 @@ export const useAdminStore = create<AdminState>()(
       }),
       {
         name: "sfm-admin-v2",
+        storage: createJSONStorage(() => localStorage),
         merge: (persisted, current) => {
           const p = persisted as Record<string, unknown>;
           const pSettings = (p?.settings ?? {}) as Record<string, unknown>;
