@@ -17,6 +17,7 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<Partial<Product>>({});
+  const [filterCategory, setFilterCategory] = useState("");
   const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -158,12 +159,14 @@ export default function AdminProductsPage() {
     }
   };
 
+  const filteredProducts = filterCategory ? products.filter((p) => p.category === filterCategory) : products;
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Products</h2>
-          <p className="text-sm text-muted">{products.length} total</p>
+          <p className="text-sm text-muted">{filterCategory ? `${filteredProducts.length} ${filterCategory}` : `${products.length} total`}</p>
         </div>
         <button
           onClick={openAdd}
@@ -171,6 +174,22 @@ export default function AdminProductsPage() {
         >
           <Plus className="h-4 w-4" /> Add Product
         </button>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {["", "fish", "chicken", "mutton", "vegetables", "fruits", "dairy"].map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setFilterCategory(cat)}
+            className={`rounded-xl px-4 py-1.5 text-xs font-bold transition-all ${
+              (filterCategory || "") === cat
+                ? "bg-brand-fresh text-white shadow-lg shadow-brand-fresh/25"
+                : "border border-white/10 text-muted hover:border-white/20 hover:text-white"
+            }`}
+          >
+            {cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "All"}
+          </button>
+        ))}
       </div>
 
       {adding && (
@@ -308,6 +327,11 @@ export default function AdminProductsPage() {
           <PackageOpen className="mb-3 h-10 w-10 text-muted" />
           <p className="text-muted">No products yet</p>
         </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="glass-card flex flex-col items-center rounded-2xl p-12">
+          <PackageOpen className="mb-3 h-10 w-10 text-muted" />
+          <p className="text-muted">No products in this category</p>
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-left text-sm">
@@ -321,7 +345,7 @@ export default function AdminProductsPage() {
               </tr>
             </thead>
             <tbody>
-              {[...products].reverse().map((p) =>
+              {[...filteredProducts].reverse().map((p) =>
                 editingId === p.id ? (
                   <tr key={p.id} className="border-b border-border">
                     <td className="px-4 py-3" colSpan={5}>
