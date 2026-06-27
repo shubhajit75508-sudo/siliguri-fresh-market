@@ -245,6 +245,17 @@ export default function AdminProductsPage() {
               <span className="text-sm font-medium text-white">Flash Deal</span>
             </label>
             <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={2} />
+            <input placeholder="Unit (e.g. kg, piece)" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <label className="flex cursor-pointer items-center gap-2">
+              <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
+              <span className="text-sm font-medium text-white">In Stock</span>
+            </label>
+            <input placeholder="Cuts (comma-separated, e.g. Bengali Cut, Steak)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Source" value={form.source || ""} onChange={(e) => setForm({ ...form, source: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Catch Date (e.g. Today, 5:00 AM)" value={form.catchDate || ""} onChange={(e) => setForm({ ...form, catchDate: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
           </div>
 
           {/* Weight-Price List */}
@@ -397,6 +408,23 @@ export default function AdminProductsPage() {
                               <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Price" />
                             </div>
                           ))}
+                        </div>
+                        <div className="sm:col-span-4 grid gap-2 sm:grid-cols-3">
+                          <input placeholder="Unit" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
+                            <span className="text-xs font-medium text-muted">In Stock</span>
+                          </label>
+                        </div>
+                        <div className="sm:col-span-4 grid gap-2 sm:grid-cols-2">
+                          <input placeholder="Cuts (comma-separated)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
+                          <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
+                        </div>
+                        <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
+                          <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
+                          <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
+                          <input placeholder="Source" value={form.source || ""} onChange={(e) => setForm({ ...form, source: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
+                          <input placeholder="Catch Date" value={form.catchDate || ""} onChange={(e) => setForm({ ...form, catchDate: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
                         </div>
                         <div className="flex gap-2">
                           <button onClick={saveEdit} className="rounded-lg bg-brand-fresh px-4 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /></button>
