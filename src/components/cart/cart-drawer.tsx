@@ -107,9 +107,11 @@ export function CartDrawer() {
                                 <span className={`product-badge ${b.cls}`}>{b.label}</span>
                               )}
                             </div>
-                            <p className="mt-0.5 text-[11px] text-[#80949b]">
-                              {item.selectedWeight || item.product.unit}
-                            </p>
+                            <div className="mt-0.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-[#80949b]">
+                              <span>{item.selectedWeight || item.product.unit}</span>
+                              {item.selectedCut && <span>· Cut: {item.selectedCut}</span>}
+                              {item.selectedCleaning && <span>· Clean: {item.selectedCleaning}</span>}
+                            </div>
                           </div>
                           <div className="flex items-center justify-between">
                             <p className="text-sm font-bold text-[#2ecc71]">

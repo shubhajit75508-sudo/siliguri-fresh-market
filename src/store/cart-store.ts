@@ -6,25 +6,31 @@ import { getWeightMultiplier } from "@/lib/utils";
 export type CartLineKey = {
   productId: string;
   weight?: string;
+  cut?: string;
+  cleaning?: string;
 };
 
 export function cartLineKey(
-  item: Pick<CartItem, "product" | "selectedWeight">
+  item: Pick<CartItem, "product" | "selectedWeight" | "selectedCut" | "selectedCleaning">
 ): CartLineKey {
   return {
     productId: item.product.id,
     weight: item.selectedWeight,
+    cut: item.selectedCut,
+    cleaning: item.selectedCleaning,
   };
 }
 
 export function cartLineId(key: CartLineKey): string {
-  return [key.productId, key.weight ?? ""].join("|");
+  return [key.productId, key.weight ?? "", key.cut ?? "", key.cleaning ?? ""].join("|");
 }
 
 function matchesCartLine(item: CartItem, key: CartLineKey): boolean {
   return (
     item.product.id === key.productId &&
-    item.selectedWeight === key.weight
+    item.selectedWeight === key.weight &&
+    item.selectedCut === key.cut &&
+    item.selectedCleaning === key.cleaning
   );
 }
 
@@ -36,7 +42,7 @@ interface CartState {
   addItem: (
     product: Product,
     quantity?: number,
-    options?: { weight?: string }
+    options?: { weight?: string; cut?: string; cleaning?: string }
   ) => void;
   removeItem: (key: CartLineKey) => void;
   updateQuantity: (key: CartLineKey, quantity: number) => void;
@@ -67,6 +73,8 @@ export const useCartStore = create<CartState>()(
           const key: CartLineKey = {
             productId: product.id,
             weight: options?.weight,
+            cut: options?.cut,
+            cleaning: options?.cleaning,
           };
 
           set((state) => {
@@ -88,6 +96,8 @@ export const useCartStore = create<CartState>()(
                   product,
                   quantity,
                   selectedWeight: options?.weight,
+                  selectedCut: options?.cut,
+                  selectedCleaning: options?.cleaning,
                 },
               ],
               isOpen: true,

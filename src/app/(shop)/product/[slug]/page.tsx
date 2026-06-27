@@ -273,7 +273,7 @@ export default function ProductDetailPage({
           <div className="mt-6 flex items-center gap-3">
             <button
               onClick={() => {
-                addToCart(product, 1, { weight: displayWeight });
+                addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
               }}
               className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2ecc71] px-6 py-3.5 font-bold text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/25 transition-all hover:bg-[#27ae60] active:scale-[0.98]"
             >

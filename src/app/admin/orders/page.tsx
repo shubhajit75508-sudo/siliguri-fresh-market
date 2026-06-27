@@ -270,23 +270,15 @@ export default function AdminOrdersPage() {
                             <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
                           </div>
                           <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
-                            {item.selectedWeight ? (
-                              <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">Wt: {item.selectedWeight}</span>
-                            ) : (prod?.weightPrices || prod?.weight)?.length ? (
-                              <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">
-                                Wt: {(prod?.weightPrices || prod?.weight || []).map(w => typeof w === "string" ? w : w.weight).join(", ")}
-                              </span>
-                            ) : null}
-                            {prod && (prod.cuts || []).length ? (
-                              <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">
-                                Cut: {(prod.cuts || []).join(", ")}
-                              </span>
-                            ) : null}
-                            {prod && (prod.cleaningOptions || []).length ? (
-                              <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-purple">
-                                Clean: {(prod.cleaningOptions || []).join(", ")}
-                              </span>
-                            ) : null}
+                            {item.selectedWeight && (
+                              <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">{item.selectedWeight}</span>
+                            )}
+                            {item.selectedCut && (
+                              <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">{item.selectedCut}</span>
+                            )}
+                            {item.selectedCleaning && (
+                              <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-purple">{item.selectedCleaning}</span>
+                            )}
                           </div>
                         </div>
                       </li>

@@ -47,6 +47,8 @@ export interface CartItem {
   product: Product;
   quantity: number;
   selectedWeight?: string;
+  selectedCut?: string;
+  selectedCleaning?: string;
 }
 
 export interface Address {

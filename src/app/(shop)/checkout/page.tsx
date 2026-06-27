@@ -266,7 +266,11 @@ export default function CheckoutPage() {
                           <span className="text-[13px] font-bold text-white truncate">{item.product.name}</span>
                           {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
                         </div>
-                        <p className="text-[11px] text-[#80949b] mt-0.5">{item.selectedWeight || item.product.unit}</p>
+                        <p className="text-[11px] text-[#80949b] mt-0.5">
+                          {item.selectedWeight || item.product.unit}
+                          {item.selectedCut ? ` · Cut: ${item.selectedCut}` : ""}
+                          {item.selectedCleaning ? ` · Clean: ${item.selectedCleaning}` : ""}
+                        </p>
                         <p className="text-[10px] text-[#5a7278] mt-1">
                           {item.product.originalPrice && item.product.originalPrice > item.product.price ? (
                             <>MRP <span className="line-through">₹{item.product.originalPrice}</span> &nbsp;</>
