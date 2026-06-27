@@ -8,6 +8,35 @@ function getAdmin() {
   return createClient(url, key);
 }
 
+export async function POST(req: NextRequest) {
+  const supabaseAdmin = getAdmin();
+  if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
+
+  const body = await req.json();
+  const { error } = await supabaseAdmin.from("orders").upsert({
+    id: body.id,
+    user_id: body.user_id ?? null,
+    items: body.items ?? [],
+    total: body.total,
+    status: body.status ?? "received",
+    delivery_status: body.delivery_status ?? "pending",
+    payment_method: body.payment_method ?? "cod",
+    payment_status: body.payment_status ?? "unpaid",
+    address_snapshot: body.address_snapshot ?? {},
+    customer_name: body.customer_name ?? "",
+    customer_phone: body.customer_phone ?? "",
+    customer_email: body.customer_email ?? "",
+    delivery_boy_id: body.delivery_boy_id ?? null,
+    delivery_code: body.delivery_code ?? "",
+    return_requested: body.return_requested ?? false,
+    return_approved: body.return_approved ?? false,
+    created_at: body.created_at ?? new Date().toISOString(),
+    eta: body.eta ?? 30,
+  });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ success: true });
+}
+
 export async function GET(req: NextRequest) {
   const cookie = req.cookies.get("sfm-auth-session");
   if (!cookie?.value) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
