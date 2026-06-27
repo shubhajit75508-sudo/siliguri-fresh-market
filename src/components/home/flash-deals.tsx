@@ -11,6 +11,7 @@ export function FlashDealsSection() {
   const { data: deals = [], isLoading, error } = useFlashDeals();
   const [apiRaw, setApiRaw] = useState<string>("loading...");
   const [adminRaw, setAdminRaw] = useState<string>("loading...");
+  const [lsRaw, setLsRaw] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/products/flash-deals")
@@ -31,6 +32,14 @@ export function FlashDealsSection() {
     readStore();
     const unsub = (useAdminStore as any).persist?.onFinishHydration?.(readStore);
     return () => unsub?.();
+  }, []);
+
+  useEffect(() => {
+    try {
+      const ls = localStorage.getItem("sfm-admin-v2");
+      const parsed = ls ? JSON.parse(ls) : null;
+      setLsRaw(parsed ? JSON.stringify(parsed, null, 2).slice(0, 2000) : "(null)");
+    } catch { setLsRaw("(error reading)"); }
   }, []);
 
   return (
@@ -62,6 +71,10 @@ export function FlashDealsSection() {
         <details className="mt-2 rounded-lg border border-dashed border-amber-400/30 bg-amber-950/10 p-3 text-xs font-mono">
           <summary className="cursor-pointer text-amber-400">Admin store flash deals</summary>
           <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap text-muted">{adminRaw}</pre>
+        </details>
+        <details className="mt-2 rounded-lg border border-dashed border-sky-400/30 bg-sky-950/10 p-3 text-xs font-mono">
+          <summary className="cursor-pointer text-sky-400">localStorage (sfm-admin-v2)</summary>
+          <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap text-muted">{lsRaw}</pre>
         </details>
       </div>
     </section>
