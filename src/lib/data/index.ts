@@ -45,14 +45,15 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getFlashDeals(): Promise<Product[]> {
-  let products: Product[] = [];
+  let products: Product[] = [...mock.getFlashDeals()];
 
   if (isSupabaseConfigured()) {
     try {
       const res = await fetch("/api/products/flash-deals");
       if (res.ok) {
         const dbProducts: Product[] = await res.json();
-        products = [...products, ...dbProducts];
+        const dbIds = new Set(dbProducts.map((p) => p.id));
+        products = [...dbProducts, ...products.filter((p) => !dbIds.has(p.id))];
       }
     } catch {
       // API failed
