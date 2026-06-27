@@ -106,10 +106,7 @@ export default function AdminProductsPage() {
   };
 
   const saveAdd = async () => {
-    if (!form.name || form.price === undefined || form.price === null || form.price < 0 || !form.image) {
-      console.log("saveAdd blocked:", { name: form.name, price: form.price, image: form.image });
-      return;
-    }
+    if (!form.name || form.price === undefined || form.price === null || form.price < 0 || !form.image) return;
     setSaving(true);
     const id = crypto.randomUUID();
     const slug = createUniqueSlug(form.name);
