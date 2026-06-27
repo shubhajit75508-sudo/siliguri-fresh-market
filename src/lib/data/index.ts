@@ -48,14 +48,17 @@ export async function getFlashDeals(): Promise<Product[]> {
   // Start with mock flash deals as a guaranteed baseline
   let products: Product[] = [...mock.getFlashDeals()];
 
-  // Overlay Supabase flash deals (replaces mock entries with same IDs)
+  // Overlay Supabase flash deals via server API (uses service role key)
   if (isSupabaseConfigured()) {
     try {
-      const dbProducts = await db.fetchFlashDeals();
-      const dbIds = new Set(dbProducts.map((p) => p.id));
-      products = [...dbProducts, ...products.filter((p) => !dbIds.has(p.id))];
-    } catch (e) {
-      console.warn("[getFlashDeals] Supabase query failed, using fallback", e);
+      const res = await fetch("/api/products/flash-deals");
+      if (res.ok) {
+        const dbProducts: Product[] = await res.json();
+        const dbIds = new Set(dbProducts.map((p) => p.id));
+        products = [...dbProducts, ...products.filter((p) => !dbIds.has(p.id))];
+      }
+    } catch {
+      // API failed, keep mock data
     }
   }
 
