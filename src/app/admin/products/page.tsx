@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Pencil, Plus, Trash2, Save, X, PackageOpen } from "lucide-react";
+import { Pencil, Plus, Trash2, Save, X, PackageOpen, Zap } from "lucide-react";
 import { useAdminStore } from "@/store/admin-store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllProducts } from "@/lib/data";
@@ -163,14 +163,18 @@ export default function AdminProductsPage() {
     }
   };
 
-  const filteredProducts = filterCategory ? products.filter((p) => p.category === filterCategory) : products;
+  const filteredProducts = filterCategory
+    ? filterCategory === "flash"
+      ? products.filter((p) => p.isFlashDeal)
+      : products.filter((p) => p.category === filterCategory)
+    : products;
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Products</h2>
-          <p className="text-sm text-muted">{filterCategory ? `${filteredProducts.length} ${filterCategory}` : `${products.length} total`}</p>
+          <p className="text-sm text-muted">{filterCategory ? `${filteredProducts.length} ${filterCategory === "flash" ? "flash" : filterCategory}` : `${products.length} total`}</p>
         </div>
         <button
           onClick={openAdd}
@@ -194,6 +198,16 @@ export default function AdminProductsPage() {
             {cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "All"}
           </button>
         ))}
+        <button
+          onClick={() => setFilterCategory("flash")}
+          className={`rounded-xl px-4 py-1.5 text-xs font-bold transition-all flex items-center gap-1 ${
+            filterCategory === "flash"
+              ? "bg-brand-red text-white shadow-lg shadow-brand-red/25"
+              : "border border-white/10 text-muted hover:border-white/20 hover:text-white"
+          }`}
+        >
+          <Zap className="h-3 w-3" /> Flash
+        </button>
       </div>
 
       {adding && (
@@ -334,7 +348,7 @@ export default function AdminProductsPage() {
       ) : filteredProducts.length === 0 ? (
         <div className="glass-card flex flex-col items-center rounded-2xl p-12">
           <PackageOpen className="mb-3 h-10 w-10 text-muted" />
-          <p className="text-muted">No products in this category</p>
+          <p className="text-muted">{filterCategory === "flash" ? "No flash deals yet" : "No products in this category"}</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
