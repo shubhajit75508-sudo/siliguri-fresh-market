@@ -70,6 +70,29 @@ export default function CheckoutPage() {
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   const requiredDetailsFilled = !!(detailForm.area?.trim() && detailForm.street?.trim() && detailForm.building?.trim());
 
+  // Auto-select saved address on mount and pre-populate form
+  useEffect(() => {
+    if (!hydrated || selectedAddressId) return;
+    const savedAddresses = useUserStore.getState().addresses;
+    if (savedAddresses.length === 0) return;
+
+    // Pick default address, or the first one
+    const addr = savedAddresses.find(a => a.isDefault) || savedAddresses[0];
+    setSelectedAddressId(addr.id);
+    setEditingAddress(false);
+    setAddrType(addr.label?.toLowerCase() || "home");
+    setNewAddress({ city: addr.city || "Siliguri", pincode: addr.pincode || "734001" });
+    setDetailForm({
+      area: addr.area || "",
+      landmark: addr.landmark || "",
+      building: addr.building || "",
+      flat: addr.flat || "",
+      floor: addr.floor || "",
+      street: addr.street || "",
+      deliveryInstructions: addr.deliveryInstructions || "",
+    });
+  }, [hydrated, addresses]);
+
   if (hydrated && items.length === 0 && !paymentConfirmed) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center py-20 text-center">
@@ -369,11 +392,60 @@ export default function CheckoutPage() {
               {addressMissing && (
                 <div className="flex items-center gap-2 bg-brand-red/10 border-b border-brand-red/20 px-4 py-2.5"><AlertTriangle className="h-5 w-5" /><span className="text-xs font-bold text-brand-red">Address required — please fill delivery details</span></div>
               )}
+              {/* Saved addresses picker */}
+              {!editingAddress && addresses.length > 1 && (
+                <div className="px-5 pt-4 pb-2 space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted">Saved Addresses</p>
+                  {addresses.map((addr) => (
+                    <button
+                      key={addr.id}
+                      onClick={() => {
+                        setSelectedAddressId(addr.id);
+                        setEditingAddress(false);
+                        setAddrType(addr.label?.toLowerCase() || "home");
+                        setNewAddress({ city: addr.city || "Siliguri", pincode: addr.pincode || "734001" });
+                        setDetailForm({
+                          area: addr.area || "",
+                          landmark: addr.landmark || "",
+                          building: addr.building || "",
+                          flat: addr.flat || "",
+                          floor: addr.floor || "",
+                          street: addr.street || "",
+                          deliveryInstructions: addr.deliveryInstructions || "",
+                        });
+                      }}
+                      className={`w-full text-left rounded-xl border p-3 transition-all ${
+                        selectedAddressId === addr.id
+                          ? "border-[#2D7D3A] bg-[#2D7D3A]/5"
+                          : "border-border hover:border-[#2D7D3A]/30"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-[#2D7D3A] uppercase tracking-wider">{addr.label || "Home"}</span>
+                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selectedAddressId === addr.id ? "border-[#2D7D3A]" : "border-border"}`}>
+                          {selectedAddressId === addr.id && <div className="w-2 h-2 rounded-full bg-[#2D7D3A]" />}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted mt-0.5 truncate">
+                        {[addr.building, addr.street, addr.area].filter(Boolean).join(", ")}, {addr.city} — {addr.pincode}
+                      </p>
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => { setSelectedAddressId(null); setEditingAddress(true); }}
+                    className="w-full rounded-xl border border-dashed border-border py-2 text-[11px] font-semibold text-muted hover:border-[#2D7D3A]/40 hover:text-[#2D7D3A] transition-colors"
+                  >
+                    + Add New Address
+                  </button>
+                  <div className="h-px bg-border my-1" />
+                </div>
+              )}
+
               {(!selectedAddress || editingAddress) ? (
                 <>
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
                 <Home className="h-5 w-5" />
-                <div><h2 className="text-sm font-bold text-foreground">Delivery Address</h2><p className="text-[10px] text-muted">Where should we deliver?</p></div>
+                <div><h2 className="text-sm font-bold text-foreground">Delivery Address</h2><p className="text-[10px] text-muted">{addresses.length > 0 ? "Edit your address" : "Where should we deliver?"}</p></div>
               </div>
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -585,7 +657,7 @@ export default function CheckoutPage() {
             <p className="text-[10px] text-muted">{items.reduce((n,i) => n + i.quantity, 0)} items</p>
           </div>
           <button onClick={step === 1 ? () => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); } : step === 2 ? () => {
-            if (!detailForm.area.trim() || !detailForm.landmark.trim()) { toast.add("Please fill Area and Landmark", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+            if (!selectedAddress && (!detailForm.area.trim() || !detailForm.landmark.trim())) { toast.add("Please fill Area and Landmark", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
             if (!selectedAddress) {
               const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(location ? { lat: location.lat, lng: location.lng } : {}) };
               useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
