@@ -41,7 +41,7 @@ export function HeroSection() {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[520px]"
             >
-              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2">
+              <div className="mb-3.5 sm:mb-5 inline-flex items-center gap-2.5 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2">
                 <span className="live-dot h-2 w-2 rounded-full bg-[#2D7D3A] shadow-[0_0_8px_#2D7D3A]" />
                 <span className="text-[12px] font-semibold tracking-wide text-white">
                   Live — Delivering in 30–60 min
@@ -54,11 +54,11 @@ export function HeroSection() {
                 ))}
               </h1>
 
-              <p className="mt-4 max-w-[420px] text-[15px] leading-relaxed text-white/75 sm:text-base">
+              <p className="mt-3 sm:mt-4 max-w-[420px] text-[15px] leading-relaxed text-white/75 sm:text-base">
                 {hero.subtitle}
               </p>
 
-              <div className="mt-5 sm:mt-7 flex flex-wrap gap-3">
+              <div className="mt-4 sm:mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/search"
                   className="inline-flex h-12 items-center rounded-full bg-[#2D7D3A] px-7 text-[14px] font-semibold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] hover:scale-[1.02] active:scale-[0.98]"
@@ -118,7 +118,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
-            className="mt-2 sm:mt-6 flex gap-1.5 sm:gap-2"
+            className="mt-2.5 sm:mt-6 flex gap-1.5 sm:gap-2"
           >
             {[
               { icon: Clock, text: "30-min ETA" },
