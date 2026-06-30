@@ -188,7 +188,6 @@ export async function fetchProductsByCategory(category: string): Promise<Product
     .from("products")
     .select("*")
     .eq("category", category)
-    .eq("in_stock", true)
     .order("name");
   if (error) throw error;
   return (data ?? []).map((row) => mapProduct(row as ProductRow));

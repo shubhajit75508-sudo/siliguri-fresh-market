@@ -13,10 +13,6 @@ function getAdminProducts(): Product[] {
   }
 }
 
-function getAdminInStockProducts(): Product[] {
-  return getAdminProducts().filter((p) => p.inStock);
-}
-
 function mergeWithAdmin(products: Product[]): Product[] {
   const admin = getAdminProducts();
   if (!admin.length) return products;
@@ -31,7 +27,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
   } else {
     products = mock.getProductsByCategory(category);
   }
-  const admin = getAdminInStockProducts().filter((p) => p.category === category);
+  const admin = getAdminProducts().filter((p) => p.category === category);
   if (!admin.length) return products;
   const adminIds = new Set(admin.map((p) => p.id));
   return [...admin, ...products.filter((p) => !adminIds.has(p.id))];
@@ -44,7 +40,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
   const mockProduct = mock.getProductBySlug(slug);
   if (mockProduct) return mockProduct;
-  const admin = getAdminInStockProducts().find((p) => p.slug === slug);
+  const admin = getAdminProducts().find((p) => p.slug === slug);
   return admin ?? null;
 }
 
@@ -63,7 +59,7 @@ export async function getFlashDeals(): Promise<Product[]> {
     }
   }
 
-  const admin = getAdminInStockProducts().filter((p) => p.isFlashDeal);
+  const admin = getAdminProducts().filter((p) => p.isFlashDeal);
   if (admin.length) {
     const adminIds = new Set(admin.map((p) => p.id));
     products = [...admin, ...products.filter((p) => !adminIds.has(p.id))];
@@ -79,7 +75,7 @@ export async function getTrendingProducts(): Promise<Product[]> {
   } else {
     products = mock.getTrendingProducts();
   }
-  const admin = getAdminInStockProducts().filter((p) => p.isTrending);
+  const admin = getAdminProducts().filter((p) => p.isTrending);
   if (!admin.length) return products;
   const adminIds = new Set(admin.map((p) => p.id));
   return [...admin, ...products.filter((p) => !adminIds.has(p.id))];
@@ -89,7 +85,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
   if (isSupabaseConfigured()) {
     try {
       const dbResults = await db.searchProductsByQuery(query);
-      const admin = getAdminInStockProducts().filter((p) =>
+      const admin = getAdminProducts().filter((p) =>
         p.name.toLowerCase().includes(query.toLowerCase())
       );
       const adminIds = new Set(admin.map((p) => p.id));
@@ -97,7 +93,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
     } catch {}
   }
   const mockResults = mock.searchProducts(query);
-  const admin = getAdminInStockProducts().filter((p) =>
+  const admin = getAdminProducts().filter((p) =>
     p.name.toLowerCase().includes(query.toLowerCase())
   );
   const adminIds = new Set(admin.map((p) => p.id));
