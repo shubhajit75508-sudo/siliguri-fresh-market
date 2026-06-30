@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import { ADMIN_EMAILS } from "@/lib/admin-creds";
-import { signCookieSync } from "@/lib/session";
+import { signSessionToken } from "@/lib/session";
 
 export type UserRole = "admin" | "delivery" | "customer";
 
@@ -168,7 +168,8 @@ export const useAuthStore = create<AuthState>()(
             }
             const adminUser = { ...user, role: "admin" as const, id: userId };
             set({ currentUser: adminUser });
-            document.cookie = `sfm-auth-session=${signCookieSync(`${adminUser.id}|admin`)}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
+            const adminToken = await signSessionToken(`${adminUser.id}|admin`);
+            document.cookie = `sfm-auth-session=${adminToken}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
             return { success: true, user: adminUser };
           }
 
@@ -229,7 +230,8 @@ export const useAuthStore = create<AuthState>()(
                   users: exists ? state.users : [...state.users, newUser],
                 };
               });
-              document.cookie = `sfm-auth-session=${signCookieSync(`${newUser.id}|${newUser.role}`)}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
+              const token = await signSessionToken(`${newUser.id}|${newUser.role}`);
+              document.cookie = `sfm-auth-session=${token}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
               return { success: true, user: newUser };
             }
           }
@@ -248,7 +250,8 @@ export const useAuthStore = create<AuthState>()(
             return { success: false, error: "Incorrect password" };
           }
           set({ currentUser: user });
-          document.cookie = `sfm-auth-session=${signCookieSync(`${user.id}|${user.role}`)}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
+          const loginToken = await signSessionToken(`${user.id}|${user.role}`);
+          document.cookie = `sfm-auth-session=${loginToken}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
           return { success: true, user };
         },
 

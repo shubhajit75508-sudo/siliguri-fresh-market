@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSession } from "@/lib/api-auth";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -9,6 +10,12 @@ function getSupabaseAdmin() {
 }
 
 export async function PUT(req: NextRequest) {
+  // Require authenticated session (delivery boy or admin)
+  const payload = await getSession(req);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
@@ -18,10 +25,16 @@ export async function PUT(req: NextRequest) {
     const { deliveryBoyId, orderId, lat, lng, heading, speed } = await req.json();
 
     if (!deliveryBoyId || !orderId || lat == null || lng == null) {
-      return NextResponse.json({ error: "Missing required fields: deliveryBoyId, orderId, lat, lng" }, { status: 400 });
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Delete old location for this boy+order, then insert new
+    // Verify the caller is either the delivery boy themselves or an admin
+    const isAdmin = payload.endsWith("|admin");
+    const userId = payload.split("|")[0];
+    if (!isAdmin && userId !== deliveryBoyId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     await supabaseAdmin.from("delivery_locations").delete()
       .eq("delivery_boy_id", deliveryBoyId)
       .eq("order_id", orderId);
@@ -44,18 +57,38 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  // Require authenticated session (customer tracking their own order, or admin)
+  const payload = await getSession(req);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) {
     return NextResponse.json({ location: null });
   }
 
   const orderId = req.nextUrl.searchParams.get("order_id");
-
   if (!orderId) {
     return NextResponse.json({ error: "Missing order_id param" }, { status: 400 });
   }
 
   try {
+    // Verify the customer owns this order, or caller is admin/delivery
+    const isAdmin = payload.endsWith("|admin");
+    const isDelivery = payload.includes("|delivery");
+    if (!isAdmin && !isDelivery) {
+      const { data: order } = await supabaseAdmin
+        .from("orders")
+        .select("user_id")
+        .eq("id", orderId)
+        .maybeSingle();
+      const userId = payload.split("|")[0];
+      if (!order || order.user_id !== userId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
+
     const { data, error } = await supabaseAdmin
       .from("delivery_locations")
       .select("*")

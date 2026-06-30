@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSession, getUserId } from "@/lib/api-auth";
 
 function getAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -9,6 +10,12 @@ function getAdmin() {
 }
 
 export async function POST(req: NextRequest) {
+  // Require authentication for order creation
+  const payload = await getSession(req);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabaseAdmin = getAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
@@ -33,16 +40,18 @@ export async function POST(req: NextRequest) {
     created_at: body.created_at ?? new Date().toISOString(),
     eta: body.eta ?? 30,
   });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Order creation failed" }, { status: 500 });
   return NextResponse.json({ success: true });
 }
 
 export async function GET(req: NextRequest) {
-  const cookie = req.cookies.get("sfm-auth-session");
-  if (!cookie?.value) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Require verified session
+  const payload = await getSession(req);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
-  const [userId] = raw.split("|");
+  const userId = getUserId(payload);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabaseAdmin = getAdmin();
@@ -59,9 +68,13 @@ export async function GET(req: NextRequest) {
   if (user?.email) {
     email = user.email;
   } else {
-    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
-    if (authUser?.user?.email) {
-      email = authUser.user.email;
+    try {
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+      if (authUser?.user?.email) {
+        email = authUser.user.email;
+      }
+    } catch {
+      // auth lookup failed — continue with empty email
     }
   }
 
@@ -73,6 +86,6 @@ export async function GET(req: NextRequest) {
     .eq("customer_email", email)
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
   return NextResponse.json({ orders: data ?? [] });
 }

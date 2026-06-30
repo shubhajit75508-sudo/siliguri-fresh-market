@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSession } from "@/lib/api-auth";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -9,6 +10,12 @@ function getSupabaseAdmin() {
 }
 
 export async function GET(req: NextRequest) {
+  // Require authenticated session (delivery boy or admin)
+  const payload = await getSession(req);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
@@ -21,14 +28,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing boy_id param" }, { status: 400 });
   }
 
+  // Verify caller is the delivery boy or an admin
+  const isAdmin = payload.endsWith("|admin");
+  const userId = payload.split("|")[0];
+  if (!isAdmin && userId !== boyId) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { data: ordersData, error } = await supabaseAdmin
     .from("orders")
-    .select("id, customer_name, customer_phone, total, items, delivery_code, payment_status, delivery_status, address_snapshot, created_at, delivery_boy_id")
+    .select("id, customer_name, customer_phone, total, items, payment_status, delivery_status, address_snapshot, created_at, delivery_boy_id")
     .eq("delivery_boy_id", boyId)
     .order("created_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to load assignments" }, { status: 500 });
   }
 
   const assignments = (ordersData ?? []).map((o: Record<string, unknown>) => ({
@@ -43,7 +57,7 @@ export async function GET(req: NextRequest) {
     total: o.total as number,
     status: (o.delivery_status as string) === "picked_up" ? "picked_up" as const : (o.delivery_status as string) === "delivered" ? "delivered" as const : (o.delivery_status as string) === "accepted" ? "accepted" as const : "assigned" as const,
     assignedAt: o.created_at as string,
-    deliveryCode: (o.delivery_code as string) ?? "",
+    // delivery_code intentionally excluded — visible only to customer
   }));
 
   return NextResponse.json({ assignments });
