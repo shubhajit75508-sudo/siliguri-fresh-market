@@ -32,7 +32,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white">Dashboard</h2>
+      <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
       <p className="text-sm text-muted">
         {stats.totalOrders} total orders · {stats.pendingOrders} pending
       </p>

@@ -102,7 +102,7 @@ export default function AdminLayout({
         <div className="flex h-16 items-center gap-2 border-b px-6">
           <img src="/logo.png" alt="SFM" width={32} height={32} />
           <div>
-            <p className="text-sm font-extrabold text-white">SFM Admin</p>
+            <p className="text-sm font-extrabold text-foreground">SFM Admin</p>
             <p className="text-[10px] text-muted">Dashboard</p>
           </div>
           <button
@@ -161,7 +161,7 @@ export default function AdminLayout({
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-lg font-bold text-white">Admin Panel</h1>
+          <h1 className="text-lg font-bold text-foreground">Admin Panel</h1>
           <Link
             href="/"
             className="ml-auto text-sm text-brand-blue hover:underline"

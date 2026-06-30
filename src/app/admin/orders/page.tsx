@@ -185,7 +185,7 @@ export default function AdminOrdersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmCancel(null)}>
           <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold">Cancel Order</h3>
-            <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-white">{confirmCancel}</span>?</p>
+            <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-foreground">{confirmCancel}</span>?</p>
             <div className="mt-6 flex gap-3">
               <Button variant="default" onClick={() => { cancelOrder(confirmCancel); setConfirmCancel(null); }} className="bg-brand-red hover:bg-brand-red/80">
                 <XCircle className="mr-1 h-4 w-4" /> Yes, Cancel
@@ -266,7 +266,7 @@ export default function AdminOrdersPage() {
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-medium text-white truncate">{item.product.name}</span>
+                            <span className="font-medium text-foreground truncate">{item.product.name}</span>
                             <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
                           </div>
                           <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
@@ -288,7 +288,7 @@ export default function AdminOrdersPage() {
               </div>
               <div className="flex justify-between border-t pt-2 text-sm font-bold">
                 <span>Total</span>
-                <span className="text-white">{formatPrice(selectedOrder.total)}</span>
+                <span className="text-foreground">{formatPrice(selectedOrder.total)}</span>
               </div>
             </div>
             <div className="mt-6 flex gap-3">
@@ -340,7 +340,7 @@ export default function AdminOrdersPage() {
               <h3 className="text-lg font-bold">Return Request</h3>
               <button onClick={() => setReturnModal(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
             </div>
-            <p className="mt-3 text-sm text-muted">Customer <span className="font-semibold text-white">{returnModal.customerName}</span> has requested a return for order {returnModal.id}.</p>
+            <p className="mt-3 text-sm text-muted">Customer <span className="font-semibold text-foreground">{returnModal.customerName}</span> has requested a return for order {returnModal.id}.</p>
             <div className="mt-4 rounded-xl bg-surface p-3 text-sm">
               <p className="font-medium">{returnModal.customerName}</p>
               <p className="mt-1 text-muted">{returnModal.customerPhone}</p>

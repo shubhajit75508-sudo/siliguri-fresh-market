@@ -41,7 +41,7 @@ export function ReturnPolicyBanner({ deliveredAt }: { deliveredAt?: string }) {
           <span className="text-gray-400">Replacement window has expired (available within 3 hours of delivery).</span>
         ) : (
           <>
-            <span className="font-semibold text-white">Replacement only.</span>{" "}
+            <span className="font-semibold text-foreground">Replacement only.</span>{" "}
             Available within 3 hours of delivery. Call{" "}
             <a href={`tel:${CUSTOMER_CARE}`} className="font-semibold text-brand-blue underline">
               {CUSTOMER_CARE}
@@ -111,7 +111,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
               <span className="font-semibold">{remaining}</span>
             </div>
             <p className="mt-3 text-sm text-muted">
-              For replacement of order <span className="font-semibold text-white">{orderId}</span>, please call our customer care.
+              For replacement of order <span className="font-semibold text-foreground">{orderId}</span>, please call our customer care.
             </p>
             <a
               href={`tel:${CUSTOMER_CARE}`}

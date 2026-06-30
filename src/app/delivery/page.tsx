@@ -46,7 +46,7 @@ function DeliveryCard({
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <p className="font-bold text-white">{a.customerName}</p>
+            <p className="font-bold text-foreground">{a.customerName}</p>
             <Badge variant={statusColors[a.status] ?? "blue"}>
               {statusLabels[a.status] ?? a.status}
             </Badge>
@@ -59,14 +59,14 @@ function DeliveryCard({
           <p className="mt-0.5 text-sm text-muted">{a.customerPhone}</p>
           <p className="text-[10px] font-mono text-muted mt-0.5">Order: {a.orderId}</p>
         </div>
-        <p className="text-sm font-bold text-white">{formatPrice(a.total)}</p>
+        <p className="text-sm font-bold text-foreground">{formatPrice(a.total)}</p>
       </div>
 
       <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm">
         <div className="flex items-start gap-2">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
           <div>
-            <p className="font-medium text-white">{a.address.line1}</p>
+            <p className="font-medium text-foreground">{a.address.line1}</p>
             {a.address.area && <p className="text-muted">Area: {a.address.area}</p>}
             {a.address.landmark && <p className="text-muted">Landmark: {a.address.landmark}</p>}
             {a.address.building && (
@@ -162,7 +162,7 @@ function DeliveryCard({
                     setDeliveryCodes((prev) => ({ ...prev, [a.orderId]: val }));
                     setCodeError(null);
                   }}
-                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-white placeholder:text-white/25 outline-none focus:border-brand-fresh/50 focus:ring-2 focus:ring-brand-fresh/20"
+                  className="flex-1 rounded-xl border border-border bg-surface px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-foreground placeholder:text-muted/50 outline-none focus:border-brand-fresh/50 focus:ring-2 focus:ring-brand-fresh/20"
                 />
               </div>
               {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
@@ -312,7 +312,7 @@ export default function DeliveryDashboard() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <Package className="h-10 w-10 text-muted" />
-        <h2 className="text-lg font-bold text-white">No Deliveries Assigned</h2>
+        <h2 className="text-lg font-bold text-foreground">No Deliveries Assigned</h2>
         <p className="mt-1 text-sm text-muted">You&apos;ll see new orders here as they come in</p>
       </div>
     );
@@ -328,7 +328,7 @@ export default function DeliveryDashboard() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-white">Active Deliveries ({active.length})</h2>
+                <h2 className="text-sm font-bold text-foreground">Active Deliveries ({active.length})</h2>
                 {tracking ? (
                   <span className="flex items-center gap-1.5 text-[10px] text-brand-fresh font-semibold bg-brand-fresh/10 px-2 py-0.5 rounded-full">
                     <span className="relative flex h-1.5 w-1.5">

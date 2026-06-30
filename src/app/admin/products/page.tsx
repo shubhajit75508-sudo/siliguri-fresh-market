@@ -189,7 +189,7 @@ export default function AdminProductsPage() {
             className={`rounded-xl px-4 py-1.5 text-xs font-bold transition-all ${
               (filterCategory || "") === cat
                 ? "bg-brand-fresh text-white shadow-lg shadow-brand-fresh/25"
-                : "border border-white/10 text-muted hover:border-white/20 hover:text-white"
+                : "border border-white/10 text-muted hover:border-white/20 hover:text-foreground"
             }`}
           >
             {cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "All"}
@@ -200,7 +200,7 @@ export default function AdminProductsPage() {
           className={`rounded-xl px-4 py-1.5 text-xs font-bold transition-all flex items-center gap-1 ${
             filterCategory === "flash"
               ? "bg-brand-red text-white shadow-lg shadow-brand-red/25"
-              : "border border-white/10 text-muted hover:border-white/20 hover:text-white"
+              : "border border-white/10 text-muted hover:border-white/20 hover:text-foreground"
           }`}
         >
           <Zap className="h-3 w-3" /> Flash
@@ -213,25 +213,25 @@ export default function AdminProductsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 rounded-2xl border border-border bg-surface p-5"
         >
-          <h3 className="mb-4 font-bold text-white">New Product</h3>
+          <h3 className="mb-4 font-bold text-foreground">New Product</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
             <div>
-              <input placeholder="Primary Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Primary Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
               {form.image && <img src={form.image} alt="" className="mt-1.5 h-12 w-12 rounded-lg object-cover" />}
             </div>
             <div className="sm:col-span-1">
               <label className="mb-1.5 block text-xs font-medium text-muted">Additional Images</label>
               {(form.images || []).map((url, i) => (
                 <div key={i} className="mb-1.5 flex items-center gap-1.5">
-                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded-xl border border-white/10 bg-surface px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
+                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
                   {url && <img src={url} alt="" className="h-8 w-8 shrink-0 rounded object-cover" />}
                   <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 rounded-lg p-1.5 text-brand-red hover:bg-brand-red/10"><X className="h-4 w-4" /></button>
                 </div>
               ))}
               <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="text-xs font-bold text-brand-fresh hover:underline">+ Add Image</button>
             </div>
-            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40">
+            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40">
               <option value="fish">Fish</option>
               <option value="chicken">Chicken</option>
               <option value="mutton">Mutton</option>
@@ -239,29 +239,29 @@ export default function AdminProductsPage() {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>
             </select>
-            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-1" />
+            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40 sm:col-span-1" />
             <label className="flex cursor-pointer items-center gap-2 sm:col-span-1">
-              <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
-              <span className="text-sm font-medium text-white">Flash Deal</span>
+              <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
+              <span className="text-sm font-medium text-foreground">Flash Deal</span>
             </label>
-            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={2} />
-            <input placeholder="Unit (e.g. kg, piece)" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={2} />
+            <input placeholder="Unit (e.g. kg, piece)" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
             <label className="flex cursor-pointer items-center gap-2">
-              <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
-              <span className="text-sm font-medium text-white">In Stock</span>
+              <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
+              <span className="text-sm font-medium text-foreground">In Stock</span>
             </label>
-            <input placeholder="Cuts (comma-separated, e.g. Bengali Cut, Steak)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Source" value={form.source || ""} onChange={(e) => setForm({ ...form, source: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Catch Date (e.g. Today, 5:00 AM)" value={form.catchDate || ""} onChange={(e) => setForm({ ...form, catchDate: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Cuts (comma-separated, e.g. Bengali Cut, Steak)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
+            <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Source" value={form.source || ""} onChange={(e) => setForm({ ...form, source: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Catch Date (e.g. Today, 5:00 AM)" value={form.catchDate || ""} onChange={(e) => setForm({ ...form, catchDate: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40" />
           </div>
 
           {/* Weight-Price List */}
           <div className="mt-5">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-bold text-white">Weight & Pricing</h4>
+              <h4 className="text-sm font-bold text-foreground">Weight & Pricing</h4>
               <button
                 type="button"
                 onClick={() => {
@@ -284,7 +284,7 @@ export default function AdminProductsPage() {
                       wps[i] = { ...wps[i], weight: e.target.value };
                       setForm({ ...form, weightPrices: wps, weight: wps.map(w => w.weight).filter(Boolean) });
                     }}
-                    className="flex-1 rounded-xl border border-white/10 bg-surface px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
+                    className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40"
                   />
                   <span className="text-muted text-sm">₹</span>
                   <input
@@ -296,7 +296,7 @@ export default function AdminProductsPage() {
                       wps[i] = { ...wps[i], price: +e.target.value };
                       setForm({ ...form, weightPrices: wps, price: wps[0]?.price || form.price || 0 });
                     }}
-                    className="w-24 rounded-xl border border-white/10 bg-surface px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
+                    className="w-24 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40"
                   />
                   <button
                     type="button"
@@ -380,7 +380,7 @@ export default function AdminProductsPage() {
                         <div className="flex items-center gap-2">
                           <input value={form.price || 0} type="number" onChange={(e) => setForm({ ...form, price: +e.target.value })} className="flex-1 rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Price" />
                           <label className="flex cursor-pointer items-center gap-1.5 shrink-0">
-                            <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-3.5 w-3.5 accent-[#2ecc71]" />
+                            <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-3.5 w-3.5 accent-brand-fresh" />
                             <span className="text-[11px] font-medium text-muted">Flash</span>
                           </label>
                         </div>
@@ -412,7 +412,7 @@ export default function AdminProductsPage() {
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-3">
                           <input placeholder="Unit" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
                           <label className="flex cursor-pointer items-center gap-2">
-                            <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
+                            <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
                             <span className="text-xs font-medium text-muted">In Stock</span>
                           </label>
                         </div>

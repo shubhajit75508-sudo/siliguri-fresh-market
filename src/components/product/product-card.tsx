@@ -82,7 +82,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <Link href={`/product/${product.slug}`} className="block min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="truncate text-[13px] font-bold text-white">{product.name}</p>
+              <p className="truncate text-[13px] font-bold text-foreground">{product.name}</p>
               {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
             </div>
             <p className="text-[11px] text-muted">{product.weight?.[0] || `1 ${product.unit}`}</p>
@@ -90,7 +90,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           <button
             onClick={handleAdd}
             disabled={!product.inStock}
-            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full border border-white/10 text-[12px] font-semibold text-white hover:bg-white/5 disabled:opacity-50"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full border border-white/10 text-[12px] font-semibold text-foreground hover:bg-white/5 disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" /> {product.inStock ? "Add to cart" : "Out of stock"}
           </button>
@@ -131,7 +131,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             {product.deliveryEta} min
           </div>
 
-          <h3 className="line-clamp-1 text-[15px] font-bold text-white">{product.name}</h3>
+          <h3 className="line-clamp-1 text-[15px] font-bold text-foreground">{product.name}</h3>
 
           {weights.length > 1 ? (
             <div className="mt-1.5 flex flex-wrap gap-1">
@@ -192,7 +192,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               <button
                 onClick={handleAdd}
                 disabled={!product.inStock}
-                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 text-[13px] font-semibold text-white transition-all hover:border-brand-fresh/30 hover:bg-brand-fresh/5 active:scale-[0.98] disabled:opacity-50"
+                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 text-[13px] font-semibold text-foreground transition-all hover:border-brand-fresh/30 hover:bg-brand-fresh/5 active:scale-[0.98] disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} />
                 {product.inStock ? "Add" : "Out of stock"}

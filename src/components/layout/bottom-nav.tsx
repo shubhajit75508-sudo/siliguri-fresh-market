@@ -34,7 +34,7 @@ export function BottomNav() {
               href={item.href}
               className={cn(
                 "flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-medium",
-                active ? "text-white" : "text-muted"
+                active ? "text-foreground" : "text-muted"
               )}
             >
               <Icon className={cn("h-[22px] w-[22px]", active && "text-brand-fresh")} strokeWidth={active ? 2.5 : 2} />
@@ -47,12 +47,12 @@ export function BottomNav() {
           <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-brand-fresh text-[#FFF3E2] shadow-lg shadow-brand-fresh/30">
             <ShoppingBag className="h-5 w-5" strokeWidth={2.5} />
             {count > 0 && (
-              <span className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0d1b2a] bg-white text-[10px] font-bold text-[#FFF3E2]">
+              <span className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand-dark bg-brand-dark text-[10px] font-bold text-[#FFF3E2]">
                 {count}
               </span>
             )}
           </div>
-          <span className="mt-1 text-[10px] font-semibold text-white">Cart</span>
+          <span className="mt-1 text-[10px] font-semibold text-foreground">Cart</span>
         </button>
       </div>
     </nav>

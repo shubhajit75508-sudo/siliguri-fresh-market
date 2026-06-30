@@ -115,7 +115,7 @@ export function SearchBar() {
                         <button
                           key={q}
                           onClick={() => go(q)}
-                          className="rounded-full border border-brand-fresh/20 bg-brand-fresh/5 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-fresh/10"
+                          className="rounded-full border border-brand-fresh/20 bg-brand-fresh/5 px-3 py-1.5 text-xs font-medium text-brand-fresh-dim hover:bg-brand-fresh/10"
                         >
                           {q}
                         </button>

@@ -82,7 +82,7 @@ export function Header() {
               <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
               Cart
               {itemCount > 0 && (
-                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-surface px-1 text-[10px] font-bold text-white">
+                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold text-[#FFF3E2]">
                   {itemCount}
                 </span>
               )}
@@ -129,7 +129,7 @@ export function Header() {
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-surface text-[8px] font-bold text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white/20 text-[8px] font-bold text-[#FFF3E2]">
                   {itemCount}
                 </span>
               )}

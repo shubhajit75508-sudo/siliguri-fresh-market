@@ -51,12 +51,12 @@ export function CartDrawer() {
             dragConstraints={{ left: 0, right: 120 }}
             dragElastic={0.12}
             onDragEnd={(_, info) => { if (info.offset.x > 100) closeCart(); }}
-            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-gradient-to-b from-surface to-bg-[#FFF3E2] shadow-2xl border-l border-white/5"
+            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-gradient-to-b from-surface to-[#FFF3E2] shadow-2xl border-l border-white/5"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
               <div>
-                <h2 className="text-lg font-extrabold text-white"><ShoppingCart className="h-5 w-5 inline mr-1.5" />Your Cart</h2>
+                <h2 className="text-lg font-extrabold text-foreground"><ShoppingCart className="h-5 w-5 inline mr-1.5" />Your Cart</h2>
                 <p className="text-xs text-muted mt-0.5">{getItemCount()} items</p>
               </div>
               <button
@@ -72,7 +72,7 @@ export function CartDrawer() {
               {items.length === 0 ? (
                 <div className="flex flex-col items-center py-20 text-center">
                   <ShoppingCart className="h-12 w-12 mb-4 text-muted" />
-                  <h3 className="text-lg font-bold text-white">Cart is empty</h3>
+                  <h3 className="text-lg font-bold text-foreground">Cart is empty</h3>
                   <p className="mt-1 text-sm text-muted">Add fresh items to get started</p>
                   <Link href="/" onClick={closeCart}>
                     <Button className="mt-6 rounded-full bg-brand-fresh hover:bg-brand-fresh-dim text-[#FFF3E2] font-bold px-6 py-2.5 shadow-lg shadow-brand-fresh/20">
@@ -102,7 +102,7 @@ export function CartDrawer() {
                         <div className="flex flex-1 flex-col justify-between">
                           <div>
                             <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-semibold text-white">{item.product.name}</h4>
+                              <h4 className="text-sm font-semibold text-foreground">{item.product.name}</h4>
                               {b && (
                                 <span className={`product-badge ${b.cls}`}>{b.label}</span>
                               )}
@@ -130,16 +130,16 @@ export function CartDrawer() {
                           <div className="flex items-center gap-0.5 sm:gap-1 rounded-xl bg-white/8 px-0.5 sm:px-1 py-0.5 sm:py-1">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}
-                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
+                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-foreground/70 hover:bg-white/10 transition-all"
                             >
                               <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </button>
-                            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center text-sm font-bold text-white tabular-nums">
+                            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center text-sm font-bold text-foreground tabular-nums">
                               {item.quantity}
                             </span>
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity + 1)}
-                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 transition-all"
+                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-foreground/70 hover:bg-white/10 transition-all"
                             >
                               <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </button>
@@ -158,17 +158,17 @@ export function CartDrawer() {
                 <div className="mb-4 space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted">Subtotal</span>
-                    <span className="text-white font-medium">{formatPrice(subtotal)}</span>
+                    <span className="text-foreground font-medium">{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-muted">Delivery</span>
-                    <span className={deliveryFee === 0 ? "text-brand-fresh font-medium" : "text-white font-medium"}>
+                    <span className={deliveryFee === 0 ? "text-brand-fresh font-medium" : "text-foreground font-medium"}>
                       {deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}
                     </span>
                   </div>
                   <div className="flex justify-between border-t border-white/5 pt-3 text-base font-bold">
-                    <span className="text-white">Total</span>
-                    <span className="text-white tabular-nums">₹{total.toLocaleString()}</span>
+                    <span className="text-foreground">Total</span>
+                    <span className="text-foreground tabular-nums">₹{total.toLocaleString()}</span>
                   </div>
                 </div>
                 <Link href="/checkout" onClick={closeCart}>

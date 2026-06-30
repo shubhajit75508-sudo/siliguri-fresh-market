@@ -64,7 +64,7 @@ export default function CouponsPage() {
         {[...coupons].reverse().map((c) => (
           <div key={c.code} className="rounded-xl border bg-surface p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <code className="text-lg font-bold text-white">{c.code}</code>
+              <code className="text-lg font-bold text-foreground">{c.code}</code>
               <div className="flex items-center gap-2">
                 <Badge variant="fresh">Active</Badge>
                 <button onClick={() => handleDelete(c.code)} className="rounded-lg p-1 hover:bg-red-50"><Trash2 className="h-4 w-4 text-brand-red" /></button>

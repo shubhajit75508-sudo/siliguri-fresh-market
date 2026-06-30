@@ -64,17 +64,17 @@ export default function ProductDetailPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-1 text-xs text-muted">
-          <button onClick={() => router.push("/")} className="hover:text-white transition-colors">Home</button>
+          <button onClick={() => router.push("/")} className="hover:text-foreground transition-colors">Home</button>
           <span className="mx-1">/</span>
           {product.category && (
-            <><button onClick={() => router.push(`/category/${product.category}`)} className="hover:text-white transition-colors capitalize">{product.category}</button>
+            <><button onClick={() => router.push(`/category/${product.category}`)} className="hover:text-foreground transition-colors capitalize">{product.category}</button>
             <span className="mx-1">/</span></>
           )}
-          <span className="text-white truncate max-w-[120px]">{product.name}</span>
+          <span className="text-foreground truncate max-w-[120px]">{product.name}</span>
         </div>
         <button
           onClick={() => { if (navigator.share) navigator.share({ title: product.name, url: window.location.href }); }}
-          className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-medium text-muted hover:text-white hover:bg-white/5 transition-colors"
+          className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-medium text-muted hover:text-foreground hover:bg-white/5 transition-colors"
         >
           <Share2 className="h-3.5 w-3.5" /> Share
         </button>
@@ -130,11 +130,11 @@ export default function ProductDetailPage({
             )}
           </div>
 
-          <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-white">{product.name}</h1>
+          <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-foreground">{product.name}</h1>
 
           {/* Reviews + Social Proof */}
           <div className="mt-2 flex items-center gap-3 flex-wrap">
-            <span className="flex items-center gap-1 text-sm text-white">
+            <span className="flex items-center gap-1 text-sm text-foreground">
               <span className="flex items-center gap-0.5 rounded-full bg-brand-fresh/15 px-2 py-0.5 text-xs font-bold text-brand-fresh">
                 <Star className="h-3 w-3 fill-current" /> {product.rating?.toFixed(1) || "4.5"}
               </span>
@@ -167,10 +167,10 @@ export default function ProductDetailPage({
           {(product.species || product.river || product.source || product.catchDate) && (
             <div className="mt-3 rounded-xl bg-white/5 border border-white/5 p-3">
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted">
-                {product.species && <span><span className="text-white font-semibold">Species:</span> {product.species}</span>}
-                {product.river && <span><span className="text-white font-semibold">River:</span> {product.river}</span>}
-                {product.source && <span><span className="text-white font-semibold">Source:</span> {product.source}</span>}
-                {product.catchDate && <span><span className="text-white font-semibold">Catch Date:</span> {product.catchDate}</span>}
+                {product.species && <span><span className="text-foreground font-semibold">Species:</span> {product.species}</span>}
+                {product.river && <span><span className="text-foreground font-semibold">River:</span> {product.river}</span>}
+                {product.source && <span><span className="text-foreground font-semibold">Source:</span> {product.source}</span>}
+                {product.catchDate && <span><span className="text-foreground font-semibold">Catch Date:</span> {product.catchDate}</span>}
               </div>
             </div>
           )}
@@ -246,7 +246,7 @@ export default function ProductDetailPage({
           {/* Price + Savings */}
           <div className="mt-5">
             <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-[28px] font-bold text-white">{formatPrice(displayPrice)}</span>
+              <span className="text-[28px] font-bold text-foreground">{formatPrice(displayPrice)}</span>
               {displayOriginal && displayOriginal > displayPrice && (
                 <span className="text-base text-muted-light line-through">{formatPrice(displayOriginal)}</span>
               )}

@@ -81,7 +81,7 @@ export default function AccountLayout({
                     "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
                     isActive
                       ? "bg-brand-dark text-white"
-                      : "text-muted hover:bg-brand-dark/5 hover:text-white"
+                      : "text-muted hover:bg-brand-dark/5 hover:text-brand-dark"
                   )}
                 >
                   <Icon className="h-4 w-4" />

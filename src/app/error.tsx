@@ -11,7 +11,7 @@ export default function GlobalError({
     <html>
       <body className="flex min-h-screen items-center justify-center bg-surface p-8">
         <div className="max-w-md text-center">
-          <h1 className="text-4xl font-extrabold text-white">Oops!</h1>
+          <h1 className="text-4xl font-extrabold text-foreground">Oops!</h1>
           <p className="mt-4 text-muted">
             Something went wrong. Please try again.
           </p>

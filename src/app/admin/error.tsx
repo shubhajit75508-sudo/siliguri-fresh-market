@@ -4,7 +4,7 @@ export default function AdminError({ error, reset }: { error: Error; reset: () =
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center px-4 py-16">
       <div className="max-w-md text-center">
-        <h1 className="text-4xl font-extrabold text-white">Oops!</h1>
+        <h1 className="text-4xl font-extrabold text-foreground">Oops!</h1>
         <p className="mt-4 text-muted">Something went wrong in the admin panel.</p>
         {error.message && <p className="mt-2 text-xs text-muted-light">{error.message}</p>}
         <button

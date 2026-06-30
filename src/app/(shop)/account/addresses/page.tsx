@@ -341,7 +341,7 @@ export default function AddressesPage() {
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEditForm(addr)} title="Edit">
-                  <Building2 className="h-3.5 w-3.5 text-muted hover:text-white" />
+                  <Building2 className="h-3.5 w-3.5 text-muted hover:text-foreground" />
                 </Button>
                 {confirmDelete === addr.id ? (
                   <div className="flex gap-1">
