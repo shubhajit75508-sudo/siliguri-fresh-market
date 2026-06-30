@@ -23,7 +23,7 @@ export function HeroSection() {
   return (
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-xl">
-        <div className="relative min-h-[520px] sm:min-h-[460px] lg:min-h-[540px]">
+        <div className="relative aspect-[4/3] sm:min-h-[460px] lg:min-h-[540px]">
           <img
             src={hero.image}
             alt="Siliguri Fresh Mart"
@@ -33,7 +33,7 @@ export function HeroSection() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
         </div>
 
-        <div className="absolute inset-0 flex flex-col justify-start pt-14 pb-8 px-6 sm:justify-between sm:p-8 lg:p-10">
+        <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 lg:p-10">
           <div className="flex flex-1 flex-row flex-wrap items-start justify-between gap-4 lg:gap-8 lg:flex-nowrap lg:items-center">
             <motion.div
               initial={{ opacity: 0, y: 28 }}
@@ -41,7 +41,7 @@ export function HeroSection() {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[520px]"
             >
-              <div className="mb-8 sm:mb-5 inline-flex items-center gap-2.5 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2">
+              <div className="mb-5 sm:mb-5 inline-flex items-center gap-2.5 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2">
                 <span className="live-dot h-2 w-2 rounded-full bg-[#2D7D3A] shadow-[0_0_8px_#2D7D3A]" />
                 <span className="text-[13px] sm:text-[12px] font-semibold tracking-wide text-white">
                   Live — Delivering in 30–60 min
@@ -54,11 +54,11 @@ export function HeroSection() {
                 ))}
               </h1>
 
-              <p className="mt-6 sm:mt-4 max-w-[420px] text-[16px] leading-relaxed text-white/80 sm:text-base">
+              <p className="mt-4 sm:mt-4 max-w-[420px] text-[16px] leading-relaxed text-white/80 sm:text-base">
                 {hero.subtitle}
               </p>
 
-              <div className="mt-7 sm:mt-7 flex flex-wrap gap-3">
+              <div className="mt-5 sm:mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/search"
                   className="inline-flex h-12 sm:h-12 items-center rounded-full bg-[#2D7D3A] px-6 sm:px-7 text-[15px] sm:text-[14px] font-semibold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] hover:scale-[1.02] active:scale-[0.98]"
@@ -118,7 +118,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
-            className="mt-6 sm:mt-6 flex gap-1.5 sm:gap-2"
+            className="mt-3 sm:mt-6 flex gap-1.5 sm:gap-2"
           >
             {[
               { icon: Clock, text: "30-min ETA" },
