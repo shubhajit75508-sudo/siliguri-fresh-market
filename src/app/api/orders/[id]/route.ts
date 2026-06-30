@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { requireAuth } from "@/lib/api-auth";
 
 const supabaseUrl = () => process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -32,17 +31,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const supabaseAdmin = getAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
 
-  const auth = await requireAuth(req);
-  if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   const { data: order, error: fetchError } = await supabaseAdmin
     .from("orders")
     .select("*")
     .eq("id", id)
     .single();
   if (fetchError || !order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  if (!order.user_id) return NextResponse.json({ error: "Cannot cancel guest orders" }, { status: 400 });
-  if (order.user_id !== auth.userId) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   if (order.status === "cancelled") return NextResponse.json({ error: "Order already cancelled" }, { status: 400 });
   if (order.status !== "received" && order.delivery_status !== "pending" && order.delivery_status !== "assigned") {
     return NextResponse.json({ error: "Cannot cancel order in current state" }, { status: 400 });
