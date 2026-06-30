@@ -152,7 +152,6 @@ export const useOrderStore = create<OrderState>()(
 
         cancelOrder: async (id) => {
           const prev = get().orders;
-          const order = prev.find((o) => o.id === id);
           set((state) => ({
             orders: state.orders.map((o) =>
               o.id === id
@@ -160,11 +159,15 @@ export const useOrderStore = create<OrderState>()(
                 : o
             ),
           }));
-          const payload: Record<string, unknown> = { id, status: "cancelled" };
-          if (order?.paymentStatus === "paid") {
-            payload.payment_status = "refunded";
+          let ok = false;
+          if (isSupabaseConfigured()) {
+            try {
+              const res = await fetch(`/api/orders/${encodeURIComponent(id)}`, { method: "PUT" });
+              ok = res.ok;
+            } catch { ok = false; }
+          } else {
+            ok = true;
           }
-          const ok = await apiPut(payload);
           if (!ok) set({ orders: prev });
         },
 
