@@ -84,7 +84,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoFocus
-                className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                className="mt-1 w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
 
@@ -97,12 +97,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full rounded-l-xl border border-r-0 border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
+                  className="w-full rounded-l-xl border border-r-0 border-border bg-surface px-4 py-2.5 text-sm outline-none transition-colors focus:border-brand-dark"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-[#0d1b2a] px-3 text-muted transition-colors hover:text-white"
+                  className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-surface px-3 text-muted transition-colors hover:text-white"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>

@@ -85,7 +85,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               <p className="truncate text-[13px] font-bold text-white">{product.name}</p>
               {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
             </div>
-            <p className="text-[11px] text-[#80949b]">{product.weight?.[0] || `1 ${product.unit}`}</p>
+            <p className="text-[11px] text-muted">{product.weight?.[0] || `1 ${product.unit}`}</p>
           </Link>
           <button
             onClick={handleAdd}
@@ -126,7 +126,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         </div>
 
         <div className="flex flex-1 flex-col p-4">
-          <div className="mb-1.5 flex items-center gap-1 text-[11px] text-[#80949b]">
+          <div className="mb-1.5 flex items-center gap-1 text-[11px] text-muted">
             <Clock className="h-3 w-3" />
             {product.deliveryEta} min
           </div>
@@ -141,8 +141,8 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedWeight(w); }}
                   className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold transition-all ${
                     selectedWeight === w
-                      ? "border-[#2ecc71] bg-[#2ecc71]/10 text-[#2ecc71]"
-                      : "border-white/10 bg-white/5 text-[#80949b] hover:border-white/30"
+                      ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh"
+                      : "border-white/10 bg-white/5 text-muted hover:border-white/30"
                   }`}
                 >
                   {w}
@@ -150,18 +150,18 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               ))}
             </div>
           ) : (
-            <p className="mt-0.5 text-[12px] text-[#80949b]">
+            <p className="mt-0.5 text-[12px] text-muted">
               {product.weight?.[0] || `1 ${product.unit}`}
             </p>
           )}
 
           <div className="mt-1 flex items-center gap-1.5">
-            <span className="text-sm font-bold text-[#2ecc71]">{formatPrice(displayPrice)}</span>
+            <span className="text-sm font-bold text-brand-fresh">{formatPrice(displayPrice)}</span>
             {displayOriginal && displayOriginal > displayPrice && (
-              <span className="text-[11px] text-[#5a7278] line-through">{formatPrice(displayOriginal)}</span>
+              <span className="text-[11px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
             )}
-            <span className="text-[11px] text-[#80949b] ml-auto">
-              <Star className="h-3 w-3 inline text-[#f1c40f] mr-0.5" />
+            <span className="text-[11px] text-muted ml-auto">
+              <Star className="h-3 w-3 inline text-brand-gold mr-0.5" />
               {product.rating?.toFixed(1) || "4.5"} ({product.reviewCount || "120"})
             </span>
           </div>
@@ -169,21 +169,21 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           <div className="mt-auto pt-3">
             {cartQuantity > 0 ? (
               <div
-                className="flex h-11 items-center justify-between rounded-full bg-[#2ecc71] px-1.5 shadow-md shadow-[#2ecc71]/20"
+                className="flex h-11 items-center justify-between rounded-full bg-brand-fresh px-1.5 shadow-md shadow-brand-fresh/20"
                 onClick={(e) => e.preventDefault()}
               >
                 <button
                   onClick={handleDecrement}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-[#0a1f1c] hover:bg-black/10"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-[#FFF3E2] hover:bg-black/10"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="text-[13px] font-semibold text-[#0a1f1c]">
+                <span className="text-[13px] font-semibold text-[#FFF3E2]">
                   {cartQuantity}
                 </span>
                 <button
                   onClick={handleIncrement}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-[#0a1f1c] hover:bg-black/10"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-[#FFF3E2] hover:bg-black/10"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -192,7 +192,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               <button
                 onClick={handleAdd}
                 disabled={!product.inStock}
-                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 text-[13px] font-semibold text-white transition-all hover:border-[#2ecc71]/30 hover:bg-[#2ecc71]/5 active:scale-[0.98] disabled:opacity-50"
+                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 text-[13px] font-semibold text-white transition-all hover:border-brand-fresh/30 hover:bg-brand-fresh/5 active:scale-[0.98] disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} />
                 {product.inStock ? "Add" : "Out of stock"}

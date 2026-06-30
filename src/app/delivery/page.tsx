@@ -42,7 +42,7 @@ function DeliveryCard({
   onConfirm: (orderId: string, code: string) => Promise<void>;
 }) {
   return (
-    <div className="mb-3 rounded-2xl border border-white/5 bg-[#0d1b2a] p-4 shadow-sm">
+    <div className="mb-3 rounded-2xl border border-white/5 bg-surface p-4 shadow-sm">
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -56,28 +56,28 @@ function DeliveryCard({
               <Badge variant="orange">COD</Badge>
             )}
           </div>
-          <p className="mt-0.5 text-sm text-[#80949b]">{a.customerPhone}</p>
-          <p className="text-[10px] font-mono text-[#80949b] mt-0.5">Order: {a.orderId}</p>
+          <p className="mt-0.5 text-sm text-muted">{a.customerPhone}</p>
+          <p className="text-[10px] font-mono text-muted mt-0.5">Order: {a.orderId}</p>
         </div>
         <p className="text-sm font-bold text-white">{formatPrice(a.total)}</p>
       </div>
 
       <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm">
         <div className="flex items-start gap-2">
-          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#80949b]" />
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
           <div>
             <p className="font-medium text-white">{a.address.line1}</p>
-            {a.address.area && <p className="text-[#80949b]">Area: {a.address.area}</p>}
-            {a.address.landmark && <p className="text-[#80949b]">Landmark: {a.address.landmark}</p>}
+            {a.address.area && <p className="text-muted">Area: {a.address.area}</p>}
+            {a.address.landmark && <p className="text-muted">Landmark: {a.address.landmark}</p>}
             {a.address.building && (
-              <p className="text-[#80949b]">
+              <p className="text-muted">
                 {a.address.building}
                 {a.address.flat ? `, Flat ${a.address.flat}` : ""}
                 {a.address.floor ? `, Floor ${a.address.floor}` : ""}
               </p>
             )}
-            {a.address.line2 && <p className="text-[#80949b]">{a.address.line2}</p>}
-            <p className="text-[#80949b]">{a.address.city} — {a.address.pincode}</p>
+            {a.address.line2 && <p className="text-muted">{a.address.line2}</p>}
+            <p className="text-muted">{a.address.city} — {a.address.pincode}</p>
           </div>
         </div>
         {a.address.lat && a.address.lng && (
@@ -93,7 +93,7 @@ function DeliveryCard({
         {currentPosition && customerLocations[a.orderId] && (
           <div className="mt-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-semibold text-[#80949b] uppercase tracking-wide">Live Tracking</span>
+              <span className="text-[10px] font-semibold text-muted uppercase tracking-wide">Live Tracking</span>
               <span className="text-[10px] font-mono text-brand-fresh">
                 {(() => {
                   const [blat, blng] = currentPosition;
@@ -119,10 +119,10 @@ function DeliveryCard({
       </div>
 
       <details className="mt-3">
-        <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-[#80949b]">
+        <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-muted">
           <ShoppingBag className="h-3.5 w-3.5" /> {a.items.length} item{a.items.length > 1 ? "s" : ""}
         </summary>
-        <ul className="mt-2 space-y-1 pl-5 text-sm text-[#80949b]">
+        <ul className="mt-2 space-y-1 pl-5 text-sm text-muted">
           {a.items.map((item, i) => (
             <li key={i}>{item.name} × {item.quantity}</li>
           ))}
@@ -132,7 +132,7 @@ function DeliveryCard({
       <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3">
         <a
           href={`tel:${a.customerPhone}`}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-[#80949b] hover:bg-white/5"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-muted hover:bg-white/5"
         >
           <Phone className="h-3.5 w-3.5" /> Call
         </a>
@@ -151,7 +151,7 @@ function DeliveryCard({
           {a.status === "picked_up" && (
             <div className="w-full space-y-2">
               <div className="flex items-center gap-2">
-                <KeyRound className="h-3.5 w-3.5 text-[#80949b]" />
+                <KeyRound className="h-3.5 w-3.5 text-muted" />
                 <input
                   type="tel"
                   maxLength={4}
@@ -162,7 +162,7 @@ function DeliveryCard({
                     setDeliveryCodes((prev) => ({ ...prev, [a.orderId]: val }));
                     setCodeError(null);
                   }}
-                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-white placeholder:text-white/25 outline-none focus:border-[#2ecc71]/50 focus:ring-2 focus:ring-[#2ecc71]/20"
+                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-white placeholder:text-white/25 outline-none focus:border-brand-fresh/50 focus:ring-2 focus:ring-brand-fresh/20"
                 />
               </div>
               {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
@@ -302,8 +302,8 @@ export default function DeliveryDashboard() {
   if (loadingAssignments) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Loader2 className="mb-4 h-8 w-8 animate-spin text-[#80949b]" />
-        <p className="text-sm text-[#80949b]">Loading deliveries...</p>
+        <Loader2 className="mb-4 h-8 w-8 animate-spin text-muted" />
+        <p className="text-sm text-muted">Loading deliveries...</p>
       </div>
     );
   }
@@ -311,16 +311,16 @@ export default function DeliveryDashboard() {
   if (active.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="h-10 w-10 text-[#80949b]" />
+        <Package className="h-10 w-10 text-muted" />
         <h2 className="text-lg font-bold text-white">No Deliveries Assigned</h2>
-        <p className="mt-1 text-sm text-[#80949b]">You&apos;ll see new orders here as they come in</p>
+        <p className="mt-1 text-sm text-muted">You&apos;ll see new orders here as they come in</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4 pb-8">
-      <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-[#2ecc71]/30 bg-[#2ecc71]/5" : "border-[#e74c3c]/30 bg-[#e74c3c]/5"}`}>
+      <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-brand-fresh/30 bg-brand-fresh/5" : "border-brand-red/30 bg-brand-red/5"}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tracking ? "bg-brand-fresh/10" : "bg-brand-red/10"}`}>
@@ -344,7 +344,7 @@ export default function DeliveryDashboard() {
                 )}
               </div>
               {currentPosition && (
-                <p className="text-[10px] text-[#80949b] mt-0.5 font-mono">
+                <p className="text-[10px] text-muted mt-0.5 font-mono">
                   {currentPosition[0].toFixed(5)}, {currentPosition[1].toFixed(5)}
                 </p>
               )}
@@ -352,7 +352,7 @@ export default function DeliveryDashboard() {
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold tabular-nums">{active.length}</p>
-            <p className="text-[10px] text-[#80949b] -mt-0.5">active</p>
+            <p className="text-[10px] text-muted -mt-0.5">active</p>
           </div>
         </div>
         {gpsError && (
@@ -362,7 +362,7 @@ export default function DeliveryDashboard() {
 
       {pickupStatuses.length > 0 && (
         <div>
-          <h3 className="mb-2 text-sm font-semibold text-[#80949b] uppercase tracking-wide">Pickup</h3>
+          <h3 className="mb-2 text-sm font-semibold text-muted uppercase tracking-wide">Pickup</h3>
           {pickupStatuses.map((a) => (
             <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAccept} onPickUp={handlePickUp} onConfirm={handleConfirm} />
           ))}

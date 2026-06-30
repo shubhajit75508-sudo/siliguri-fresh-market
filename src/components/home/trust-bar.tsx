@@ -16,10 +16,10 @@ export function TrustBar() {
         const Icon = s.icon;
         return (
           <div key={s.label} className="flex items-center gap-2 justify-center sm:justify-start">
-            <Icon className="h-4 w-4 text-[#2ecc71] shrink-0" />
+            <Icon className="h-4 w-4 text-brand-fresh shrink-0" />
             <div>
               <p className="text-[13px] font-extrabold text-white leading-none">{s.value}</p>
-              <p className="text-[10px] text-[#80949b] font-medium">{s.label}</p>
+              <p className="text-[10px] text-muted font-medium">{s.label}</p>
             </div>
           </div>
         );
@@ -43,7 +43,7 @@ export function WhyChooseUs() {
           <div key={r.title} className="glass rounded-xl border border-white/5 px-3 py-3 flex-shrink-0 w-[65vw] max-w-[240px] sm:w-auto sm:max-w-none">
             <span className="text-lg">{r.icon}</span>
             <h3 className="mt-1.5 text-xs font-bold text-white">{r.title}</h3>
-            <p className="mt-0.5 text-[11px] text-[#80949b] leading-snug hidden sm:block">{r.desc}</p>
+            <p className="mt-0.5 text-[11px] text-muted leading-snug hidden sm:block">{r.desc}</p>
           </div>
         ))}
       </div>

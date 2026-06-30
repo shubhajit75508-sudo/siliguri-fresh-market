@@ -93,7 +93,7 @@ export default function AdminDeliveryBoysPage() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-[#5a7278]" /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-light" /></div>;
   }
 
   return (
@@ -114,11 +114,11 @@ export default function AdminDeliveryBoysPage() {
           className="mb-6 rounded-2xl border border-border bg-surface p-5">
           <h3 className="mb-4 font-bold">New Delivery Boy</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Phone *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Email (auto-filled if blank)" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Password (auto-generated if blank)" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Service Area" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} className="rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Phone *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Email (auto-filled if blank)" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Password (auto-generated if blank)" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Service Area" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
           </div>
           <div className="mt-4 flex gap-2">
             <button onClick={addBoyFn} disabled={saving} className="rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim disabled:opacity-50">
@@ -129,7 +129,7 @@ export default function AdminDeliveryBoysPage() {
         </motion.div>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-[#0d1b2a]">
+      <div className="overflow-x-auto rounded-xl border border-border bg-surface">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b bg-surface text-xs uppercase tracking-wide text-muted">
@@ -144,7 +144,7 @@ export default function AdminDeliveryBoysPage() {
           </thead>
           <tbody>
             {boys.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-[#5a7278]">No delivery boys registered.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-muted-light">No delivery boys registered.</td></tr>
             ) : (
               [...boys].reverse().map((b) => (
                 <tr key={b.id} className="border-b last:border-0 hover:bg-surface/50">

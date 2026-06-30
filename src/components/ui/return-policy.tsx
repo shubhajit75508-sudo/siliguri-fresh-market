@@ -60,7 +60,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
   if (expired) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-        <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl text-center" onClick={(e) => e.stopPropagation()}>
+        <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl text-center" onClick={(e) => e.stopPropagation()}>
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/8">
             <Clock className="h-6 w-6 text-gray-400" />
           </div>
@@ -79,7 +79,7 @@ export function ReturnRequestModal({ orderId, deliveredAt, onClose }: { orderId:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl"
+        className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {sent ? (

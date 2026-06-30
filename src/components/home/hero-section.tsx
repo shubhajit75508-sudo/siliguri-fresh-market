@@ -61,7 +61,7 @@ export function HeroSection() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/search"
-                  className="inline-flex h-12 items-center rounded-full bg-[#0d1b2a] px-7 text-[14px] font-semibold text-foreground shadow-lg shadow-black/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="inline-flex h-12 items-center rounded-full bg-surface px-7 text-[14px] font-semibold text-foreground shadow-lg shadow-black/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Shop fresh now
                 </Link>

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Buy Fresh Fish Online in Siliguri | Rohu, Katla, Hilsa, Prawns | Home Delivery",

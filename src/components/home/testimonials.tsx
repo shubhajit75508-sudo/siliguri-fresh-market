@@ -56,15 +56,15 @@ const testimonials: Testimonial[] = [
 
 export function FreshnessBanner() {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d2b1a] via-[#133a23] to-[#1A5C36] border border-[#2ecc71]/20 p-5">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d2b1a] via-[#133a23] to-[#1A5C36] border border-brand-fresh/20 p-5">
       <div className="flex items-center gap-4">
-        <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-[#2ecc71]/15">
-          <Leaf className="h-6 w-6 text-[#2ecc71]" />
+        <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-brand-fresh/15">
+          <Leaf className="h-6 w-6 text-brand-fresh" />
         </span>
         <div>
           <h3 className="text-base font-extrabold text-white">100% Freshness Guarantee</h3>
           <p className="mt-0.5 text-xs text-[#b7c9c2] leading-relaxed">
-            Not satisfied? <strong className="text-[#2ecc71]">Free replacement</strong> within 3 hours. No questions asked.
+            Not satisfied? <strong className="text-brand-fresh">Free replacement</strong> within 3 hours. No questions asked.
           </p>
         </div>
       </div>
@@ -92,11 +92,11 @@ export function Testimonials() {
             <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-center text-center gap-1.5">
               <div className="flex gap-[1px]">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`h-3.5 w-3.5 ${i < t.rating ? "text-[#2ecc71] fill-current" : "text-white/30"}`} />
+                  <Star key={i} className={`h-3.5 w-3.5 ${i < t.rating ? "text-brand-fresh fill-current" : "text-white/30"}`} />
                 ))}
               </div>
               <p className="text-xs font-semibold text-white leading-snug">"{t.quote}"</p>
-              <p className="text-[11px] font-medium text-[#2ecc71]">— {t.name}</p>
+              <p className="text-[11px] font-medium text-brand-fresh">— {t.name}</p>
             </div>
           </div>
         ))}

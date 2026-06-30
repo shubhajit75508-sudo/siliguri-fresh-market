@@ -58,7 +58,7 @@ export default function AdminOrdersPage() {
       : orders.filter((o) => o.status === activeTab);
 
   if (!loaded) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-[#5a7278]" /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-light" /></div>;
   }
 
   return (
@@ -77,7 +77,7 @@ export default function AdminOrdersPage() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors capitalize ${
-              activeTab === tab ? "bg-brand-dark text-white" : "bg-white/8 text-[#80949b] hover:bg-gray-200"
+              activeTab === tab ? "bg-brand-dark text-white" : "bg-white/8 text-muted hover:bg-gray-200"
             }`}
           >
             {tab.replace(/_/g, " ")} ({tab === "all" ? orders.length : tab === "out_for_delivery" ? orders.filter(isOutForDelivery).length : orders.filter((o) => o.status === tab).length})
@@ -85,23 +85,23 @@ export default function AdminOrdersPage() {
         ))}
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-xl border bg-[#0d1b2a] shadow-sm">
+      <div className="mt-4 overflow-x-auto rounded-xl border bg-surface shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-white/5 text-left">
-              <th className="px-4 py-3 font-medium text-[#80949b]">Order ID</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Customer</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Items</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Total</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Payment</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Status</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Delivery</th>
-              <th className="px-4 py-3 font-medium text-[#80949b]">Action</th>
+              <th className="px-4 py-3 font-medium text-muted">Order ID</th>
+              <th className="px-4 py-3 font-medium text-muted">Customer</th>
+              <th className="px-4 py-3 font-medium text-muted">Items</th>
+              <th className="px-4 py-3 font-medium text-muted">Total</th>
+              <th className="px-4 py-3 font-medium text-muted">Payment</th>
+              <th className="px-4 py-3 font-medium text-muted">Status</th>
+              <th className="px-4 py-3 font-medium text-muted">Delivery</th>
+              <th className="px-4 py-3 font-medium text-muted">Action</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-[#5a7278]">No orders yet.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-muted-light">No orders yet.</td></tr>
             ) : (
               filtered.map((order) => (
                 <tr key={order.id} className="border-b hover:bg-white/5">
@@ -144,7 +144,7 @@ export default function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
-                        <Eye className="h-4 w-4 text-[#80949b]" />
+                        <Eye className="h-4 w-4 text-muted" />
                       </button>
                       {!isOutForDelivery(order) && order.status !== "delivered" && order.status !== "cancelled" && (
                         <>
@@ -183,7 +183,7 @@ export default function AdminOrdersPage() {
       {/* Cancel confirm modal */}
       {confirmCancel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmCancel(null)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold">Cancel Order</h3>
             <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-white">{confirmCancel}</span>?</p>
             <div className="mt-6 flex gap-3">
@@ -199,7 +199,7 @@ export default function AdminOrdersPage() {
       {/* Detail modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-lg rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="mx-4 w-full max-w-lg rounded-2xl bg-surface p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">{selectedOrder.id}</h3>
               <button onClick={() => setSelectedOrder(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
@@ -335,7 +335,7 @@ export default function AdminOrdersPage() {
 
       {returnModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setReturnModal(null)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">Return Request</h3>
               <button onClick={() => setReturnModal(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
@@ -374,7 +374,7 @@ function AssignModal({ order, onAssign, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#0d1b2a] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold">Assign Delivery</h3>
           <button onClick={onClose} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>

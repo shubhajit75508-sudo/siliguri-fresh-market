@@ -95,7 +95,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 transform bg-[#0d1b2a] border-r border-white/10 transition-transform lg:translate-x-0 lg:static",
+          "fixed inset-y-0 left-0 z-50 w-64 transform bg-surface border-r border-white/10 transition-transform lg:translate-x-0 lg:static",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -128,7 +128,7 @@ export default function AdminLayout({
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-brand-dark text-white"
-                    : "text-[#80949b] hover:bg-white/8"
+                    : "text-muted hover:bg-white/8"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -140,7 +140,7 @@ export default function AdminLayout({
         <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-4">
           <button
             onClick={() => { logout(); authLogout(); document.cookie = "sfm-auth-session=; path=/; max-age=0"; router.push("/auth/login"); }}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#80949b] transition-colors hover:bg-white/8"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-white/8"
           >
             <LogOut className="h-4 w-4" />
             Logout
@@ -157,7 +157,7 @@ export default function AdminLayout({
 
       {/* Main */}
       <div className="flex-1">
-        <header className="flex h-16 items-center gap-4 border-b bg-[#0d1b2a] px-6">
+        <header className="flex h-16 items-center gap-4 border-b bg-surface px-6">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
             <Menu className="h-5 w-5" />
           </button>

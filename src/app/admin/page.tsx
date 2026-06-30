@@ -33,7 +33,7 @@ export default function AdminDashboard() {
   return (
     <div>
       <h2 className="text-2xl font-bold text-white">Dashboard</h2>
-      <p className="text-sm text-[#80949b]">
+      <p className="text-sm text-muted">
         {stats.totalOrders} total orders · {stats.pendingOrders} pending
       </p>
 
@@ -49,10 +49,10 @@ export default function AdminDashboard() {
           <RevenueChart />
         </div>
 
-        <div className="rounded-xl border bg-[#0d1b2a] p-6 shadow-sm">
+        <div className="rounded-xl border bg-surface p-6 shadow-sm">
           <h3 className="font-bold">Top Categories</h3>
           {orders.length === 0 ? (
-            <p className="mt-4 text-sm text-[#5a7278]">No data yet. Data will appear once orders are placed.</p>
+            <p className="mt-4 text-sm text-muted-light">No data yet. Data will appear once orders are placed.</p>
           ) : (
             <div className="mt-4 space-y-3">
               {Object.entries(

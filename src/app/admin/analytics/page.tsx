@@ -28,11 +28,11 @@ export default function AnalyticsPage() {
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-[#5a7278]" /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-light" /></div>;
   }
 
   if (!data) {
-    return <div className="py-10 text-center text-sm text-[#5a7278]">Failed to load analytics.</div>;
+    return <div className="py-10 text-center text-sm text-muted-light">Failed to load analytics.</div>;
   }
 
   const cards = [
@@ -49,40 +49,40 @@ export default function AnalyticsPage() {
   return (
     <div>
       <h2 className="text-2xl font-bold">Analytics</h2>
-      <p className="text-sm text-[#80949b]">Business performance at a glance</p>
+      <p className="text-sm text-muted">Business performance at a glance</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
-          <div key={c.label} className="rounded-xl border bg-[#0d1b2a] p-5 shadow-sm">
+          <div key={c.label} className="rounded-xl border bg-surface p-5 shadow-sm">
             <div className={"mb-3 inline-flex rounded-lg p-2.5 " + c.color}>
               <c.icon className="h-5 w-5" />
             </div>
             <p className="text-2xl font-bold">{c.value}</p>
-            <p className="mt-0.5 text-xs text-[#80949b]">{c.label}</p>
+            <p className="mt-0.5 text-xs text-muted">{c.label}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border bg-[#0d1b2a] p-6 shadow-sm">
+        <div className="rounded-xl border bg-surface p-6 shadow-sm">
           <h3 className="font-bold">Orders by Status</h3>
           <div className="mt-4 space-y-3">
             {Object.entries(data.statusCounts).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between">
-                <span className="text-sm capitalize text-[#80949b]">{status.replace(/_/g, " ")}</span>
+                <span className="text-sm capitalize text-muted">{status.replace(/_/g, " ")}</span>
                 <span className="text-sm font-semibold">{count}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="rounded-xl border bg-[#0d1b2a] p-6 shadow-sm">
+        <div className="rounded-xl border bg-surface p-6 shadow-sm">
           <h3 className="font-bold">Quick Stats</h3>
           <div className="mt-4 space-y-3 text-sm">
-            <div className="flex justify-between"><span className="text-[#80949b]">Pending Orders</span><span className="font-semibold">{data.pendingOrders}</span></div>
-            <div className="flex justify-between"><span className="text-[#80949b]">Active Deliveries</span><span className="font-semibold">{data.activeDeliveries}</span></div>
-            <div className="flex justify-between"><span className="text-[#80949b]">Total Customers</span><span className="font-semibold">{data.totalCustomers}</span></div>
-            <div className="flex justify-between"><span className="text-[#80949b]">Products in Catalog</span><span className="font-semibold">{data.totalProducts}</span></div>
+            <div className="flex justify-between"><span className="text-muted">Pending Orders</span><span className="font-semibold">{data.pendingOrders}</span></div>
+            <div className="flex justify-between"><span className="text-muted">Active Deliveries</span><span className="font-semibold">{data.activeDeliveries}</span></div>
+            <div className="flex justify-between"><span className="text-muted">Total Customers</span><span className="font-semibold">{data.totalCustomers}</span></div>
+            <div className="flex justify-between"><span className="text-muted">Products in Catalog</span><span className="font-semibold">{data.totalProducts}</span></div>
           </div>
         </div>
       </div>

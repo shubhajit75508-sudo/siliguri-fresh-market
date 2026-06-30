@@ -158,7 +158,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="flex min-h-screen flex-col bg-white/5">
-      <header className="flex h-14 items-center gap-3 border-b bg-[#0d1b2a] px-4 shadow-sm">
+      <header className="flex h-14 items-center gap-3 border-b bg-surface px-4 shadow-sm">
         <Truck className="h-5 w-5 text-brand-fresh-dim" />
         <div className="leading-none">
           <p className="text-sm font-bold">{boy.name}</p>

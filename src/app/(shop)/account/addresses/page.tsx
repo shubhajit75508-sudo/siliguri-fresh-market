@@ -150,7 +150,7 @@ export default function AddressesPage() {
             value={form.label}
             onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
             placeholder="Label (Home, Work…)"
-            className="w-full rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+            className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
           />
 
           <div>
@@ -163,20 +163,20 @@ export default function AddressesPage() {
                 onChange={(e) => setForm((f) => ({ ...f, line1: e.target.value }))}
                 placeholder="Street / Road / Colony *"
                 required
-                className="w-full rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   value={form.area}
                   onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
                   placeholder="Area / Locality *"
-                  className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                  className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
                 />
                 <input
                   value={form.landmark}
                   onChange={(e) => setForm((f) => ({ ...f, landmark: e.target.value }))}
                   placeholder="Landmark *"
-                  className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                  className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
                 />
               </div>
             </div>
@@ -191,19 +191,19 @@ export default function AddressesPage() {
                 value={form.building}
                 onChange={(e) => setForm((f) => ({ ...f, building: e.target.value }))}
                 placeholder="Building / House *"
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
               <input
                 value={form.flat}
                 onChange={(e) => setForm((f) => ({ ...f, flat: e.target.value }))}
                 placeholder="Flat / Door No."
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
               <input
                 value={form.floor}
                 onChange={(e) => setForm((f) => ({ ...f, floor: e.target.value }))}
                 placeholder="Floor (optional)"
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function AddressesPage() {
             value={form.line2}
             onChange={(e) => setForm((f) => ({ ...f, line2: e.target.value }))}
             placeholder="Additional info (optional)"
-            className="w-full rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+            className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
           />
 
           <div>
@@ -222,14 +222,14 @@ export default function AddressesPage() {
                 value={form.city}
                 onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
                 placeholder="City"
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
               <input
                 value={form.pincode}
                 onChange={(e) => setForm((f) => ({ ...f, pincode: e.target.value }))}
                 placeholder="Pincode *"
                 required
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm tracking-widest font-bold"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm tracking-widest font-bold"
               />
             </div>
           </div>
@@ -263,13 +263,13 @@ export default function AddressesPage() {
                 value={form.lat}
                 onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))}
                 placeholder="Latitude"
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
               <input
                 value={form.lng}
                 onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))}
                 placeholder="Longitude"
-                className="rounded-xl border border-border bg-[#0d1b2a] px-3 py-2.5 text-sm"
+                className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               />
             </div>
           )}

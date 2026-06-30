@@ -205,7 +205,7 @@ export default function TrackOrderPage({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="h-12 w-12 mb-4 text-[#80949b]" />
+        <Package className="h-12 w-12 mb-4 text-muted" />
         <h2 className="text-lg font-bold">Loading order...</h2>
         <p className="mt-1 text-sm text-muted">Looking up order {orderId}</p>
       </div>
@@ -215,7 +215,7 @@ export default function TrackOrderPage({
   if (!order) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="h-12 w-12 mb-4 text-[#80949b]" />
+        <Package className="h-12 w-12 mb-4 text-muted" />
         <h2 className="text-lg font-bold">Order not found</h2>
         <p className="mt-1 text-sm text-muted">No order with ID {orderId}</p>
       </div>
@@ -245,7 +245,7 @@ export default function TrackOrderPage({
             </div>
           )}
         </div>
-        <div className="mt-8 rounded-2xl border border-border bg-[#0d1b2a] p-4 shadow-sm">
+        <div className="mt-8 rounded-2xl border border-border bg-surface p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-lg">📦</div>
             <div className="flex-1">
@@ -264,10 +264,10 @@ export default function TrackOrderPage({
   return (
       <div className="py-6">
       <div className="text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2ecc71]/10 px-3 py-1 text-[11px] font-semibold text-[#2ecc71] mb-3">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-fresh/10 px-3 py-1 text-[11px] font-semibold text-brand-fresh mb-3">
           <span className="live-dot relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#2ecc71] opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#2ecc71]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-fresh" />
           </span>
           LIVE TRACKING
         </span>
@@ -275,27 +275,27 @@ export default function TrackOrderPage({
         {isOutForDelivery && (
           <div className="mt-2 flex flex-col items-center gap-1">
             {distance && (
-              <p className="text-sm text-[#80949b] flex items-center justify-center gap-1">
-                <Truck className="h-4 w-4 inline text-[#2ecc71]" /> {distance} away
+              <p className="text-sm text-muted flex items-center justify-center gap-1">
+                <Truck className="h-4 w-4 inline text-brand-fresh" /> {distance} away
               </p>
             )}
             {etaMinutes !== null && etaMinutes > 0 && (
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-4 py-1.5">
-                <Clock className="h-4 w-4 text-[#2ecc71]" />
+              <div className="inline-flex items-center gap-2 rounded-full bg-brand-fresh/10 border border-brand-fresh/20 px-4 py-1.5">
+                <Clock className="h-4 w-4 text-brand-fresh" />
                 <span className="text-sm font-bold text-white tabular-nums">
                   Arriving in ~{etaMinutes} min
                 </span>
               </div>
             )}
             {lastUpdated && (
-              <p className="text-[10px] text-[#5a7278]">
+              <p className="text-[10px] text-muted-light">
                 Updated {new Date(lastUpdated).toLocaleTimeString()}
               </p>
             )}
           </div>
         )}
         {!isOutForDelivery && !isDelivered && (
-          <p className="mt-1 text-sm text-[#80949b]">Estimated delivery: 30 min — 1 hour</p>
+          <p className="mt-1 text-sm text-muted">Estimated delivery: 30 min — 1 hour</p>
         )}
       </div>
 
@@ -304,7 +304,7 @@ export default function TrackOrderPage({
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setShowCancel(true)}
-            className="text-[11px] text-[#80949b] hover:text-[#e74c3c] underline underline-offset-2 transition-colors"
+            className="text-[11px] text-muted hover:text-brand-red underline underline-offset-2 transition-colors"
           >
             Cancel Order
           </button>
@@ -331,14 +331,14 @@ export default function TrackOrderPage({
           </div>
         )}
         {isOutForDelivery && boyLocation && (
-          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 rounded-xl bg-[#0d1b2a]/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
+          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 rounded-xl bg-surface/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
             <span className="live-dot relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#2ecc71] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#2ecc71]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-fresh" />
             </span>
             <span className="text-white">Live</span>
             {speed > 0 && (
-              <span className="text-[#80949b] ml-1 font-mono">{(speed * 3.6).toFixed(1)} km/h</span>
+              <span className="text-muted ml-1 font-mono">{(speed * 3.6).toFixed(1)} km/h</span>
             )}
           </div>
         )}
@@ -346,10 +346,10 @@ export default function TrackOrderPage({
 
       {/* Delivery Code */}
       {order.deliveryCode && (isOutForDelivery || order.status === "delivered") && (
-        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2ecc71]/30 bg-[#2ecc71]/5 p-5 text-center">
+        <div className="mt-4 rounded-2xl border-2 border-dashed border-brand-fresh/30 bg-brand-fresh/5 p-5 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <KeyRound className="h-4 w-4 text-[#2ecc71]" />
-            <p className="text-xs font-semibold text-[#80949b]">
+            <KeyRound className="h-4 w-4 text-brand-fresh" />
+            <p className="text-xs font-semibold text-muted">
               {isDelivered ? "Delivery code used" : "Share this code with delivery partner"}
             </p>
           </div>
@@ -362,7 +362,7 @@ export default function TrackOrderPage({
               className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
               title="Copy code"
             >
-              <Copy className="h-4 w-4 text-[#80949b]" />
+              <Copy className="h-4 w-4 text-muted" />
             </button>
           </div>
         </div>
@@ -378,7 +378,7 @@ export default function TrackOrderPage({
               Request Replacement ({deliveredAt ? getRemainingTime(deliveredAt) : "3 hours"})
             </button>
           ) : (
-            <div className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs text-[#5a7278]">
+            <div className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs text-muted-light">
               <Clock className="h-3.5 w-3.5" /> Replacement window expired
             </div>
           )}
@@ -392,7 +392,7 @@ export default function TrackOrderPage({
       {/* Cancel Confirmation Modal */}
       {showCancel && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4 pb-8 sm:px-0 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-[#0d1b2a] p-6 shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-surface p-6 shadow-2xl animate-[fadeIn_0.2s_ease-out]">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-red/10 mb-4">
               <Ban className="h-8 w-8 text-brand-red" />
             </div>
@@ -431,7 +431,7 @@ export default function TrackOrderPage({
 
       {/* Status Card */}
       <div className="glass rounded-2xl border border-white/10 p-8 text-center mt-6 mb-6">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-[#2ecc71]/15 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-fresh/15 flex items-center justify-center mb-4">
           {isDelivered ? <CheckCircle className="h-8 w-8" /> : isOutForDelivery ? <Truck className="h-8 w-8" /> : <Package className="h-8 w-8" />}
         </div>
         <p className="text-sm font-bold text-[#c2d0c9]">
@@ -451,25 +451,25 @@ export default function TrackOrderPage({
                   animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 1, repeat: Infinity }}
                   className={`flex h-10 w-10 items-center justify-center rounded-full text-lg ${
-                    isActive ? "bg-[#2ecc71] text-[#0a1f1c]" : "bg-white/5 border border-white/10 text-[#80949b]"
+                    isActive ? "bg-brand-fresh text-[#FFF3E2]" : "bg-white/5 border border-white/10 text-muted"
                   }`}
                 >
                   {(() => { const Icon = stage.icon; return <Icon className="h-5 w-5" />; })()}
                 </motion.div>
                 {i < stages.length - 1 && (
-                  <div className={`h-12 w-0.5 ${i < currentStage ? "bg-[#2ecc71]" : "bg-white/10"}`} />
+                  <div className={`h-12 w-0.5 ${i < currentStage ? "bg-brand-fresh" : "bg-white/10"}`} />
                 )}
               </div>
               <div className="pb-8 pt-2">
-                <p className={`text-sm font-bold ${isActive ? "text-white" : "text-[#80949b]"}`}>
+                <p className={`text-sm font-bold ${isActive ? "text-white" : "text-muted"}`}>
                   {stage.label}
                 </p>
                 {isCurrent && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-[#2ecc71]">
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-brand-fresh">
                     {stage.sub}
                   </motion.p>
                 )}
-                {isActive && !isCurrent && <p className="text-xs text-[#2ecc71]">Completed</p>}
+                {isActive && !isCurrent && <p className="text-xs text-brand-fresh">Completed</p>}
               </div>
             </div>
           );

@@ -17,15 +17,15 @@ export function Header() {
   const itemCount = hydrated ? getItemCount() : 0;
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0d1b2a]/95 shadow-[0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl backdrop-saturate-150">
+    <header className="sticky top-0 z-50 bg-surface/95 shadow-[0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl backdrop-saturate-150">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2ecc71]/20">            <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-10 w-10 object-contain rounded-xl" /></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-fresh/20">            <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-10 w-10 object-contain rounded-xl" /></div>
             <div className="flex flex-col">
-              <span className="text-[15px] font-extrabold text-white leading-tight">Siliguri</span>
-              <span className="text-[10px] font-bold text-[#2ecc71] uppercase tracking-wider leading-tight">Fresh Mart</span>
+              <span className="text-[15px] font-extrabold text-foreground leading-tight">Siliguri</span>
+              <span className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider leading-tight">Fresh Mart</span>
             </div>
           </Link>
 
@@ -38,7 +38,7 @@ export function Header() {
               <>
                 <Link
                   href={currentUser.role === "admin" ? "/admin" : currentUser.role === "delivery" ? "/delivery" : "/account"}
-                  className="flex h-10 items-center gap-2 rounded-full border border-border bg-[#0d1b2a] px-3 pl-1.5 transition-all hover:border-brand-dark/20 hover:shadow-sm"
+                  className="flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-3 pl-1.5 transition-all hover:border-brand-dark/20 hover:shadow-sm"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-dark text-[11px] font-bold text-white">
                     {currentUser.name.charAt(0)}
@@ -62,7 +62,7 @@ export function Header() {
               <>
                 <Link
                   href="/auth/signup"
-                  className="hidden lg:flex h-10 items-center gap-1.5 rounded-full border border-border bg-[#0d1b2a] px-3 text-[13px] font-medium hover:bg-surface"
+                  className="hidden lg:flex h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface"
                 >
                   <UserPlus className="h-3.5 w-3.5" /> Sign Up
                 </Link>
@@ -82,7 +82,7 @@ export function Header() {
               <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
               Cart
               {itemCount > 0 && (
-                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#0d1b2a] px-1 text-[10px] font-bold text-white">
+                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-surface px-1 text-[10px] font-bold text-white">
                   {itemCount}
                 </span>
               )}
@@ -93,10 +93,10 @@ export function Header() {
         {/* Mobile */}
         <div className="flex h-14 items-center gap-3 lg:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2ecc71]/20"><img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-9 w-9 object-contain rounded-lg" /></div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-fresh/20"><img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-9 w-9 object-contain rounded-lg" /></div>
             <div className="leading-none">
               <div className="text-sm font-bold text-white">Siliguri</div>
-              <div className="text-[10px] font-bold text-[#2ecc71] uppercase tracking-wider">Fresh Mart</div>
+              <div className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider">Fresh Mart</div>
             </div>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">
@@ -129,7 +129,7 @@ export function Header() {
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0d1b2a] text-[8px] font-bold text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-surface text-[8px] font-bold text-white">
                   {itemCount}
                 </span>
               )}

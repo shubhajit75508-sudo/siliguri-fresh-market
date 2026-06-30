@@ -63,7 +63,7 @@ export default function ProductDetailPage({
     <div className="py-4">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-1 text-xs text-[#80949b]">
+        <div className="flex items-center gap-1 text-xs text-muted">
           <button onClick={() => router.push("/")} className="hover:text-white transition-colors">Home</button>
           <span className="mx-1">/</span>
           {product.category && (
@@ -74,7 +74,7 @@ export default function ProductDetailPage({
         </div>
         <button
           onClick={() => { if (navigator.share) navigator.share({ title: product.name, url: window.location.href }); }}
-          className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-medium text-[#80949b] hover:text-white hover:bg-white/5 transition-colors"
+          className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-medium text-muted hover:text-white hover:bg-white/5 transition-colors"
         >
           <Share2 className="h-3.5 w-3.5" /> Share
         </button>
@@ -89,13 +89,13 @@ export default function ProductDetailPage({
               className="absolute inset-0 w-full h-full object-cover product-img"
             />
             {isFlashDeal && (
-              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-[#e74c3c] px-3 py-1.5 text-[11px] font-bold text-white shadow-lg">
+              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-red px-3 py-1.5 text-[11px] font-bold text-white shadow-lg">
                 <Flame className="h-3 w-3" /> -{product.discount}%
               </span>
             )}
             {product.freshnessScore > 0 && (
               <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/40 backdrop-blur px-2.5 py-1 text-[10px] font-semibold text-white">
-                <Leaf className="h-3 w-3 text-[#2ecc71]" /> {product.freshnessScore}% Fresh
+                <Leaf className="h-3 w-3 text-brand-fresh" /> {product.freshnessScore}% Fresh
               </span>
             )}
           </div>
@@ -106,7 +106,7 @@ export default function ProductDetailPage({
                   key={i}
                   onClick={() => setSelectedImage(i)}
                   className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                    selectedImage === i ? "border-[#2ecc71] ring-1 ring-[#2ecc71]/30" : "border-white/5 opacity-60 hover:opacity-90"
+                    selectedImage === i ? "border-brand-fresh ring-1 ring-brand-fresh/30" : "border-white/5 opacity-60 hover:opacity-90"
                   }`}
                 >
                   <img src={img} alt={product.name + " - Image " + (i + 1)} className="w-full h-full object-cover" />
@@ -120,11 +120,11 @@ export default function ProductDetailPage({
         <div className="flex flex-col">
           {/* Category + Freshness */}
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-7 w-fit items-center rounded-full bg-[#2ecc71]/10 px-3 text-[11px] font-semibold capitalize text-[#2ecc71]">
+            <span className="inline-flex h-7 w-fit items-center rounded-full bg-brand-fresh/10 px-3 text-[11px] font-semibold capitalize text-brand-fresh">
               {product.category}
             </span>
             {product.freshnessScore > 0 && (
-              <span className="inline-flex h-7 w-fit items-center gap-1 rounded-full bg-[#2ecc71]/10 px-3 text-[11px] font-semibold text-[#2ecc71]">
+              <span className="inline-flex h-7 w-fit items-center gap-1 rounded-full bg-brand-fresh/10 px-3 text-[11px] font-semibold text-brand-fresh">
                 <Leaf className="h-3 w-3" /> {product.freshnessScore}% Fresh
               </span>
             )}
@@ -135,30 +135,30 @@ export default function ProductDetailPage({
           {/* Reviews + Social Proof */}
           <div className="mt-2 flex items-center gap-3 flex-wrap">
             <span className="flex items-center gap-1 text-sm text-white">
-              <span className="flex items-center gap-0.5 rounded-full bg-[#2ecc71]/15 px-2 py-0.5 text-xs font-bold text-[#2ecc71]">
+              <span className="flex items-center gap-0.5 rounded-full bg-brand-fresh/15 px-2 py-0.5 text-xs font-bold text-brand-fresh">
                 <Star className="h-3 w-3 fill-current" /> {product.rating?.toFixed(1) || "4.5"}
               </span>
             </span>
-            <span className="text-xs text-[#80949b]">
+            <span className="text-xs text-muted">
               {product.reviewCount || 0} reviews
             </span>
-            <span className="text-xs text-[#80949b]">·</span>
-            <span className="text-xs text-[#2ecc71] font-semibold">
+            <span className="text-xs text-muted">·</span>
+            <span className="text-xs text-brand-fresh font-semibold">
               🔥 {boughtToday}+ bought today
             </span>
           </div>
 
           {/* Stock + Delivery Row */}
           <div className="mt-3 flex items-center gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-1 text-xs text-[#2ecc71] font-semibold">
-              <span className="live-dot h-2 w-2 rounded-full bg-[#2ecc71]" /> In Stock
+            <span className="inline-flex items-center gap-1 text-xs text-brand-fresh font-semibold">
+              <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh" /> In Stock
             </span>
-            <span className="text-xs text-[#80949b]">·</span>
-            <span className="inline-flex items-center gap-1 text-xs text-[#80949b]">
+            <span className="text-xs text-muted">·</span>
+            <span className="inline-flex items-center gap-1 text-xs text-muted">
               <Clock className="h-3 w-3" /> Delivers in {product.deliveryEta || 30}-45 min
             </span>
-            <span className="text-xs text-[#80949b]">·</span>
-            <span className="inline-flex items-center gap-1 text-xs text-[#2ecc71] font-semibold">
+            <span className="text-xs text-muted">·</span>
+            <span className="inline-flex items-center gap-1 text-xs text-brand-fresh font-semibold">
               <Truck className="h-3 w-3" /> Free over ₹299
             </span>
           </div>
@@ -166,7 +166,7 @@ export default function ProductDetailPage({
           {/* Source / Product Info */}
           {(product.species || product.river || product.source || product.catchDate) && (
             <div className="mt-3 rounded-xl bg-white/5 border border-white/5 p-3">
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#80949b]">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted">
                 {product.species && <span><span className="text-white font-semibold">Species:</span> {product.species}</span>}
                 {product.river && <span><span className="text-white font-semibold">River:</span> {product.river}</span>}
                 {product.source && <span><span className="text-white font-semibold">Source:</span> {product.source}</span>}
@@ -176,12 +176,12 @@ export default function ProductDetailPage({
           )}
 
           {product.description && (
-            <p className="mt-4 text-sm leading-relaxed text-[#80949b]">{product.description}</p>
+            <p className="mt-4 text-sm leading-relaxed text-muted">{product.description}</p>
           )}
 
           {/* Weight selector */}
           <div className="mt-5">
-            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#80949b]">Select Weight</p>
+            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Select Weight</p>
             <div className="flex flex-wrap gap-2">
               {weights.map((w) => (
                 <button
@@ -189,8 +189,8 @@ export default function ProductDetailPage({
                   onClick={() => setSelectedWeight(w)}
                   className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-all ${
                     displayWeight === w
-                      ? "border-[#2ecc71] bg-[#2ecc71]/10 text-[#2ecc71] shadow-sm"
-                      : "border-white/10 text-[#80949b] hover:border-[#2ecc71]/40"
+                      ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh shadow-sm"
+                      : "border-white/10 text-muted hover:border-brand-fresh/40"
                   }`}
                 >
                   {w}
@@ -202,7 +202,7 @@ export default function ProductDetailPage({
           {/* Cut Options */}
           {product.cuts && product.cuts.length > 0 && (
             <div className="mt-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#80949b]">Cut Preference</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Cut Preference</p>
               <div className="flex flex-wrap gap-2">
                 {product.cuts.map((c) => (
                   <button
@@ -210,8 +210,8 @@ export default function ProductDetailPage({
                     onClick={() => setSelectedCut(c === selectedCut ? "" : c)}
                     className={`rounded-xl border-2 px-4 py-2 text-xs font-semibold transition-all ${
                       selectedCut === c
-                        ? "border-[#2ecc71] bg-[#2ecc71]/10 text-[#2ecc71] shadow-sm"
-                        : "border-white/10 text-[#80949b] hover:border-[#2ecc71]/40"
+                        ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh shadow-sm"
+                        : "border-white/10 text-muted hover:border-brand-fresh/40"
                     }`}
                   >
                     {c}
@@ -224,7 +224,7 @@ export default function ProductDetailPage({
           {/* Cleaning Options */}
           {product.cleaningOptions && product.cleaningOptions.length > 0 && (
             <div className="mt-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#80949b]">Cleaning</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Cleaning</p>
               <div className="flex flex-wrap gap-2">
                 {product.cleaningOptions.map((c) => (
                   <button
@@ -232,8 +232,8 @@ export default function ProductDetailPage({
                     onClick={() => setSelectedClean(c === selectedClean ? "" : c)}
                     className={`rounded-xl border-2 px-4 py-2 text-xs font-semibold transition-all ${
                       selectedClean === c
-                        ? "border-[#2ecc71] bg-[#2ecc71]/10 text-[#2ecc71] shadow-sm"
-                        : "border-white/10 text-[#80949b] hover:border-[#2ecc71]/40"
+                        ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh shadow-sm"
+                        : "border-white/10 text-muted hover:border-brand-fresh/40"
                     }`}
                   >
                     {c}
@@ -248,24 +248,24 @@ export default function ProductDetailPage({
             <div className="flex items-baseline gap-3 flex-wrap">
               <span className="text-[28px] font-bold text-white">{formatPrice(displayPrice)}</span>
               {displayOriginal && displayOriginal > displayPrice && (
-                <span className="text-base text-[#5a7278] line-through">{formatPrice(displayOriginal)}</span>
+                <span className="text-base text-muted-light line-through">{formatPrice(displayOriginal)}</span>
               )}
               {isFlashDeal && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#e74c3c]/10 border border-[#e74c3c]/20 px-2.5 py-0.5 text-[11px] font-bold text-[#e74c3c]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-red/10 border border-brand-red/20 px-2.5 py-0.5 text-[11px] font-bold text-brand-red">
                   -{discountPercent}%
                 </span>
               )}
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#2ecc71]/10 border border-[#2ecc71]/20 px-2.5 py-0.5 text-[11px] font-bold text-[#2ecc71]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-fresh/10 border border-brand-fresh/20 px-2.5 py-0.5 text-[11px] font-bold text-brand-fresh">
                 <BadgeCheck className="h-3 w-3" /> Verified Seller
               </span>
             </div>
             {savings > 0 && (
-              <p className="mt-1 text-xs text-[#2ecc71] font-semibold">
+              <p className="mt-1 text-xs text-brand-fresh font-semibold">
                 You save {formatPrice(savings)} ({discountPercent}% off)
               </p>
             )}
             {displayWeight !== weights[0] && (
-              <p className="mt-1 text-xs text-[#80949b]">{formatPrice(getPriceForWeight(product.price, weights[0], product.weightPrices))} / {weights[0]}</p>
+              <p className="mt-1 text-xs text-muted">{formatPrice(getPriceForWeight(product.price, weights[0], product.weightPrices))} / {weights[0]}</p>
             )}
           </div>
 
@@ -275,7 +275,7 @@ export default function ProductDetailPage({
               onClick={() => {
                 addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
               }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2ecc71] px-6 py-3.5 font-bold text-[#0a1f1c] shadow-lg shadow-[#2ecc71]/25 transition-all hover:bg-[#27ae60] active:scale-[0.98]"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-brand-fresh px-6 py-3.5 font-bold text-[#FFF3E2] shadow-lg shadow-brand-fresh/25 transition-all hover:bg-brand-fresh-dim active:scale-[0.98]"
             >
               <ShoppingCart className="h-5 w-5" />
               Add to Cart
@@ -285,8 +285,8 @@ export default function ProductDetailPage({
               onClick={() => toggleWishlist(product.id)}
               className={`flex h-[52px] w-[52px] items-center justify-center rounded-2xl border-2 transition-all ${
                 wishlist.includes(product.id)
-                  ? "border-[#e74c3c] bg-[#e74c3c]/10 text-[#e74c3c]"
-                  : "border-white/10 text-[#80949b] hover:border-[#e74c3c]/40 hover:text-[#e74c3c]"
+                  ? "border-brand-red bg-brand-red/10 text-brand-red"
+                  : "border-white/10 text-muted hover:border-brand-red/40 hover:text-brand-red"
               }`}
             >
               <Heart className={`h-5 w-5 ${wishlist.includes(product.id) ? "fill-current" : ""}`} />
@@ -303,10 +303,10 @@ export default function ProductDetailPage({
               { icon: Navigation, text: "Replacement guaranteed — request within 3 hours" },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2ecc71]/10">
-                  <Icon className="h-3 w-3 text-[#2ecc71]" />
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-fresh/10">
+                  <Icon className="h-3 w-3 text-brand-fresh" />
                 </span>
-                <span className="text-sm text-[#80949b]">{text}</span>
+                <span className="text-sm text-muted">{text}</span>
               </div>
             ))}
           </div>
@@ -314,11 +314,11 @@ export default function ProductDetailPage({
           {/* Nutrition Info */}
           {product.nutrition && Object.keys(product.nutrition).length > 0 && (
             <div className="mt-5 rounded-xl bg-white/5 border border-white/5 p-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#80949b]">Nutrition Facts</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Nutrition Facts</p>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(product.nutrition).map(([key, val]) => (
                   <div key={key} className="rounded-lg bg-white/5 px-3 py-1.5 text-center">
-                    <p className="text-[10px] text-[#80949b] uppercase tracking-wide">{key}</p>
+                    <p className="text-[10px] text-muted uppercase tracking-wide">{key}</p>
                     <p className="text-xs font-bold text-white mt-0.5">{val}</p>
                   </div>
                 ))}
@@ -328,9 +328,9 @@ export default function ProductDetailPage({
 
           {/* Trust Badges */}
           <div className="mt-5 flex items-center justify-center gap-4 pt-3 border-t border-white/5">
-            <span className="text-[10px] font-semibold text-[#80949b] tracking-wider flex items-center gap-1"><Shield className="h-3 w-3" /> Secure Checkout</span>
-            <span className="text-[10px] font-semibold text-[#80949b] tracking-wider flex items-center gap-1"><Leaf className="h-3 w-3" /> 100% Fresh</span>
-            <span className="text-[10px] font-semibold text-[#80949b] tracking-wider flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
+            <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Shield className="h-3 w-3" /> Secure Checkout</span>
+            <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Leaf className="h-3 w-3" /> 100% Fresh</span>
+            <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
           </div>
         </div>
       </div>

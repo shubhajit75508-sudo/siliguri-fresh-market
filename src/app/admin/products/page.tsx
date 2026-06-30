@@ -215,23 +215,23 @@ export default function AdminProductsPage() {
         >
           <h3 className="mb-4 font-bold text-white">New Product</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
             <div>
-              <input placeholder="Primary Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Primary Image URL" value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
               {form.image && <img src={form.image} alt="" className="mt-1.5 h-12 w-12 rounded-lg object-cover" />}
             </div>
             <div className="sm:col-span-1">
               <label className="mb-1.5 block text-xs font-medium text-muted">Additional Images</label>
               {(form.images || []).map((url, i) => (
                 <div key={i} className="mb-1.5 flex items-center gap-1.5">
-                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded-xl border border-white/10 bg-[#0d1b2a] px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
+                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded-xl border border-white/10 bg-surface px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
                   {url && <img src={url} alt="" className="h-8 w-8 shrink-0 rounded object-cover" />}
-                  <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 rounded-lg p-1.5 text-[#e74c3c] hover:bg-[#e74c3c]/10"><X className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 rounded-lg p-1.5 text-brand-red hover:bg-brand-red/10"><X className="h-4 w-4" /></button>
                 </div>
               ))}
-              <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="text-xs font-bold text-[#2ecc71] hover:underline">+ Add Image</button>
+              <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="text-xs font-bold text-brand-fresh hover:underline">+ Add Image</button>
             </div>
-            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40">
+            <select value={form.category || "fish"} onChange={(e) => setForm({ ...form, category: e.target.value as import("@/types").Category })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40">
               <option value="fish">Fish</option>
               <option value="chicken">Chicken</option>
               <option value="mutton">Mutton</option>
@@ -239,23 +239,23 @@ export default function AdminProductsPage() {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>
             </select>
-            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-1" />
+            <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-1" />
             <label className="flex cursor-pointer items-center gap-2 sm:col-span-1">
               <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
               <span className="text-sm font-medium text-white">Flash Deal</span>
             </label>
-            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={2} />
-            <input placeholder="Unit (e.g. kg, piece)" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <textarea placeholder="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40 sm:col-span-2" rows={2} />
+            <input placeholder="Unit (e.g. kg, piece)" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
             <label className="flex cursor-pointer items-center gap-2">
               <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} className="h-4 w-4 accent-[#2ecc71]" />
               <span className="text-sm font-medium text-white">In Stock</span>
             </label>
-            <input placeholder="Cuts (comma-separated, e.g. Bengali Cut, Steak)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Source" value={form.source || ""} onChange={(e) => setForm({ ...form, source: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
-            <input placeholder="Catch Date (e.g. Today, 5:00 AM)" value={form.catchDate || ""} onChange={(e) => setForm({ ...form, catchDate: e.target.value })} className="rounded-xl border border-white/10 bg-[#0d1b2a] px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Cuts (comma-separated, e.g. Bengali Cut, Steak)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Source" value={form.source || ""} onChange={(e) => setForm({ ...form, source: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Catch Date (e.g. Today, 5:00 AM)" value={form.catchDate || ""} onChange={(e) => setForm({ ...form, catchDate: e.target.value })} className="rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm text-white outline-none focus:border-brand-fresh/40" />
           </div>
 
           {/* Weight-Price List */}
@@ -268,7 +268,7 @@ export default function AdminProductsPage() {
                   const wps = form.weightPrices || [];
                   setForm({ ...form, weightPrices: [...wps, { weight: "", price: 0 }], price: wps[0]?.price || form.price || 0, weight: [...(form.weight || []), ""] });
                 }}
-                className="text-xs font-bold text-[#2ecc71] hover:underline"
+                className="text-xs font-bold text-brand-fresh hover:underline"
               >
                 + Add Weight
               </button>
@@ -284,9 +284,9 @@ export default function AdminProductsPage() {
                       wps[i] = { ...wps[i], weight: e.target.value };
                       setForm({ ...form, weightPrices: wps, weight: wps.map(w => w.weight).filter(Boolean) });
                     }}
-                    className="flex-1 rounded-xl border border-white/10 bg-[#0d1b2a] px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
+                    className="flex-1 rounded-xl border border-white/10 bg-surface px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
                   />
-                  <span className="text-[#80949b] text-sm">₹</span>
+                  <span className="text-muted text-sm">₹</span>
                   <input
                     placeholder="Price"
                     type="number"
@@ -296,7 +296,7 @@ export default function AdminProductsPage() {
                       wps[i] = { ...wps[i], price: +e.target.value };
                       setForm({ ...form, weightPrices: wps, price: wps[0]?.price || form.price || 0 });
                     }}
-                    className="w-24 rounded-xl border border-white/10 bg-[#0d1b2a] px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
+                    className="w-24 rounded-xl border border-white/10 bg-surface px-3 py-2 text-sm text-white outline-none focus:border-brand-fresh/40"
                   />
                   <button
                     type="button"
@@ -304,7 +304,7 @@ export default function AdminProductsPage() {
                       const wps = (form.weightPrices || []).filter((_, j) => j !== i);
                       setForm({ ...form, weightPrices: wps, price: wps[0]?.price || 0, weight: wps.map(w => w.weight).filter(Boolean) });
                     }}
-                    className="text-[#e74c3c] hover:bg-[#e74c3c]/10 rounded-lg p-1.5"
+                    className="text-brand-red hover:bg-brand-red/10 rounded-lg p-1.5"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -312,7 +312,7 @@ export default function AdminProductsPage() {
               ))}
             </div>
             {(form.weightPrices || []).length === 0 && (
-              <p className="text-xs text-[#80949b] mt-1">Add weight options above. First weight's price becomes the default.</p>
+              <p className="text-xs text-muted mt-1">Add weight options above. First weight's price becomes the default.</p>
             )}
             {(form.weightPrices || []).length >= 1 && (form.weightPrices || [])[0].weight && (form.weightPrices || [])[0].price > 0 && (
               <button
@@ -341,7 +341,7 @@ export default function AdminProductsPage() {
             <button onClick={saveAdd} className="inline-flex items-center gap-2 rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim">
               <Save className="h-4 w-4" /> Save
             </button>
-            <button onClick={() => { setAdding(false); setForm({}); }} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-5 py-2 text-sm font-medium text-[#80949b] hover:bg-white/5">
+            <button onClick={() => { setAdding(false); setForm({}); }} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-5 py-2 text-sm font-medium text-muted hover:bg-white/5">
               <X className="h-4 w-4" /> Cancel
             </button>
           </div>
@@ -393,18 +393,18 @@ export default function AdminProductsPage() {
                               <div key={i} className="flex items-center gap-1">
                                 <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded border border-border px-2 py-1 text-xs outline-none" placeholder="Additional image URL" />
                                 {url && <img src={url} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />}
-                                <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 text-[#e74c3c]"><X className="h-3 w-3" /></button>
+                                <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 text-brand-red"><X className="h-3 w-3" /></button>
                               </div>
                             ))}
                           </div>
-                          <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="mt-1 text-[10px] font-bold text-[#2ecc71] hover:underline">+ Add Image</button>
+                          <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), ""] })} className="mt-1 text-[10px] font-bold text-brand-fresh hover:underline">+ Add Image</button>
                         </div>
                         <textarea value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="sm:col-span-4 rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Description" rows={2} />
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
                           {(form.weightPrices || []).map((wp, i) => (
                             <div key={i} className="flex gap-1 items-center">
                               <input value={wp.weight} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], weight: e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Wt" />
-                              <span className="text-[#80949b] text-xs">₹</span>
+                              <span className="text-muted text-xs">₹</span>
                               <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Price" />
                             </div>
                           ))}

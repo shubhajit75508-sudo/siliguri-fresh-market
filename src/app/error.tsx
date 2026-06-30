@@ -9,13 +9,13 @@ export default function GlobalError({
 }) {
   return (
     <html>
-      <body className="flex min-h-screen items-center justify-center bg-[#0d1b2a] p-8">
+      <body className="flex min-h-screen items-center justify-center bg-surface p-8">
         <div className="max-w-md text-center">
           <h1 className="text-4xl font-extrabold text-white">Oops!</h1>
-          <p className="mt-4 text-[#80949b]">
+          <p className="mt-4 text-muted">
             Something went wrong. Please try again.
           </p>
-          <p className="mt-2 text-xs text-[#5a7278]">
+          <p className="mt-2 text-xs text-muted-light">
             {error.message || error.digest}
           </p>
           <button

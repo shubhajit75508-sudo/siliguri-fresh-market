@@ -131,25 +131,25 @@ export default function DeliveryPage() {
       )}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        <div className="flex items-center gap-4 rounded-xl border bg-[#0d1b2a] p-4 shadow-sm">
+        <div className="flex items-center gap-4 rounded-xl border bg-surface p-4 shadow-sm">
           <Truck className="h-8 w-8 text-brand-blue" />
           <div>
             <p className="text-xl font-bold">{activeDeliveries.length}</p>
-            <p className="text-sm text-[#80949b]">Active Deliveries</p>
+            <p className="text-sm text-muted">Active Deliveries</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-xl border bg-[#0d1b2a] p-4 shadow-sm">
+        <div className="flex items-center gap-4 rounded-xl border bg-surface p-4 shadow-sm">
           <Clock className="h-8 w-8 text-brand-fresh" />
           <div>
             <p className="text-xl font-bold">{avgTime ? `${avgTime} min` : "--"}</p>
-            <p className="text-sm text-[#80949b]">Avg Delivery Time</p>
+            <p className="text-sm text-muted">Avg Delivery Time</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 rounded-xl border bg-[#0d1b2a] p-4 shadow-sm">
+        <div className="flex items-center gap-4 rounded-xl border bg-surface p-4 shadow-sm">
           <MapPin className="h-8 w-8 text-brand-purple" />
           <div>
             <p className="text-xl font-bold">{activePartners}</p>
-            <p className="text-sm text-[#80949b]">Active Partners</p>
+            <p className="text-sm text-muted">Active Partners</p>
           </div>
         </div>
       </div>
@@ -162,7 +162,7 @@ export default function DeliveryPage() {
             {boyLocations.map((b) => {
               const mins = b.updatedAt ? Math.round((Date.now() - new Date(b.updatedAt).getTime()) / 60000) : null;
               return (
-                <div key={b.orderId} className="flex items-center justify-between rounded-xl border bg-[#0d1b2a] p-3 shadow-sm">
+                <div key={b.orderId} className="flex items-center justify-between rounded-xl border bg-surface p-3 shadow-sm">
                   <div>
                     <p className="text-sm font-medium">{b.boyName}</p>
                     <p className="text-xs text-muted">{b.orderId}</p>
@@ -200,9 +200,9 @@ export default function DeliveryPage() {
       <div className="mt-6 space-y-3">
         <h3 className="font-bold">Current Deliveries</h3>
         {activeDeliveries.length === 0 ? (
-          <div className="rounded-xl border bg-[#0d1b2a] p-8 text-center shadow-sm">
+          <div className="rounded-xl border bg-surface p-8 text-center shadow-sm">
             <Truck className="mx-auto h-8 w-8 text-gray-300" />
-            <p className="mt-2 text-sm text-[#5a7278]">No deliveries in progress.</p>
+            <p className="mt-2 text-sm text-muted-light">No deliveries in progress.</p>
           </div>
         ) : (
           activeDeliveries.map((o) => {
@@ -223,7 +223,7 @@ export default function DeliveryPage() {
               }
             }
             return (
-              <div key={o.id} className="rounded-xl border bg-[#0d1b2a] p-4 shadow-sm">
+              <div key={o.id} className="rounded-xl border bg-surface p-4 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">

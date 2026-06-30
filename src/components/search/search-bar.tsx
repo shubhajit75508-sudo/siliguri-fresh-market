@@ -45,7 +45,7 @@ export function SearchBar() {
             if (e.key === "Enter") go(query);
           }}
           placeholder="Search hilsa, prawns, mutton curry cut..."
-          className="h-11 w-full rounded-full border border-border bg-surface pl-11 pr-12 text-[14px] transition-all placeholder:text-muted/80 focus:border-brand-fresh/40 focus:bg-[#0d1b2a] focus:outline-none focus:ring-4 focus:ring-brand-fresh/10"
+          className="h-11 w-full rounded-full border border-border bg-surface pl-11 pr-12 text-[14px] transition-all placeholder:text-muted/80 focus:border-brand-fresh/40 focus:bg-surface focus:outline-none focus:ring-4 focus:ring-brand-fresh/10"
         />
         <button
           type="button"
@@ -67,7 +67,7 @@ export function SearchBar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border border-border bg-[#0d1b2a] p-3 shadow-xl"
+              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border border-border bg-surface p-3 shadow-xl"
             >
               {results.length > 0 ? (
                 results.map((p) => (

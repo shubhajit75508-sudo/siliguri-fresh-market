@@ -5,9 +5,9 @@ export default function ShopError({ error, reset }: { error: Error; reset: () =>
     <div className="flex min-h-[50vh] flex-col items-center justify-center px-4 py-16">
       <div className="max-w-md text-center">
         <h1 className="text-4xl font-extrabold text-white">Oops!</h1>
-        <p className="mt-4 text-[#80949b]">Something went wrong loading this page.</p>
+        <p className="mt-4 text-muted">Something went wrong loading this page.</p>
         {error.message && (
-          <p className="mt-2 text-xs text-[#5a7278]">{error.message}</p>
+          <p className="mt-2 text-xs text-muted-light">{error.message}</p>
         )}
         <button
           onClick={reset}

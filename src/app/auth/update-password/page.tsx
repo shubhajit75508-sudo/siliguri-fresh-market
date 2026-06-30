@@ -69,12 +69,12 @@ export default function UpdatePasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={4}
-                className="w-full rounded-l-xl border border-r-0 border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+                className="w-full rounded-l-xl border border-r-0 border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-[#0d1b2a] px-3 text-muted hover:text-white"
+                className="inline-flex items-center rounded-r-xl border border-l-0 border-border bg-surface px-3 text-muted hover:text-white"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -88,7 +88,7 @@ export default function UpdatePasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="mt-1 w-full rounded-xl border border-border bg-[#0d1b2a] px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
+              className="mt-1 w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-dark"
             />
           </div>
           <Button variant="default" className="w-full" onClick={handleUpdate} disabled={loading}>
