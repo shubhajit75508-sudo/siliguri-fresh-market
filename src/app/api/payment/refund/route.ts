@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
 
     if (!res.ok) {
-      return NextResponse.json({ error: data.error?.description || "Refund failed" }, { status: res.status });
+      return NextResponse.json({ error: "Refund failed" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, refund: data });

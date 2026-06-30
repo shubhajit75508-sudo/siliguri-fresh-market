@@ -135,8 +135,7 @@ export async function DELETE(req: NextRequest) {
     }
   );
   if (!res.ok) {
-    const errBody = await res.text();
-    return NextResponse.json({ error: errBody || "Delete failed" }, { status: 500 });
+    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
   return NextResponse.json({ success: true });
 }

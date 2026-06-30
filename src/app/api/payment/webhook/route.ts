@@ -15,7 +15,8 @@ function verifyWebhookSignature(body: string, signature: string, secret: string)
 }
 
 export async function POST(req: NextRequest) {
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
   if (!webhookSecret) {
     return NextResponse.json({ error: "Webhook not configured" }, { status: 501 });
   }
@@ -70,4 +71,8 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true });
+  } catch (e) {
+    console.error("[webhook] error:", e);
+    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
+  }
 }
