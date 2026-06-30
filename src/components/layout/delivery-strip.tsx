@@ -67,7 +67,7 @@ export function DeliveryStrip() {
           </button>
 
           {open && (
-            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl glass-deep-light p-4 shadow-xl z-50">
+            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl glass-card p-4 shadow-xl z-50">
               <p className="mb-3 text-sm font-bold">Delivery Location</p>
 
               {/* Saved addresses */}
@@ -93,7 +93,7 @@ export function DeliveryStrip() {
               <button
                 onClick={getLocation}
                 disabled={locating}
-                className="mb-3 flex w-full items-center gap-2 rounded-xl glass px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/20 disabled:opacity-50"
+                className="mb-3 flex w-full items-center gap-2 rounded-xl btn-glass-secondary py-2.5 text-sm font-medium disabled:opacity-50"
               >
                 {locating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -119,7 +119,7 @@ export function DeliveryStrip() {
                 <button
                   onClick={handleSave}
                   disabled={!PINCODE_REGEX.test(inputValue.trim())}
-                  className="shrink-0 rounded-xl btn-gradient-primary px-4 py-2 text-sm font-semibold disabled:opacity-40"
+                  className="shrink-0 rounded-full btn-primary-solid px-4 py-2 text-sm font-semibold disabled:opacity-40"
                 >
                   Save
                 </button>

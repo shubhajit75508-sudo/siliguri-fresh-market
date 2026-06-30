@@ -195,9 +195,7 @@ export default function CheckoutPage() {
   const subtotal = getSubtotal();
   const total = getTotal();
   const catBadge = (cat: string) => {
-    if (["fish","chicken","mutton","seafood"].includes(cat)) return { label:"FRESH", cls:"fresh" };
-    if (["fruits","vegetables"].includes(cat)) return { label:"ORGANIC", cls:"organic" };
-    if (["dairy","eggs"].includes(cat)) return { label:"FARM", cls:"farm" };
+    if (["fish","chicken","mutton","seafood","fruits","vegetables","dairy","eggs"].includes(cat)) return { label:"FRESH", cls:"fresh" };
     return null;
   };
 

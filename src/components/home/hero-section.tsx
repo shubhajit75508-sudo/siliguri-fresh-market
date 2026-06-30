@@ -38,9 +38,9 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[520px] glass-deep-light p-6 rounded-2xl"
+              className="max-w-[520px] glass-card p-6"
             >
-              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full glass-deep-light px-4 py-2">
+              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full glass-card px-4 py-2">
                 <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh shadow-[0_0_8px_#2E8B47]" />
                 <span className="text-[12px] font-semibold tracking-wide text-white/95">
                   Live — Delivering in 30–60 min
@@ -60,13 +60,13 @@ export function HeroSection() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/search"
-                  className="inline-flex h-12 items-center rounded-full btn-gradient-primary px-7 text-[14px] font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="inline-flex h-12 items-center rounded-full btn-primary-solid px-7 text-[14px] font-semibold"
                 >
                   Shop fresh now
                 </Link>
                 <Link
                   href="/account"
-                  className="inline-flex h-12 items-center rounded-full btn-glass px-7 text-[14px] font-semibold"
+                  className="inline-flex h-12 items-center rounded-full btn-glass-secondary px-7 text-[14px] font-semibold"
                 >
                   My Account
                 </Link>
@@ -78,7 +78,7 @@ export function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="hidden sm:block max-w-[120px] sm:max-w-[300px] glass-deep rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 shrink-0"
+              className="hidden sm:block max-w-[120px] sm:max-w-[300px] glass-card rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 shrink-0"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-fresh">
                 Today&apos;s Catch
@@ -126,7 +126,7 @@ export function HeroSection() {
             ].map((item) => (
               <div
                 key={item.text}
-                className="flex items-center gap-2 rounded-full glass-deep-light px-4 py-2.5"
+                className="flex items-center gap-2 rounded-full glass-card px-4 py-2.5"
               >
                 <item.icon className="h-3.5 w-3.5 text-brand-fresh" strokeWidth={2.5} />
                 <span className="text-[12px] font-medium text-white/90">{item.text}</span>

@@ -11,7 +11,7 @@ const stats = [
 
 export function TrustBar() {
   return (
-    <div className="glass-deep-light rounded-2xl px-4 py-3 grid grid-cols-4 gap-2">
+    <div className="glass-card px-4 py-3 grid grid-cols-4 gap-2">
       {stats.map((s) => {
         const Icon = s.icon;
         return (
@@ -40,7 +40,7 @@ export function WhyChooseUs() {
       <h2 className="section-title mb-3">Why Choose Us</h2>
       <div className="flex gap-2 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
         {reasons.map((r) => (
-          <div key={r.title} className="glass rounded-xl px-3 py-3 flex-shrink-0 w-[65vw] max-w-[240px] sm:w-auto sm:max-w-none">
+          <div key={r.title} className="glass-card px-3 py-3 flex-shrink-0 w-[65vw] max-w-[240px] sm:w-auto sm:max-w-none">
             <span className="text-lg">{r.icon}</span>
             <h3 className="mt-1.5 text-xs font-bold text-foreground">{r.title}</h3>
             <p className="mt-0.5 text-[11px] text-muted leading-snug hidden sm:block">{r.desc}</p>

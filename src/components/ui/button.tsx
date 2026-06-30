@@ -10,12 +10,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-dark text-white shadow-md shadow-brand-dark/20 hover:bg-brand-fresh-dim",
-        fresh: "bg-brand-fresh-dim text-white hover:bg-brand-dark",
+        default: "bg-[#34A05A] text-white shadow-md shadow-[#34A05A]/20 hover:bg-[#2B8A4B]",
+        fresh: "bg-[#2B8A4B] text-white hover:bg-[#34A05A]",
         outline: "border-[1.5px] border-white/20 text-foreground hover:bg-white/10",
         ghost: "hover:bg-white/10 text-foreground",
-        gradient: "btn-gradient-primary",
-        glass: "btn-glass",
+        glass: "btn-glass-secondary",
         prime: "bg-[#facc15] text-foreground font-bold hover:bg-[#eab308]",
         destructive: "bg-red-500 text-white hover:bg-red-600",
       },

@@ -16,9 +16,7 @@ interface ProductCardProps {
 }
 
 const catBadge = (cat: string): { label: string; cls: string } | null => {
-  if (["fish", "chicken", "mutton", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
-  if (["fruits", "vegetables"].includes(cat)) return { label: "ORGANIC", cls: "organic" };
-  if (["dairy", "eggs"].includes(cat)) return { label: "FARM", cls: "farm" };
+  if (["fish", "chicken", "mutton", "seafood", "fruits", "vegetables", "dairy", "eggs"].includes(cat)) return { label: "FRESH", cls: "fresh" };
   return null;
 };
 
@@ -90,7 +88,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           <button
             onClick={handleAdd}
             disabled={!product.inStock}
-            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full border border-white/10 text-[12px] font-semibold text-foreground hover:bg-white/5 disabled:opacity-50"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full bg-[#34A05A] text-[12px] font-semibold text-white hover:bg-[#2B8A4B] disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" /> {product.inStock ? "Add to cart" : "Out of stock"}
           </button>

@@ -23,7 +23,7 @@ export function BottomNav() {
   if (pathname.startsWith("/admin") || pathname.startsWith("/checkout")) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-deep safe-bottom lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-overlay safe-bottom lg:hidden">
       <div className="flex items-end justify-around px-1 pb-2 pt-1">
         {items.map((item) => {
           const active = item.href === "/" ? pathname === "/" : item.href === "/account" ? (pathname === "/account" || (pathname.startsWith("/account/") && !pathname.startsWith("/account/wishlist"))) : pathname.startsWith(item.href);
@@ -44,10 +44,10 @@ export function BottomNav() {
         })}
 
         <button onClick={openCart} className="relative -mt-4 flex flex-col items-center">
-          <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full btn-gradient-primary shadow-lg shadow-brand-red/30">
+          <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full btn-primary-solid shadow-lg shadow-[#34A05A]/30">
             <ShoppingBag className="h-5 w-5" strokeWidth={2.5} />
             {count > 0 && (
-              <span className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand-dark bg-brand-dark text-[10px] font-bold text-[#FFF3E2]">
+              <span className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#E0502E] bg-[#E0502E] text-[10px] font-bold text-white">
                 {count}
               </span>
             )}
