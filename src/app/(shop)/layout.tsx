@@ -11,7 +11,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
   const hideFooter = pathname === "/checkout";
 
   return (
-    <div className="page-bg min-h-screen">
+    <div className="min-h-screen">
       <Header />
       <DeliveryStrip />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 sm:px-6 lg:pb-12">

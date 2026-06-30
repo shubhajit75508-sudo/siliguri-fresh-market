@@ -11,15 +11,15 @@ const stats = [
 
 export function TrustBar() {
   return (
-    <div className="glass rounded-2xl border border-white/5 px-4 py-3 grid grid-cols-4 gap-2">
+    <div className="glass-deep-light rounded-2xl px-4 py-3 grid grid-cols-4 gap-2">
       {stats.map((s) => {
         const Icon = s.icon;
         return (
           <div key={s.label} className="flex items-center gap-2 justify-center sm:justify-start">
-            <Icon className="h-4 w-4 text-brand-fresh shrink-0" />
+            <Icon className="h-4 w-4 text-brand-gold shrink-0" />
             <div>
-              <p className="text-[13px] font-extrabold text-foreground leading-none">{s.value}</p>
-              <p className="text-[10px] text-muted font-medium">{s.label}</p>
+              <p className="text-[13px] font-extrabold text-brand-gold leading-none">{s.value}</p>
+              <p className="text-[10px] text-white/70 font-medium">{s.label}</p>
             </div>
           </div>
         );
@@ -40,7 +40,7 @@ export function WhyChooseUs() {
       <h2 className="section-title mb-3">Why Choose Us</h2>
       <div className="flex gap-2 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
         {reasons.map((r) => (
-          <div key={r.title} className="glass rounded-xl border border-white/5 px-3 py-3 flex-shrink-0 w-[65vw] max-w-[240px] sm:w-auto sm:max-w-none">
+          <div key={r.title} className="glass rounded-xl px-3 py-3 flex-shrink-0 w-[65vw] max-w-[240px] sm:w-auto sm:max-w-none">
             <span className="text-lg">{r.icon}</span>
             <h3 className="mt-1.5 text-xs font-bold text-foreground">{r.title}</h3>
             <p className="mt-0.5 text-[11px] text-muted leading-snug hidden sm:block">{r.desc}</p>

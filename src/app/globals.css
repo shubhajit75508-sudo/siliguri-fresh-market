@@ -7,7 +7,7 @@
   --color-accent: #F5A623;
   --color-accent-dark: #D48A0C;
   --color-accent-light: #F7C862;
-  --color-bg: #0A1C12;
+  --color-bg: #0E2F1F;
   --color-surface: #0E4A28;
   --color-surface-alt: #14305C;
   --color-border: #1A5C36;
@@ -26,7 +26,7 @@
   --color-danger-text: #E84C2B;
 
   --bg-base: var(--color-bg);
-  --bg-gradient: linear-gradient(180deg, #0A1C12 0%, #0E4A28 50%, #14305C 100%);
+  --bg-gradient: linear-gradient(180deg, #0E2F1F 0%, #14305C 100%);
   --surface: var(--color-surface);
   --surface-2: #14305C;
   --border: var(--color-border);
@@ -39,9 +39,9 @@
   --accent-glow: rgba(14, 74, 40, 0.3);
   --danger: var(--color-danger);
   --warning: var(--color-warning);
-  --card-bg: var(--color-surface);
-  --card-border: var(--color-border);
-  --card-hover: var(--color-primary-light);
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-hover: rgba(255, 255, 255, 0.15);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
@@ -53,7 +53,7 @@
   --brand-fresh-dim: #236A35;
   --brand-gold: var(--color-accent);
   --brand-gold-light: var(--color-accent-light);
-  --brand-black: #0A1C12;
+  --brand-black: #0E2F1F;
   --brand-blue: #4FA8D8;
   --brand-red: var(--color-danger);
   --brand-orange: var(--color-warning);
@@ -100,38 +100,85 @@ body {
   min-height: 100vh;
 }
 
-/* Card base */
+/* ===== Glass utilities — exactly 2 opacity levels (15% / 25%) ===== */
+
+.glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-deep {
+  background: rgba(14, 47, 31, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-deep-light {
+  background: rgba(14, 47, 31, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Glass solid — for buttons only (no blur, it's the "opaque, confident" element) */
+.btn-gradient-primary {
+  background: linear-gradient(135deg, #E84C2B, #F5A623);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 20px rgba(232, 76, 43, 0.35);
+  transition: all 0.2s ease;
+}
+.btn-gradient-primary:hover {
+  box-shadow: 0 6px 28px rgba(232, 76, 43, 0.45);
+  transform: translateY(-1px);
+}
+.btn-gradient-primary:active {
+  transform: scale(0.98);
+}
+
+/* Secondary glass button */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all 0.2s ease;
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== Card base (glass) ===== */
 .dark-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
 }
 
 .dark-card-hover:hover {
-  background: var(--color-primary-light);
-  border-color: var(--color-border);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Accent card */
 .accent-card {
-  background: linear-gradient(135deg, rgba(14, 74, 40, 0.08), rgba(20, 48, 92, 0.06));
-  border: 1px solid rgba(14, 74, 40, 0.15);
-}
-
-/* Glow button */
-.btn-glow {
-  background: var(--accent);
-  color: var(--color-text-on-primary);
-  border: none;
-  box-shadow: var(--shadow-glow);
-  transition: all 0.2s ease;
-}
-.btn-glow:hover {
-  box-shadow: 0 0 32px rgba(14, 74, 40, 0.35);
-  transform: translateY(-1px);
-}
-.btn-glow:active {
-  transform: scale(0.98);
+  background: rgba(14, 47, 31, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Product badge */
@@ -159,16 +206,18 @@ body {
   color: var(--brand-blue);
 }
 
-/* Product card */
+/* Product card — glass, not solid */
 .product-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   overflow: hidden;
   transition: all 0.3s ease;
 }
 .product-card:hover {
-  border-color: var(--color-primary-light);
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -176,26 +225,30 @@ body {
   filter: brightness(0.95) saturate(1.05) contrast(1.02);
 }
 
-/* Category tile */
+/* Category tile — glass, not solid */
 .category-tile {
   border-radius: 18px;
   overflow: hidden;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s ease;
 }
 .category-tile:hover {
   transform: scale(1.02);
-  border-color: var(--color-primary-light);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 .category-tile img {
   filter: brightness(0.9) saturate(1.05);
 }
 
-/* Footer */
+/* Footer — glass */
 .footer-surface {
-  background: var(--color-surface-alt);
-  border-top: 1px solid var(--border);
+  background: rgba(14, 47, 31, 0.2);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 24px 24px 0 0;
   margin-top: 2rem;
 }
