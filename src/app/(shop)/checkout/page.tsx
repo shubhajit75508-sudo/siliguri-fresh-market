@@ -188,7 +188,7 @@ export default function CheckoutPage() {
 
         const Rzpay = (window as any).Razorpay;
         const rzp = new Rzpay({
-          key: "rzp_test_T3eebwyzkSd5mE",
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_T3eebwyzkSd5mE",
           amount: Math.round(total * 100),
           currency: "INR",
           name: "Siliguri Fresh Mart",
