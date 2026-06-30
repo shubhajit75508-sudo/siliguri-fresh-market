@@ -172,21 +172,6 @@ export default function CheckoutPage() {
 
     if (paymentStatus === "razorpay" && razorpayLoaded) {
       try {
-        // Create order as UNPAID first — only mark paid on successful Razorpay callback
-        const orderId = await createOrder({
-          items: items.map(i => ({ ...i })),
-          total: total,
-          address: selectedAddress,
-          paymentMethod: "razorpay",
-          paymentStatus: "unpaid",
-          customerName: currentUser.name,
-          customerPhone: currentUser.phone || "",
-          customerEmail: currentUser.email || "",
-          userId: currentUser.id,
-        });
-
-        if (!orderId) throw new Error("Order creation failed");
-
         const Rzpay = (window as any).Razorpay;
         const rzp = new Rzpay({
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_T3eebwyzkSd5mE",
@@ -201,22 +186,33 @@ export default function CheckoutPage() {
           },
           theme: { color: "#2D7D3A" },
           handler: async () => {
-            // Payment succeeded — mark order as paid
+            // Payment confirmed — NOW create the order as paid
             try {
-              await fetch("/api/admin/orders", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: orderId, paymentStatus: "paid" }),
+              const orderId = await createOrder({
+                items: items.map(i => ({ ...i })),
+                total: total,
+                address: selectedAddress,
+                paymentMethod: "razorpay",
+                paymentStatus: "paid",
+                customerName: currentUser.name,
+                customerPhone: currentUser.phone || "",
+                customerEmail: currentUser.email || "",
+                userId: currentUser.id,
               });
-            } catch {}
-            setPaymentConfirmed(true);
-            clearCart();
-            router.push(`/track/${orderId}`);
+              if (orderId) {
+                setPaymentConfirmed(true);
+                clearCart();
+                router.push(`/track/${orderId}`);
+              } else {
+                toast.add("Order creation failed. Contact support.", "error");
+              }
+            } catch {
+              toast.add("Payment received but order creation failed. Contact support.", "error");
+            }
           },
           modal: {
             ondismiss: () => {
-              // Payment cancelled/closed — keep order as unpaid (can retry or cancel)
-              toast.add("Payment cancelled. You can retry from your orders.", "info");
+              toast.add("Payment cancelled", "info");
             },
           },
         });
