@@ -7,10 +7,14 @@ import { useAdminStore } from "@/store/admin-store";
 
 function getAdminProducts(): Product[] {
   try {
-    return (useAdminStore.getState().products ?? []).filter((p) => p.inStock);
+    return useAdminStore.getState().products ?? [];
   } catch {
     return [];
   }
+}
+
+function getAdminInStockProducts(): Product[] {
+  return getAdminProducts().filter((p) => p.inStock);
 }
 
 function mergeWithAdmin(products: Product[]): Product[] {
@@ -27,7 +31,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
   } else {
     products = mock.getProductsByCategory(category);
   }
-  const admin = getAdminProducts().filter((p) => p.category === category);
+  const admin = getAdminInStockProducts().filter((p) => p.category === category);
   if (!admin.length) return products;
   const adminIds = new Set(admin.map((p) => p.id));
   return [...admin, ...products.filter((p) => !adminIds.has(p.id))];
@@ -40,7 +44,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
   const mockProduct = mock.getProductBySlug(slug);
   if (mockProduct) return mockProduct;
-  const admin = getAdminProducts().find((p) => p.slug === slug);
+  const admin = getAdminInStockProducts().find((p) => p.slug === slug);
   return admin ?? null;
 }
 
@@ -59,7 +63,7 @@ export async function getFlashDeals(): Promise<Product[]> {
     }
   }
 
-  const admin = getAdminProducts().filter((p) => p.isFlashDeal);
+  const admin = getAdminInStockProducts().filter((p) => p.isFlashDeal);
   if (admin.length) {
     const adminIds = new Set(admin.map((p) => p.id));
     products = [...admin, ...products.filter((p) => !adminIds.has(p.id))];
@@ -75,7 +79,7 @@ export async function getTrendingProducts(): Promise<Product[]> {
   } else {
     products = mock.getTrendingProducts();
   }
-  const admin = getAdminProducts().filter((p) => p.isTrending);
+  const admin = getAdminInStockProducts().filter((p) => p.isTrending);
   if (!admin.length) return products;
   const adminIds = new Set(admin.map((p) => p.id));
   return [...admin, ...products.filter((p) => !adminIds.has(p.id))];
@@ -83,9 +87,21 @@ export async function getTrendingProducts(): Promise<Product[]> {
 
 export async function searchProducts(query: string): Promise<Product[]> {
   if (isSupabaseConfigured()) {
-    try { return await db.searchProductsByQuery(query); } catch {}
+    try {
+      const dbResults = await db.searchProductsByQuery(query);
+      const admin = getAdminInStockProducts().filter((p) =>
+        p.name.toLowerCase().includes(query.toLowerCase())
+      );
+      const adminIds = new Set(admin.map((p) => p.id));
+      return [...admin, ...dbResults.filter((p) => !adminIds.has(p.id))];
+    } catch {}
   }
-  return mergeWithAdmin(mock.searchProducts(query));
+  const mockResults = mock.searchProducts(query);
+  const admin = getAdminInStockProducts().filter((p) =>
+    p.name.toLowerCase().includes(query.toLowerCase())
+  );
+  const adminIds = new Set(admin.map((p) => p.id));
+  return [...admin, ...mockResults.filter((p) => !adminIds.has(p.id))];
 }
 
 export async function getAllProducts(): Promise<Product[]> {
