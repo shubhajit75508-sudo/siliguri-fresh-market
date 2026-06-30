@@ -45,7 +45,8 @@ export default function AdminInventoryPage() {
         }
       }
       updateProduct(id, { stock, inStock: stock > 0 });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      // Invalidate ALL product queries across the app
+      queryClient.invalidateQueries({ predicate: (query) => (query.queryKey[0] as string)?.startsWith("products") });
       setEditingStock((prev) => {
         const next = { ...prev };
         delete next[id];
