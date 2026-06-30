@@ -164,11 +164,15 @@ export const useOrderStore = create<OrderState>()(
             try {
               const res = await fetch(`/api/orders/${encodeURIComponent(id)}`, { method: "PUT" });
               ok = res.ok;
-            } catch { ok = false; }
-          } else {
-            ok = true;
+              if (!ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error((err as Record<string, unknown>).error as string || "Cancel failed");
+              }
+            } catch (e) {
+              set({ orders: prev });
+              throw e;
+            }
           }
-          if (!ok) set({ orders: prev });
         },
 
         createOrder: async (data) => {
