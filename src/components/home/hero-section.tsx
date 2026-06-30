@@ -29,8 +29,8 @@ export function HeroSection() {
             alt="Siliguri Fresh Mart"
             className="absolute inset-0 w-full h-full object-cover sm:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         </div>
 
         <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-8 lg:p-10">
