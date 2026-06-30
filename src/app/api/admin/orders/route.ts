@@ -53,6 +53,30 @@ export async function PUT(req: NextRequest) {
   const { error } = await supabaseAdmin.from("orders").update(dbUpdates).eq("id", id);
   if (error) return NextResponse.json({ error: "Order operation failed" }, { status: 500 });
 
+  // Restore product stock when order is cancelled
+  if (dbUpdates.status === "cancelled") {
+    try {
+      const { data: order } = await supabaseAdmin.from("orders").select("items").eq("id", id).single();
+      if (order?.items && Array.isArray(order.items)) {
+        for (const item of order.items as any[]) {
+          const productId = item.product?.id || item.productId;
+          const quantity = item.quantity || 1;
+          if (productId) {
+            // Get current stock and increment
+            const { data: product } = await supabaseAdmin.from("products").select("stock").eq("id", productId).maybeSingle();
+            const currentStock = (product?.stock ?? 0) + quantity;
+            await supabaseAdmin.from("products").update({
+              stock: currentStock,
+              in_stock: currentStock > 0,
+            }).eq("id", productId);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to restore stock on cancel:", e);
+    }
+  }
+
   if (dbUpdates.delivery_status && body.customer_email) {
     sendDeliveryUpdate({
       email: body.customer_email,
