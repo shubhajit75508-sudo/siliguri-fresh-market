@@ -56,14 +56,14 @@ const testimonials: Testimonial[] = [
 
 export function FreshnessBanner() {
   return (
-    <div className="glass-deep-light rounded-2xl p-5">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-dark via-[#6B2814] to-brand-fresh-dim border border-brand-fresh/20 p-5">
       <div className="flex items-center gap-4">
-        <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-brand-gold/15">
-          <Leaf className="h-6 w-6 text-brand-gold" />
+        <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-brand-fresh/15">
+          <Leaf className="h-6 w-6 text-brand-fresh" />
         </span>
         <div>
           <h3 className="text-base font-extrabold text-white">100% Freshness Guarantee</h3>
-          <p className="mt-0.5 text-xs text-white/60 leading-relaxed">
+          <p className="mt-0.5 text-xs text-[#b7c9c2] leading-relaxed">
             Not satisfied? <strong className="text-brand-fresh">Free replacement</strong> within 3 hours. No questions asked.
           </p>
         </div>

@@ -17,7 +17,7 @@ export function Header() {
   const itemCount = hydrated ? getItemCount() : 0;
 
   return (
-    <header className="sticky top-0 z-50 glass-deep">
+    <header className="sticky top-0 z-50 bg-surface/95 shadow-[0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl backdrop-saturate-150">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
@@ -38,7 +38,7 @@ export function Header() {
               <>
                 <Link
                   href={currentUser.role === "admin" ? "/admin" : currentUser.role === "delivery" ? "/delivery" : "/account"}
-                  className="flex h-10 items-center gap-2 rounded-full btn-glass px-3 pl-1.5 transition-all hover:bg-white/20 hover:shadow-sm"
+                  className="flex h-10 items-center gap-2 rounded-full border border-border bg-surface px-3 pl-1.5 transition-all hover:border-brand-dark/20 hover:shadow-sm"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-dark text-[11px] font-bold text-white">
                     {currentUser.name.charAt(0)}
@@ -62,7 +62,7 @@ export function Header() {
               <>
                 <Link
                   href="/auth/signup"
-                  className="hidden lg:flex h-10 items-center gap-1.5 rounded-full btn-glass px-3 text-[13px] font-medium hover:bg-white/20"
+                  className="hidden lg:flex h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface"
                 >
                   <UserPlus className="h-3.5 w-3.5" /> Sign Up
                 </Link>
@@ -77,12 +77,12 @@ export function Header() {
 
             <button
               onClick={openCart}
-              className="flex h-10 items-center gap-2 rounded-full btn-gradient-primary px-5 text-[13px] font-semibold transition-all hover:shadow-lg active:scale-[0.98]"
+              className="flex h-10 items-center gap-2 rounded-full bg-brand-dark px-5 text-[13px] font-semibold text-white shadow-md shadow-brand-dark/20 transition-all hover:bg-brand-fresh-dim hover:shadow-lg hover:shadow-brand-dark/25 active:scale-[0.98]"
             >
               <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
               Cart
               {itemCount > 0 && (
-                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white/25 px-1 text-[10px] font-bold text-white">
+                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold text-[#FFF3E2]">
                   {itemCount}
                 </span>
               )}
@@ -103,7 +103,7 @@ export function Header() {
             {currentUser ? (
               <Link
                 href={currentUser.role === "admin" ? "/admin" : currentUser.role === "delivery" ? "/delivery" : "/account"}
-                className="flex h-8 w-8 items-center justify-center rounded-full btn-glass text-[10px] font-bold"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-dark text-[10px] font-bold text-white"
               >
                 {currentUser.name.charAt(0)}
               </Link>
@@ -111,7 +111,7 @@ export function Header() {
               <>
                 <Link
                   href="/auth/signup"
-                  className="flex h-8 items-center rounded-full btn-glass px-2.5 text-[10px] font-medium"
+                  className="flex h-8 items-center rounded-full border border-border px-2.5 text-[10px] font-medium"
                 >
                   Sign Up
                 </Link>
@@ -125,11 +125,11 @@ export function Header() {
             )}
             <button
               onClick={openCart}
-              className="relative flex h-8 w-8 items-center justify-center rounded-full btn-gradient-primary"
+              className="relative flex h-8 w-8 items-center justify-center rounded-full bg-brand-dark text-white"
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white/25 text-[8px] font-bold text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white/20 text-[8px] font-bold text-[#FFF3E2]">
                   {itemCount}
                 </span>
               )}
@@ -181,7 +181,7 @@ export function Header() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block rounded-xl px-4 py-3 text-sm font-medium hover:bg-white/10"
+                  className="block rounded-xl px-4 py-3 text-sm font-medium hover:bg-surface"
                 >
                   {l.label}
                 </Link>
