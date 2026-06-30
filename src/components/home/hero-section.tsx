@@ -42,7 +42,7 @@ export function HeroSection() {
               className="max-w-[520px]"
             >
               <div className="mb-5 inline-flex items-center gap-2.5 rounded-full glass-pill px-4 py-2">
-                <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh shadow-[0_0_8px_#2E8B47]" />
+                <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh shadow-[0_0_8px_#87341B]" />
                 <span className="text-[12px] font-semibold tracking-wide text-white/95">
                   Live — Delivering in 30–60 min
                 </span>
