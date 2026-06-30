@@ -33,7 +33,8 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const displayOriginal = getOriginalPriceForWeight(product.price, product.originalPrice, selectedWeight, product.weightPrices);
 
   const b = catBadge(product.category);
-  const available = product.inStock && (product.stock == null || product.stock > 0);
+  const stockQty = product.stock == null ? 0 : product.stock;
+  const available = product.inStock && stockQty > 0;
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
