@@ -86,7 +86,10 @@ export async function PUT(req: NextRequest) {
   if (updates.image !== undefined) dbUpdates.image = updates.image;
   if (updates.images !== undefined) dbUpdates.images = updates.images;
   if (updates.inStock !== undefined) dbUpdates.in_stock = updates.inStock;
-  if (updates.stock !== undefined) dbUpdates.stock = updates.stock;
+  if (updates.stock !== undefined) {
+    dbUpdates.stock = updates.stock;
+    if (updates.inStock === undefined) dbUpdates.in_stock = updates.stock > 0;
+  }
   if (updates.unit !== undefined) dbUpdates.unit = updates.unit;
   if (updates.freshnessScore !== undefined) dbUpdates.freshness_score = updates.freshnessScore;
   if (updates.deliveryEta !== undefined) dbUpdates.delivery_eta = updates.deliveryEta;

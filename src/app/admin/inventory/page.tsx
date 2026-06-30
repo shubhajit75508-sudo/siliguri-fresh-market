@@ -44,7 +44,7 @@ export default function AdminInventoryPage() {
           throw new Error(err.error || "Update failed");
         }
       }
-      updateProduct(id, { stock });
+      updateProduct(id, { stock, inStock: stock > 0 });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setEditingStock((prev) => {
         const next = { ...prev };
