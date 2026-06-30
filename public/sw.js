@@ -3,7 +3,7 @@ const STATIC_ASSETS = [
   "/",
   "/offline",
   "/manifest.json",
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
+  "/icons/icon-192x192.png",
 ];
 
 // Install — precache static assets
