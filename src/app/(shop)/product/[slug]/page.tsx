@@ -74,7 +74,7 @@ export default function ProductDetailPage({
         </div>
         <button
           onClick={() => { if (navigator.share) navigator.share({ title: product.name, url: window.location.href }); }}
-          className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-[11px] font-medium text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+          className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-[11px] font-medium text-muted hover:text-foreground hover:bg-surface-2 transition-colors"
         >
           <Share2 className="h-3.5 w-3.5" /> Share
         </button>
@@ -106,7 +106,7 @@ export default function ProductDetailPage({
                   key={i}
                   onClick={() => setSelectedImage(i)}
                   className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                    selectedImage === i ? "border-brand-fresh ring-1 ring-brand-fresh/30" : "border-white/5 opacity-60 hover:opacity-90"
+                    selectedImage === i ? "border-[#2D7D3A] ring-1 ring-[#2D7D3A]/30" : "border-border opacity-60 hover:opacity-90"
                   }`}
                 >
                   <img src={img} alt={product.name + " - Image " + (i + 1)} className="w-full h-full object-cover" />
@@ -150,9 +150,15 @@ export default function ProductDetailPage({
 
           {/* Stock + Delivery Row */}
           <div className="mt-3 flex items-center gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-1 text-xs text-brand-fresh font-semibold">
-              <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh" /> In Stock
-            </span>
+            {product.inStock ? (
+              <span className="inline-flex items-center gap-1 text-xs text-brand-fresh font-semibold">
+                <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh" /> In Stock
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-xs text-brand-red font-semibold">
+                <span className="h-2 w-2 rounded-full bg-brand-red" /> Out of Stock
+              </span>
+            )}
             <span className="text-xs text-muted">·</span>
             <span className="inline-flex items-center gap-1 text-xs text-muted">
               <Clock className="h-3 w-3" /> Delivers in {product.deliveryEta || 30}-45 min
@@ -165,7 +171,7 @@ export default function ProductDetailPage({
 
           {/* Source / Product Info */}
           {(product.species || product.river || product.source || product.catchDate) && (
-            <div className="mt-3 rounded-xl bg-white/5 border border-white/5 p-3">
+            <div className="mt-3 rounded-xl bg-surface-2 border border-border p-3">
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted">
                 {product.species && <span><span className="text-foreground font-semibold">Species:</span> {product.species}</span>}
                 {product.river && <span><span className="text-foreground font-semibold">River:</span> {product.river}</span>}
@@ -189,8 +195,8 @@ export default function ProductDetailPage({
                   onClick={() => setSelectedWeight(w)}
                   className={`rounded-xl border-2 px-4 py-2 text-sm font-semibold transition-all ${
                     displayWeight === w
-                      ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh shadow-sm"
-                      : "border-white/10 text-muted hover:border-brand-fresh/40"
+                      ? "border-[#2D7D3A] bg-[#2D7D3A]/10 text-[#2D7D3A] shadow-sm"
+                      : "border-border text-muted hover:border-[#2D7D3A]/40"
                   }`}
                 >
                   {w}
@@ -275,10 +281,11 @@ export default function ProductDetailPage({
               onClick={() => {
                 addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
               }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-brand-fresh px-6 py-3.5 font-bold text-[#FFF3E2] shadow-lg shadow-brand-fresh/25 transition-all hover:bg-brand-fresh-dim active:scale-[0.98]"
+              disabled={!product.inStock}
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2D7D3A] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#2D7D3A] disabled:active:scale-100"
             >
               <ShoppingCart className="h-5 w-5" />
-              Add to Cart
+              {product.inStock ? "Add to Cart" : "Out of Stock"}
             </button>
 
             <button
@@ -286,7 +293,7 @@ export default function ProductDetailPage({
               className={`flex h-[52px] w-[52px] items-center justify-center rounded-2xl border-2 transition-all ${
                 wishlist.includes(product.id)
                   ? "border-brand-red bg-brand-red/10 text-brand-red"
-                  : "border-white/10 text-muted hover:border-brand-red/40 hover:text-brand-red"
+                  : "border-border text-muted hover:border-brand-red/40 hover:text-brand-red"
               }`}
             >
               <Heart className={`h-5 w-5 ${wishlist.includes(product.id) ? "fill-current" : ""}`} />
@@ -294,7 +301,7 @@ export default function ProductDetailPage({
           </div>
 
           {/* Benefits */}
-          <div className="mt-6 space-y-3 border-t border-white/5 pt-5">
+          <div className="mt-6 space-y-3 border-t border-border pt-5">
             {[
               { icon: Star, text: `Freshness guaranteed — ${product.freshnessScore || 95}% score` },
               { icon: Shield, text: "30-min delivery — first batch" },
@@ -313,13 +320,13 @@ export default function ProductDetailPage({
 
           {/* Nutrition Info */}
           {product.nutrition && Object.keys(product.nutrition).length > 0 && (
-            <div className="mt-5 rounded-xl bg-white/5 border border-white/5 p-4">
+            <div className="mt-5 rounded-xl bg-surface-2 border border-border p-4">
               <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Nutrition Facts</p>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(product.nutrition).map(([key, val]) => (
-                  <div key={key} className="rounded-lg bg-white/5 px-3 py-1.5 text-center">
+                  <div key={key} className="rounded-lg bg-surface-2 px-3 py-1.5 text-center">
                     <p className="text-[10px] text-muted uppercase tracking-wide">{key}</p>
-                    <p className="text-xs font-bold text-white mt-0.5">{val}</p>
+                    <p className="text-xs font-bold text-foreground mt-0.5">{val}</p>
                   </div>
                 ))}
               </div>
@@ -327,7 +334,7 @@ export default function ProductDetailPage({
           )}
 
           {/* Trust Badges */}
-          <div className="mt-5 flex items-center justify-center gap-4 pt-3 border-t border-white/5">
+          <div className="mt-5 flex items-center justify-center gap-4 pt-3 border-t border-border">
             <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Shield className="h-3 w-3" /> Secure Checkout</span>
             <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Leaf className="h-3 w-3" /> 100% Fresh</span>
             <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
