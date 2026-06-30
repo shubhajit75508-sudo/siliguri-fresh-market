@@ -2,7 +2,19 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import { ADMIN_EMAILS } from "@/lib/admin-creds";
-import { signSessionToken } from "@/lib/session";
+/** Set session cookie via server-side API (secret never touches browser) */
+async function setSessionCookie(userId: string, role: string): Promise<void> {
+  try {
+    await fetch("/api/auth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, role }),
+    });
+  } catch {
+    // Fallback: set cookie client-side (old method, will be phased out)
+    document.cookie = `sfm-auth-session=${userId}|${role}; path=/; max-age=604800; Secure; SameSite=Strict`;
+  }
+}
 
 export type UserRole = "admin" | "delivery" | "customer";
 
@@ -168,8 +180,7 @@ export const useAuthStore = create<AuthState>()(
             }
             const adminUser = { ...user, role: "admin" as const, id: userId };
             set({ currentUser: adminUser });
-            const adminToken = await signSessionToken(`${adminUser.id}|admin`);
-            document.cookie = `sfm-auth-session=${adminToken}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
+            await setSessionCookie(adminUser.id, "admin");
             return { success: true, user: adminUser };
           }
 
@@ -230,8 +241,7 @@ export const useAuthStore = create<AuthState>()(
                   users: exists ? state.users : [...state.users, newUser],
                 };
               });
-              const token = await signSessionToken(`${newUser.id}|${newUser.role}`);
-              document.cookie = `sfm-auth-session=${token}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
+              await setSessionCookie(newUser.id, newUser.role);
               return { success: true, user: newUser };
             }
           }
@@ -250,8 +260,7 @@ export const useAuthStore = create<AuthState>()(
             return { success: false, error: "Incorrect password" };
           }
           set({ currentUser: user });
-          const loginToken = await signSessionToken(`${user.id}|${user.role}`);
-          document.cookie = `sfm-auth-session=${loginToken}; path=/; max-age=${60 * 60 * 24 * 7}; Secure; SameSite=Strict`;
+          await setSessionCookie(user.id, user.role);
           return { success: true, user };
         },
 

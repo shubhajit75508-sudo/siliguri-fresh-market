@@ -17,8 +17,11 @@ function checkRateLimit(key: string, maxRequests: number, windowMs: number): boo
 }
 
 function getSecret(): string {
-  const secret = process.env.COOKIE_SECRET
-    || process.env.NEXT_PUBLIC_COOKIE_SECRET;
+  const secret = process.env.COOKIE_SECRET;
+  if (!secret) {
+    console.error("COOKIE_SECRET is not set. Session security is disabled.");
+    return "";
+  }
   if (!secret) {
     console.error("COOKIE_SECRET environment variable is not set. Session security is disabled.");
     return "";
