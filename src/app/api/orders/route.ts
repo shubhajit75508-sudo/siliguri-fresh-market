@@ -43,14 +43,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  // Require verified session
+  // Verify session — return empty if not authenticated (no PII leak)
   const payload = await getSession(req);
   if (!payload) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ orders: [] });
   }
 
   const userId = getUserId(payload);
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userId) return NextResponse.json({ orders: [] });
 
   const supabaseAdmin = getAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
