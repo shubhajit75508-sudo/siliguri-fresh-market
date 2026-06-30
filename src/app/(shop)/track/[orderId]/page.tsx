@@ -298,14 +298,14 @@ export default function TrackOrderPage({
         )}
       </div>
 
-      {/* Cancel Order */}
-      {order.status === "received" && (
+      {/* Cancel Order — only allowed until picked up (not after out_for_delivery) */}
+      {order.status !== "out_for_delivery" && order.status !== "delivered" && order.status !== "cancelled" && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setShowCancel(true)}
             className="text-[11px] text-muted hover:text-brand-red underline underline-offset-2 transition-colors"
           >
-            Cancel Order
+            {order.deliveryStatus === "picked_up" ? "Cancel (before dispatch)" : "Cancel Order"}
           </button>
         </div>
       )}
