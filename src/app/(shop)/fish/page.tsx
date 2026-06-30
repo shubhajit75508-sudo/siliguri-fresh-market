@@ -18,7 +18,7 @@ export default function FishPage() {
         </div>
         <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
           <div className="animate-in">
-            <span className="inline-flex rounded-full glass-pill px-3 py-1 text-[11px] font-semibold text-brand-fresh">
+            <span className="inline-flex rounded-full glass-panel px-3 py-1 text-[11px] font-semibold text-[#4CAF50]">
               Premium Fish Experience
             </span>
             <h1 className="mt-3 text-[28px] font-bold tracking-tight text-white sm:text-[36px]">

@@ -90,7 +90,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           <button
             onClick={handleAdd}
             disabled={!product.inStock}
-            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full border border-white/10 text-[12px] font-semibold text-foreground hover:bg-white/5 disabled:opacity-50"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full btn-primary text-[12px] font-semibold disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" /> {product.inStock ? "Add to cart" : "Out of stock"}
           </button>
@@ -174,16 +174,16 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               >
                 <button
                   onClick={handleDecrement}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-[#FFF3E2] hover:bg-black/10"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-black/10"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="text-[13px] font-semibold text-[#FFF3E2]">
+                <span className="text-[13px] font-semibold text-white">
                   {cartQuantity}
                 </span>
                 <button
                   onClick={handleIncrement}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-[#FFF3E2] hover:bg-black/10"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-black/10"
                 >
                   <Plus className="h-4 w-4" />
                 </button>

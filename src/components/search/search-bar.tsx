@@ -45,7 +45,7 @@ export function SearchBar() {
             if (e.key === "Enter") go(query);
           }}
           placeholder="Search hilsa, prawns, mutton curry cut..."
-          className="h-11 w-full rounded-full border border-border bg-surface pl-11 pr-12 text-[14px] transition-all placeholder:text-muted/80 focus:border-brand-fresh/40 focus:bg-surface focus:outline-none focus:ring-4 focus:ring-brand-fresh/10"
+          className="h-11 w-full rounded-full border border-white/10 bg-[#252220] pl-11 pr-12 text-[14px] text-white transition-all placeholder:text-white/30 focus:border-[#C75A3A]/40 focus:outline-none focus:ring-4 focus:ring-[#C75A3A]/10"
         />
         <button
           type="button"
@@ -67,14 +67,14 @@ export function SearchBar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border border-border bg-surface p-3 shadow-xl"
+              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border border-white/10 bg-[#1E1C1A] p-3 shadow-xl"
             >
               {results.length > 0 ? (
                 results.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => go(p.name)}
-                    className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left hover:bg-surface"
+                    className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left text-white hover:bg-white/5"
                   >
                     <div className="relative h-10 w-10 overflow-hidden rounded-lg">
                       <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-cover product-img" />
@@ -99,7 +99,7 @@ export function SearchBar() {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {searchHistory.map((q) => (
-                          <button key={q} onClick={() => go(q)} className="rounded-full bg-surface px-3 py-1.5 text-xs font-medium hover:bg-border">
+                          <button key={q} onClick={() => go(q)} className="rounded-full bg-white/5 text-white px-3 py-1.5 text-xs font-medium hover:bg-white/10">
                             {q}
                           </button>
                         ))}
@@ -115,7 +115,7 @@ export function SearchBar() {
                         <button
                           key={q}
                           onClick={() => go(q)}
-                          className="rounded-full border border-brand-fresh/20 bg-brand-fresh/5 px-3 py-1.5 text-xs font-medium text-brand-fresh-dim hover:bg-brand-fresh/10"
+                          className="rounded-full border border-[#4CAF50]/20 bg-[#4CAF50]/5 px-3 py-1.5 text-xs font-medium text-[#4CAF50] hover:bg-[#4CAF50]/10"
                         >
                           {q}
                         </button>

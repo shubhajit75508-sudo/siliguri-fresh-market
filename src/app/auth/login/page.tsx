@@ -61,7 +61,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <div className="rounded-2xl bg-gradient-to-b from-white to-surface/60 p-8 shadow-lg shadow-black/5 ring-1 ring-black/5">
+        <div className="rounded-2xl bg-gradient-to-b from-[#252220] to-[#1E1C1A] p-8 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <div className="mb-6 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-dark to-brand-dark/80 shadow-md shadow-brand-dark/20">
               <LogIn className="h-7 w-7 text-white" />
