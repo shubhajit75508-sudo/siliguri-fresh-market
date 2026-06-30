@@ -58,7 +58,7 @@ export function HeroSection() {
                 {hero.subtitle}
               </p>
 
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-5 sm:mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/search"
                   className="inline-flex h-12 items-center rounded-full bg-[#2D7D3A] px-7 text-[14px] font-semibold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] hover:scale-[1.02] active:scale-[0.98]"
@@ -118,7 +118,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
-            className="mt-4 sm:mt-6 flex gap-1.5 sm:gap-2"
+            className="mt-2 sm:mt-6 flex gap-1.5 sm:gap-2"
           >
             {[
               { icon: Clock, text: "30-min ETA" },
