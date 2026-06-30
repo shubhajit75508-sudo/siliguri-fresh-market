@@ -51,7 +51,7 @@ export async function getFlashDeals(): Promise<Product[]> {
 
   if (isSupabaseConfigured()) {
     try {
-      const res = await fetch("/api/products/flash-deals");
+      const res = await fetch("/api/products/flash-deals", { cache: "no-store" });
       if (res.ok) {
         const dbProducts: Product[] = await res.json();
         products = [...products, ...dbProducts];

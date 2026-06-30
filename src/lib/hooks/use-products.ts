@@ -5,7 +5,7 @@ export function useProducts() {
   return useQuery({
     queryKey: ["products"],
     queryFn: data.getAllProducts,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 
@@ -29,7 +29,7 @@ export function useFlashDeals() {
   return useQuery({
     queryKey: ["products", "flash-deals"],
     queryFn: data.getFlashDeals,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
   });
 }
 
@@ -37,7 +37,7 @@ export function useTrendingProducts() {
   return useQuery({
     queryKey: ["products", "trending"],
     queryFn: data.getTrendingProducts,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 

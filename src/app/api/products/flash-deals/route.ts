@@ -46,5 +46,7 @@ export async function GET() {
     console.error("flash-deals error:", error.code);
     return NextResponse.json({ error: "Failed to load deals" }, { status: 500 });
   }
-  return NextResponse.json((data ?? []).map((row: ProductRow) => mapProduct(row)));
+  return NextResponse.json((data ?? []).map((row: ProductRow) => mapProduct(row)), {
+    headers: { "Cache-Control": "no-store, max-age=0" },
+  });
 }
