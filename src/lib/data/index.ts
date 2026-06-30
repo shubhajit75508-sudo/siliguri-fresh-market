@@ -7,7 +7,7 @@ import { useAdminStore } from "@/store/admin-store";
 
 function getAdminProducts(): Product[] {
   try {
-    return useAdminStore.getState().products ?? [];
+    return (useAdminStore.getState().products ?? []).filter((p) => p.inStock);
   } catch {
     return [];
   }

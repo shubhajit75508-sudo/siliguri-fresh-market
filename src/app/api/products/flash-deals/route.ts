@@ -40,7 +40,8 @@ export async function GET() {
   const { data, error } = await supabaseAdmin
     .from("products")
     .select("*")
-    .eq("is_flash_deal", true);
+    .eq("is_flash_deal", true)
+    .eq("in_stock", true);
 
   if (error) {
     console.error("flash-deals error:", error.code);
