@@ -10,12 +10,15 @@ const links = {
   ],
   Company: [
     { label: "Contact", href: "/account/support" },
-    { label: "FAQ", href: "/#faq" },
-  ],
-  Help: [
-    { label: "FAQ", href: "/#faq" },
     { label: "Track order", href: "/account/orders" },
-    { label: "Delivery info", href: "/" },
+    { label: "Delivery info", href: "/policies/shipping" },
+  ],
+  Legal: [
+    { label: "Privacy Policy", href: "/policies/privacy" },
+    { label: "Terms & Conditions", href: "/policies/terms" },
+    { label: "Returns & Replacement", href: "/policies/returns" },
+    { label: "Shipping & Delivery", href: "/policies/shipping" },
+    { label: "Cancellation", href: "/policies/cancellation" },
   ],
 };
 
@@ -23,7 +26,7 @@ export function Footer() {
   return (
     <footer className="footer-surface pb-48 lg:pb-8">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3">
               <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain rounded-xl" />
