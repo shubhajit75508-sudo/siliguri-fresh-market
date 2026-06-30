@@ -48,7 +48,7 @@ export function HeroSection() {
                 </span>
               </div>
 
-              <h1 className="text-[26px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[42px] lg:text-[48px]">
+              <h1 className="text-[22px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[42px] lg:text-[48px]">
                 {hero.title.split("\n").map((line, i) => (
                   <span key={i}>{i > 0 && <br />}{line}</span>
                 ))}
@@ -79,7 +79,7 @@ export function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="hidden sm:block max-w-[120px] sm:max-w-[300px] bg-white/15 backdrop-blur-sm rounded-2xl p-3 sm:p-5 shrink-0"
+              className="max-w-[180px] sm:max-w-[300px] bg-white/15 backdrop-blur-sm rounded-2xl p-3 sm:p-5 shrink-0 w-full sm:w-auto"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#66BB6A]">
                 Today&apos;s Catch
@@ -118,7 +118,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
-            className="mt-6 flex flex-wrap gap-2"
+            className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2"
           >
             {[
               { icon: Clock, text: "30-min ETA" },

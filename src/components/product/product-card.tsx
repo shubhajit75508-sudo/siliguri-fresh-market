@@ -141,8 +141,8 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedWeight(w); }}
                   className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold transition-all ${
                     selectedWeight === w
-                      ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh"
-                      : "border-white/10 bg-white/5 text-muted hover:border-white/30"
+                      ? "border-[#2D7D3A] bg-[#2D7D3A]/10 text-[#2D7D3A]"
+                      : "border-border bg-surface-2 text-muted hover:border-muted"
                   }`}
                 >
                   {w}
@@ -192,7 +192,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               <button
                 onClick={handleAdd}
                 disabled={!product.inStock}
-                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 text-[13px] font-semibold text-foreground transition-all hover:border-brand-fresh/30 hover:bg-brand-fresh/5 active:scale-[0.98] disabled:opacity-50"
+                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border text-[13px] font-semibold text-foreground transition-all hover:border-[#2D7D3A]/40 hover:bg-[#2D7D3A]/5 active:scale-[0.98] disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} />
                 {product.inStock ? "Add" : "Out of stock"}

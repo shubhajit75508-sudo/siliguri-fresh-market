@@ -54,14 +54,14 @@ export function CartDrawer() {
             className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-white shadow-2xl border-l border-border"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <div>
                 <h2 className="text-lg font-extrabold text-foreground"><ShoppingCart className="h-5 w-5 inline mr-1.5" />Your Cart</h2>
                 <p className="text-xs text-muted mt-0.5">{getItemCount()} items</p>
               </div>
               <button
                 onClick={closeCart}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 hover:bg-white/5 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border hover:bg-surface-2 transition-all"
               >
                 <X className="h-5 w-5 text-muted" />
               </button>
@@ -91,9 +91,9 @@ export function CartDrawer() {
                         layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="group relative flex gap-3 rounded-2xl border border-white/5 bg-white/[0.03] p-3"
+                        className="group relative flex gap-3 rounded-2xl border border-border bg-surface-2 p-3"
                       >
-                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/5">
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-surface-2">
                           <img src={item.product.image}
                             alt={item.product.name}
                             className="object-cover brightness-90"
@@ -127,7 +127,7 @@ export function CartDrawer() {
                         </div>
                         {/* Quantity stepper */}
                         <div className="self-end shrink-0">
-                          <div className="flex items-center gap-0.5 sm:gap-1 rounded-xl bg-white/8 px-0.5 sm:px-1 py-0.5 sm:py-1">
+                          <div className="flex items-center gap-0.5 sm:gap-1 rounded-xl bg-surface-2 border border-border px-0.5 sm:px-1 py-0.5 sm:py-1">
                             <button
                               onClick={() => updateQuantity(lineKey, item.quantity - 1)}
                               className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg text-foreground/70 hover:bg-white/10 transition-all"
@@ -154,7 +154,7 @@ export function CartDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-white/5 bg-surface/95 backdrop-blur-xl px-4 pb-6 pt-4 safe-bottom">
+              <div className="border-t border-border bg-white/95 backdrop-blur-sm px-4 pb-6 pt-4 safe-bottom">
                 <div className="mb-4 space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted">Subtotal</span>
@@ -166,13 +166,13 @@ export function CartDrawer() {
                       {deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}
                     </span>
                   </div>
-                  <div className="flex justify-between border-t border-white/5 pt-3 text-base font-bold">
+                  <div className="flex justify-between border-t border-border pt-3 text-base font-bold">
                     <span className="text-foreground">Total</span>
                     <span className="text-foreground tabular-nums">₹{total.toLocaleString()}</span>
                   </div>
                 </div>
                 <Link href="/checkout" onClick={closeCart}>
-                  <button className="btn-glow flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold">
+                  <button className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all active:scale-[0.98]">
                     Proceed to Checkout
                     <ArrowRight className="h-4 w-4" />
                   </button>
