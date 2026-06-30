@@ -25,6 +25,9 @@ export async function GET(req: NextRequest) {
     .eq("delivery_boy_id", userId)
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("delivery orders error:", error.code);
+    return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
+  }
   return NextResponse.json({ orders: data ?? [] });
 }

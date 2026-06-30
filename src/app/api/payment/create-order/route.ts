@@ -13,24 +13,19 @@ export async function POST(req: NextRequest) {
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
-    return NextResponse.json({ 
-      error: "Razorpay not configured", 
-      keyId: keyId ? "set" : "MISSING", 
-      keySecret: keySecret ? "set" : "MISSING",
-      hint: "Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Vercel env vars"
-    }, { status: 501 });
+    console.error("Razorpay not configured");
+    return NextResponse.json({ error: "Payment service unavailable" }, { status: 501 });
   }
 
   try {
     const { amount, currency, receipt, notes } = await req.json();
 
     if (!amount || amount < 1) {
-      return NextResponse.json({ error: "Amount must be at least ₹1" }, { status: 400 });
+      return NextResponse.json({ error: "Amount must be at least Rs.1" }, { status: 400 });
     }
 
     let order;
     try {
-      // Use require for Razorpay (reliable in serverless ESM context)
       const RazorpayLib = require("razorpay");
       const RazorpayClass = RazorpayLib.default || RazorpayLib;
       const razorpay = new RazorpayClass({ key_id: keyId, key_secret: keySecret });
@@ -41,12 +36,8 @@ export async function POST(req: NextRequest) {
         notes: notes || {},
       });
     } catch (razErr: any) {
-      return NextResponse.json({ 
-        error: "Razorpay error", 
-        detail: razErr?.error?.description || razErr?.message || String(razErr),
-        type: typeof razErr,
-        stack: razErr?.stack?.slice(0, 300) || "none"
-      }, { status: 502 });
+      console.error("Razorpay create order failed:", razErr?.statusCode, razErr?.error?.code);
+      return NextResponse.json({ error: "Payment service temporarily unavailable" }, { status: 502 });
     }
 
     return NextResponse.json({
@@ -57,7 +48,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("Razorpay create order error:", err?.message || err);
-    const msg = err?.error?.description || err?.message || "Failed to create payment";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create payment" }, { status: 500 });
   }
 }

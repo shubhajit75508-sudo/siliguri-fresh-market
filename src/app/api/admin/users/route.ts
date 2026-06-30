@@ -36,12 +36,13 @@ export async function POST(req: NextRequest) {
       loyalty_points: body.loyalty_points ?? 0,
     });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("users upsert error:", error.code);
+      return NextResponse.json({ error: "User creation failed" }, { status: 500 });
+    }
     return NextResponse.json({ success: true });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
-    );
+    console.error("users error:", err);
+    return NextResponse.json({ error: "User creation failed" }, { status: 500 });
   }
 }

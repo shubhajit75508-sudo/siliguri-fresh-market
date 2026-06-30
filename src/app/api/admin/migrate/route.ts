@@ -14,7 +14,7 @@ export async function GET() {
   const add = (label: string, statement: string) => {
     sql.push(statement);
     try { supabase.rpc("exec_sql", { sql: statement }).then(({ error }) => {
-      results.push(error ? `${label}: ${error.message}` : `${label}: OK`);
+      results.push(error ? `${label}: FAILED` : `${label}: OK`);
     }); } catch { results.push(`${label}: skipped (exec_sql unavailable)`); }
   };
 

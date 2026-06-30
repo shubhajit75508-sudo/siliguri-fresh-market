@@ -13,6 +13,9 @@ export async function GET() {
     .eq("role", "customer")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("customers error:", error.code);
+    return NextResponse.json({ error: "Failed to load customers" }, { status: 500 });
+  }
   return NextResponse.json({ customers: data ?? [] });
 }

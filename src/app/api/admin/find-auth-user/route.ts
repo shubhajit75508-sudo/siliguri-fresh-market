@@ -17,11 +17,15 @@ export async function GET(req: NextRequest) {
 
   try {
     const { data, error } = await supabaseAdmin.auth.admin.listUsers();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("find-auth-user list error:", error.code);
+      return NextResponse.json({ error: "User lookup failed" }, { status: 500 });
+    }
     const user = data?.users?.find((u) => u.email === email);
     if (!user) return NextResponse.json({ id: null });
     return NextResponse.json({ id: user.id, email: user.email, name: user.user_metadata?.name, phone: user.user_metadata?.phone });
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    console.error("find-auth-user error:", e);
+    return NextResponse.json({ error: "User lookup failed" }, { status: 500 });
   }
 }

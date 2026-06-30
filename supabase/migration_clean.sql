@@ -181,6 +181,46 @@ CREATE INDEX IF NOT EXISTS idx_delivery_locations_order ON public.delivery_locat
 -- Enable Realtime for live tracking
 ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS public.delivery_locations;
 
+-- RLS for delivery_locations
+ALTER TABLE public.delivery_locations ENABLE ROW LEVEL SECURITY;
+
+-- Allow admins full access
+CREATE POLICY delivery_locations_admin ON public.delivery_locations
+  FOR ALL TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
+
+-- Allow delivery boys to INSERT their own locations
+CREATE POLICY delivery_locations_boy_insert ON public.delivery_locations
+  FOR INSERT TO authenticated
+  WITH CHECK (delivery_boy_id = auth.uid());
+
+-- Allow delivery boys to UPDATE their own locations
+CREATE POLICY delivery_locations_boy_update ON public.delivery_locations
+  FOR UPDATE TO authenticated
+  USING (delivery_boy_id = auth.uid())
+  WITH CHECK (delivery_boy_id = auth.uid());
+
+-- Allow delivery boys to DELETE their own locations
+CREATE POLICY delivery_locations_boy_delete ON public.delivery_locations
+  FOR DELETE TO authenticated
+  USING (delivery_boy_id = auth.uid());
+
+-- Allow delivery boys to SELECT their own locations
+CREATE POLICY delivery_locations_boy_select ON public.delivery_locations
+  FOR SELECT TO authenticated
+  USING (delivery_boy_id = auth.uid());
+
+-- Allow customers to SELECT locations for their own orders
+CREATE POLICY delivery_locations_customer_select ON public.delivery_locations
+  FOR SELECT TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.orders WHERE id = delivery_locations.order_id AND user_id = auth.uid()));
+
+-- Allow public read for live tracking (minimal exposure — only lat/lng/updated_at for a specific order)
+CREATE POLICY delivery_locations_public_read ON public.delivery_locations
+  FOR SELECT TO anon
+  USING (TRUE);
+
 -- =============================================================================
 -- 2. INDEXES
 -- =============================================================================

@@ -31,7 +31,10 @@ export async function GET() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("delivery-boys list error:", error.code);
+    return NextResponse.json({ error: "Failed to load delivery boys" }, { status: 500 });
+  }
   return NextResponse.json({ boys: data ?? [] });
 }
 
@@ -50,7 +53,10 @@ export async function POST(req: NextRequest) {
     email_confirm: true,
     user_metadata: { name: body.name, phone: body.phone, role: "delivery" },
   });
-  if (authError) return NextResponse.json({ error: authError.message }, { status: 500 });
+  if (authError) {
+    console.error("delivery-boys auth create error:", authError.status);
+    return NextResponse.json({ error: "Failed to create delivery boy" }, { status: 500 });
+  }
 
   const userId = authData.user.id;
 
@@ -62,7 +68,10 @@ export async function POST(req: NextRequest) {
     role: "delivery",
     loyalty_points: 0,
   });
-  if (userError) return NextResponse.json({ error: userError.message }, { status: 500 });
+  if (userError) {
+    console.error("delivery-boys user upsert error:", userError.code);
+    return NextResponse.json({ error: "Failed to create delivery boy" }, { status: 500 });
+  }
 
   const { error: dbError } = await supabaseAdmin.from("delivery_boys").upsert({
     id: userId,
@@ -72,7 +81,10 @@ export async function POST(req: NextRequest) {
     is_active: true,
     area: body.area ?? "Siliguri",
   });
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
+  if (dbError) {
+    console.error("delivery-boys db upsert error:", dbError.code);
+    return NextResponse.json({ error: "Failed to create delivery boy" }, { status: 500 });
+  }
 
   return NextResponse.json({ success: true, id: userId });
 }

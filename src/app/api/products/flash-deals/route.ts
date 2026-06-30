@@ -42,6 +42,9 @@ export async function GET() {
     .select("*")
     .eq("is_flash_deal", true);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("flash-deals error:", error.code);
+    return NextResponse.json({ error: "Failed to load deals" }, { status: 500 });
+  }
   return NextResponse.json((data ?? []).map((row: ProductRow) => mapProduct(row)));
 }

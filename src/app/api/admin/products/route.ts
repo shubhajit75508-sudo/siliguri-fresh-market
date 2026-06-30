@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     river: body.river ?? null,
     catch_date: body.catchDate ?? null,
   });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
   return NextResponse.json({ success: true });
 }
 
@@ -105,7 +105,7 @@ export async function PUT(req: NextRequest) {
   if (updates.catchDate !== undefined) dbUpdates.catch_date = updates.catchDate;
 
   const { error } = await supabaseAdmin.from("products").update(dbUpdates).filter("id::text", "eq", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
   return NextResponse.json({ success: true });
 }
 

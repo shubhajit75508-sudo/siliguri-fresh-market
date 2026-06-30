@@ -40,7 +40,10 @@ export async function POST(req: NextRequest) {
     .update(dbUpdates)
     .eq("id", orderId);
 
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+  if (updateError) {
+    console.error("delivery status update error:", updateError.code);
+    return NextResponse.json({ error: "Failed to update status" }, { status: 500 });
+  }
 
   if (customerEmail) {
     const { sendDeliveryUpdate } = await import("@/lib/email");

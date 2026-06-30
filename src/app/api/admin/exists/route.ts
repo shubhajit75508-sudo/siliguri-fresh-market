@@ -15,7 +15,7 @@ export async function GET() {
 
   const { data, error } = await supabaseAdmin.auth.admin.listUsers();
   if (error) {
-    console.error("Admin exists check failed:", error.message);
+    console.error("Admin exists check failed:", error.code);
     return NextResponse.json({ exists: true });
   }
 

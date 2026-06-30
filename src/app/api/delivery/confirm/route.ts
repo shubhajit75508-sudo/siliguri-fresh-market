@@ -49,7 +49,8 @@ export async function POST(req: NextRequest) {
     .eq("id", orderId);
 
   if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 500 });
+    console.error("confirm update error:", updateError.code);
+    return NextResponse.json({ error: "Failed to confirm delivery" }, { status: 500 });
   }
 
   return NextResponse.json({ success: true, paymentUpdated: updates.payment_status === "paid" });

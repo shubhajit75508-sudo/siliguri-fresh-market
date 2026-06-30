@@ -18,7 +18,7 @@ export async function GET() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Order operation failed" }, { status: 500 });
   return NextResponse.json({ orders: data ?? [] });
 }
 
@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest) {
   if (updates.return_approved !== undefined) dbUpdates.return_approved = updates.return_approved;
 
   const { error } = await supabaseAdmin.from("orders").update(dbUpdates).eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Order operation failed" }, { status: 500 });
 
   if (dbUpdates.delivery_status && body.customer_email) {
     sendDeliveryUpdate({
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     created_at: body.created_at ?? new Date().toISOString(),
     eta: body.eta ?? 30,
   });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Order operation failed" }, { status: 500 });
 
   if (body.customer_email) {
     sendOrderConfirmation({

@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
     .eq("delivery_boy_id", oldId)
     .select("id");
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("reconcile error:", error.code);
+    return NextResponse.json({ error: "Reconciliation failed" }, { status: 500 });
+  }
   return NextResponse.json({ updated: data?.length ?? 0, orders: data ?? [] });
 }
