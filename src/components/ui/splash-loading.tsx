@@ -2,7 +2,7 @@
 
 export function SplashLoading() {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-[#1A1512]">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-[#F5F8F5]">
       <div className="relative">
         <img
           src="https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg"

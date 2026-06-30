@@ -13,7 +13,7 @@ export function RootSplash() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-[#1A1512]">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-[#F5F8F5]">
       <style>{`
         @keyframes splash-spin {
           to { transform: rotate(360deg); }

@@ -22,14 +22,15 @@ export function HeroSection() {
 
   return (
     <section className="pt-2 pb-2 sm:pt-4">
-      <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-2xl shadow-black/15">
+      <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-xl">
         <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-[540px]">
           <img
             src={hero.image}
             alt="Siliguri Fresh Mart"
-            className="absolute inset-0 w-full h-full object-cover scale-105 product-img"
+            className="absolute inset-0 w-full h-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
         </div>
 
         <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-8 lg:p-10">
@@ -38,11 +39,11 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[520px] glass-panel p-6"
+              className="max-w-[520px]"
             >
-              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full glass-panel px-4 py-2">
-                <span className="live-dot h-2 w-2 rounded-full bg-[#4CAF50] shadow-[0_0_8px_#4CAF50]" />
-                <span className="text-[12px] font-semibold tracking-wide text-white/95">
+              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2">
+                <span className="live-dot h-2 w-2 rounded-full bg-[#2D7D3A] shadow-[0_0_8px_#2D7D3A]" />
+                <span className="text-[12px] font-semibold tracking-wide text-white">
                   Live — Delivering in 30–60 min
                 </span>
               </div>
@@ -53,20 +54,20 @@ export function HeroSection() {
                 ))}
               </h1>
 
-              <p className="mt-4 max-w-[420px] text-[15px] leading-relaxed text-white/70 sm:text-base">
+              <p className="mt-4 max-w-[420px] text-[15px] leading-relaxed text-white/75 sm:text-base">
                 {hero.subtitle}
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/search"
-                  className="inline-flex h-12 items-center rounded-full btn-primary px-7 text-[14px] font-semibold"
+                  className="inline-flex h-12 items-center rounded-full bg-[#2D7D3A] px-7 text-[14px] font-semibold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Shop fresh now
                 </Link>
                 <Link
                   href="/account"
-                  className="inline-flex h-12 items-center rounded-full btn-secondary px-7 text-[14px] font-semibold"
+                  className="inline-flex h-12 items-center rounded-full bg-white/20 backdrop-blur-sm px-7 text-[14px] font-semibold text-white transition-all hover:bg-white/30"
                 >
                   My Account
                 </Link>
@@ -78,13 +79,13 @@ export function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="hidden sm:block max-w-[120px] sm:max-w-[300px] glass-panel p-3 sm:p-5 shrink-0"
+              className="hidden sm:block max-w-[120px] sm:max-w-[300px] bg-white/15 backdrop-blur-sm rounded-2xl p-3 sm:p-5 shrink-0"
             >
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-fresh">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#66BB6A]">
                 Today&apos;s Catch
               </p>
               <h3 className="mt-1.5 text-[14px] font-bold tracking-tight text-white sm:text-[22px]">Padma Hilsa</h3>
-              <p className="mt-0.5 text-[10px] text-white/55 sm:mt-1 sm:text-[12px]">Harvested at dawn — iced & sealed</p>
+              <p className="mt-0.5 text-[10px] text-white/60 sm:mt-1 sm:text-[12px]">Harvested at dawn — iced & sealed</p>
 
               <div className="mt-3 sm:mt-5">
                 {timeline.map((step, i) => (
@@ -93,19 +94,19 @@ export function HeroSection() {
                       <div
                         className={`h-2.5 w-2.5 rounded-full ${
                           step.active
-                            ? "bg-brand-fresh shadow-[0_0_0_4px_rgba(34,197,94,0.25)]"
+                            ? "bg-[#2D7D3A] shadow-[0_0_0_4px_rgba(45,125,58,0.3)]"
                             : step.done
-                              ? "bg-brand-fresh"
-                              : "bg-white/25"
+                              ? "bg-[#2D7D3A]"
+                              : "bg-white/30"
                         }`}
                       />
                       {i < timeline.length - 1 && (
-                        <div className={`my-0.5 h-4 w-px sm:my-1 sm:h-9 ${step.done ? "bg-brand-fresh/40" : "bg-white/15"}`} />
+                        <div className={`my-0.5 h-4 w-px sm:my-1 sm:h-9 ${step.done ? "bg-[#2D7D3A]/50" : "bg-white/20"}`} />
                       )}
                     </div>
                     <div className={i < timeline.length - 1 ? "pb-1 sm:pb-3" : ""}>
                       <p className="text-[11px] font-semibold text-white sm:text-[13px]">{step.label}</p>
-                      <p className="text-[9px] text-white/45 sm:text-[11px]">{step.time}</p>
+                      <p className="text-[9px] text-white/50 sm:text-[11px]">{step.time}</p>
                     </div>
                   </div>
                 ))}
@@ -122,14 +123,14 @@ export function HeroSection() {
             {[
               { icon: Clock, text: "30-min ETA" },
               { icon: ShieldCheck, text: "Freshness 100%" },
-              { icon: Truck, text: "Free over ₹299" },
+              { icon: Truck, text: "Free over Rs.299" },
             ].map((item) => (
               <div
                 key={item.text}
-                className="flex items-center gap-2 rounded-full glass-panel px-4 py-2.5"
+                className="flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2.5"
               >
-                <item.icon className="h-3.5 w-3.5 text-brand-fresh" strokeWidth={2.5} />
-                <span className="text-[12px] font-medium text-white/90">{item.text}</span>
+                <item.icon className="h-3.5 w-3.5 text-[#66BB6A]" strokeWidth={2.5} />
+                <span className="text-[12px] font-medium text-white">{item.text}</span>
               </div>
             ))}
           </motion.div>

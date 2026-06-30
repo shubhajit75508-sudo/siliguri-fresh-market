@@ -28,26 +28,26 @@ export function FlashDealsSection() {
   if (error || !deals.length) return null;
 
   return (
-    <section className="relative overflow-hidden rounded-2xl glass-panel py-6 sm:py-12 mx-4 sm:mx-0">
-      <div className="mx-auto max-w-7xl px-2 sm:px-4">
+    <section className="relative py-6 sm:py-12">
+      <div className="mx-auto max-w-7xl px-4">
         <FadeIn className="mb-4 flex items-center justify-between gap-2 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-[#E8A440]/15">
-              <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-[#E8A440]" />
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-[#F5A623]/10">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-[#F5A623]" />
             </div>
             <div>
-              <h2 className="text-base sm:text-xl font-extrabold text-white">
+              <h2 className="text-base sm:text-xl font-extrabold text-foreground">
                 Flash Deals
               </h2>
-              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-white/40">
-                <Sparkles className="h-2.5 w-2.5 text-[#E8A440]" />
+              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted">
+                <Sparkles className="h-2.5 w-2.5 text-[#F5A623]" />
                 <span>Limited time offer</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 rounded-lg bg-[#E8A440]/10 px-2.5 py-1.5 sm:px-3 sm:py-2 ring-1 ring-[#E8A440]/20">
-            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#E8A440]" />
-            <span className="font-mono tabular-nums text-xs sm:text-sm font-bold text-[#E8A440]">
+          <div className="flex items-center gap-1.5 rounded-lg bg-[#F5A623]/10 px-2.5 py-1.5 sm:px-3 sm:py-2">
+            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#F5A623]" />
+            <span className="font-mono tabular-nums text-xs sm:text-sm font-bold text-[#B87A0A]">
               {timeLeft}
             </span>
           </div>

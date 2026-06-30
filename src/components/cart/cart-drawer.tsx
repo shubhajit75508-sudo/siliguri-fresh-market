@@ -51,7 +51,7 @@ export function CartDrawer() {
             dragConstraints={{ left: 0, right: 120 }}
             dragElastic={0.12}
             onDragEnd={(_, info) => { if (info.offset.x > 100) closeCart(); }}
-            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-[#1A1512] shadow-2xl border-l border-white/5"
+            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-white shadow-2xl border-l border-border"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">

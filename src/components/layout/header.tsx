@@ -17,7 +17,7 @@ export function Header() {
   const itemCount = hydrated ? getItemCount() : 0;
 
   return (
-    <header className="sticky top-0 z-50 glass-strong border-b border-white/5">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
@@ -82,7 +82,7 @@ export function Header() {
               <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
               Cart
               {itemCount > 0 && (
-                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#E8A440] px-1 text-[10px] font-bold text-[#1A1512]">
+                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F5A623] px-1 text-[10px] font-bold text-white">
                   {itemCount}
                 </span>
               )}
@@ -95,7 +95,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-fresh/20"><img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-9 w-9 object-contain rounded-lg" /></div>
             <div className="leading-none">
-              <div className="text-sm font-bold text-white">Siliguri</div>
+              <div className="text-sm font-bold text-foreground">Siliguri</div>
               <div className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider">Fresh Mart</div>
             </div>
           </Link>
@@ -129,14 +129,14 @@ export function Header() {
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#E8A440] text-[8px] font-bold text-[#1A1512]">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#F5A623] text-[8px] font-bold text-white">
                   {itemCount}
                 </span>
               )}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground"
             >
               {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -154,7 +154,7 @@ export function Header() {
             initial={{ maxHeight: 0, opacity: 0 }}
             animate={{ maxHeight: 500, opacity: 1 }}
             exit={{ maxHeight: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-white/5 bg-[#1A1512]/95 backdrop-blur-[14px] lg:hidden"
+            className="overflow-hidden border-t border-border bg-white lg:hidden"
           >
             <div className="space-y-0.5 p-3">
               {[
@@ -181,7 +181,7 @@ export function Header() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block rounded-xl px-4 py-3 text-sm font-medium text-white hover:bg-white/5"
+                  className="block rounded-xl px-4 py-3 text-sm font-medium text-foreground hover:bg-surface-2"
                 >
                   {l.label}
                 </Link>

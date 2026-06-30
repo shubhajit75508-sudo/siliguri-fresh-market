@@ -1,59 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #C75A3A;
-  --color-primary-dark: #A0462C;
-  --color-primary-light: #E08A70;
-  --color-accent: #E8A440;
-  --color-accent-dark: #C4872C;
-  --color-bg: #1A1512;
-  --color-bg-mid: #1C2520;
-  --color-bg-end: #1A2128;
-  --color-surface: #252220;
-  --color-surface-alt: #2A2824;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-text-primary: #EDF2F5;
-  --color-text-secondary: rgba(237, 242, 245, 0.5);
+  --color-primary: #2D7D3A;
+  --color-primary-dark: #23682E;
+  --color-primary-light: #E8F5E9;
+  --color-accent: #F5A623;
+  --color-accent-dark: #D48A0C;
+  --color-bg: #F5F8F5;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F0F4F0;
+  --color-border: #E0E6E1;
+  --color-text-primary: #1A2A1A;
+  --color-text-secondary: #6B7B6B;
   --color-text-on-primary: #FFFFFF;
-  --color-success: #4CAF50;
-  --color-success-bg: rgba(76, 175, 80, 0.15);
-  --color-success-text: #66BB6A;
-  --color-warning: #E8A440;
-  --color-warning-bg: rgba(232, 164, 64, 0.15);
-  --color-warning-text: #E8A440;
-  --color-danger: #E74C3C;
-  --color-danger-bg: rgba(231, 76, 60, 0.15);
-  --color-danger-text: #E74C3C;
+  --color-success: #2D7D3A;
+  --color-success-bg: rgba(45, 125, 58, 0.08);
+  --color-success-text: #2D7D3A;
+  --color-warning: #F5A623;
+  --color-warning-bg: rgba(245, 166, 35, 0.1);
+  --color-warning-text: #B87A0A;
+  --color-danger: #E53935;
+  --color-danger-bg: rgba(229, 57, 53, 0.08);
+  --color-danger-text: #C62828;
 
   --bg-base: var(--color-bg);
-  --bg-gradient: linear-gradient(180deg, #1A1512 0%, #1C2520 40%, #1A2128 100%);
+  --bg-gradient: var(--color-bg);
   --surface: var(--color-surface);
   --surface-2: var(--color-surface-alt);
   --border: var(--color-border);
-  --border-light: rgba(255, 255, 255, 0.05);
+  --border-light: #E8EDE9;
   --foreground: var(--color-text-primary);
   --muted: var(--color-text-secondary);
-  --muted-light: rgba(237, 242, 245, 0.35);
+  --muted-light: #8FA08F;
   --accent: var(--color-primary);
   --accent-dim: var(--color-primary-dark);
-  --accent-glow: rgba(199, 90, 58, 0.25);
   --danger: var(--color-danger);
   --warning: var(--color-warning);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 28px var(--accent-glow);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
 
   --brand-dark: var(--color-primary);
-  --brand-fresh: #4CAF50;
-  --brand-fresh-dim: #3D8B40;
+  --brand-fresh: #2D7D3A;
+  --brand-fresh-dim: #23682E;
   --brand-gold: var(--color-accent);
-  --brand-gold-light: #F0C070;
-  --brand-blue: #60A5FA;
+  --brand-gold-light: #F8C762;
+  --brand-black: #1A2A1A;
+  --brand-blue: #4FA8D8;
   --brand-red: var(--color-danger);
   --brand-orange: var(--color-warning);
-  --brand-purple: #A78BFA;
+  --brand-purple: #9B59B6;
 }
 
 @theme inline {
@@ -68,7 +65,7 @@
   --color-brand-fresh-dim: var(--brand-fresh-dim);
   --color-brand-gold: var(--brand-gold);
   --color-brand-gold-light: var(--brand-gold-light);
-  --color-brand-black: var(--color-bg);
+  --color-brand-black: var(--brand-black);
   --color-brand-blue: var(--brand-blue);
   --color-brand-red: var(--brand-red);
   --color-brand-orange: var(--brand-orange);
@@ -84,7 +81,7 @@ html {
 }
 
 body {
-  background: var(--bg-gradient);
+  background: var(--color-bg);
   color: var(--foreground);
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   overflow-x: hidden;
@@ -94,85 +91,74 @@ body {
   min-height: 100vh;
 }
 
-/* ===== SINGLE GLASS SYSTEM ===== */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* ===== CARD — clean white, subtle shadow ===== */
+.card-white {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
   border-radius: 16px;
 }
 
-.glass-strong {
-  background: rgba(18, 16, 14, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-/* Primary CTA — solid terracotta, the one opaque confident element */
+/* ===== BUTTONS ===== */
 .btn-primary {
-  background: #C75A3A;
+  background: #2D7D3A;
   color: white;
   border: none;
   border-radius: 100px;
-  box-shadow: 0 4px 18px rgba(199, 90, 58, 0.3);
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(45, 125, 58, 0.2);
   transition: all 0.2s ease;
 }
 .btn-primary:hover {
-  background: #B04A2E;
-  box-shadow: 0 6px 24px rgba(199, 90, 58, 0.4);
+  background: #23682E;
+  box-shadow: 0 4px 18px rgba(45, 125, 58, 0.3);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: scale(0.98); }
 
-/* Secondary button — glass only */
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: white;
+  background: #FFFFFF;
+  border: 1px solid #D0D8D1;
+  color: var(--foreground);
   border-radius: 100px;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
-.btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+.btn-secondary:hover {
+  background: var(--color-surface-alt);
+  border-color: var(--color-primary);
+}
 .btn-secondary:active { transform: scale(0.98); }
 
-/* ===== CARDS ===== */
+/* ===== PRODUCT CARD ===== */
 .product-card {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 .product-card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
-  transform: translateY(-2px);
+  border-color: #A5D6A7;
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .category-tile {
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
 }
 .category-tile:hover {
   transform: scale(1.02);
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: #A5D6A7;
+  box-shadow: var(--shadow-sm);
 }
 
 .footer-surface {
-  background: rgba(18, 16, 14, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: #FFFFFF;
+  border-top: 1px solid var(--color-border);
   border-radius: 24px 24px 0 0;
   margin-top: 2rem;
 }
@@ -190,16 +176,16 @@ body {
   letter-spacing: 0.05em;
 }
 .product-badge.fresh {
-  background: rgba(76, 175, 80, 0.15);
-  color: #66BB6A;
+  background: rgba(45, 125, 58, 0.08);
+  color: #2D7D3A;
 }
 .product-badge.organic {
-  background: rgba(167, 139, 250, 0.15);
-  color: #A78BFA;
+  background: rgba(155, 89, 182, 0.08);
+  color: #9B59B6;
 }
 .product-badge.farm {
-  background: rgba(96, 165, 250, 0.15);
-  color: #60A5FA;
+  background: rgba(79, 168, 216, 0.08);
+  color: #4FA8D8;
 }
 
 /* Section title */
@@ -231,8 +217,8 @@ body {
   30%, 70% { transform: translateX(4px); }
 }
 @keyframes red-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.15), 0 0 60px rgba(231, 76, 60, 0.08); }
-  50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.25), 0 0 80px rgba(231, 76, 60, 0.15); }
+  0%, 100% { box-shadow: 0 0 20px rgba(229, 57, 53, 0.15), 0 0 60px rgba(229, 57, 53, 0.08); }
+  50% { box-shadow: 0 0 35px rgba(229, 57, 53, 0.25), 0 0 80px rgba(229, 57, 53, 0.15); }
 }
 .address-shake {
   animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both, red-glow 1.5s ease-in-out infinite;
@@ -291,7 +277,7 @@ body {
   color: var(--accent);
 }
 .stepper-dot.pending {
-  background: var(--color-surface);
+  background: var(--color-primary-light);
   color: var(--muted);
 }
 .stepper-line {

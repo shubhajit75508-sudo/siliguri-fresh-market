@@ -51,7 +51,7 @@ export function DeliveryStrip() {
   const cityLabel = deliveryPincode === "734001" ? "Siliguri" : `Pincode`;
 
   return (
-    <div className="border-b border-white/5 bg-[#1A1512]/60 backdrop-blur-[14px]">
+    <div className="border-b border-border bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
         <div className="relative" ref={ref}>
           <button
@@ -67,7 +67,7 @@ export function DeliveryStrip() {
           </button>
 
           {open && (
-            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl glass-panel p-4 shadow-xl z-50">
+            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl card-white p-4 shadow-xl z-50">
               <p className="mb-3 text-sm font-bold">Delivery Location</p>
 
               {/* Saved addresses */}
@@ -77,8 +77,8 @@ export function DeliveryStrip() {
                     <button
                       key={addr.id}
                       onClick={() => selectPincode(addr.pincode)}
-                      className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-white transition-colors hover:bg-white/5 ${
-                        deliveryPincode === addr.pincode ? "bg-[#4CAF50]/10 font-semibold text-[#4CAF50]" : ""
+                      className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-surface-2 ${
+                        deliveryPincode === addr.pincode ? "bg-[#2D7D3A]/8 font-semibold text-[#2D7D3A]" : ""
                       }`}
                     >
                       <MapPin className="h-3.5 w-3.5 shrink-0 text-muted" />
@@ -93,7 +93,7 @@ export function DeliveryStrip() {
               <button
                 onClick={getLocation}
                 disabled={locating}
-                className="mb-3 flex w-full items-center gap-2 rounded-xl bg-[#4CAF50]/10 px-3 py-2.5 text-sm font-medium text-[#4CAF50] transition-colors hover:bg-[#4CAF50]/15 disabled:opacity-50"
+                className="mb-3 flex w-full items-center gap-2 rounded-xl bg-[#2D7D3A]/8 px-3 py-2.5 text-sm font-medium text-[#2D7D3A] transition-colors hover:bg-[#2D7D3A]/12 disabled:opacity-50"
               >
                 {locating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -114,7 +114,7 @@ export function DeliveryStrip() {
                   placeholder="734001"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  className="w-full rounded-xl border border-white/10 bg-[#252220] px-3 py-2 text-sm text-white outline-none focus:border-[#C75A3A]/40"
+                  className="w-full rounded-xl border border-border bg-white px-3 py-2 text-sm text-foreground outline-none focus:border-[#2D7D3A]/40"
                 />
                 <button
                   onClick={handleSave}
