@@ -33,12 +33,11 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const displayOriginal = getOriginalPriceForWeight(product.price, product.originalPrice, selectedWeight, product.weightPrices);
 
   const b = catBadge(product.category);
-  const isOutOfStock = !product.inStock || (product.stock != null && product.stock <= 0);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isOutOfStock) {
+    if (!product.inStock) {
       toast.add(`${product.name} is out of stock`, "error");
       return;
     }
@@ -90,10 +89,10 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           </Link>
           <button
             onClick={handleAdd}
-            disabled={isOutOfStock}
+            disabled={!product.inStock}
             className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full btn-primary text-[12px] font-semibold disabled:opacity-50"
           >
-            <Plus className="h-3.5 w-3.5" /> {isOutOfStock ? "Out of stock" : "Add to cart"}
+            <Plus className="h-3.5 w-3.5" /> {product.inStock ? "Add to cart" : "Out of stock"}
           </button>
         </div>
       </div>
@@ -192,11 +191,11 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             ) : (
               <button
                 onClick={handleAdd}
-                disabled={isOutOfStock}
+                disabled={!product.inStock}
                 className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border text-[13px] font-semibold text-foreground transition-all hover:border-[#2D7D3A]/40 hover:bg-[#2D7D3A]/5 active:scale-[0.98] disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} />
-                {isOutOfStock ? "Out of stock" : "Add"}
+                {product.inStock ? "Add" : "Out of stock"}
               </button>
             )}
           </div>
