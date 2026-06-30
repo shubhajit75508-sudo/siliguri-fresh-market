@@ -56,7 +56,7 @@ const testimonials: Testimonial[] = [
 
 export function FreshnessBanner() {
   return (
-    <div className="glass-card p-5">
+    <div className="glass-deep-light rounded-2xl p-5">
       <div className="flex items-center gap-4">
         <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-brand-gold/15">
           <Leaf className="h-6 w-6 text-brand-gold" />

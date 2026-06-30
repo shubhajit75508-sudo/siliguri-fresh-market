@@ -28,7 +28,10 @@ export function FlashDealsSection() {
   if (error || !deals.length) return null;
 
   return (
-    <section className="relative overflow-hidden rounded-2xl glass-card py-6 sm:py-12">
+    <section className="relative overflow-hidden rounded-2xl py-6 sm:py-12">
+      <div className="absolute inset-0 glass-deep-light rounded-2xl" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(245,166,35,0.06),transparent_70%)]" />
+      <div className="absolute -left-4 -top-4 h-32 w-32 animate-pulse rounded-full bg-brand-gold/5 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-4">
         <FadeIn className="mb-4 flex items-center justify-between gap-2 sm:mb-6">
@@ -61,7 +64,7 @@ export function FlashDealsSection() {
               className="animate-in animate-in-duration-500 animate-in-fade animate-in-slide-up"
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <ProductCard product={p} badge="Bestseller" />
+              <ProductCard product={p} badge="Golden Deal" />
             </div>
           ))}
         </div>
