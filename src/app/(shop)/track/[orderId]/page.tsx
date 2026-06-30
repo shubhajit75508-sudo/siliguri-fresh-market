@@ -4,13 +4,14 @@ import { use, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
-  Package, ShoppingBag, Truck, CheckCircle, MapPin, Shield, Leaf, Navigation,
+  Package, ShoppingBag, Truck, CheckCircle, MapPin, Shield, Leaf, Navigation, LogIn,
 } from "lucide-react";
 import type { Order, DeliveryStatus } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 import { useOrderStore } from "@/store/order-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import dynamic from "next/dynamic";
 
@@ -41,6 +42,8 @@ export default function TrackOrderPage({
   const [cancelling, setCancelling] = useState(false);
   const toast = useToast();
   const { cancelOrder } = useOrderStore();
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const userId = currentUser?.id;
 
   const fetchOrder = useCallback(() => {
     fetch(`/api/orders/${orderId}`)
@@ -84,6 +87,7 @@ export default function TrackOrderPage({
           deliveryCode: (raw.delivery_code as string) ?? "",
           returnRequested: raw.return_requested as boolean | undefined,
           returnApproved: raw.return_approved as boolean | undefined,
+          userId: (raw.user_id as string) ?? undefined,
         });
       })
       .catch(() => setOrder(null))
@@ -298,15 +302,24 @@ export default function TrackOrderPage({
         )}
       </div>
 
-      {/* Cancel Order — only allowed until picked up (not after out_for_delivery) */}
+      {/* Cancel Order — only allowed until picked up, and only for the order owner */}
       {order.status !== "out_for_delivery" && order.status !== "delivered" && order.status !== "cancelled" && (
         <div className="mt-4 flex justify-end">
-          <button
-            onClick={() => setShowCancel(true)}
-            className="text-[11px] text-muted hover:text-brand-red underline underline-offset-2 transition-colors"
-          >
-            {order.deliveryStatus === "picked_up" ? "Cancel (before dispatch)" : "Cancel Order"}
-          </button>
+          {userId && order.userId === userId ? (
+            <button
+              onClick={() => setShowCancel(true)}
+              className="text-[11px] text-muted hover:text-brand-red underline underline-offset-2 transition-colors"
+            >
+              {order.deliveryStatus === "picked_up" ? "Cancel (before dispatch)" : "Cancel Order"}
+            </button>
+          ) : !userId ? (
+            <a
+              href="/auth/login"
+              className="flex items-center gap-1 text-[11px] text-muted hover:text-[#2D7D3A] underline underline-offset-2 transition-colors"
+            >
+              <LogIn className="h-3 w-3" /> Login to cancel
+            </a>
+          ) : null}
         </div>
       )}
 
