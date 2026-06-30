@@ -168,7 +168,6 @@ export async function fetchAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
     .select("*")
-    .eq("in_stock", true)
     .order("name");
   if (error) throw error;
   return (data ?? []).map((row) => mapProduct(row as ProductRow));
