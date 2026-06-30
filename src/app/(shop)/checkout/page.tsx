@@ -241,7 +241,7 @@ export default function CheckoutPage() {
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold border flex-shrink-0 ${
                   step > s.n ? "bg-[#2D7D3A] border-[#2D7D3A] text-white" : step === s.n ? "bg-[#2D7D3A]/10 border-[#2D7D3A] text-[#2D7D3A]" : "bg-surface-2 border-border text-muted"
                 }`}>
-                  {step > s.n ? "\u2713" : s.n}
+                  {step > s.n ? "✓" : s.n}
                 </div>
                 <span className={`text-[10px] font-semibold uppercase tracking-wider hidden sm:inline ${step >= s.n ? "text-foreground" : "text-muted"}`}>{s.l}</span>
               </div>
@@ -285,21 +285,21 @@ export default function CheckoutPage() {
                         </div>
                         <p className="text-[11px] text-muted mt-0.5">
                           {item.selectedWeight || item.product.unit}
-                          {item.selectedCut ? ` \u00b7 Cut: ${item.selectedCut}` : ""}
-                          {item.selectedCleaning ? ` \u00b7 Clean: ${item.selectedCleaning}` : ""}
+                          {item.selectedCut ? ` · Cut: ${item.selectedCut}` : ""}
+                          {item.selectedCleaning ? ` · Clean: ${item.selectedCleaning}` : ""}
                         </p>
                         <p className="text-[10px] text-muted-light mt-1">
                           {item.product.originalPrice && item.product.originalPrice > item.product.price ? (
-                            <>MRP <span className="line-through">\u20B9{item.product.originalPrice}</span> &nbsp;</>
+                            <>MRP <span className="line-through">₹{item.product.originalPrice}</span> &nbsp;</>
                           ) : null}
-                          <span className="text-[#2D7D3A] font-bold">\u20B9{item.product.price}/unit</span>
+                          <span className="text-[#2D7D3A] font-bold">₹{item.product.price}/unit</span>
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                        <span className="text-sm font-extrabold text-foreground">\u20B9{(getPriceForWeight(item.product.price, item.selectedWeight || item.product.unit, item.product.weightPrices) * item.quantity).toFixed(0)}</span>
+                        <span className="text-sm font-extrabold text-foreground">₹{(getPriceForWeight(item.product.price, item.selectedWeight || item.product.unit, item.product.weightPrices) * item.quantity).toFixed(0)}</span>
                         <div className="flex items-center gap-1">
                           <div className="flex items-center gap-0 rounded-lg bg-surface-2 border border-border">
-                          <button onClick={() => { const k = cartLineKey(item); if (item.quantity <= 1) removeItem(k); else updateQuantity(k, item.quantity - 1); }} className="w-7 h-7 flex items-center justify-center text-muted hover:text-foreground rounded-l-lg text-sm font-bold">\u2212</button>
+                          <button onClick={() => { const k = cartLineKey(item); if (item.quantity <= 1) removeItem(k); else updateQuantity(k, item.quantity - 1); }} className="w-7 h-7 flex items-center justify-center text-muted hover:text-foreground rounded-l-lg text-sm font-bold">−</button>
                           <span className="min-w-[28px] text-center text-[13px] font-bold text-foreground">{item.quantity}</span>
                           <button onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)} className="w-7 h-7 flex items-center justify-center text-muted hover:text-foreground rounded-r-lg text-sm font-bold">+</button>
                         </div>
@@ -325,7 +325,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-foreground">Total</span><span className="text-lg font-extrabold text-foreground">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/10 px-4 py-2.5 text-[11px] text-muted">
-                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">within 45\u201360 min</strong> after order confirmation.
+                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">within 45–60 min</strong> after order confirmation.
               </div>
             </div>
 
@@ -355,7 +355,7 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">Phone <span className="text-brand-red text-xs">*</span></label>
-                  <div className="flex"><div className="bg-[#2D7D3A]/5 border border-border border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2D7D3A] whitespace-nowrap flex items-center gap-1">{'\uD83C\uDDEE\uD83C\uDDF3'} +91</div><input type="tel" value={contactForm.phone} onChange={(e) => setContactForm(c => ({ ...c, phone: e.target.value }))} className="flex-1 bg-white border border-border rounded-r-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10" placeholder="98765 43210" /></div>
+                  <div className="flex"><div className="bg-[#2D7D3A]/5 border border-border border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2D7D3A] whitespace-nowrap flex items-center gap-1">🇮🇳 +91</div><input type="tel" value={contactForm.phone} onChange={(e) => setContactForm(c => ({ ...c, phone: e.target.value }))} className="flex-1 bg-white border border-border rounded-r-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10" placeholder="98765 43210" /></div>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">Email <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
@@ -367,7 +367,7 @@ export default function CheckoutPage() {
             {/* Delivery Address */}
             <div ref={addressRef} className={`card-white overflow-hidden mb-3.5 transition-all duration-500 ${addressMissing ? "border-brand-red/50 ring-2 ring-[#e74c3c]/20 address-shake" : ""}`}>
               {addressMissing && (
-                <div className="flex items-center gap-2 bg-brand-red/10 border-b border-brand-red/20 px-4 py-2.5"><AlertTriangle className="h-5 w-5" /><span className="text-xs font-bold text-brand-red">Address required \u2014 please fill delivery details</span></div>
+                <div className="flex items-center gap-2 bg-brand-red/10 border-b border-brand-red/20 px-4 py-2.5"><AlertTriangle className="h-5 w-5" /><span className="text-xs font-bold text-brand-red">Address required — please fill delivery details</span></div>
               )}
               {(!selectedAddress || editingAddress) ? (
                 <>
@@ -406,7 +406,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">Delivery Note <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
-                  <textarea value={detailForm.deliveryInstructions} onChange={(e) => setDetailForm(f => ({ ...f, deliveryInstructions: e.target.value }))} rows={2} className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 resize-none" placeholder="Ring bell twice \u00b7 Leave at door..." />
+                  <textarea value={detailForm.deliveryInstructions} onChange={(e) => setDetailForm(f => ({ ...f, deliveryInstructions: e.target.value }))} rows={2} className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 resize-none" placeholder="Ring bell twice · Leave at door..." />
                 </div>
               </div>
               <div className="px-5 pb-5">
@@ -429,7 +429,7 @@ export default function CheckoutPage() {
               {selectedAddress && (
                 <div className="px-5 pb-5">
                   <button onClick={() => { saveAddressDetails(); setEditingAddress(false); }} className="w-full py-2.5 rounded-xl bg-[#2D7D3A]/8 border border-[#2D7D3A]/20 text-[#2D7D3A] text-xs font-bold hover:bg-[#2D7D3A]/15 transition-colors">
-                    \u2713 Done Editing
+                    ✓ Done Editing
                   </button>
                 </div>
               )}
@@ -454,7 +454,7 @@ export default function CheckoutPage() {
                       {selectedAddress.area && <span>{selectedAddress.area}</span>}
                       {selectedAddress.landmark && <span>, Near {selectedAddress.landmark}</span>}
                       <br />
-                      <span>{selectedAddress.city} \u2014 {selectedAddress.pincode}</span>
+                      <span>{selectedAddress.city} — {selectedAddress.pincode}</span>
                       {selectedAddress.deliveryInstructions && <p className="text-[11px] text-muted mt-1 italic">{selectedAddress.deliveryInstructions}</p>}
                       {selectedAddress.lat && selectedAddress.lng && <p className="text-[10px] text-[#2D7D3A] mt-1">GPS coordinates saved</p>}
                     </div>
@@ -513,8 +513,8 @@ export default function CheckoutPage() {
                 <div className="flex items-start justify-between p-5 gap-3">
                   <div className="text-[13px] text-muted leading-relaxed">
                     <span className="text-[11px] text-[#2D7D3A] font-bold uppercase tracking-wider block mb-1">{selectedAddress.label?.toUpperCase() || "HOME"}</span>
-                    {currentUser?.name} \u00b7 {currentUser?.phone}<br />
-                    {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.street ? `${selectedAddress.street}, ` : ""}{selectedAddress.landmark && `Near ${selectedAddress.landmark}, `}{selectedAddress.city} \u2014 {selectedAddress.pincode}
+                    {currentUser?.name} · {currentUser?.phone}<br />
+                    {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.street ? `${selectedAddress.street}, ` : ""}{selectedAddress.landmark && `Near ${selectedAddress.landmark}, `}{selectedAddress.city} — {selectedAddress.pincode}
                   </div>
                   <button onClick={() => setStep(2)} className="text-xs font-bold text-[#2D7D3A] whitespace-nowrap hover:underline">Change</button>
                 </div>
@@ -532,7 +532,7 @@ export default function CheckoutPage() {
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "razorpay" ? "bg-[#4A8FE7]/10 text-[#4A8FE7]" : "bg-surface"}`}><Zap className="h-5 w-5" /></div>
                   <div className="flex-1 text-left">
                     <div className="flex items-center gap-2"><span className="text-sm font-bold text-foreground">Razorpay</span>{selectedPayment === "razorpay" && <span className="product-badge fresh text-[9px]">RECOMMENDED</span>}</div>
-                    <p className="text-[11px] text-muted">UPI \u00b7 Cards \u00b7 NetBanking \u00b7 Wallets</p>
+                    <p className="text-[11px] text-muted">UPI · Cards · NetBanking · Wallets</p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "razorpay" ? "border-[#2D7D3A]" : "border-border"}`}>
                     {selectedPayment === "razorpay" && <div className="w-2.5 h-2.5 rounded-full bg-[#2D7D3A]" />}
@@ -572,7 +572,7 @@ export default function CheckoutPage() {
                 </span>
               ))}
             </div>
-            <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full py-3 rounded-2xl border border-border text-sm font-semibold text-muted hover:bg-surface-2 transition-colors mb-2">{'\u2190'} Back to Delivery</button>
+            <button onClick={() => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full py-3 rounded-2xl border border-border text-sm font-semibold text-muted hover:bg-surface-2 transition-colors mb-2">{'←'} Back to Delivery</button>
           </>
         )}
       </div>
@@ -593,7 +593,7 @@ export default function CheckoutPage() {
             setEditingAddress(false);
             setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
           } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
-            {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed \u2192" : step === 2 ? "Continue \u2192" : selectedPayment === "razorpay" ? `Pay \u20B9${total.toLocaleString()}` : "Place Order"}
+            {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "razorpay" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>
       </div>
@@ -638,7 +638,7 @@ export default function CheckoutPage() {
               disabled={!upiTxnId.trim()}
               className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid \u2014 Confirm
+              <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm
             </button>
             <p className="mt-4 text-[10px] text-center text-muted flex items-center justify-center gap-1">
               <ExternalLink className="h-3 w-3" /> Open GPay / PhonePe / Paytm to complete
