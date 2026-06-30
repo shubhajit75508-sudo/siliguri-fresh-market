@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { ADMIN_EMAILS } from "@/lib/admin-creds";
+import bcrypt from "bcryptjs";
 
-function getAdminPassword(email: string): string | null {
+function getAdminPasswordHash(email: string): string | null {
   for (let i = 0; i < ADMIN_EMAILS.length; i++) {
     if (ADMIN_EMAILS[i] === email) {
       return process.env[`ADMIN_PASSWORD_${i + 1}`] ?? null;
@@ -20,12 +21,27 @@ export async function POST(req: NextRequest) {
     }
 
     if (!ADMIN_EMAILS.includes(email)) {
-      return NextResponse.json({ error: "Not an admin account" }, { status: 401 });
+      // Use same generic message to not reveal which emails are admin
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const expected = getAdminPassword(email);
-    if (!expected || expected !== password) {
-      return NextResponse.json({ error: "Incorrect password" }, { status: 401 });
+    const storedHash = getAdminPasswordHash(email);
+    if (!storedHash) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    // Support both bcrypt hashes and plain-text fallback during transition
+    let valid = false;
+    if (storedHash.startsWith("$2")) {
+      valid = await bcrypt.compare(password, storedHash);
+    } else {
+      // Legacy plain-text comparison — will be removed after hashes are deployed
+      valid = storedHash === password;
+    }
+    if (!valid) {
+      // Delay to slow down brute-force (complementing rate limit)
+      await new Promise((r) => setTimeout(r, 300));
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     let userId = "admin-" + crypto.randomUUID();

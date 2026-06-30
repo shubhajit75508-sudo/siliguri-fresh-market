@@ -20,6 +20,23 @@ const nextConfig: NextConfig = {
   // Security headers
   async headers() {
     return [
+      // CORS for API routes — allow only same origin
+      {
+        source: "/api/(.*)",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "https://www.siligurifreshmart.com" },
+          { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, OPTIONS" },
+          { key: "Access-Control-Allow-Headers", value: "Content-Type, x-api-key" },
+          { key: "Access-Control-Max-Age", value: "86400" },
+        ],
+      },
+      // Allow Vercel preview deployments too
+      {
+        source: "/api/(.*)",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "https://siliguri-fresh-market.vercel.app" },
+        ],
+      },
       // Block search engines from private routes
       {
         source: "/(admin|delivery|auth|api|checkout|account|track)(/.*)?",
