@@ -44,7 +44,7 @@ export function OrganizationSchema() {
           },
           contactPoint: {
             "@type": "ContactPoint",
-            telephone: "+91-9876543210",
+            telephone: "+91 7029908278",
             contactType: "customer service",
           },
           areaServed: [
@@ -66,8 +66,8 @@ export function LocalBusinessSchema() {
           "@type": "LocalBusiness",
           name: "Siliguri Fresh Mart",
           image: "https://www.siligurifreshmart.com/logo.png",
-          telephone: "+91-9876543210",
-          email: "hello@siligurifreshmart.com",
+          telephone: "+91 7029908278",
+          email: "siligurifreshmart@gmail.com",
           address: {
             "@type": "PostalAddress",
             addressLocality: "Siliguri",

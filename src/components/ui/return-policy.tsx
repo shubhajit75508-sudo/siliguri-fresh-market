@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { RotateCcw, Phone, X, Clock, AlertTriangle } from "lucide-react";
 
-export const CUSTOMER_CARE = "+91 98765 43210";
+export const CUSTOMER_CARE = "+91 7029908278";
 export const REPLACEMENT_WINDOW_MS = 3 * 60 * 60 * 1000;
 
 export function isWithinReplacementWindow(deliveredAt?: string): boolean {

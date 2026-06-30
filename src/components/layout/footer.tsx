@@ -40,8 +40,8 @@ export function Footer() {
             </p>
             <div className="mt-4 space-y-1 text-[12px] text-muted">
               <p>📍 Siliguri, West Bengal 734001</p>
-              <p>📞 +91 98765 43210</p>
-              <p>📧 hello@siligurifreshmart.com</p>
+              <p>📞 +91 7029908278</p>
+              <p>📧 siligurifreshmart@gmail.com</p>
             </div>
             <div className="mt-4 flex flex-wrap gap-1.5">
               {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Siliguri Town","Champasari","Sukna","Burdwan Road"].map((area) => (

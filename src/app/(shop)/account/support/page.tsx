@@ -9,7 +9,7 @@ export default function SupportPage() {
 
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
         {[
-          { icon: Phone, label: "Call Us", value: "+91 98765 43210" },
+          { icon: Phone, label: "Call Us", value: "+91 7029908278" },
           { icon: Mail, label: "Email", value: "support@sfm.com" },
           { icon: MessageCircle, label: "WhatsApp", value: "Chat Now" },
         ].map((c) => (
