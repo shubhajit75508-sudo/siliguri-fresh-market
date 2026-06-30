@@ -27,13 +27,13 @@ export function HeroSection() {
           <img
             src={hero.image}
             alt="Siliguri Fresh Mart"
-            className="absolute inset-0 w-full h-full object-cover scale-105"
+            className="absolute inset-0 w-full h-full object-cover sm:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
         </div>
 
-        <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 lg:p-10">
+        <div className="absolute inset-0 flex flex-col justify-start pt-14 pb-8 px-6 sm:justify-between sm:p-8 lg:p-10">
           <div className="flex flex-1 flex-row flex-wrap items-start justify-between gap-4 lg:gap-8 lg:flex-nowrap lg:items-center">
             <motion.div
               initial={{ opacity: 0, y: 28 }}
