@@ -34,16 +34,21 @@ export default function AdminInventoryPage() {
     if (stock === undefined) return;
     try {
       if (supabaseAvailable) {
+        console.log("[inventory] Saving stock:", { id, stock, inStock: stock > 0 });
         const res = await fetch(API_BASE, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id, stock, inStock: stock > 0 }),
         });
+        console.log("[inventory] API response:", res.status, res.statusText);
         if (!res.ok) {
           const err = await res.json();
+          console.error("[inventory] API error:", err);
           throw new Error(err.error || "Update failed");
         }
+        console.log("[inventory] API success");
       }
+      console.log("[inventory] Updating store:", id, stock, stock > 0);
       updateProduct(id, { stock, inStock: stock > 0 });
       // Invalidate ALL product queries across the app
       queryClient.invalidateQueries({ predicate: (query) => (query.queryKey[0] as string)?.startsWith("products") });
