@@ -172,12 +172,13 @@ export default function CheckoutPage() {
 
     if (paymentStatus === "razorpay" && razorpayLoaded) {
       try {
+        // Create order as UNPAID first — only mark paid on successful Razorpay callback
         const orderId = await createOrder({
           items: items.map(i => ({ ...i })),
           total: total,
           address: selectedAddress,
           paymentMethod: "razorpay",
-          paymentStatus: "paid",
+          paymentStatus: "unpaid",
           customerName: currentUser.name,
           customerPhone: currentUser.phone || "",
           customerEmail: currentUser.email || "",
@@ -199,12 +200,25 @@ export default function CheckoutPage() {
             contact: currentUser.phone,
           },
           theme: { color: "#2D7D3A" },
-          handler: () => {
+          handler: async () => {
+            // Payment succeeded — mark order as paid
+            try {
+              await fetch("/api/admin/orders", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: orderId, paymentStatus: "paid" }),
+              });
+            } catch {}
             setPaymentConfirmed(true);
             clearCart();
             router.push(`/track/${orderId}`);
           },
-          modal: { ondismiss: () => toast.add("Payment cancelled", "info") },
+          modal: {
+            ondismiss: () => {
+              // Payment cancelled/closed — keep order as unpaid (can retry or cancel)
+              toast.add("Payment cancelled. You can retry from your orders.", "info");
+            },
+          },
         });
         rzp.open();
       } catch {
