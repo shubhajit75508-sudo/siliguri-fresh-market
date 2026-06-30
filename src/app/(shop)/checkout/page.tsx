@@ -120,7 +120,7 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     setConfirmingOrder(true);
     try {
-      await placeOrder("cod");
+      await placeOrder(selectedPayment === "cod" ? "cod" : "razorpay");
     } catch {
       toast.add("Order failed. Please try again.", "error");
     } finally {
