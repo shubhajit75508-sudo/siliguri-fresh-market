@@ -122,7 +122,7 @@ export default function CheckoutPage() {
       const order = await res.json();
       const razorpay = new (window as any).Razorpay({
         key: order.key_id, amount: order.amount, currency: order.currency, name: "Siliguri Fresh Mart", description: `Order ${sfmOrderId}`, order_id: order.id,
-        image: "https://siligurifreshmart.com/favicon.ico", theme: { color: "#16a34a" },
+        image: "https://siligurifreshmart.com/favicon.ico", theme: { color: "#0E4A28" },
         prefill: { name: currentUser?.name, email: currentUser?.email, contact: currentUser?.phone, method: "upi" },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
           const verifyRes = await fetch("/api/payment/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(response) });

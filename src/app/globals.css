@@ -1,63 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #87341B;
-  --color-primary-dark: #6B2814;
-  --color-primary-light: #F5DCC9;
-  --color-accent: #F2A93B;
-  --color-accent-dark: #D6921F;
-  --color-accent-light: #FBE7C2;
-  --color-bg: #FFF8EF;
-  --color-surface: #FFFFFF;
-  --color-surface-alt: #FFF3E2;
-  --color-border: #EFDCC8;
-  --color-text-primary: #2E1509;
-  --color-text-secondary: #6B5444;
-  --color-text-on-primary: #FFF3E2;
-  --color-text-on-accent: #4A2A02;
-  --color-success: #5B7A2B;
-  --color-success-bg: rgba(91, 122, 43, 0.13);
-  --color-success-text: #4A6322;
-  --color-warning: #D6921F;
-  --color-warning-bg: rgba(214, 146, 31, 0.15);
-  --color-warning-text: #8A5E10;
-  --color-danger: #C0392B;
-  --color-danger-bg: rgba(192, 57, 43, 0.12);
-  --color-danger-text: #8C2419;
+  --color-primary: #0E4A28;
+  --color-primary-dark: #0A3A1F;
+  --color-primary-light: #2E8B47;
+  --color-accent: #F5A623;
+  --color-accent-dark: #D48A0C;
+  --color-accent-light: #F7C862;
+  --color-bg: #0A1C12;
+  --color-surface: #0E4A28;
+  --color-surface-alt: #14305C;
+  --color-border: #1A5C36;
+  --color-text-primary: #F4FBF6;
+  --color-text-secondary: #90B0A0;
+  --color-text-on-primary: #F4FBF6;
+  --color-text-on-accent: #0A1C12;
+  --color-success: #2E8B47;
+  --color-success-bg: rgba(46, 139, 71, 0.15);
+  --color-success-text: #2E8B47;
+  --color-warning: #F5A623;
+  --color-warning-bg: rgba(245, 166, 35, 0.15);
+  --color-warning-text: #F5A623;
+  --color-danger: #E84C2B;
+  --color-danger-bg: rgba(232, 76, 43, 0.15);
+  --color-danger-text: #E84C2B;
 
   --bg-base: var(--color-bg);
-  --bg-gradient: linear-gradient(180deg, #FFF8EF 0%, #FFF3E2 100%);
+  --bg-gradient: linear-gradient(180deg, #0A1C12 0%, #0E4A28 50%, #14305C 100%);
   --surface: var(--color-surface);
-  --surface-2: #FDF6EC;
+  --surface-2: #14305C;
   --border: var(--color-border);
-  --border-light: #F2E2D0;
+  --border-light: #1A5C36;
   --foreground: var(--color-text-primary);
   --muted: var(--color-text-secondary);
-  --muted-light: #8C7A6C;
+  --muted-light: #70A080;
   --accent: var(--color-primary);
   --accent-dim: var(--color-primary-dark);
-  --accent-glow: rgba(135, 52, 27, 0.15);
+  --accent-glow: rgba(14, 74, 40, 0.3);
   --danger: var(--color-danger);
   --warning: var(--color-warning);
   --card-bg: var(--color-surface);
   --card-border: var(--color-border);
   --card-hover: var(--color-primary-light);
 
-  --shadow-sm: 0 1px 3px rgba(46, 21, 9, 0.08);
-  --shadow-md: 0 4px 16px rgba(46, 21, 9, 0.1);
-  --shadow-lg: 0 8px 32px rgba(46, 21, 9, 0.12);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 24px var(--accent-glow);
 
   --brand-dark: var(--color-primary);
-  --brand-fresh: var(--color-primary);
-  --brand-fresh-dim: var(--color-primary-dark);
+  --brand-fresh: #2E8B47;
+  --brand-fresh-dim: #236A35;
   --brand-gold: var(--color-accent);
   --brand-gold-light: var(--color-accent-light);
-  --brand-black: var(--color-text-primary);
-  --brand-blue: #3498db;
+  --brand-black: #0A1C12;
+  --brand-blue: #4FA8D8;
   --brand-red: var(--color-danger);
   --brand-orange: var(--color-warning);
-  --brand-purple: #9b59b6;
+  --brand-purple: #7B3F8C;
 }
 
 @theme inline {
@@ -114,8 +114,8 @@ body {
 
 /* Accent card */
 .accent-card {
-  background: linear-gradient(135deg, rgba(135, 52, 27, 0.06), rgba(242, 169, 59, 0.04));
-  border: 1px solid rgba(135, 52, 27, 0.12);
+  background: linear-gradient(135deg, rgba(14, 74, 40, 0.08), rgba(20, 48, 92, 0.06));
+  border: 1px solid rgba(14, 74, 40, 0.15);
 }
 
 /* Glow button */
@@ -127,7 +127,7 @@ body {
   transition: all 0.2s ease;
 }
 .btn-glow:hover {
-  box-shadow: 0 0 32px rgba(135, 52, 27, 0.25);
+  box-shadow: 0 0 32px rgba(14, 74, 40, 0.35);
   transform: translateY(-1px);
 }
 .btn-glow:active {
@@ -147,15 +147,15 @@ body {
   letter-spacing: 0.05em;
 }
 .product-badge.fresh {
-  background: rgba(135, 52, 27, 0.1);
-  color: var(--color-primary);
+  background: rgba(46, 139, 71, 0.15);
+  color: var(--brand-fresh);
 }
 .product-badge.organic {
-  background: rgba(155, 89, 182, 0.12);
+  background: rgba(123, 63, 140, 0.15);
   color: var(--brand-purple);
 }
 .product-badge.farm {
-  background: rgba(52, 152, 219, 0.12);
+  background: rgba(79, 168, 216, 0.15);
   color: var(--brand-blue);
 }
 
@@ -235,8 +235,8 @@ body {
 }
 
 @keyframes red-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(192, 57, 43, 0.15), 0 0 60px rgba(192, 57, 43, 0.08); }
-  50% { box-shadow: 0 0 35px rgba(192, 57, 43, 0.25), 0 0 80px rgba(192, 57, 43, 0.15); }
+  0%, 100% { box-shadow: 0 0 20px rgba(232, 76, 43, 0.15), 0 0 60px rgba(232, 76, 43, 0.08); }
+  50% { box-shadow: 0 0 35px rgba(232, 76, 43, 0.25), 0 0 80px rgba(232, 76, 43, 0.15); }
 }
 
 .address-shake {
