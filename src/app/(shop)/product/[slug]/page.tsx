@@ -37,6 +37,9 @@ export default function ProductDetailPage({
   const savings = displayOriginal && displayOriginal > displayPrice ? displayOriginal - displayPrice : 0;
   const discountPercent = product.discount || 0;
 
+  const stockQty = product.stock == null ? 0 : product.stock;
+  const available = product.inStock && stockQty > 0;
+
   const allImages = [product.image, ...(product.images || [])];
 
   // Social proof count (seeded from product name)
@@ -150,7 +153,7 @@ export default function ProductDetailPage({
 
           {/* Stock + Delivery Row */}
           <div className="mt-3 flex items-center gap-3 flex-wrap">
-            {product.inStock ? (
+            {available ? (
               <span className="inline-flex items-center gap-1 text-xs text-brand-fresh font-semibold">
                 <span className="live-dot h-2 w-2 rounded-full bg-brand-fresh" /> In Stock
               </span>
@@ -281,11 +284,11 @@ export default function ProductDetailPage({
               onClick={() => {
                 addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
               }}
-              disabled={!product.inStock}
+              disabled={!available}
               className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2D7D3A] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#2D7D3A] disabled:active:scale-100"
             >
               <ShoppingCart className="h-5 w-5" />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
+              {available ? "Add to Cart" : "Out of Stock"}
             </button>
 
             <button

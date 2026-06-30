@@ -35,7 +35,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const b = catBadge(product.category);
   const stockQty = product.stock == null ? 0 : product.stock;
   const available = product.inStock && stockQty > 0;
-  if (process.env.NODE_ENV === "development") {
+  if (typeof window !== "undefined") {
     console.log(`[ProductCard] ${product.name}: inStock=${product.inStock} stock=${product.stock} stockQty=${stockQty} available=${available}`);
   }
 
