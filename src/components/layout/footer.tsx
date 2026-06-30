@@ -26,7 +26,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain" />
+              <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain rounded-xl" />
               <div>
                 <p className="text-[16px] font-bold">Siliguri Fresh Mart</p>
                 <p className="text-[12px] font-medium text-brand-fresh-dim">Fresh Mart</p>

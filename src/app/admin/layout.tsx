@@ -100,7 +100,7 @@ export default function AdminLayout({
         )}
       >
         <div className="flex h-16 items-center gap-2 border-b px-6">
-          <img src="/logo.png" alt="SFM" width={32} height={32} />
+          <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={32} height={32} className="rounded-lg" />
           <div>
             <p className="text-sm font-extrabold text-foreground">SFM Admin</p>
             <p className="text-[10px] text-muted">Dashboard</p>
