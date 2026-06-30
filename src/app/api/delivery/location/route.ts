@@ -57,11 +57,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  // Require authenticated session (customer tracking their own order, or admin)
-  const payload = await getSession(req);
-  if (!payload) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Public endpoint — tracking page is accessible via order ID URL
 
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) {
@@ -74,21 +70,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Verify the customer owns this order, or caller is admin/delivery
-    const isAdmin = payload.endsWith("|admin");
-    const isDelivery = payload.includes("|delivery");
-    if (!isAdmin && !isDelivery) {
-      const { data: order } = await supabaseAdmin
-        .from("orders")
-        .select("user_id")
-        .eq("id", orderId)
-        .maybeSingle();
-      const userId = payload.split("|")[0];
-      if (!order || order.user_id !== userId) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-    }
-
     const { data, error } = await supabaseAdmin
       .from("delivery_locations")
       .select("*")
