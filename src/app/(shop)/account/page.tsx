@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/user-store";
 import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, updateUser, setUser } = useUserStore();
@@ -102,6 +103,32 @@ export default function ProfilePage() {
               </Button>
             )}
             <Button variant="outline" onClick={handleLogout} className="text-brand-red border-brand-red/30 hover:bg-brand-red/5">Sign Out</Button>
+          </div>
+
+          <hr className="my-6 border-border" />
+
+          <div className="rounded-xl border border-brand-red/20 bg-brand-red/5 p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-brand-red" />
+              <div>
+                <h3 className="text-sm font-bold">Delete Account</h3>
+                <p className="mt-1 text-xs text-muted">
+                  Your account and all associated data will be permanently removed. Deletion is completed within 1 week of your request.
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-3 border-brand-red/30 text-brand-red hover:bg-brand-red/10"
+                  onClick={() => {
+                    const msg = encodeURIComponent(
+                      `Hi, I want to request deletion of my account.\n\nName: ${displayUser.name}\nEmail: ${displayUser.email}\nPhone: ${displayUser.phone}\n\nPlease delete my account and all associated data within 1 week. Thank you.`
+                    );
+                    window.open(`https://wa.me/917029908278?text=${msg}`, "_blank");
+                  }}
+                >
+                  Request Deletion via WhatsApp
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
