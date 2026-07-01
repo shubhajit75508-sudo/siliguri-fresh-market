@@ -9,6 +9,7 @@ import {
   MapPin,
   Bell,
   Headphones,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserStore } from "@/store/user-store";
@@ -20,6 +21,7 @@ const accountLinks = [
   { href: "/account/addresses", icon: MapPin, label: "Addresses" },
   { href: "/account/notifications", icon: Bell, label: "Notifications" },
   { href: "/account/support", icon: Headphones, label: "Support" },
+  { href: "/account/delete", icon: Trash2, label: "Delete Account" },
 ];
 
 export default function AccountLayout({
