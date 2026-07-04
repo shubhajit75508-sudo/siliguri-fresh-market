@@ -145,7 +145,14 @@ export const useOrderStore = create<OrderState>()(
               returnApproved: Boolean(r.return_approved),
               deliveryCode: (r.delivery_code as string) ?? "",
             }));
-            set({ orders: userOrders, loaded: true });
+            set((state) => {
+              const local = state.orders;
+              const mergedMap = new Map(local.map((o) => [o.id, o]));
+              for (const o of userOrders) {
+                mergedMap.set(o.id, o);
+              }
+              return { orders: Array.from(mergedMap.values()), loaded: true };
+            });
           } catch (e) { console.error("loadUserOrders failed:", e); if (!get().loaded) set({ loaded: true }); }
         },
 

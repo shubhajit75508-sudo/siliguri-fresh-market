@@ -76,14 +76,28 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  if (!email) return NextResponse.json({ orders: [] });
+  let orders: Record<string, unknown>[] | null = null;
 
-  const { data, error } = await supabaseAdmin
-    .from("orders")
-    .select("*")
-    .eq("customer_email", email)
-    .order("created_at", { ascending: false });
+  if (email) {
+    const { data, error } = await supabaseAdmin
+      .from("orders")
+      .select("*")
+      .eq("customer_email", email)
+      .order("created_at", { ascending: false });
+    if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
+    orders = data;
+  }
 
-  if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
-  return NextResponse.json({ orders: data ?? [] });
+  // Fallback: if no orders found by email (or email was missing), try by user_id
+  if ((!orders || orders.length === 0) && userId) {
+    const { data: ordersByUserId, error: err2 } = await supabaseAdmin
+      .from("orders")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+    if (err2) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
+    if (ordersByUserId) orders = ordersByUserId;
+  }
+
+  return NextResponse.json({ orders: orders ?? [] });
 }
