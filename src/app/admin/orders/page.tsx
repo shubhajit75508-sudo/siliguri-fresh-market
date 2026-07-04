@@ -91,8 +91,9 @@ export default function AdminOrdersPage() {
         ))}
         <button
           onClick={() => {
+            const tabLabel = activeTab === "all" ? "all" : activeTab.replace(/_/g, "-");
             const header = "Order ID,Customer,Phone,Items,Total,Payment Method,Payment Status,Delivery Status,Delivery Boy,Order Date,Address";
-            const rows = orders.map((o) =>
+            const rows = filtered.map((o) =>
               [
                 o.id,
                 `"${o.customerName}"`,
@@ -112,7 +113,7 @@ export default function AdminOrdersPage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.download = `orders-${tabLabel}-${new Date().toISOString().slice(0, 10)}.csv`;
             a.click();
             URL.revokeObjectURL(url);
           }}

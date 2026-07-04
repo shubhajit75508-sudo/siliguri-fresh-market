@@ -29,14 +29,24 @@ export async function GET() {
 
   const allOrders = revenueRes.data ?? [];
   const totalRevenue = allOrders
-    .filter((o) => o.status !== "cancelled")
+    .filter((o) => o.status === "delivered")
     .reduce((sum, o) => sum + (o.total ?? 0), 0);
 
   const todayOrders = todayRes.data ?? [];
   const revenueToday = todayOrders
-    .filter((o) => o.status !== "cancelled")
+    .filter((o) => o.status === "delivered")
     .reduce((sum, o) => sum + (o.total ?? 0), 0);
   const ordersToday = todayOrders.length;
+
+  const deliveredRevenue = allOrders
+    .filter((o) => o.status === "delivered")
+    .reduce((sum, o) => sum + (o.total ?? 0), 0);
+  const cancelledRevenue = allOrders
+    .filter((o) => o.status === "cancelled")
+    .reduce((sum, o) => sum + (o.total ?? 0), 0);
+  const pendingRevenue = allOrders
+    .filter((o) => o.status === "received")
+    .reduce((sum, o) => sum + (o.total ?? 0), 0);
 
   const statusCounts: Record<string, number> = {};
   for (const o of allOrders) {
@@ -55,7 +65,7 @@ export async function GET() {
     end.setHours(23, 59, 59, 999);
     const dayOrders = allOrders.filter((o) => {
       const ot = new Date(o.created_at).getTime();
-      return ot >= start.getTime() && ot <= end.getTime() && o.status !== "cancelled";
+      return ot >= start.getTime() && ot <= end.getTime() && o.status === "delivered";
     });
     dailyRevenue.push({
       date: d.toISOString().slice(0, 10),
@@ -74,6 +84,9 @@ export async function GET() {
     totalProducts,
     totalCustomers,
     statusCounts,
+    deliveredRevenue,
+    cancelledRevenue,
+    pendingRevenue,
     dailyRevenue,
   });
 }

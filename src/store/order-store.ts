@@ -375,7 +375,7 @@ export const useOrderStore = create<OrderState>()(
           const orders = get().orders;
           const today = new Date().toDateString();
           const todayOrders = orders.filter((o) => new Date(o.createdAt).toDateString() === today);
-          const revenueToday = todayOrders.filter((o) => o.status !== "cancelled").reduce((sum, o) => sum + o.total, 0);
+          const revenueToday = todayOrders.filter((o) => o.status === "delivered").reduce((sum, o) => sum + o.total, 0);
           return {
             totalOrders: orders.length,
             revenueToday,
