@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter } from "lucide-react";
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange" | "red"> = {
   received: "default",
@@ -39,6 +39,9 @@ export default function AdminOrdersPage() {
   const [bulkAction, setBulkAction] = useState<string>("");
   const [bulkConfirm, setBulkConfirm] = useState(false);
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [showExportFilters, setShowExportFilters] = useState(false);
+  const [exportDateFrom, setExportDateFrom] = useState("");
+  const [exportDateTo, setExportDateTo] = useState("");
 
   const { data: allProducts } = useQuery({
     queryKey: ["products", "all"],
@@ -90,10 +93,31 @@ export default function AdminOrdersPage() {
           </button>
         ))}
         <button
+          onClick={() => setShowExportFilters((v) => !v)}
+          className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
+            showExportFilters || exportDateFrom || exportDateTo
+              ? "border-brand-dark bg-brand-dark text-white"
+              : "border-border text-muted hover:bg-white/8"
+          }`}
+        >
+          <Filter className="mr-1 inline h-3 w-3" /> Date
+        </button>
+        <button
           onClick={() => {
             const tabLabel = activeTab === "all" ? "all" : activeTab.replace(/_/g, "-");
+            let csvRows = filtered;
+            if (exportDateFrom) {
+              const from = new Date(exportDateFrom);
+              from.setHours(0, 0, 0, 0);
+              csvRows = csvRows.filter((o) => new Date(o.createdAt) >= from);
+            }
+            if (exportDateTo) {
+              const to = new Date(exportDateTo);
+              to.setHours(23, 59, 59, 999);
+              csvRows = csvRows.filter((o) => new Date(o.createdAt) <= to);
+            }
             const header = "Order ID,Customer,Phone,Items,Total,Payment Method,Payment Status,Delivery Status,Delivery Boy,Order Date,Address";
-            const rows = filtered.map((o) =>
+            const rows = csvRows.map((o) =>
               [
                 o.id,
                 `"${o.customerName}"`,
@@ -113,7 +137,10 @@ export default function AdminOrdersPage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `orders-${tabLabel}-${new Date().toISOString().slice(0, 10)}.csv`;
+            const dateSuffix = new Date().toISOString().slice(0, 10);
+            const fromSuffix = exportDateFrom ? `-from-${exportDateFrom}` : "";
+            const toSuffix = exportDateTo ? `-to-${exportDateTo}` : "";
+            a.download = `orders-${tabLabel}${fromSuffix}${toSuffix}-${dateSuffix}.csv`;
             a.click();
             URL.revokeObjectURL(url);
           }}
@@ -122,6 +149,37 @@ export default function AdminOrdersPage() {
           <Download className="mr-1 inline h-3 w-3" /> Export CSV
         </button>
       </div>
+
+      {showExportFilters && (
+        <div className="mt-3 flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted">From:</label>
+            <input
+              type="date"
+              value={exportDateFrom}
+              onChange={(e) => setExportDateFrom(e.target.value)}
+              className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted">To:</label>
+            <input
+              type="date"
+              value={exportDateTo}
+              onChange={(e) => setExportDateTo(e.target.value)}
+              className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+            />
+          </div>
+          {(exportDateFrom || exportDateTo) && (
+            <button
+              onClick={() => { setExportDateFrom(""); setExportDateTo(""); }}
+              className="text-xs text-muted hover:text-foreground underline"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      )}
 
       {selectedIds.size > 0 && (
         <div className="mt-3 flex items-center gap-3 rounded-xl border border-brand-fresh/30 bg-brand-fresh/5 px-4 py-2.5">
