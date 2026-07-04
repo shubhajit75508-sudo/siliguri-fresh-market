@@ -42,6 +42,11 @@ export default function AdminOrdersPage() {
   const [showExportFilters, setShowExportFilters] = useState(false);
   const [exportDateFrom, setExportDateFrom] = useState("");
   const [exportDateTo, setExportDateTo] = useState("");
+  const [exportPaymentMethod, setExportPaymentMethod] = useState("");
+  const [exportPaymentStatus, setExportPaymentStatus] = useState("");
+  const [exportMinTotal, setExportMinTotal] = useState("");
+  const [exportMaxTotal, setExportMaxTotal] = useState("");
+  const [exportCustomerSearch, setExportCustomerSearch] = useState("");
 
   const { data: allProducts } = useQuery({
     queryKey: ["products", "all"],
@@ -95,12 +100,12 @@ export default function AdminOrdersPage() {
         <button
           onClick={() => setShowExportFilters((v) => !v)}
           className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
-            showExportFilters || exportDateFrom || exportDateTo
+            showExportFilters || exportDateFrom || exportDateTo || exportPaymentMethod || exportPaymentStatus || exportMinTotal || exportMaxTotal || exportCustomerSearch
               ? "border-brand-dark bg-brand-dark text-white"
               : "border-border text-muted hover:bg-white/8"
           }`}
         >
-          <Filter className="mr-1 inline h-3 w-3" /> Date
+          <Filter className="mr-1 inline h-3 w-3" /> Filters
         </button>
         <button
           onClick={() => {
@@ -116,20 +121,46 @@ export default function AdminOrdersPage() {
               to.setHours(23, 59, 59, 999);
               csvRows = csvRows.filter((o) => new Date(o.createdAt) <= to);
             }
-            const header = "Order ID,Customer,Phone,Items,Total,Payment Method,Payment Status,Delivery Status,Delivery Boy,Order Date,Address";
+            if (exportPaymentMethod) {
+              csvRows = csvRows.filter((o) => o.paymentMethod === exportPaymentMethod);
+            }
+            if (exportPaymentStatus) {
+              csvRows = csvRows.filter((o) => o.paymentStatus === exportPaymentStatus);
+            }
+            if (exportMinTotal) {
+              const min = Number(exportMinTotal);
+              csvRows = csvRows.filter((o) => o.total >= min);
+            }
+            if (exportMaxTotal) {
+              const max = Number(exportMaxTotal);
+              csvRows = csvRows.filter((o) => o.total <= max);
+            }
+            if (exportCustomerSearch) {
+              const q = exportCustomerSearch.toLowerCase();
+              csvRows = csvRows.filter((o) => o.customerName.toLowerCase().includes(q) || o.customerPhone.includes(q));
+            }
+            const safe = (v: string) => `"${v.replace(/"/g, '""')}"`;
+            const header = "Order ID,Customer,Phone,Email,Payment Method,Payment Status,Status,Delivery Status,Delivery Boy,Items Qty,Item Details,Total,Order Date,Area,Landmark,Building/Flat,City,Pincode";
             const rows = csvRows.map((o) =>
               [
                 o.id,
-                `"${o.customerName}"`,
+                safe(o.customerName),
                 o.customerPhone,
-                o.items.reduce((n, i) => n + i.quantity, 0),
-                o.total,
+                o.customerEmail,
                 o.paymentMethod,
                 o.paymentStatus,
                 o.status,
+                o.deliveryStatus || "",
                 o.deliveryBoyName || "",
+                o.items.reduce((n, i) => n + i.quantity, 0),
+                safe(o.items.map((i) => `${i.product.name} ×${i.quantity}${i.selectedWeight ? ` (${i.selectedWeight})` : ""}`).join("; ")),
+                o.total,
                 new Date(o.createdAt).toLocaleDateString(),
-                `"${o.address.line1}, ${o.address.city}"`,
+                o.address.area || "",
+                o.address.landmark || "",
+                [o.address.building, o.address.flat && `Flat ${o.address.flat}`, o.address.floor && `Floor ${o.address.floor}`].filter(Boolean).join(", "),
+                o.address.city,
+                o.address.pincode,
               ].join(",")
             );
             const csv = [header, ...rows].join("\n");
@@ -151,33 +182,113 @@ export default function AdminOrdersPage() {
       </div>
 
       {showExportFilters && (
-        <div className="mt-3 flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-muted">From:</label>
-            <input
-              type="date"
-              value={exportDateFrom}
-              onChange={(e) => setExportDateFrom(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
-            />
+        <div className="mt-3 space-y-3 rounded-xl border border-border bg-surface p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted whitespace-nowrap">From:</label>
+              <input
+                type="date"
+                value={exportDateFrom}
+                onChange={(e) => setExportDateFrom(e.target.value)}
+                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted whitespace-nowrap">To:</label>
+              <input
+                type="date"
+                value={exportDateTo}
+                onChange={(e) => setExportDateTo(e.target.value)}
+                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              />
+            </div>
+            <div className="flex gap-1">
+              {["Today", "Last 7", "Last 30"].map((label) => (
+                <button
+                  key={label}
+                  onClick={() => {
+                    const to = new Date();
+                    const from = new Date();
+                    if (label === "Today") {
+                      from.setHours(0, 0, 0, 0);
+                    } else if (label === "Last 7") {
+                      from.setDate(from.getDate() - 6);
+                    } else {
+                      from.setDate(from.getDate() - 29);
+                    }
+                    setExportDateFrom(from.toISOString().slice(0, 10));
+                    setExportDateTo(to.toISOString().slice(0, 10));
+                  }}
+                  className="rounded-lg border border-border px-2.5 py-1 text-[11px] font-medium text-muted hover:bg-white/8"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-muted">To:</label>
-            <input
-              type="date"
-              value={exportDateTo}
-              onChange={(e) => setExportDateTo(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
-            />
-          </div>
-          {(exportDateFrom || exportDateTo) && (
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted whitespace-nowrap">Payment:</label>
+              <select
+                value={exportPaymentMethod}
+                onChange={(e) => setExportPaymentMethod(e.target.value)}
+                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              >
+                <option value="">All</option>
+                <option value="cod">COD</option>
+                <option value="razorpay">Razorpay</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted whitespace-nowrap">Status:</label>
+              <select
+                value={exportPaymentStatus}
+                onChange={(e) => setExportPaymentStatus(e.target.value)}
+                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              >
+                <option value="">All</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted whitespace-nowrap">Total:</label>
+              <input
+                type="number"
+                placeholder="Min"
+                value={exportMinTotal}
+                onChange={(e) => setExportMinTotal(e.target.value)}
+                className="w-20 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              />
+              <span className="text-xs text-muted">—</span>
+              <input
+                type="number"
+                placeholder="Max"
+                value={exportMaxTotal}
+                onChange={(e) => setExportMaxTotal(e.target.value)}
+                className="w-20 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted whitespace-nowrap">Customer:</label>
+              <input
+                type="text"
+                placeholder="Name or phone"
+                value={exportCustomerSearch}
+                onChange={(e) => setExportCustomerSearch(e.target.value)}
+                className="w-40 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand-dark"
+              />
+            </div>
             <button
-              onClick={() => { setExportDateFrom(""); setExportDateTo(""); }}
+              onClick={() => {
+                setExportDateFrom(""); setExportDateTo(""); setExportPaymentMethod(""); setExportPaymentStatus("");
+                setExportMinTotal(""); setExportMaxTotal(""); setExportCustomerSearch("");
+              }}
               className="text-xs text-muted hover:text-foreground underline"
             >
-              Clear
+              Clear all
             </button>
-          )}
+          </div>
         </div>
       )}
 
