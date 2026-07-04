@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 import type { Order, CartItem, Address, DeliveryStatus, DeliveryAssignment } from "@/types";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
@@ -70,8 +70,7 @@ interface OrderState {
 
 export const useOrderStore = create<OrderState>()(
   devtools(
-    persist(
-      (set, get) => ({
+    (set, get) => ({
         orders: [],
         loaded: false,
 
@@ -385,11 +384,6 @@ export const useOrderStore = create<OrderState>()(
           };
         },
       }),
-      { name: "sfm-orders-v2", partialize: (state) => {
-        const { loaded, ...rest } = state;
-        return rest;
-      } }
-    ),
-    { name: "OrderStore" }
+      { name: "OrderStore" }
   )
 );
