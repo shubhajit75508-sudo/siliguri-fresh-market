@@ -1,8 +1,11 @@
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import type { Order } from "@/types";
 
 export async function downloadInvoice(order: Order): Promise<void> {
+  const [jsPDF, html2canvas] = await Promise.all([
+    import("jspdf").then((m) => new m.default()),
+    import("html2canvas"),
+  ]);
+
   const container = document.createElement("div");
   container.style.position = "fixed";
   container.style.left = "-9999px";
@@ -67,13 +70,12 @@ export async function downloadInvoice(order: Order): Promise<void> {
   document.body.appendChild(container);
 
   try {
-    const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false });
+    const canvas = await html2canvas.default(container, { scale: 2, useCORS: true, logging: false });
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfWidth = jsPDF.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`invoice-${order.id}.pdf`);
+    jsPDF.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    jsPDF.save(`invoice-${order.id}.pdf`);
   } finally {
     container.remove();
   }
