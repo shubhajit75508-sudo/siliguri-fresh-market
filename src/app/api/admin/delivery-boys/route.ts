@@ -89,6 +89,36 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ success: true, id: userId });
 }
 
+export async function PUT(req: NextRequest) {
+  const unauthorized = checkAuth(req);
+  if (unauthorized) return unauthorized;
+
+  const supabaseAdmin = getAdmin();
+  if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
+
+  const body = await req.json();
+  const { id, name, phone, email, area, isActive } = body;
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+  const { error: dbError } = await supabaseAdmin.from("delivery_boys").update({
+    name,
+    phone,
+    area,
+    is_active: isActive,
+  }).eq("id", id);
+
+  if (dbError) {
+    console.error("delivery-boys update error:", dbError.code);
+    return NextResponse.json({ error: "Failed to update delivery boy" }, { status: 500 });
+  }
+
+  if (email) {
+    await supabaseAdmin.from("users").update({ name, phone, email }).eq("id", id);
+  }
+
+  return NextResponse.json({ success: true });
+}
+
 export async function DELETE(req: NextRequest) {
   const unauthorized = checkAuth(req);
   if (unauthorized) return unauthorized;

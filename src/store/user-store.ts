@@ -9,6 +9,7 @@ interface UserState {
   searchHistory: string[];
   wishlist: string[];
   deliveryPincode: string;
+  watchedPrices: Record<string, number>;
   setUser: (user: User | null) => void;
   updateUser: (partial: Partial<User>) => void;
   addAddress: (address: Address) => void;
@@ -21,6 +22,7 @@ interface UserState {
   toggleWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   setDeliveryPincode: (pincode: string) => void;
+  updateWatchedPrice: (productId: string, price: number) => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -33,6 +35,7 @@ export const useUserStore = create<UserState>()(
         searchHistory: [],
         wishlist: [],
         deliveryPincode: "",
+        watchedPrices: {},
 
     setUser: (user) => set({ user }),
     updateUser: (partial) =>
@@ -82,6 +85,11 @@ export const useUserStore = create<UserState>()(
         isInWishlist: (productId) => get().wishlist.includes(productId),
 
         setDeliveryPincode: (pincode) => set({ deliveryPincode: pincode }),
+
+        updateWatchedPrice: (productId, price) =>
+          set((state) => ({
+            watchedPrices: { ...state.watchedPrices, [productId]: price },
+          })),
       }),
       { name: "sfm-user-v2" }
     ),

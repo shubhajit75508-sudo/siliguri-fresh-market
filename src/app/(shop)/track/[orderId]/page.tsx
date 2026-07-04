@@ -4,7 +4,7 @@ import { use, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
-  Package, ShoppingBag, Truck, CheckCircle, MapPin, Shield, Leaf, Navigation,
+  Package, ShoppingBag, Truck, CheckCircle, MapPin, Shield, Leaf, Navigation, FileText,
 } from "lucide-react";
 import type { Order, DeliveryStatus } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getR
 import { useOrderStore } from "@/store/order-store";
 import { useToast } from "@/components/ui/toaster";
 import dynamic from "next/dynamic";
+import { downloadInvoice } from "@/lib/invoice";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
@@ -507,6 +508,14 @@ export default function TrackOrderPage({
           <span className="text-sm font-bold text-foreground">Total</span>
           <span className="text-sm font-bold text-foreground">{'\u20B9'}{order.total.toLocaleString()}</span>
         </div>
+        {order.status === "delivered" && (
+          <button
+            onClick={() => downloadInvoice(order)}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2 text-xs font-medium text-muted transition-colors hover:bg-surface"
+          >
+            <FileText className="h-3.5 w-3.5" /> Download Invoice
+          </button>
+        )}
       </div>
     </div>
   );

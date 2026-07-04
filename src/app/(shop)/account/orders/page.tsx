@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2, XCircle, Ban } from "lucide-react";
+import { Package, ChevronRight, RotateCcw, Clock, ShoppingBag, Loader2, XCircle, Ban, RefreshCw, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
+import { useCartStore } from "@/store/cart-store";
 import { useToast } from "@/components/ui/toaster";
+import { useRouter } from "next/navigation";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
+import { downloadInvoice } from "@/lib/invoice";
 
 const statusBadge: Record<string, "default" | "fresh" | "blue" | "red" | "orange"> = {
   received: "default",
@@ -28,11 +31,14 @@ interface OrderSummary {
 
 export default function OrdersPage() {
   const { orders: allOrders, loaded, loadUserOrders, cancelOrder } = useOrderStore();
+  const { clearCart, addItem } = useCartStore();
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
   const [returnDeliveredAt, setReturnDeliveredAt] = useState<string | undefined>();
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  const [reordering, setReordering] = useState<string | null>(null);
   const toast = useToast();
+  const router = useRouter();
 
   useEffect(() => { loadUserOrders(); }, [loadUserOrders]);
 
@@ -62,6 +68,24 @@ export default function OrdersPage() {
       toast.add("Failed to cancel", "error");
     } finally {
       setCancelling(false);
+    }
+  };
+
+  const handleReorder = async (orderId: string) => {
+    const order = allOrders.find((o) => o.id === orderId);
+    if (!order) return;
+    setReordering(orderId);
+    try {
+      clearCart();
+      for (const item of order.items) {
+        addItem(item.product, item.quantity, { weight: item.selectedWeight, cut: item.selectedCut, cleaning: item.selectedCleaning });
+      }
+      toast.add("Items added to cart");
+      router.push("/checkout");
+    } catch {
+      toast.add("Failed to reorder some items", "error");
+    } finally {
+      setReordering(null);
     }
   };
 
@@ -122,6 +146,26 @@ export default function OrdersPage() {
                   <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red/5 py-2 text-xs text-brand-red">
                     <XCircle className="h-3.5 w-3.5" />
                     This order was cancelled
+                  </div>
+                )}
+                {(order.status === "delivered" || order.status === "cancelled") && (
+                  <div className="mt-2 flex items-center gap-3">
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReorder(order.id); }}
+                      disabled={reordering === order.id}
+                      className="flex items-center gap-1 text-[11px] text-brand-fresh hover:underline disabled:opacity-50"
+                    >
+                      <RefreshCw className={`h-3 w-3 ${reordering === order.id ? "animate-spin" : ""}`} />
+                      {reordering === order.id ? "Adding..." : "Reorder"}
+                    </button>
+                    {order.status === "delivered" && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); downloadInvoice(allOrders.find((o) => o.id === order.id)!); }}
+                        className="flex items-center gap-1 text-[11px] text-muted hover:text-foreground"
+                      >
+                        <FileText className="h-3 w-3" /> Invoice
+                      </button>
+                    )}
                   </div>
                 )}
                 {order.status === "received" && (

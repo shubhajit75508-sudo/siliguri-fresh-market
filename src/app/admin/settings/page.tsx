@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useAdminStore } from "@/store/admin-store";
 import { useToast } from "@/components/ui/toaster";
-import { Settings, Home, Eye, EyeOff } from "lucide-react";
+import { Settings, Home, Eye, EyeOff, Search } from "lucide-react";
 
-type Tab = "general" | "home";
+type Tab = "general" | "home" | "seo";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useAdminStore();
@@ -51,6 +51,14 @@ export default function SettingsPage() {
           }`}
         >
           <Home className="h-4 w-4" /> Home Page
+        </button>
+        <button
+          onClick={() => setTab("seo")}
+          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            tab === "seo" ? "bg-brand-dark text-white" : "text-muted hover:bg-white/8"
+          }`}
+        >
+          <Search className="h-4 w-4" /> SEO
         </button>
       </div>
 
@@ -153,6 +161,39 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          <Button variant="default" onClick={handleSave}>Save Changes</Button>
+        </div>
+      )}
+
+      {tab === "seo" && (
+        <div className="max-w-lg space-y-6">
+          <div className="rounded-xl border bg-surface p-4 shadow-sm">
+            <label className="text-xs font-medium text-muted">Home Page Meta Title</label>
+            <input
+              type="text"
+              value={form.seo.homeTitle}
+              onChange={(e) => { setForm({ ...form, seo: { ...form.seo, homeTitle: e.target.value } }); edited.current = true; }}
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
+            />
+          </div>
+          <div className="rounded-xl border bg-surface p-4 shadow-sm">
+            <label className="text-xs font-medium text-muted">Home Page Meta Description</label>
+            <textarea
+              value={form.seo.homeDescription}
+              onChange={(e) => { setForm({ ...form, seo: { ...form.seo, homeDescription: e.target.value } }); edited.current = true; }}
+              rows={3}
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
+            />
+          </div>
+          <div className="rounded-xl border bg-surface p-4 shadow-sm">
+            <label className="text-xs font-medium text-muted">Home Page Meta Keywords (comma separated)</label>
+            <textarea
+              value={form.seo.homeKeywords}
+              onChange={(e) => { setForm({ ...form, seo: { ...form.seo, homeKeywords: e.target.value } }); edited.current = true; }}
+              rows={2}
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark"
+            />
+          </div>
           <Button variant="default" onClick={handleSave}>Save Changes</Button>
         </div>
       )}

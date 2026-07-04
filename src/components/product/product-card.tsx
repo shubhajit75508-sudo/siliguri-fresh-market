@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Clock, Plus, Minus, Star } from "lucide-react";
+import { Clock, Plus, Minus, Star, TrendingDown } from "lucide-react";
 import { cartLineKey, useCartStore } from "@/store/cart-store";
+import { useUserStore } from "@/store/user-store";
 import { useToast } from "@/components/ui/toaster";
 import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import type { Product } from "@/types";
@@ -35,6 +36,18 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const b = catBadge(product.category);
   const stockQty = product.stock == null ? 0 : product.stock;
   const available = product.inStock && stockQty > 0;
+
+  const { watchedPrices, updateWatchedPrice } = useUserStore();
+  const priceDropped = useRef(false);
+  useEffect(() => {
+    const lastPrice = watchedPrices[product.id];
+    if (lastPrice !== undefined && displayPrice < lastPrice) {
+      priceDropped.current = true;
+    }
+    updateWatchedPrice(product.id, displayPrice);
+    const timer = setTimeout(() => { priceDropped.current = false; }, 5000);
+    return () => clearTimeout(timer);
+  }, [product.id, displayPrice]);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -119,6 +132,11 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           {tag && (
             <span className="absolute right-3 top-3 rounded-full bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold text-white">
               {tag}
+            </span>
+          )}
+          {priceDropped.current && (
+            <span className="absolute left-3 top-3 rounded-full bg-brand-fresh px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg shadow-brand-fresh/30">
+              <TrendingDown className="mr-0.5 inline h-3 w-3" /> Price Dropped
             </span>
           )}
 

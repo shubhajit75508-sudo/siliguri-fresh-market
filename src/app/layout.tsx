@@ -4,6 +4,7 @@ import { AppProvider } from "@/providers/app-provider";
 import { RootSplash } from "@/components/ui/root-splash";
 import { ServiceWorker } from "@/components/ui/service-worker";
 import { OrganizationSchema, LocalBusinessSchema, WebSiteSchema } from "@/components/seo/schemas";
+import { DynamicMeta } from "@/components/seo/dynamic-meta";
 import "./globals.css";
 
 const inter = Inter({
@@ -91,6 +92,7 @@ export default function RootLayout({
         <OrganizationSchema />
         <LocalBusinessSchema />
         <WebSiteSchema />
+        <DynamicMeta />
         <RootSplash />
         <ServiceWorker />
         <AppProvider>{children}</AppProvider>

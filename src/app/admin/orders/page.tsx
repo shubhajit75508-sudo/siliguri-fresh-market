@@ -9,8 +9,9 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { getAllProducts } from "@/lib/data";
 import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download } from "lucide-react";
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange" | "red"> = {
   received: "default",
@@ -28,11 +29,16 @@ const tabs = ["all", "received", "out_for_delivery", "delivered", "cancelled"] a
 
 export default function AdminOrdersPage() {
   const { orders, loaded, loadOrders, updateStatus, assignDeliveryBoy, approveReturn, cancelOrder } = useOrderStore();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<typeof orders[number] | null>(null);
   const [returnModal, setReturnModal] = useState<typeof orders[number] | null>(null);
   const [assignModal, setAssignModal] = useState<typeof orders[number] | null>(null);
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState<string>("");
+  const [bulkConfirm, setBulkConfirm] = useState(false);
+  const [bulkProcessing, setBulkProcessing] = useState(false);
 
   const { data: allProducts } = useQuery({
     queryKey: ["products", "all"],
@@ -83,12 +89,113 @@ export default function AdminOrdersPage() {
             {tab.replace(/_/g, " ")} ({tab === "all" ? orders.length : tab === "out_for_delivery" ? orders.filter(isOutForDelivery).length : orders.filter((o) => o.status === tab).length})
           </button>
         ))}
+        <button
+          onClick={() => {
+            const header = "Order ID,Customer,Phone,Items,Total,Payment Method,Payment Status,Delivery Status,Delivery Boy,Order Date,Address";
+            const rows = orders.map((o) =>
+              [
+                o.id,
+                `"${o.customerName}"`,
+                o.customerPhone,
+                o.items.reduce((n, i) => n + i.quantity, 0),
+                o.total,
+                o.paymentMethod,
+                o.paymentStatus,
+                o.status,
+                o.deliveryBoyName || "",
+                new Date(o.createdAt).toLocaleDateString(),
+                `"${o.address.line1}, ${o.address.city}"`,
+              ].join(",")
+            );
+            const csv = [header, ...rows].join("\n");
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="ml-auto shrink-0 rounded-full border border-border px-4 py-1.5 text-xs font-semibold text-muted hover:bg-white/8"
+        >
+          <Download className="mr-1 inline h-3 w-3" /> Export CSV
+        </button>
       </div>
+
+      {selectedIds.size > 0 && (
+        <div className="mt-3 flex items-center gap-3 rounded-xl border border-brand-fresh/30 bg-brand-fresh/5 px-4 py-2.5">
+          <span className="text-sm font-medium">{selectedIds.size} selected</span>
+          <select
+            value={bulkAction}
+            onChange={(e) => setBulkAction(e.target.value)}
+            className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm outline-none"
+          >
+            <option value="">Bulk action...</option>
+            <option value="delivered">Mark Delivered</option>
+            <option value="cancelled">Mark Cancelled</option>
+          </select>
+          <button
+            onClick={() => { if (bulkAction) setBulkConfirm(true); }}
+            disabled={!bulkAction || bulkProcessing}
+            className="rounded-lg bg-brand-dark px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            {bulkProcessing ? (
+              <><Loader2 className="mr-1 inline h-3 w-3 animate-spin" /> Processing...</>
+            ) : "Apply"}
+          </button>
+          <button onClick={() => setSelectedIds(new Set())} className="ml-auto text-xs text-muted hover:text-foreground">
+            Clear
+          </button>
+        </div>
+      )}
+
+      {bulkConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setBulkConfirm(false)}>
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold">Bulk Update</h3>
+            <p className="mt-2 text-sm text-muted">
+              Mark <span className="font-semibold text-foreground">{selectedIds.size} orders</span> as <span className="font-semibold text-foreground capitalize">{bulkAction}</span>?
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Button variant="default" disabled={bulkProcessing} onClick={async () => {
+                setBulkProcessing(true);
+                let count = 0;
+                for (const id of selectedIds) {
+                  try {
+                    await updateStatus(id, bulkAction as "delivered" | "cancelled");
+                    count++;
+                  } catch { /* skip failed */ }
+                }
+                setBulkProcessing(false);
+                setBulkConfirm(false);
+                setSelectedIds(new Set());
+                setBulkAction("");
+                toast.add(`${count}/${selectedIds.size} orders updated`);
+              }}>
+                {bulkProcessing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
+                Confirm
+              </Button>
+              <Button variant="outline" onClick={() => setBulkConfirm(false)}>Cancel</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 overflow-x-auto rounded-xl border bg-surface shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-white/5 text-left">
+              <th className="px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                  onChange={() => {
+                    if (selectedIds.size === filtered.length) setSelectedIds(new Set());
+                    else setSelectedIds(new Set(filtered.map((o) => o.id)));
+                  }}
+                  className="h-4 w-4 rounded border-border accent-brand-dark"
+                />
+              </th>
               <th className="px-4 py-3 font-medium text-muted">Order ID</th>
               <th className="px-4 py-3 font-medium text-muted">Customer</th>
               <th className="px-4 py-3 font-medium text-muted">Items</th>
@@ -101,10 +208,23 @@ export default function AdminOrdersPage() {
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-muted-light">No orders yet.</td></tr>
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-sm text-muted-light">No orders yet.</td></tr>
             ) : (
               filtered.map((order) => (
                 <tr key={order.id} className="border-b hover:bg-white/5">
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(order.id)}
+                      onChange={() => {
+                        const next = new Set(selectedIds);
+                        if (next.has(order.id)) next.delete(order.id);
+                        else next.add(order.id);
+                        setSelectedIds(next);
+                      }}
+                      className="h-4 w-4 rounded border-border accent-brand-dark"
+                    />
+                  </td>
                   <td className="px-4 py-3 font-mono text-xs font-medium">{order.id}</td>
                   <td className="px-4 py-3">
                     <p className="font-medium">{order.customerName}</p>

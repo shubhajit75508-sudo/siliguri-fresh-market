@@ -15,6 +15,12 @@ interface HeroConfig {
   subtitle: string;
 }
 
+interface SeoConfig {
+  homeTitle: string;
+  homeDescription: string;
+  homeKeywords: string;
+}
+
 interface AppSettings {
   storeName: string;
   deliveryRadius: string;
@@ -23,6 +29,7 @@ interface AppSettings {
   operatingHours: string;
   hero: HeroConfig;
   sections: SectionConfig[];
+  seo: SeoConfig;
 }
 
 interface AdminState {
@@ -50,6 +57,11 @@ const defaultSettings: AppSettings = {
     subtitle: "",
   },
   sections: [],
+  seo: {
+    homeTitle: "",
+    homeDescription: "",
+    homeKeywords: "",
+  },
 };
 
 export const useAdminStore = create<AdminState>()(
@@ -107,6 +119,7 @@ export const useAdminStore = create<AdminState>()(
               sections: Array.isArray(pSettings.sections)
                 ? (pSettings.sections as SectionConfig[])
                 : cSettings.sections,
+              seo: { ...cSettings.seo, ...((pSettings.seo ?? {}) as SeoConfig) },
             },
           };
         },

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Trash2, Loader2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Pencil } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { useToast } from "@/components/ui/toaster";
 import type { DeliveryBoy } from "@/types";
@@ -13,7 +13,9 @@ export default function AdminDeliveryBoysPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<DeliveryBoy | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", area: "" });
+  const [editForm, setEditForm] = useState({ name: "", phone: "", email: "", area: "", isActive: true });
   const toast = useToast();
 
   useEffect(() => {
@@ -92,6 +94,40 @@ export default function AdminDeliveryBoysPage() {
     setBoys((prev) => prev.filter((b) => b.id !== id));
   };
 
+  const editBoyFn = (boy: DeliveryBoy) => {
+    setEditForm({ name: boy.name, phone: boy.phone, email: boy.email || "", area: boy.area || "", isActive: boy.isActive });
+    setEditing(boy);
+  };
+
+  const saveEditFn = async () => {
+    if (!editing) return;
+    if (!editForm.name || !editForm.phone) {
+      toast.add("Name and phone are required", "error");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin/delivery-boys", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editing.id, ...editForm }),
+      });
+      if (!res.ok) {
+        toast.add("Failed to update", "error");
+        setSaving(false);
+        return;
+      }
+      const updated: DeliveryBoy = { ...editing, ...editForm };
+      addBoy(updated);
+      setBoys((prev) => prev.map((b) => (b.id === editing.id ? updated : b)));
+      setEditing(null);
+      toast.add("Delivery boy updated");
+    } catch {
+      toast.add("Network error", "error");
+    }
+    setSaving(false);
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-light" /></div>;
   }
@@ -157,9 +193,14 @@ export default function AdminDeliveryBoysPage() {
                     <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-[11px] font-semibold text-green-700">Active</span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => removeBoyFn(b.id)} className="rounded-lg p-2 text-brand-red hover:bg-brand-red/10">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => editBoyFn(b)} className="rounded-lg p-2 text-muted hover:bg-white/8">
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => removeBoyFn(b.id)} className="rounded-lg p-2 text-brand-red hover:bg-brand-red/10">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -167,6 +208,29 @@ export default function AdminDeliveryBoysPage() {
           </tbody>
         </table>
       </div>
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditing(null)}>
+          <div className="mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="mb-4 font-bold">Edit Delivery Boy</h3>
+            <div className="space-y-3">
+              <input placeholder="Name *" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Phone *" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Service Area" value={editForm.area} onChange={(e) => setEditForm({ ...editForm, area: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
+                Active
+              </label>
+            </div>
+            <div className="mt-5 flex gap-2">
+              <button onClick={saveEditFn} disabled={saving} className="rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim disabled:opacity-50">
+                {saving ? "Saving..." : "Save"}
+              </button>
+              <button onClick={() => setEditing(null)} className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
