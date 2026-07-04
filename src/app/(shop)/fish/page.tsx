@@ -1,10 +1,25 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
+import { ProductFilterBar, type ProductFiltersState } from "@/components/product/product-filter-bar";
 
 export default function FishPage() {
   const { data: fish = [] } = useProductsByCategory("fish");
+  const [filters, setFilters] = useState<ProductFiltersState>({ sort: "name", inStockOnly: false });
+
+  const processed = useMemo(() => {
+    let list = [...fish];
+    if (filters.inStockOnly) list = list.filter((p) => p.inStock);
+    switch (filters.sort) {
+      case "price-asc": list.sort((a, b) => a.price - b.price); break;
+      case "price-desc": list.sort((a, b) => b.price - a.price); break;
+      case "name": list.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "rating": list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
+    }
+    return list;
+  }, [fish, filters]);
 
   return (
     <div className="py-6 sm:py-8">
@@ -31,13 +46,26 @@ export default function FishPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {fish.map((p, i) => (
-          <div key={p.id} className={`animate-in animate-in-d${Math.min(i + 1, 10)}`}>
-            <ProductCard product={p} badge="Fresh Catch" />
-          </div>
-        ))}
-      </div>
+      <ProductFilterBar
+        total={fish.length}
+        filtered={processed.length}
+        filters={filters}
+        onChange={setFilters}
+      />
+
+      {processed.length > 0 ? (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {processed.map((p, i) => (
+            <div key={p.id} className={`animate-in animate-in-d${Math.min(i + 1, 10)}`}>
+              <ProductCard product={p} badge="Fresh Catch" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <p className="text-muted">No products match your filters.</p>
+        </div>
+      )}
     </div>
   );
 }

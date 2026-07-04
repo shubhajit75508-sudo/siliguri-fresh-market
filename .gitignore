@@ -46,3 +46,5 @@ next-env.d.ts
 .vercel
 
 generate-icons.ps1
+upload-keystore.p12
+upload_certificate.pem

@@ -1,12 +1,13 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
 import { useCategories } from "@/lib/hooks/use-products";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
+import { ProductFilterBar, type ProductFiltersState } from "@/components/product/product-filter-bar";
 
 export default function CategoryPage({
   params,
@@ -18,6 +19,20 @@ export default function CategoryPage({
   const { data: categories = [], isLoading: catsLoading } = useCategories();
   const { data: products = [], isLoading: prodsLoading } = useProductsByCategory(slug);
   const hydrated = useHydrated();
+
+  const [filters, setFilters] = useState<ProductFiltersState>({ sort: "name", inStockOnly: false });
+
+  const processed = useMemo(() => {
+    let list = [...products];
+    if (filters.inStockOnly) list = list.filter((p) => p.inStock);
+    switch (filters.sort) {
+      case "price-asc": list.sort((a, b) => a.price - b.price); break;
+      case "price-desc": list.sort((a, b) => b.price - a.price); break;
+      case "name": list.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "rating": list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
+    }
+    return list;
+  }, [products, filters]);
 
   const category = categories.find((c) => c.slug === slug);
   if (hydrated && !catsLoading && !category) notFound();
@@ -60,15 +75,22 @@ export default function CategoryPage({
         <p className="mt-1 text-sm text-muted">{category!.description}</p>
       </div>
 
-      {products.length > 0 ? (
+      <ProductFilterBar
+        total={products.length}
+        filtered={processed.length}
+        filters={filters}
+        onChange={setFilters}
+      />
+
+      {processed.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {products.map((p) => (
+          {processed.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
       ) : (
         <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-muted">No products found in this category.</p>
+          <p className="text-muted">No products match your filters.</p>
         </div>
       )}
 
