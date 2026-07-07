@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useEffect } from "react";
+import Link from "next/link";
 import {
   IndianRupee,
   ShoppingCart,
@@ -12,6 +13,7 @@ import {
   XCircle,
   CheckCircle,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { StatCard } from "@/components/admin/stat-card";
 import { RevenueChart } from "@/components/admin/revenue-chart";
@@ -132,10 +134,22 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs text-muted">Pending Revenue</p>
               <p className="text-lg font-bold text-brand-blue">{formatPrice(pendingRevenueTotal)}</p>
-              <p className="text-xs text-muted">{pendingOrders.length} orders</p>
+              <p className="text-xs text-muted">{          pendingOrders.length} orders</p>
             </div>
           </div>
         </div>
+        <Link href="/admin/orders" className="rounded-xl border bg-surface p-5 shadow-sm hover:shadow-md transition-all block">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/10">
+              <AlertTriangle className="h-5 w-5 text-brand-orange" />
+            </div>
+            <div>
+              <p className="text-xs text-muted">Awaiting Pickup</p>
+              <p className="text-lg font-bold text-brand-orange">{orders.filter((o) => o.deliveryStatus === "pending" && o.status !== "cancelled").length}</p>
+              <p className="text-xs text-muted">orders ready for delivery boy</p>
+            </div>
+          </div>
+        </Link>
       </div>
 
       {/* Today's Deliveries */}

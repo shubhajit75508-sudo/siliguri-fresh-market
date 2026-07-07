@@ -4,11 +4,16 @@ import { useDeliveryStore } from "@/store/delivery-store";
 import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
 import LiveMap from "@/components/maps/LiveMap";
-import type { DeliveryAssignment } from "@/types";
+import type { DeliveryAssignment, Order } from "@/types";
+import {
+  Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed,
+  XCircle, Clock, AlertTriangle,
+} from "lucide-react";
+
+// ── Helpers ──────────────────────────────────────────
 
 const statusLabels: Record<string, string> = {
   assigned: "Assigned",
@@ -24,7 +29,129 @@ const statusColors: Record<string, "blue" | "orange" | "fresh" | "default"> = {
   delivered: "fresh",
 };
 
-// Extracted as standalone component so GPS re-renders don't unmount it
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "Just now";
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  return `${hr}h ${min % 60}m`;
+}
+
+function ageBadgeColor(min: number): string {
+  if (min < 15) return "text-brand-fresh bg-brand-fresh/10";
+  if (min < 30) return "text-brand-orange bg-brand-orange/10";
+  return "text-brand-red bg-brand-red/10";
+}
+
+function playNewOrderSound() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch {}
+}
+
+// ── Available Order Card ─────────────────────────────
+
+function AvailableCard({
+  order, boyId, atCapacity, onAccept, onReject, accepting, rejecting,
+}: {
+  order: Order; boyId: string; atCapacity: boolean;
+  onAccept: (id: string) => void; onReject: (id: string) => void;
+  accepting: string | null; rejecting: string | null;
+}) {
+  const mins = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
+  return (
+    <div className="mb-3 rounded-2xl border border-brand-fresh/20 bg-surface p-4 shadow-sm hover:border-brand-fresh/40 transition-all">
+      <div className="flex items-start justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="font-bold text-foreground truncate">{order.customerName}</p>
+            <Badge variant={order.paymentMethod === "razorpay" ? "fresh" : "orange"}>
+              {order.paymentMethod === "razorpay" ? "Paid" : "COD"}
+            </Badge>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${ageBadgeColor(mins)}`}>
+              <Clock className="h-3 w-3" /> {mins < 1 ? "<1 min" : `${mins} min`}
+            </span>
+          </div>
+          <p className="mt-0.5 text-sm text-muted">{order.customerPhone}</p>
+          <p className="text-[10px] font-mono text-muted mt-0.5">{order.id}</p>
+        </div>
+        <p className="shrink-0 text-sm font-bold text-foreground">{formatPrice(order.total)}</p>
+      </div>
+
+      <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm space-y-1">
+        <div className="flex items-start gap-2">
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
+          <div className="text-xs">
+            <p className="font-medium text-foreground">{order.address.line1}</p>
+            {order.address.area && <p className="text-muted">Area: {order.address.area}</p>}
+            {order.address.landmark && <p className="text-muted">Near: {order.address.landmark}</p>}
+            {order.address.building && <p className="text-muted">{order.address.building}{order.address.flat ? `, Flat ${order.address.flat}` : ""}{order.address.floor ? `, Floor ${order.address.floor}` : ""}</p>}
+            <p className="text-muted">{order.address.city} — {order.address.pincode}</p>
+          </div>
+        </div>
+      </div>
+
+      <details className="mt-3">
+        <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-muted">
+          <ShoppingBag className="h-3.5 w-3.5" /> {order.items.length} item{order.items.length > 1 ? "s" : ""}
+        </summary>
+        <ul className="mt-2 space-y-1.5 pl-5">
+          {order.items.map((item, i) => (
+            <li key={i} className="text-sm text-muted flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-foreground">{item.product.name}</span>
+              <span className="text-muted-light">×{item.quantity}</span>
+              {item.selectedWeight && <Badge variant="fresh" className="text-[10px]">{item.selectedWeight}</Badge>}
+              {item.selectedCut && <Badge variant="blue" className="text-[10px]">{item.selectedCut}</Badge>}
+              {item.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7C3AED]">{item.selectedCleaning}</span>}
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3">
+        <a
+          href={`tel:${order.customerPhone}`}
+          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-muted hover:bg-white/5"
+        >
+          <Phone className="h-3.5 w-3.5" /> Call
+        </a>
+        {atCapacity && (
+          <span className="text-[10px] text-brand-orange flex items-center gap-1">
+            <AlertTriangle className="h-3 w-3" /> Queue full
+          </span>
+        )}
+        <div className="ml-auto flex gap-2">
+          <Button variant="outline" size="sm" disabled={rejecting === order.id}
+            onClick={() => onReject(order.id)}
+            className="border-brand-red/30 text-brand-red hover:bg-brand-red/5"
+          >
+            {rejecting === order.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
+            Reject
+          </Button>
+          <Button variant="fresh" size="sm" disabled={accepting === order.id || atCapacity}
+            onClick={() => onAccept(order.id)}
+            className="bg-brand-fresh hover:bg-brand-fresh/90"
+          >
+            {accepting === order.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle className="h-3.5 w-3.5" />}
+            Accept
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Delivery Card (existing) ─────────────────────────
+
 function DeliveryCard({
   a, deliveryCodes, setDeliveryCodes, codeError, setCodeError,
   currentPosition, customerLocations,
@@ -188,14 +315,48 @@ function DeliveryCard({
   );
 }
 
+// ── Map raw DB order to Order type ───────────────────
+
+function mapDbOrder(r: Record<string, unknown>): Order {
+  return {
+    id: r.id as string,
+    items: (r.items as Order["items"]) ?? [],
+    status: (r.status as Order["status"]) ?? "received",
+    total: Number(r.total),
+    createdAt: (r.created_at as string) ?? new Date().toISOString(),
+    address: (r.address_snapshot as Order["address"]) ?? { id: "", label: "", line1: "", city: "", pincode: "", isDefault: false },
+    eta: 30,
+    customerName: (r.customer_name as string) ?? "",
+    customerPhone: (r.customer_phone as string) ?? "",
+    customerEmail: (r.customer_email as string) ?? "",
+    paymentMethod: (r.payment_method as string) ?? "cod",
+    paymentStatus: (r.payment_status as "paid" | "unpaid") ?? "unpaid",
+    deliveryStatus: (r.delivery_status as import("@/types").DeliveryStatus) ?? "pending",
+    deliveryBoyId: r.delivery_boy_id as string | undefined,
+    deliveryBoyName: r.delivery_boy_name as string | undefined,
+    returnRequested: Boolean(r.return_requested),
+    returnApproved: Boolean(r.return_approved),
+    deliveryCode: (r.delivery_code as string) ?? "",
+  };
+}
+
+// ── Main Dashboard ───────────────────────────────────
+
 export default function DeliveryDashboard() {
   const { boy, assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
   const { acceptDelivery, pickUpDelivery, confirmDelivery } = useOrderStore();
 
+  // Available orders state
+  const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
+  const [atCapacity, setAtCapacity] = useState(false);
+  const [accepting, setAccepting] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<string | null>(null);
+  const [tab, setTab] = useState<"available" | "my">("available");
+
+  // Existing state
   const [tracking, setTracking] = useState(false);
   const [gpsError, setGpsError] = useState("");
   const watchIdRef = useRef<number | null>(null);
-
   const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
   const [codeError, setCodeError] = useState<string | null>(null);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
@@ -204,7 +365,55 @@ export default function DeliveryDashboard() {
 
   const active = assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered");
   const activeOrderIds = active.map((a) => a.orderId);
+  const prevAvailableCountRef = useRef(0);
 
+  // ── Fetch available orders ──
+  const fetchAvailable = useCallback(async () => {
+    if (!boy) return;
+    try {
+      const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(boy.id)}`);
+      if (!res.ok) return;
+      const json = await res.json();
+      const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
+      if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
+        playNewOrderSound();
+      }
+      prevAvailableCountRef.current = orders.length;
+      setAvailableOrders(orders);
+      setAtCapacity(json.atCapacity ?? false);
+    } catch {}
+  }, [boy]);
+
+  // ── Accept / Reject handlers ──
+  const handleAccept = async (orderId: string) => {
+    setAccepting(orderId);
+    try {
+      const res = await fetch("/api/delivery/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      if (!res.ok) throw new Error("Already taken");
+      setAvailableOrders((prev) => prev.filter((o) => o.id !== orderId));
+      useDeliveryStore.getState().loadAssignments();
+    } catch {}
+    finally { setAccepting(null); }
+  };
+
+  const handleReject = async (orderId: string) => {
+    setRejecting(orderId);
+    try {
+      await fetch("/api/delivery/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      setAvailableOrders((prev) => prev.filter((o) => o.id !== orderId));
+    } catch {}
+    finally { setRejecting(null); }
+  };
+
+  // ── Existing handlers ──
   const sendLocation = useCallback(async (lat: number, lng: number) => {
     if (!boy || activeOrderIds.length === 0) return;
     setCurrentPosition([lat, lng]);
@@ -267,10 +476,14 @@ export default function DeliveryDashboard() {
     setCustomerLocations(locs);
   }, [active]);
 
-  const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
-  const outForDelivery = active.filter((a) => a.status === "picked_up");
+  useEffect(() => {
+    if (!boy) return;
+    fetchAvailable();
+    const interval = setInterval(fetchAvailable, 10000);
+    return () => clearInterval(interval);
+  }, [boy, fetchAvailable]);
 
-  const handleAccept = (orderId: string) => {
+  const handleAcceptDelivery = (orderId: string) => {
     acceptDelivery(orderId);
     useDeliveryStore.getState().setAssignments(
       useDeliveryStore.getState().assignments.map((x) =>
@@ -278,6 +491,7 @@ export default function DeliveryDashboard() {
       )
     );
   };
+
   const handlePickUp = (orderId: string) => {
     pickUpDelivery(orderId);
     useDeliveryStore.getState().setAssignments(
@@ -286,6 +500,7 @@ export default function DeliveryDashboard() {
       )
     );
   };
+
   const handleConfirm = async (orderId: string, code: string) => {
     const prevOrders = useOrderStore.getState().orders;
     try {
@@ -299,6 +514,9 @@ export default function DeliveryDashboard() {
     }
   };
 
+  const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
+  const outForDelivery = active.filter((a) => a.status === "picked_up");
+
   if (loadingAssignments) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -308,76 +526,130 @@ export default function DeliveryDashboard() {
     );
   }
 
-  if (active.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="h-10 w-10 text-muted" />
-        <h2 className="text-lg font-bold text-foreground">No Deliveries Assigned</h2>
-        <p className="mt-1 text-sm text-muted">You&apos;ll see new orders here as they come in</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4 pb-8">
-      <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-brand-fresh/30 bg-brand-fresh/5" : "border-brand-red/30 bg-brand-red/5"}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tracking ? "bg-brand-fresh/10" : "bg-brand-red/10"}`}>
-              <LocateFixed className={`h-5 w-5 ${tracking ? "text-brand-fresh" : "text-brand-red"}`} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-foreground">Active Deliveries ({active.length})</h2>
-                {tracking ? (
-                  <span className="flex items-center gap-1.5 text-[10px] text-brand-fresh font-semibold bg-brand-fresh/10 px-2 py-0.5 rounded-full">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-fresh" />
-                    </span>
-                    GPS Live
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-brand-red font-semibold bg-brand-red/10 px-2 py-0.5 rounded-full">
-                    <Radio className="mr-0.5 inline h-3 w-3" /> GPS {gpsError ? "Error" : "Off"}
-                  </span>
-                )}
-              </div>
-              {currentPosition && (
-                <p className="text-[10px] text-muted mt-0.5 font-mono">
-                  {currentPosition[0].toFixed(5)}, {currentPosition[1].toFixed(5)}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold tabular-nums">{active.length}</p>
-            <p className="text-[10px] text-muted -mt-0.5">active</p>
-          </div>
-        </div>
-        {gpsError && (
-          <p className="mt-2 text-[10px] text-brand-red bg-brand-red/5 rounded-lg px-3 py-2">{gpsError}</p>
-        )}
+      {/* Tab Switcher */}
+      <div className="flex gap-1 rounded-xl bg-white/5 p-1">
+        <button
+          onClick={() => setTab("available")}
+          className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+            tab === "available" ? "bg-brand-dark text-white" : "text-muted hover:text-foreground"
+          }`}
+        >
+          Available ({availableOrders.length})
+        </button>
+        <button
+          onClick={() => setTab("my")}
+          className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+            tab === "my" ? "bg-brand-dark text-white" : "text-muted hover:text-foreground"
+          }`}
+        >
+          My Deliveries ({active.length})
+        </button>
       </div>
 
-      {pickupStatuses.length > 0 && (
-        <div>
-          <h3 className="mb-2 text-sm font-semibold text-muted uppercase tracking-wide">Pickup</h3>
-          {pickupStatuses.map((a) => (
-            <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAccept} onPickUp={handlePickUp} onConfirm={handleConfirm} />
-          ))}
-        </div>
-      )}
+      {tab === "available" ? (
+        availableOrders.length === 0 ? (
+          <div className="flex flex-col items-center py-16 text-center">
+            <Package className="mb-3 h-10 w-10 text-muted" />
+            <p className="text-sm font-bold text-foreground">No orders available</p>
+            <p className="mt-1 text-xs text-muted">New orders will appear here automatically</p>
+          </div>
+        ) : (
+          <div>
+            {atCapacity && (
+              <div className="mb-3 rounded-xl bg-brand-orange/10 px-4 py-2.5 text-xs text-brand-orange flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                You've reached your active delivery limit. Complete a delivery to accept new orders.
+              </div>
+            )}
+            {availableOrders.map((o) => (
+              <AvailableCard
+                key={o.id}
+                order={o}
+                boyId={boy!.id}
+                atCapacity={atCapacity}
+                onAccept={handleAccept}
+                onReject={handleReject}
+                accepting={accepting}
+                rejecting={rejecting}
+              />
+            ))}
+          </div>
+        )
+      ) : (
+        active.length === 0 ? (
+          <div className="flex flex-col items-center py-16 text-center">
+            <Package className="mb-3 h-10 w-10 text-muted" />
+            <p className="text-sm font-bold text-foreground">No active deliveries</p>
+            <p className="mt-1 text-xs text-muted">Switch to Available to pick up orders</p>
+          </div>
+        ) : (
+          <>
+            {/* GPS Status Card */}
+            <div className={`rounded-2xl border p-4 shadow-sm transition-all ${tracking ? "border-brand-fresh/30 bg-brand-fresh/5" : "border-brand-red/30 bg-brand-red/5"}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tracking ? "bg-brand-fresh/10" : "bg-brand-red/10"}`}>
+                    <LocateFixed className={`h-5 w-5 ${tracking ? "text-brand-fresh" : "text-brand-red"}`} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-sm font-bold text-foreground">Active Deliveries ({active.length})</h2>
+                      {tracking ? (
+                        <span className="flex items-center gap-1.5 text-[10px] text-brand-fresh font-semibold bg-brand-fresh/10 px-2 py-0.5 rounded-full">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-fresh opacity-75" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-fresh" />
+                          </span>
+                          GPS Live
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-brand-red font-semibold bg-brand-red/10 px-2 py-0.5 rounded-full">
+                          <Radio className="mr-0.5 inline h-3 w-3" /> GPS {gpsError ? "Error" : "Off"}
+                        </span>
+                      )}
+                    </div>
+                    {currentPosition && (
+                      <p className="text-[10px] text-muted mt-0.5 font-mono">
+                        {currentPosition[0].toFixed(5)}, {currentPosition[1].toFixed(5)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold tabular-nums">{active.length}</p>
+                  <p className="text-[10px] text-muted -mt-0.5">active</p>
+                </div>
+              </div>
+              {gpsError && (
+                <p className="mt-2 text-[10px] text-brand-red bg-brand-red/5 rounded-lg px-3 py-2">{gpsError}</p>
+              )}
+            </div>
 
-      {outForDelivery.length > 0 && (
-        <div>
-          <h3 className="mb-2 text-sm font-semibold text-brand-fresh uppercase tracking-wide flex items-center gap-1.5">
-            <Truck className="h-4 w-4" /> Out for Delivery
-          </h3>
-          {outForDelivery.map((a) => (
-            <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAccept} onPickUp={handlePickUp} onConfirm={handleConfirm} />
-          ))}
-        </div>
+            {/* Pickup section */}
+            {pickupStatuses.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-semibold text-muted uppercase tracking-wide">Pickup</h3>
+                {pickupStatuses.map((a) => (
+                  <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} onConfirm={handleConfirm} />
+                ))}
+              </div>
+            )}
+
+            {/* Out for Delivery section */}
+            {outForDelivery.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-semibold text-brand-fresh uppercase tracking-wide flex items-center gap-1.5">
+                  <Truck className="h-4 w-4" /> Out for Delivery
+                </h3>
+                {outForDelivery.map((a) => (
+                  <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} onConfirm={handleConfirm} />
+                ))}
+              </div>
+            )}
+          </>
+        )
       )}
     </div>
   );
