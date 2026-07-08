@@ -11,6 +11,17 @@ function getAdmin() {
   return createClient(url, key);
 }
 
+function getSessionPayload(req: NextRequest): string | null {
+  const cookie = req.cookies.get("sfm-auth-session");
+  if (!cookie?.value) return null;
+  const raw = cookie.value;
+  if (raw.includes(".")) {
+    const payload = raw.split(".")[0];
+    return payload;
+  }
+  return raw;
+}
+
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabaseAdmin = getAdmin();
@@ -40,6 +51,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (order.status === "cancelled") return NextResponse.json({ error: "Order already cancelled" }, { status: 400 });
   if (order.status === "delivered" || order.delivery_status === "delivered") {
     return NextResponse.json({ error: "Cannot cancel a delivered order" }, { status: 400 });
+  }
+  const session = getSessionPayload(req);
+  const isAdmin = session?.endsWith("|admin") ?? false;
+  if (!isAdmin && order.status !== "received") {
+    return NextResponse.json({ error: "You can only cancel orders that are still received" }, { status: 400 });
   }
 
   const dbUpdates: Record<string, unknown> = { status: "cancelled" };
