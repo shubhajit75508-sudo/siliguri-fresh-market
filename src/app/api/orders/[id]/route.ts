@@ -38,8 +38,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     .single();
   if (fetchError || !order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
   if (order.status === "cancelled") return NextResponse.json({ error: "Order already cancelled" }, { status: 400 });
-  if (order.status !== "received" && order.delivery_status !== "pending" && order.delivery_status !== "assigned") {
-    return NextResponse.json({ error: "Cannot cancel order in current state" }, { status: 400 });
+  if (order.status === "delivered" || order.delivery_status === "delivered") {
+    return NextResponse.json({ error: "Cannot cancel a delivered order" }, { status: 400 });
   }
 
   const dbUpdates: Record<string, unknown> = { status: "cancelled" };
