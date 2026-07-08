@@ -394,7 +394,7 @@ export default function DeliveryDashboard() {
         const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(b.id)}`);
         if (!res.ok) { console.warn("[available] doFetch: HTTP", res.status); return; }
         const json = await res.json();
-        console.log("[available] doFetch returned", json.orders?.length ?? 0, "orders");
+        console.log("[available] doFetch returned", json.orders?.length ?? 0, "orders, debug:", json._debug);
         const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
         if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
           playNewOrderSound();

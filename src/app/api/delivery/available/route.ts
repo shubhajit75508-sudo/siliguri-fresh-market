@@ -83,5 +83,5 @@ export async function GET(req: NextRequest) {
   });
   console.log("[available] available after filters:", available.length);
 
-  return NextResponse.json({ orders: available, atCapacity });
+  return NextResponse.json({ orders: available, atCapacity, _debug: { totalNonCancelled, totalPending, rawCount: data?.length ?? 0, boyArea } });
 }
