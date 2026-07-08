@@ -373,7 +373,7 @@ export default function DeliveryDashboard() {
     if (!currentBoy) return;
     try {
       const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(currentBoy.id)}`);
-      if (!res.ok) return;
+      if (!res.ok) { console.warn("[available] fetchAvailable: HTTP", res.status); return; }
       const json = await res.json();
       const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
       if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
@@ -382,7 +382,7 @@ export default function DeliveryDashboard() {
       prevAvailableCountRef.current = orders.length;
       setAvailableOrders(orders);
       setAtCapacity(json.atCapacity ?? false);
-    } catch {}
+    } catch (e) { console.warn("[available] fetchAvailable error:", e); }
   }, []);
 
   // ── Subscribe to boy changes + poll ──
@@ -392,8 +392,9 @@ export default function DeliveryDashboard() {
       if (!b) return;
       try {
         const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(b.id)}`);
-        if (!res.ok) return;
+        if (!res.ok) { console.warn("[available] doFetch: HTTP", res.status); return; }
         const json = await res.json();
+        console.log("[available] doFetch returned", json.orders?.length ?? 0, "orders");
         const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
         if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
           playNewOrderSound();
@@ -401,11 +402,15 @@ export default function DeliveryDashboard() {
         prevAvailableCountRef.current = orders.length;
         setAvailableOrders(orders);
         setAtCapacity(json.atCapacity ?? false);
-      } catch {}
+      } catch (e) { console.warn("[available] doFetch error:", e); }
     };
     doFetch();
     const interval = setInterval(doFetch, 10000);
-    const unsub = useDeliveryStore.subscribe((s) => { if ((s as any).boy) doFetch(); });
+    const unsub = useDeliveryStore.subscribe((s, prev) => {
+      const hadBoy = Boolean((prev as any)?.boy);
+      const hasBoy = Boolean((s as any)?.boy);
+      if (hasBoy && !hadBoy) { console.log("[available] boy transition null→set, fetching"); doFetch(); }
+    });
     return () => { clearInterval(interval); unsub(); };
   }, []);
 
