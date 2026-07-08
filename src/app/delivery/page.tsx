@@ -370,11 +370,14 @@ export default function DeliveryDashboard() {
 
   // ── Fetch available orders ──
   const fetchAvailable = useCallback(async () => {
-    if (!boy) return;
+    console.log("[fetchAvailable] entered boy=", boy?.id);
+    if (!boy) { console.log("[fetchAvailable] no boy, returning"); return; }
     try {
+      console.log("[fetchAvailable] calling API boy=", boy.id);
       const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(boy.id)}`);
       if (!res.ok) { const errText = await res.text().catch(() => ""); console.error("[delivery] available API returned %d: %s", res.status, errText); return; }
       const json = await res.json();
+      console.log("[fetchAvailable] API returned ok, orders count=", json.orders?.length);
       const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
       if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
         playNewOrderSound();
@@ -461,6 +464,7 @@ export default function DeliveryDashboard() {
   }, [boy, activeOrderIds.join(","), sendLocation]);
 
   useEffect(() => {
+    console.log("[effect1] running, boy?.id=", boy?.id);
     if (boy) {
       useDeliveryStore.getState().loadAssignments().finally(() => setLoadingAssignments(false));
       fetchAvailable();
@@ -481,10 +485,11 @@ export default function DeliveryDashboard() {
 
   // Fetch available orders every 10s once boy is set
   useEffect(() => {
-    if (!boy) return;
+    console.log("[effect2] running, boy?.id=", boy?.id);
+    if (!boy) { console.log("[effect2] no boy, skipping"); return; }
     fetchAvailable();
     const interval = setInterval(fetchAvailable, 10000);
-    return () => clearInterval(interval);
+    return () => { console.log("[effect2] cleanup"); clearInterval(interval); };
   }, [boy?.id]);
 
   const handleAcceptDelivery = (orderId: string) => {
