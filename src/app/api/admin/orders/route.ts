@@ -50,6 +50,12 @@ export async function PUT(req: NextRequest) {
   if (updates.return_requested !== undefined) dbUpdates.return_requested = updates.return_requested;
   if (updates.return_approved !== undefined) dbUpdates.return_approved = updates.return_approved;
 
+  // If cancelling while assigned to a delivery boy, also clear delivery fields
+  if (dbUpdates.status === "cancelled") {
+    dbUpdates.delivery_boy_id = null;
+    dbUpdates.delivery_status = "cancelled";
+  }
+
   const { error } = await supabaseAdmin.from("orders").update(dbUpdates).eq("id", id);
   if (error) return NextResponse.json({ error: "Order operation failed" }, { status: 500 });
 
