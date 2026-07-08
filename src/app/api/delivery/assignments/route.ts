@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
     .from("orders")
     .select("id, customer_name, customer_phone, total, items, payment_status, delivery_status, address_snapshot, created_at, delivery_boy_id")
     .eq("delivery_boy_id", boyId)
+    .neq("status", "cancelled")
     .order("created_at", { ascending: false });
 
   if (error) {
