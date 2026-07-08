@@ -345,7 +345,6 @@ function mapDbOrder(r: Record<string, unknown>): Order {
 export default function DeliveryDashboard() {
   const { boy, assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
   const { acceptDelivery, pickUpDelivery, confirmDelivery } = useOrderStore();
-  console.log("[DD] rendered boy=", boy?.id, "assignments=", assignments.length);
 
   // Available orders state
   const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
