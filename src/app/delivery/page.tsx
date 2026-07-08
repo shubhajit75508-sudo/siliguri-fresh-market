@@ -462,6 +462,7 @@ export default function DeliveryDashboard() {
   useEffect(() => {
     if (boy) {
       useDeliveryStore.getState().loadAssignments().finally(() => setLoadingAssignments(false));
+      fetchAvailable();
     } else {
       setLoadingAssignments(false);
     }
@@ -477,12 +478,13 @@ export default function DeliveryDashboard() {
     setCustomerLocations(locs);
   }, [active]);
 
+  // Fetch available orders every 10s once boy is set
   useEffect(() => {
     if (!boy) return;
     fetchAvailable();
     const interval = setInterval(fetchAvailable, 10000);
     return () => clearInterval(interval);
-  }, [boy, fetchAvailable]);
+  }, [boy?.id]);
 
   const handleAcceptDelivery = (orderId: string) => {
     acceptDelivery(orderId);
