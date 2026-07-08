@@ -369,9 +369,10 @@ export default function DeliveryDashboard() {
 
   // ── Fetch available orders ──
   const fetchAvailable = useCallback(async () => {
-    if (!boy) return;
+    const currentBoy = useDeliveryStore.getState().boy;
+    if (!currentBoy) return;
     try {
-      const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(boy.id)}`);
+      const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(currentBoy.id)}`);
       if (!res.ok) return;
       const json = await res.json();
       const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
@@ -382,7 +383,7 @@ export default function DeliveryDashboard() {
       setAvailableOrders(orders);
       setAtCapacity(json.atCapacity ?? false);
     } catch {}
-  }, [boy]);
+  }, []);
 
   // ── Accept / Reject handlers ──
   const handleAccept = async (orderId: string) => {
