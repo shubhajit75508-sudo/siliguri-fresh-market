@@ -100,9 +100,11 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
         .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then((json) => {
           const allOrders: any[] = json.orders ?? [];
+          console.log("[delivery] /api/delivery/orders returned", allOrders.length, "orders");
           const currentAssignments = useDeliveryStore.getState().assignments;
           const assignedIds = new Set(currentAssignments.map((a) => a.orderId));
           const newOrders = allOrders.filter((o) => o.delivery_boy_id && knownIds.has(o.delivery_boy_id) && !assignedIds.has(o.id));
+          console.log("[delivery] new orders for this boy:", newOrders.length);
           if (newOrders.length > 0) {
             useDeliveryStore.getState().setAssignments([...currentAssignments, ...newOrders.map(orderToAssignment)]);
           }

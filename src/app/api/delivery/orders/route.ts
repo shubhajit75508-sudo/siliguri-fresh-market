@@ -27,8 +27,9 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("delivery orders error:", error.code);
+    console.error("[delivery-orders] query error:", error.code, error.message);
     return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
   }
+  console.log("[delivery-orders] found", data?.length ?? 0, "orders for boy", userId);
   return NextResponse.json({ orders: data ?? [] });
 }

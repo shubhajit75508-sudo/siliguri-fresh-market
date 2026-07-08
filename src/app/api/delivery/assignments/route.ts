@@ -43,9 +43,11 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (error) {
+    console.error("[assignments] query error:", error);
     return NextResponse.json({ error: "Failed to load assignments" }, { status: 500 });
   }
 
+  console.log("[assignments] found", ordersData?.length ?? 0, "orders for boy", boyId);
   const assignments = (ordersData ?? []).map((o: Record<string, unknown>) => ({
     id: o.id as string,
     orderId: o.id as string,
