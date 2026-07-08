@@ -10,7 +10,7 @@ import LiveMap from "@/components/maps/LiveMap";
 import type { DeliveryAssignment, Order } from "@/types";
 import {
   Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed,
-  XCircle, Clock, AlertTriangle,
+  XCircle, Clock, AlertTriangle, ImageIcon,
 } from "lucide-react";
 
 // ── Helpers ──────────────────────────────────────────
@@ -104,14 +104,25 @@ function AvailableCard({
         <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-muted">
           <ShoppingBag className="h-3.5 w-3.5" /> {order.items.length} item{order.items.length > 1 ? "s" : ""}
         </summary>
-        <ul className="mt-2 space-y-1.5 pl-5">
+        <ul className="mt-2 space-y-1.5">
           {order.items.map((item, i) => (
-            <li key={i} className="text-sm text-muted flex items-center gap-2 flex-wrap">
-              <span className="font-medium text-foreground">{item.product.name}</span>
-              <span className="text-muted-light">×{item.quantity}</span>
-              {item.selectedWeight && <Badge variant="fresh" className="text-[10px]">{item.selectedWeight}</Badge>}
-              {item.selectedCut && <Badge variant="blue" className="text-[10px]">{item.selectedCut}</Badge>}
-              {item.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7C3AED]">{item.selectedCleaning}</span>}
+            <li key={i} className="flex gap-2.5 rounded-lg bg-white/5 px-3 py-2.5 text-xs">
+              {item.product.image ? (
+                <img src={item.product.image} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+              ) : (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface"><ImageIcon className="h-4 w-4 text-muted" /></div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-foreground truncate">{item.product.name}</span>
+                  <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
+                </div>
+                <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
+                  {item.selectedWeight && <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">{item.selectedWeight}</span>}
+                  {item.selectedCut && <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">{item.selectedCut}</span>}
+                  {item.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7C3AED]">{item.selectedCleaning}</span>}
+                </div>
+              </div>
             </li>
           ))}
         </ul>
@@ -249,14 +260,25 @@ function DeliveryCard({
         <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-muted">
           <ShoppingBag className="h-3.5 w-3.5" /> {a.items.length} item{a.items.length > 1 ? "s" : ""}
         </summary>
-        <ul className="mt-2 space-y-1 pl-5 text-sm text-muted">
+        <ul className="mt-2 space-y-1.5">
           {a.items.map((item, i) => (
-            <li key={i} className="flex items-center gap-2 flex-wrap">
-              <span className="font-medium text-foreground">{item.name}</span>
-              <span className="text-muted-light">×{item.quantity}</span>
-              {item.selectedWeight && <Badge variant="fresh" className="text-[10px]">{item.selectedWeight}</Badge>}
-              {item.selectedCut && <Badge variant="blue" className="text-[10px]">{item.selectedCut}</Badge>}
-              {item.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7C3AED]">{item.selectedCleaning}</span>}
+            <li key={i} className="flex gap-2.5 rounded-lg bg-white/5 px-3 py-2.5 text-xs">
+              {item.product.image ? (
+                <img src={item.product.image} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+              ) : (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface"><ImageIcon className="h-4 w-4 text-muted" /></div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-foreground truncate">{item.product.name}</span>
+                  <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
+                </div>
+                <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
+                  {item.selectedWeight && <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-fresh">{item.selectedWeight}</span>}
+                  {item.selectedCut && <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-blue">{item.selectedCut}</span>}
+                  {item.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7C3AED]">{item.selectedCleaning}</span>}
+                </div>
+              </div>
             </li>
           ))}
         </ul>

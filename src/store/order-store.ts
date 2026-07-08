@@ -298,7 +298,7 @@ export const useOrderStore = create<OrderState>()(
                 lng: order.address.lng,
                 isDefault: false,
               },
-              items: order.items.map((i) => ({ name: i.product.name, quantity: i.quantity })),
+              items: order.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, image: i.product.image, price: i.product.price }, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning })),
               total: order.total,
               status: "assigned" as const,
               assignedAt: new Date().toISOString(),
