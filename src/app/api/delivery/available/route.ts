@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
     .single();
   const boyArea = (profile?.area as string) ?? "";
   const maxActive = (profile?.max_active_orders as number) ?? 5;
+  console.log("[available] boy profile - area:", boyArea, "max:", maxActive);
 
   const { count: activeCount } = await supabaseAdmin
     .from("orders")
@@ -38,6 +39,20 @@ export async function GET(req: NextRequest) {
 
   const atCapacity = (activeCount ?? 0) >= maxActive;
 
+  // Debug: log total non-cancelled orders regardless of delivery_status
+  const { count: totalNonCancelled } = await supabaseAdmin
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .neq("status", "cancelled");
+  console.log("[available] total non-cancelled orders:", totalNonCancelled);
+
+  const { count: totalPending } = await supabaseAdmin
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .eq("delivery_status", "pending")
+    .neq("status", "cancelled");
+  console.log("[available] total pending + non-cancelled:", totalPending);
+
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select("*")
@@ -45,18 +60,28 @@ export async function GET(req: NextRequest) {
     .neq("status", "cancelled")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
+  if (error) {
+    console.error("[available] query error:", error.message, error.details);
+    return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
+  }
+
+  console.log("[available] raw pending orders from DB:", data?.length ?? 0);
+  if (data && data.length > 0) {
+    console.log("[available] first order keys:", Object.keys(data[0]).join(","));
+    console.log("[available] first order delivery_status:", data[0].delivery_status, "status:", data[0].status);
+  }
 
   const available = (data ?? []).filter((o: Record<string, unknown>) => {
     const rejectedBy: string[] = Array.isArray(o.rejected_by) ? (o.rejected_by as string[]) : [];
-    if (rejectedBy.includes(boyId)) return false;
+    if (rejectedBy.includes(boyId)) { console.log("[available] filtered out by rejected_by for order", o.id); return false; }
     if (boyArea) {
       const addrSnapshot = (o.address_snapshot as Record<string, unknown>) ?? {};
       const orderArea = (addrSnapshot.area as string) ?? "";
-      if (orderArea && orderArea.toLowerCase() !== boyArea.toLowerCase()) return false;
+      if (orderArea && orderArea.toLowerCase() !== boyArea.toLowerCase()) { console.log("[available] filtered out by area for order", o.id, "orderArea:", orderArea, "boyArea:", boyArea); return false; }
     }
     return true;
   });
+  console.log("[available] available after filters:", available.length);
 
   return NextResponse.json({ orders: available, atCapacity });
 }
