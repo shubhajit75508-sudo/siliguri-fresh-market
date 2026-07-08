@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
 
   const available = (data ?? []).filter((o: Record<string, unknown>) => {
-    const rejectedBy: string[] = (o.rejected_by as string[]) ?? [];
+    const rejectedBy: string[] = Array.isArray(o.rejected_by) ? (o.rejected_by as string[]) : [];
     if (rejectedBy.includes(boyId)) return false;
     if (boyArea) {
       const addrSnapshot = (o.address_snapshot as Record<string, unknown>) ?? {};

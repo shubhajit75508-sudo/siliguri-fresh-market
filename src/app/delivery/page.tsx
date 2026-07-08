@@ -403,13 +403,14 @@ export default function DeliveryDashboard() {
   const handleReject = async (orderId: string) => {
     setRejecting(orderId);
     try {
-      await fetch("/api/delivery/reject", {
+      const res = await fetch("/api/delivery/reject", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId }),
       });
+      if (!res.ok) { const err = await res.text(); console.error("Reject failed:", err); return; }
       setAvailableOrders((prev) => prev.filter((o) => o.id !== orderId));
-    } catch {}
+    } catch (e) { console.error("Reject error:", e); }
     finally { setRejecting(null); }
   };
 
