@@ -385,6 +385,33 @@ export default function DeliveryDashboard() {
     } catch {}
   }, []);
 
+  // ── Subscribe to boy changes + poll ──
+  useEffect(() => {
+    const doFetch = async () => {
+      const b = useDeliveryStore.getState().boy;
+      if (!b) return;
+      try {
+        const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(b.id)}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
+        if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
+          playNewOrderSound();
+        }
+        prevAvailableCountRef.current = orders.length;
+        setAvailableOrders(orders);
+        setAtCapacity(json.atCapacity ?? false);
+      } catch {}
+    };
+    doFetch();
+    const interval = setInterval(doFetch, 10000);
+    const unsub = useDeliveryStore.subscribe(
+      (s) => s.boy,
+      () => doFetch()
+    );
+    return () => { clearInterval(interval); unsub(); };
+  }, []);
+
   // ── Accept / Reject handlers ──
   const handleAccept = async (orderId: string) => {
     setAccepting(orderId);
@@ -461,13 +488,13 @@ export default function DeliveryDashboard() {
   }, [boy, activeOrderIds.join(","), sendLocation]);
 
   useEffect(() => {
-    if (boy) {
+    const b = useDeliveryStore.getState().boy;
+    if (b) {
       useDeliveryStore.getState().loadAssignments().finally(() => setLoadingAssignments(false));
-      fetchAvailable();
     } else {
       setLoadingAssignments(false);
     }
-  }, [boy?.id]);
+  }, []);
 
   useEffect(() => {
     const locs: Record<string, [number, number]> = {};
@@ -478,14 +505,6 @@ export default function DeliveryDashboard() {
     }
     setCustomerLocations(locs);
   }, [active]);
-
-  // Fetch available orders every 10s once boy is set
-  useEffect(() => {
-    if (!boy) return;
-    fetchAvailable();
-    const interval = setInterval(fetchAvailable, 10000);
-    return () => clearInterval(interval);
-  }, [boy?.id]);
 
   const handleAcceptDelivery = (orderId: string) => {
     acceptDelivery(orderId);
