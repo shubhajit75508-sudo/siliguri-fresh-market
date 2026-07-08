@@ -22,12 +22,11 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const boyId = searchParams.get("boy_id") || userId;
 
-  const { data: profile, error: profileErr } = await supabaseAdmin
+  const { data: profile } = await supabaseAdmin
     .from("delivery_boys")
     .select("area, max_active_orders")
     .eq("id", boyId)
     .single();
-  if (profileErr) console.error("[available] profile query error:", profileErr);
   const boyArea = (profile?.area as string) ?? "";
   const maxActive = (profile?.max_active_orders as number) ?? 5;
 
@@ -46,9 +45,8 @@ export async function GET(req: NextRequest) {
     .neq("status", "cancelled")
     .order("created_at", { ascending: false });
 
-  if (error) { console.error("[available] orders query error:", error); return NextResponse.json({ error: "Failed to load orders" }, { status: 500 }); }
+  if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
 
-  console.log("[available] total pending orders in DB:", data?.length ?? 0);
   const available = (data ?? []).filter((o: Record<string, unknown>) => {
     const rejectedBy: string[] = Array.isArray(o.rejected_by) ? (o.rejected_by as string[]) : [];
     if (rejectedBy.includes(boyId)) return false;
@@ -60,6 +58,5 @@ export async function GET(req: NextRequest) {
     return true;
   });
 
-  console.log("[available] after area/reject filter:", available.length, "boy area:", boyArea);
   return NextResponse.json({ orders: available, atCapacity });
 }

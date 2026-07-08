@@ -372,7 +372,7 @@ export default function DeliveryDashboard() {
     if (!boy) return;
     try {
       const res = await fetch(`/api/delivery/available?boy_id=${encodeURIComponent(boy.id)}`);
-      if (!res.ok) { const errText = await res.text().catch(() => ""); console.error("[delivery] available API returned %d: %s", res.status, errText); return; }
+      if (!res.ok) return;
       const json = await res.json();
       const orders: Order[] = (json.orders ?? []).map(mapDbOrder);
       if (orders.length > prevAvailableCountRef.current && prevAvailableCountRef.current > 0) {
@@ -381,7 +381,7 @@ export default function DeliveryDashboard() {
       prevAvailableCountRef.current = orders.length;
       setAvailableOrders(orders);
       setAtCapacity(json.atCapacity ?? false);
-    } catch (e) { console.error("[delivery] fetchAvailable error:", e); }
+    } catch {}
   }, [boy]);
 
   // ── Accept / Reject handlers ──

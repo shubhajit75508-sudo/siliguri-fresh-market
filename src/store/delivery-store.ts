@@ -65,10 +65,10 @@ export const useDeliveryStore = create<DeliveryState>()(
           if (!state.boy?.id) return;
           try {
             const res = await fetch(`/api/delivery/assignments?boy_id=${encodeURIComponent(state.boy.id)}`);
-            if (!res.ok) { const t = await res.text().catch(() => ""); console.error("[delivery] assignments API %d: %s", res.status, t); return; }
+            if (!res.ok) return;
             const json = await res.json();
             if (json.assignments) set({ assignments: json.assignments });
-          } catch (e) { console.error("[delivery] loadAssignments error:", e); }
+          } catch {}
         },
       }),
       { name: "sfm-delivery-v2" }
