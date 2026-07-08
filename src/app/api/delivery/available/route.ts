@@ -69,6 +69,10 @@ export async function GET(req: NextRequest) {
   if (data && data.length > 0) {
     console.log("[available] first order keys:", Object.keys(data[0]).join(","));
     console.log("[available] first order delivery_status:", data[0].delivery_status, "status:", data[0].status);
+    data.forEach((o: Record<string, unknown>, i: number) => {
+      const addr = (o.address_snapshot as Record<string, unknown>) ?? {};
+      console.log("[available] order", i, "id:", o.id, "area:", addr.area, "full_address:", addr.full_address);
+    });
   }
 
   const available = (data ?? []).filter((o: Record<string, unknown>) => {
