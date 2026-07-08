@@ -5,7 +5,7 @@ import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import LiveMap from "@/components/maps/LiveMap";
 import type { DeliveryAssignment, Order } from "@/types";
 import {
@@ -363,8 +363,8 @@ export default function DeliveryDashboard() {
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
   const [customerLocations, setCustomerLocations] = useState<Record<string, [number, number]>>({});
 
-  const active = assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered");
-  const activeOrderIds = active.map((a) => a.orderId);
+  const active = useMemo(() => assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered"), [assignments, boy?.id]);
+  const activeOrderIds = useMemo(() => active.map((a) => a.orderId), [active]);
   const prevAvailableCountRef = useRef(0);
 
   // ── Fetch available orders ──
