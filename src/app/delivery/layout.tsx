@@ -8,6 +8,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
+import type { DeliveryAssignment } from "@/types";
 
 const navLinks = [
   { href: "/delivery", icon: Package, label: "Deliveries" },
@@ -64,7 +65,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
       useDeliveryStore.getState().setAssignments(mine);
     }
 
-    const orderToAssignment = (o: Record<string, unknown>) => ({
+    const orderToAssignment = (o: Record<string, unknown>): DeliveryAssignment => ({
       id: "da-" + crypto.randomUUID(),
       orderId: o.id as string,
       deliveryBoyId: boy.id,
@@ -101,11 +102,20 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
         .then((json) => {
           const allOrders: any[] = json.orders ?? [];
           const currentAssignments = useDeliveryStore.getState().assignments;
-          const assignedIds = new Set(currentAssignments.map((a) => a.orderId));
-          const newOrders = allOrders.filter((o) => o.delivery_boy_id && knownIds.has(o.delivery_boy_id) && !assignedIds.has(o.id));
-          if (newOrders.length > 0) {
-            useDeliveryStore.getState().setAssignments([...currentAssignments, ...newOrders.map(orderToAssignment)]);
-          }
+          const currentMap = new Map(currentAssignments.map((a) => [a.orderId, a]));
+          const freshAssignments = allOrders
+            .filter((o) => o.delivery_boy_id && knownIds.has(o.delivery_boy_id))
+            .map((o) => {
+              const fresh = orderToAssignment(o);
+              const existing = currentMap.get(o.id);
+              if (existing) {
+                fresh.status = existing.status;
+                fresh.deliveredAt = existing.deliveredAt;
+                fresh.assignedAt = existing.assignedAt;
+              }
+              return fresh;
+            });
+          useDeliveryStore.getState().setAssignments(freshAssignments);
         })
         .catch((e) => console.warn("[delivery] fetch error:", e));
     };

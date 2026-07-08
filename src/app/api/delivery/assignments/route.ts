@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     customerPhone: o.customer_phone as string,
     paymentStatus: (o.payment_status as "paid" | "unpaid") ?? "unpaid",
     address: (o.address_snapshot as Record<string, unknown>) ?? {},
-    items: (o.items as { name: string; quantity: number }[]) ?? [],
+    items: ((o.items as Record<string, unknown>[]) ?? []).map((i: Record<string, unknown>) => ({ product: { id: (i.product as Record<string, unknown>)?.id as string ?? "", name: (i.product as Record<string, unknown>)?.name as string ?? "", image: (i.product as Record<string, unknown>)?.image as string | undefined, price: (i.product as Record<string, unknown>)?.price as number ?? 0 }, quantity: i.quantity as number, selectedWeight: i.selectedWeight as string | undefined, selectedCut: i.selectedCut as string | undefined, selectedCleaning: i.selectedCleaning as string | undefined })),
     total: o.total as number,
     status: (o.delivery_status as string) === "picked_up" ? "picked_up" as const : (o.delivery_status as string) === "delivered" ? "delivered" as const : (o.delivery_status as string) === "accepted" ? "accepted" as const : "assigned" as const,
     assignedAt: o.created_at as string,
