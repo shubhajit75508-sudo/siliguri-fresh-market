@@ -88,7 +88,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
         lng: o.address_snapshot?.lng as number | undefined,
         isDefault: false,
       },
-      items: o.items?.map((i: { product: { name: string }; quantity: number }) => ({ name: i.product.name, quantity: i.quantity })) ?? [],
+      items: o.items?.map((i: { product: { name: string }; quantity: number; selectedWeight?: string; selectedCut?: string; selectedCleaning?: string }) => ({ name: i.product.name, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning })) ?? [],
       total: o.total,
       status: (o.delivery_status === "picked_up" || o.delivery_status === "delivered" || o.delivery_status === "accepted" ? o.delivery_status : "assigned") as "assigned" | "accepted" | "picked_up" | "delivered",
       assignedAt: new Date().toISOString(),

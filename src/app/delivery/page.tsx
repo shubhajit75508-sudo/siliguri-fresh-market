@@ -251,7 +251,13 @@ function DeliveryCard({
         </summary>
         <ul className="mt-2 space-y-1 pl-5 text-sm text-muted">
           {a.items.map((item, i) => (
-            <li key={i}>{item.name} × {item.quantity}</li>
+            <li key={i} className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-foreground">{item.name}</span>
+              <span className="text-muted-light">×{item.quantity}</span>
+              {item.selectedWeight && <Badge variant="fresh" className="text-[10px]">{item.selectedWeight}</Badge>}
+              {item.selectedCut && <Badge variant="blue" className="text-[10px]">{item.selectedCut}</Badge>}
+              {item.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7C3AED]">{item.selectedCleaning}</span>}
+            </li>
           ))}
         </ul>
       </details>

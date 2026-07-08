@@ -140,7 +140,7 @@ export interface DeliveryAssignment {
   customerPhone: string;
   paymentStatus?: "paid" | "unpaid" | "refunded";
   address: Address;
-  items: { name: string; quantity: number }[];
+  items: { name: string; quantity: number; selectedWeight?: string; selectedCut?: string; selectedCleaning?: string }[];
   total: number;
   status: "assigned" | "accepted" | "picked_up" | "delivered";
   assignedAt: string;
