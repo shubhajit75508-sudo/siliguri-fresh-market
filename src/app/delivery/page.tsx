@@ -405,10 +405,7 @@ export default function DeliveryDashboard() {
     };
     doFetch();
     const interval = setInterval(doFetch, 10000);
-    const unsub = useDeliveryStore.subscribe(
-      (s) => s.boy,
-      () => doFetch()
-    );
+    const unsub = useDeliveryStore.subscribe((s) => { if ((s as any).boy) doFetch(); });
     return () => { clearInterval(interval); unsub(); };
   }, []);
 
