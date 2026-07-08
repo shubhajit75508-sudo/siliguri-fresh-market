@@ -157,7 +157,7 @@ export async function proxy(req: NextRequest) {
   // Rate limit auth endpoints
   if (pathname.startsWith("/api/auth") && req.method === "POST") {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
-    if (!checkRateLimit(`auth-${ip}`, 10, 60 * 1000)) {
+    if (!checkRateLimit(`auth-${ip}`, 30, 60 * 1000)) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
   }

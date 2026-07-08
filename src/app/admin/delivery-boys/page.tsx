@@ -14,8 +14,8 @@ export default function AdminDeliveryBoysPage() {
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<DeliveryBoy | null>(null);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", area: "" });
-  const [editForm, setEditForm] = useState({ name: "", phone: "", email: "", area: "", isActive: true });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", area: "", maxActiveOrders: "5" });
+  const [editForm, setEditForm] = useState({ name: "", phone: "", email: "", area: "", isActive: true, maxActiveOrders: "5" });
   const toast = useToast();
 
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function AdminDeliveryBoysPage() {
             code: b.code as string,
             isActive: b.is_active as boolean,
             area: b.area as string,
+            maxActiveOrders: (b as any).max_active_orders ?? 5,
           }));
           setBoys(apiBoys);
           apiBoys.forEach((b) => addBoy(b));
@@ -55,7 +56,7 @@ export default function AdminDeliveryBoysPage() {
       const res = await fetch("/api/admin/delivery-boys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, phone: form.phone, email, password, area: form.area || "Siliguri" }),
+        body: JSON.stringify({ name: form.name, phone: form.phone, email, password, area: form.area || "Siliguri", max_active_orders: Number(form.maxActiveOrders) || 5 }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -73,11 +74,12 @@ export default function AdminDeliveryBoysPage() {
         code: form.name.slice(0, 3).toUpperCase() + form.phone.slice(-3),
         isActive: true,
         area: form.area || "Siliguri",
+        maxActiveOrders: Number(form.maxActiveOrders) || 5,
       };
 
       addBoy(newBoy);
       setBoys((prev) => [newBoy, ...prev]);
-      setForm({ name: "", phone: "", email: "", password: "", area: "" });
+      setForm({ name: "", phone: "", email: "", password: "", area: "", maxActiveOrders: "5" });
       setAdding(false);
       toast.add(`Delivery boy ${form.name} added`);
     } catch {
@@ -95,7 +97,7 @@ export default function AdminDeliveryBoysPage() {
   };
 
   const editBoyFn = (boy: DeliveryBoy) => {
-    setEditForm({ name: boy.name, phone: boy.phone, email: boy.email || "", area: boy.area || "", isActive: boy.isActive });
+    setEditForm({ name: boy.name, phone: boy.phone, email: boy.email || "", area: boy.area || "", isActive: boy.isActive, maxActiveOrders: String(boy.maxActiveOrders ?? 5) });
     setEditing(boy);
   };
 
@@ -110,14 +112,14 @@ export default function AdminDeliveryBoysPage() {
       const res = await fetch("/api/admin/delivery-boys", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: editing.id, ...editForm }),
+        body: JSON.stringify({ id: editing.id, ...editForm, max_active_orders: Number(editForm.maxActiveOrders) || 5 }),
       });
       if (!res.ok) {
         toast.add("Failed to update", "error");
         setSaving(false);
         return;
       }
-      const updated: DeliveryBoy = { ...editing, ...editForm };
+      const updated: DeliveryBoy = { ...editing, ...editForm, maxActiveOrders: Number(editForm.maxActiveOrders) || 5 };
       addBoy(updated);
       setBoys((prev) => prev.map((b) => (b.id === editing.id ? updated : b)));
       setEditing(null);
@@ -155,6 +157,7 @@ export default function AdminDeliveryBoysPage() {
             <input placeholder="Email (auto-filled if blank)" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <input placeholder="Password (auto-generated if blank)" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
             <input placeholder="Service Area" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+            <input placeholder="Max Active Orders (default 5)" type="number" min="1" value={form.maxActiveOrders} onChange={(e) => setForm({ ...form, maxActiveOrders: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
           </div>
           <div className="mt-4 flex gap-2">
             <button onClick={addBoyFn} disabled={saving} className="rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim disabled:opacity-50">
@@ -174,6 +177,7 @@ export default function AdminDeliveryBoysPage() {
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Code</th>
               <th className="px-4 py-3">Area</th>
+              <th className="px-4 py-3">Max</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -189,6 +193,7 @@ export default function AdminDeliveryBoysPage() {
                   <td className="px-4 py-3 text-muted">{b.email || "—"}</td>
                   <td className="px-4 py-3 text-muted">{b.code || "—"}</td>
                   <td className="px-4 py-3 text-muted">{b.area || "—"}</td>
+                  <td className="px-4 py-3 text-muted">{b.maxActiveOrders ?? 5}</td>
                   <td className="px-4 py-3">
                     <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-[11px] font-semibold text-green-700">Active</span>
                   </td>
@@ -217,6 +222,7 @@ export default function AdminDeliveryBoysPage() {
               <input placeholder="Phone *" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
               <input placeholder="Email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
               <input placeholder="Service Area" value={editForm.area} onChange={(e) => setEditForm({ ...editForm, area: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Max Active Orders" type="number" min="1" value={editForm.maxActiveOrders} onChange={(e) => setEditForm({ ...editForm, maxActiveOrders: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
                 Active

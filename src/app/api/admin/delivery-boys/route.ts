@@ -97,7 +97,7 @@ export async function PUT(req: NextRequest) {
   if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
 
   const body = await req.json();
-  const { id, name, phone, email, area, isActive } = body;
+  const { id, name, phone, email, area, isActive, max_active_orders } = body;
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
   const { error: dbError } = await supabaseAdmin.from("delivery_boys").update({
@@ -105,6 +105,7 @@ export async function PUT(req: NextRequest) {
     phone,
     area,
     is_active: isActive,
+    max_active_orders: max_active_orders ?? 5,
   }).eq("id", id);
 
   if (dbError) {

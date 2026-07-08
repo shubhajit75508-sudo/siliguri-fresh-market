@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   const boyId = searchParams.get("boy_id") || userId;
 
   const { data: profile } = await supabaseAdmin
-    .from("delivery_boy_profiles")
+    .from("delivery_boys")
     .select("area, max_active_orders")
     .eq("id", boyId)
     .single();

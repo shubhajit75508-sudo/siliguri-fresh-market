@@ -129,6 +129,7 @@ export interface DeliveryBoy {
   code: string;
   isActive: boolean;
   area: string;
+  maxActiveOrders?: number;
 }
 
 export interface DeliveryAssignment {
