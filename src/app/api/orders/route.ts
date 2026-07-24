@@ -45,6 +45,11 @@ export async function POST(req: NextRequest) {
     orderData.payment_id = body.payment_id;
   }
 
+  // upi_reference column — include only if provided
+  if (body.upi_reference) {
+    orderData.upi_reference = body.upi_reference;
+  }
+
   const { error } = await supabaseAdmin.from("orders").upsert(orderData);
   if (error) return NextResponse.json({ error: "Order creation failed" }, { status: 500 });
   return NextResponse.json({ success: true });

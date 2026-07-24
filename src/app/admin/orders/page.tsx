@@ -414,6 +414,33 @@ export default function AdminOrdersPage() {
                       <Badge variant={paymentBadge[order.paymentStatus] ?? "orange"}>
                         {order.paymentStatus === "paid" ? "Paid ✓" : "Unpaid"}
                       </Badge>
+                      {order.upiReference && (
+                        <span className="text-[10px] font-mono text-muted" title="UPI Reference">Ref: {order.upiReference}</span>
+                      )}
+                      {order.paymentMethod === "upi" && order.paymentStatus === "unpaid" && order.upiReference && (
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch("/api/admin/payment", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ order_id: order.id }),
+                              });
+                              if (res.ok) {
+                                loadOrders();
+                                toast.add("Payment confirmed!", "success");
+                              } else {
+                                toast.add("Failed to confirm payment", "error");
+                              }
+                            } catch {
+                              toast.add("Failed to confirm payment", "error");
+                            }
+                          }}
+                          className="mt-1 rounded-lg bg-[#2D7D3A] px-2.5 py-1 text-[10px] font-bold text-white hover:bg-[#23682E] transition-colors"
+                        >
+                          ✓ Confirm Payment
+                        </button>
+                      )}
                     </div>
                   </td>
                    <td className="px-4 py-3">
@@ -520,6 +547,37 @@ export default function AdminOrdersPage() {
                   {selectedOrder.paymentStatus === "paid" ? "PAID ✓" : "Unpaid"}
                 </Badge>
               </div>
+              {selectedOrder.upiReference && (
+                <div className="flex items-center gap-2">
+                  <span className="text-muted">UPI Ref:</span>
+                  <span className="font-mono text-xs">{selectedOrder.upiReference}</span>
+                </div>
+              )}
+              {selectedOrder.paymentMethod === "upi" && selectedOrder.paymentStatus === "unpaid" && selectedOrder.upiReference && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await fetch("/api/admin/payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ order_id: selectedOrder.id }),
+                      });
+                      if (res.ok) {
+                        loadOrders();
+                        toast.add("Payment confirmed!", "success");
+                        setSelectedOrder(null);
+                      } else {
+                        toast.add("Failed to confirm payment", "error");
+                      }
+                    } catch {
+                      toast.add("Failed to confirm payment", "error");
+                    }
+                  }}
+                  className="rounded-xl bg-[#2D7D3A] px-4 py-2 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
+                >
+                  ✓ Confirm Payment Received
+                </button>
+              )}
               <div className="flex items-center gap-2">
                 <span className="text-muted">Status:</span>
                 <Badge variant={statusColors[isOutForDelivery(selectedOrder) ? "out_for_delivery" : selectedOrder.status] ?? "default"}>

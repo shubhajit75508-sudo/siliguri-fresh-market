@@ -88,6 +88,7 @@ export interface Order {
   userId?: string;
   paymentMethod: string;
   paymentStatus: "paid" | "unpaid" | "refunded";
+  upiReference?: string;
   deliveryBoyId?: string;
   deliveryBoyName?: string;
   deliveryStatus?: DeliveryStatus;

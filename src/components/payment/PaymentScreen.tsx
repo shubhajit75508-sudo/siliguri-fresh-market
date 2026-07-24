@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import {
   CheckCircle, X, Loader2, Shield, Smartphone,
-  ArrowLeft, Clock, CreditCard, Zap, AlertTriangle,
-  Copy, ExternalLink, Leaf, Truck,
+  ArrowLeft, Clock, CreditCard, AlertTriangle,
+  Copy, ExternalLink, Leaf, Truck, Banknote,
 } from "lucide-react";
 import QRCode from "qrcode";
 import { formatPrice } from "@/lib/utils";
@@ -13,11 +13,11 @@ import type { CartItem, Address } from "@/types";
 export type PaymentState =
   | "ready"
   | "opening"
-  | "verifying"
+  | "awaiting"
+  | "submitting"
   | "success"
   | "failed"
-  | "cancelled"
-  | "expired";
+  | "cancelled";
 
 export interface PaymentScreenProps {
   items: CartItem[];
@@ -33,28 +33,6 @@ export interface PaymentScreenProps {
 
 const UPI_VPA = "shubhajit75508@okhdfcbank";
 const MERCHANT_NAME = "Siliguri Fresh Mart";
-
-interface RazorpayOrderResponse {
-  id: string;
-  amount: number;
-  currency: string;
-  key_id: string;
-}
-
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined" && (window as any).Razorpay) return resolve(true);
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
-
-function generateOrderId(): string {
-  return "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-}
 
 function buildUpiDeepLink(
   app: "gpay" | "phonepe" | "paytm" | "bhim",
@@ -101,6 +79,10 @@ function isMobileDevice(): boolean {
   );
 }
 
+function generateOrderId(): string {
+  return "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+}
+
 export default function PaymentScreen({
   items,
   total,
@@ -113,92 +95,54 @@ export default function PaymentScreen({
   onCancel,
 }: PaymentScreenProps) {
   const [state, setState] = useState<PaymentState>("ready");
-  const [razorpayOrder, setRazorpayOrder] = useState<RazorpayOrderResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const orderIdRef = useRef(generateOrderId());
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const mountedRef = useRef(true);
-
-  const orderId = orderIdRef.current;
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => { mountedRef.current = false; };
-  }, []);
+  const [upiRef, setUpiRef] = useState("");
+  const [selectedApp, setSelectedApp] = useState<string>("");
+  const orderId = generateOrderId();
 
   // Generate QR code for desktop
-  useEffect(() => {
+  useState(() => {
     if (!isMobileDevice()) {
       const qrString = buildUpiQrString(total, orderId);
       QRCode.toDataURL(qrString, {
         width: 256,
         margin: 2,
         color: { dark: "#1a1a1a", light: "#ffffff" },
-      }).then((url) => {
-        if (mountedRef.current) setQrDataUrl(url);
-      }).catch(() => {});
+      }).then((url) => setQrDataUrl(url)).catch(() => {});
     }
+  });
+
+  const handleAppSelect = useCallback((app: "gpay" | "phonepe" | "paytm" | "bhim", appName: string) => {
+    setSelectedApp(appName);
+    setState("opening");
+
+    // Open UPI deep link
+    const deepLink = buildUpiDeepLink(app, total, orderId);
+    window.location.href = deepLink;
+
+    // After a short delay, show the "awaiting payment" state
+    setTimeout(() => {
+      setState("awaiting");
+    }, 2000);
   }, [total, orderId]);
 
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, []);
-
-  const createRazorpayOrder = useCallback(async (): Promise<RazorpayOrderResponse | null> => {
-    try {
-      const res = await fetch("/api/payment/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: total,
-          currency: "INR",
-          receipt: orderId,
-          notes: { order_id: orderId, customer_name: customerName },
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to create payment order");
-      return await res.json();
-    } catch {
-      return null;
+  const handleSubmitPayment = useCallback(async () => {
+    if (!upiRef.trim()) {
+      setErrorMessage("Please enter the UPI reference number");
+      return;
     }
-  }, [total, orderId, customerName]);
 
-  const verifyPayment = useCallback(async (
-    razorpayOrderId: string,
-    razorpayPaymentId: string,
-    razorpaySignature: string
-  ): Promise<boolean> => {
-    try {
-      const res = await fetch("/api/payment/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpay_order_id: razorpayOrderId,
-          razorpay_payment_id: razorpayPaymentId,
-          razorpay_signature: razorpaySignature,
-        }),
-      });
-      const data = await res.json();
-      return data.success === true;
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const createSupabaseOrder = useCallback(async (paymentId: string): Promise<string | null> => {
-    const API = "/api/orders";
-    const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
-    const eta = 30 + Math.floor(Math.random() * 31);
-    const now = new Date().toISOString();
+    setState("submitting");
+    setErrorMessage("");
 
     try {
-      const res = await fetch(API, {
+      const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
+      const eta = 30 + Math.floor(Math.random() * 31);
+      const now = new Date().toISOString();
+
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -213,8 +157,8 @@ export default function PaymentScreen({
           total,
           status: "received",
           payment_method: "upi",
-          payment_status: "paid",
-          payment_id: paymentId,
+          payment_status: "unpaid",
+          upi_reference: upiRef.trim(),
           customer_name: customerName,
           customer_phone: customerPhone,
           customer_email: customerEmail,
@@ -226,174 +170,17 @@ export default function PaymentScreen({
           delivery_code: deliveryCode,
         }),
       });
+
       if (!res.ok) throw new Error("Order creation failed");
-      return orderId;
+
+      setState("success");
+      setTimeout(() => onSuccess(orderId), 2000);
     } catch (e) {
       console.error("Order creation error:", e);
-      return null;
-    }
-  }, [orderId, items, total, address, customerName, customerPhone, customerEmail, userId]);
-
-  const startPayment = useCallback(async (method?: "gpay" | "phonepe" | "paytm" | "bhim") => {
-    setState("opening");
-    setErrorMessage("");
-
-    const razorpayOrder = await createRazorpayOrder();
-    if (!razorpayOrder) {
       setState("failed");
-      setErrorMessage("Unable to connect to payment service. Please try again.");
-      return;
+      setErrorMessage("Failed to submit order. Please try again.");
     }
-    setRazorpayOrder(razorpayOrder);
-
-    // On mobile with specific app selected: try deep link first, fall back to Razorpay
-    if (method && isMobileDevice()) {
-      const deepLink = buildUpiDeepLink(method, total, orderId);
-      window.location.href = deepLink;
-
-      // Set a timeout - if user comes back, we'll check payment status
-      setTimeout(() => {
-        if (mountedRef.current && state === "opening") {
-          setState("verifying");
-          pollPaymentStatus(razorpayOrder.id);
-        }
-      }, 3000);
-      return;
-    }
-
-    // Open Razorpay checkout with UPI pre-selected
-    const razorpayLoaded = await loadRazorpayScript();
-    if (!razorpayLoaded) {
-      setState("failed");
-      setErrorMessage("Payment service unavailable. Please try again later.");
-      return;
-    }
-
-    const Rzpay = (window as any).Razorpay;
-    const rzp = new Rzpay({
-      key: razorpayOrder.key_id,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency,
-      order_id: razorpayOrder.id,
-      name: MERCHANT_NAME,
-      description: "Fresh Market Delivery",
-      prefill: {
-        name: customerName,
-        email: customerEmail,
-        contact: customerPhone,
-        method: "upi",
-      },
-      config: {
-        display: {
-          blocks: {
-            upi_block: {
-              name: "Pay using UPI",
-              instruments: [{ method: "upi" }],
-            },
-          },
-          sequence: ["block.upi_block"],
-          preferences: { show_default_blocks: false },
-        },
-      },
-      theme: { color: "#2D7D3A" },
-      handler: async (response: any) => {
-        if (!mountedRef.current) return;
-        setState("verifying");
-        setVerifying(true);
-
-        const isValid = await verifyPayment(
-          response.razorpay_order_id,
-          response.razorpay_payment_id,
-          response.razorpay_signature
-        );
-
-        if (!isValid) {
-          // Try polling as fallback
-          pollPaymentStatus(razorpayOrder.id);
-          return;
-        }
-
-        const sfmOrderId = await createSupabaseOrder(response.razorpay_payment_id);
-        if (!mountedRef.current) return;
-
-        if (sfmOrderId) {
-          setState("success");
-          setTimeout(() => onSuccess(sfmOrderId), 1500);
-        } else {
-          setState("failed");
-          setErrorMessage("Payment received but order creation failed. Please contact support with payment ID: " + response.razorpay_payment_id);
-        }
-      },
-      modal: {
-        ondismiss: () => {
-          if (!mountedRef.current) return;
-          setState("cancelled");
-        },
-        confirm_close: true,
-        escape: false,
-      },
-    });
-    rzp.open();
-  }, [total, orderId, customerName, customerPhone, customerEmail, address, items, userId, createRazorpayOrder, verifyPayment, createSupabaseOrder, onSuccess, state]);
-
-  const pollPaymentStatus = useCallback(async (rzOrderId: string) => {
-    if (pollRef.current) clearInterval(pollRef.current);
-    let attempts = 0;
-    const maxAttempts = 60; // 5 minutes at 5s intervals
-
-    pollRef.current = setInterval(async () => {
-      attempts++;
-      if (attempts > maxAttempts || !mountedRef.current) {
-        if (pollRef.current) clearInterval(pollRef.current);
-        if (mountedRef.current) {
-          setState("expired");
-          setErrorMessage("Payment verification timed out. Please check your bank statement.");
-        }
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/payment/status?order_id=${rzOrderId}`);
-        const data = await res.json();
-
-        if (data.status === "paid") {
-          if (pollRef.current) clearInterval(pollRef.current);
-
-          // Payment confirmed by Razorpay - verify signature and create order
-          if (data.payment_id && data.signature) {
-            const isValid = await verifyPayment(rzOrderId, data.payment_id, data.signature);
-            if (isValid) {
-              const sfmOrderId = await createSupabaseOrder(data.payment_id);
-              if (mountedRef.current && sfmOrderId) {
-                setState("success");
-                setTimeout(() => onSuccess(sfmOrderId), 1500);
-                return;
-              }
-            }
-          }
-
-          // If we got payment_id but no signature (webhook confirmed), create order directly
-          if (data.payment_id && !data.signature) {
-            const sfmOrderId = await createSupabaseOrder(data.payment_id);
-            if (mountedRef.current && sfmOrderId) {
-              setState("success");
-              setTimeout(() => onSuccess(sfmOrderId), 1500);
-              return;
-            }
-          }
-        }
-
-        if (data.status === "failed" || data.status === "cancelled") {
-          if (pollRef.current) clearInterval(pollRef.current);
-          if (mountedRef.current) {
-            setState(data.status === "cancelled" ? "cancelled" : "failed");
-          }
-        }
-      } catch {
-        // Network error - continue polling
-      }
-    }, 5000);
-  }, [verifyPayment, createSupabaseOrder, onSuccess]);
+  }, [upiRef, orderId, items, total, address, customerName, customerPhone, customerEmail, userId, onSuccess]);
 
   const totalItems = items.reduce((n, i) => n + i.quantity, 0);
 
@@ -406,13 +193,13 @@ export default function PaymentScreen({
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10 animate-[scaleIn_0.3s_ease-out]">
               <CheckCircle className="h-10 w-10 text-[#2D7D3A]" />
             </div>
-            <h1 className="text-2xl font-extrabold text-foreground">Payment Successful</h1>
-            <p className="mt-2 text-sm text-muted">Your order has been confirmed</p>
+            <h1 className="text-2xl font-extrabold text-foreground">Order Placed!</h1>
+            <p className="mt-2 text-sm text-muted">Your order has been received</p>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-2 p-5 text-left space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-muted">Amount Paid</span>
+              <span className="text-muted">Amount</span>
               <span className="font-bold text-foreground">{formatPrice(total)}</span>
             </div>
             <div className="flex justify-between text-sm">
@@ -421,7 +208,7 @@ export default function PaymentScreen({
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted">Payment</span>
-              <span className="font-semibold text-[#2D7D3A]">UPI ✓</span>
+              <span className="font-semibold text-orange-600">Pending Verification</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted">Delivery</span>
@@ -429,9 +216,9 @@ export default function PaymentScreen({
             </div>
           </div>
 
-          <div className="mt-4 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/10 p-3 text-xs text-muted">
-            <Truck className="mr-1 inline h-3.5 w-3.5" />
-            Your order is being prepared for delivery
+          <div className="mt-4 rounded-xl bg-orange-50 border border-orange-100 p-3 text-xs text-orange-700">
+            Your UPI reference <span className="font-mono font-bold">{upiRef}</span> is being verified.
+            <br />Your order will be confirmed shortly after payment verification.
           </div>
 
           <div className="mt-6 space-y-2">
@@ -439,7 +226,7 @@ export default function PaymentScreen({
               onClick={() => onSuccess(orderId)}
               className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
             >
-              Track Order →
+              Track Order
             </button>
             <button
               onClick={() => window.location.href = "/"}
@@ -462,29 +249,17 @@ export default function PaymentScreen({
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-50 animate-[scaleIn_0.3s_ease-out]">
               <AlertTriangle className="h-10 w-10 text-red-500" />
             </div>
-            <h1 className="text-2xl font-extrabold text-foreground">Payment Unsuccessful</h1>
-            <p className="mt-2 text-sm text-muted">
-              Your order has not been confirmed and you have not been charged.
-            </p>
+            <h1 className="text-2xl font-extrabold text-foreground">Something Went Wrong</h1>
+            <p className="mt-2 text-sm text-muted">{errorMessage || "Please try again."}</p>
           </div>
-
-          {errorMessage && (
-            <div className="mb-4 rounded-xl bg-red-50 border border-red-100 p-3 text-xs text-red-600">
-              {errorMessage}
-            </div>
-          )}
-
           <div className="space-y-2">
             <button
-              onClick={() => { setState("ready"); setErrorMessage(""); }}
+              onClick={() => { setState("ready"); setErrorMessage(""); setUpiRef(""); }}
               className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
             >
               Try Again
             </button>
-            <button
-              onClick={onCancel}
-              className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors"
-            >
+            <button onClick={onCancel} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">
               Return to Checkout
             </button>
           </div>
@@ -493,103 +268,93 @@ export default function PaymentScreen({
     );
   }
 
-  // ── CANCELLED STATE ──
-  if (state === "cancelled") {
+  // ── SUBMITTING STATE ──
+  if (state === "submitting") {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
         <div className="w-full max-w-md px-6 text-center">
-          <div className="mb-6">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 animate-[scaleIn_0.3s_ease-out]">
-              <X className="h-10 w-10 text-orange-500" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-foreground">Payment Not Completed</h1>
-            <p className="mt-2 text-sm text-muted">
-              You haven&apos;t been charged. Would you like to try again?
-            </p>
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
+            <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
           </div>
-
-          <div className="space-y-2">
-            <button
-              onClick={() => { setState("ready"); setErrorMessage(""); }}
-              className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
-            >
-              Try Again
-            </button>
-            <button
-              onClick={onCancel}
-              className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors"
-            >
-              Return to Checkout
-            </button>
-          </div>
+          <h1 className="text-2xl font-extrabold text-foreground">Placing Your Order</h1>
+          <p className="mt-2 text-sm text-muted">Please wait...</p>
         </div>
       </div>
     );
   }
 
-  // ── EXPIRED STATE ──
-  if (state === "expired") {
+  // ── AWAITING PAYMENT STATE ──
+  if (state === "awaiting") {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
-        <div className="w-full max-w-md px-6 text-center">
-          <div className="mb-6">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 animate-[scaleIn_0.3s_ease-out]">
-              <Clock className="h-10 w-10 text-orange-500" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-foreground">Payment Timed Out</h1>
-            <p className="mt-2 text-sm text-muted">
-              We couldn&apos;t confirm the payment within the expected time.
-              {errorMessage && <span className="block mt-1">{errorMessage}</span>}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <button
-              onClick={() => { setState("ready"); setErrorMessage(""); }}
-              className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
-            >
-              Try Again
+      <div className="fixed inset-0 z-[100] flex flex-col bg-white overflow-y-auto">
+        <div className="sticky top-0 z-10 bg-white border-b border-border">
+          <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
+            <button onClick={() => setState("ready")} className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors">
+              <ArrowLeft className="h-4 w-4" /> Back
             </button>
-            <button
-              onClick={onCancel}
-              className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors"
-            >
-              Return to Checkout
-            </button>
+            <span className="text-xs font-bold text-orange-600">AWAITING PAYMENT</span>
           </div>
         </div>
-      </div>
-    );
-  }
 
-  // ── VERIFYING STATE ──
-  if (state === "verifying") {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
-        <div className="w-full max-w-md px-6 text-center">
-          <div className="mb-6">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
-              <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-foreground">Verifying Your Payment</h1>
-            <p className="mt-2 text-sm text-muted">Please don&apos;t close this page</p>
+        <div className="flex-1 px-4 py-8 max-w-lg mx-auto w-full flex flex-col items-center">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
+            <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
           </div>
+          <h1 className="text-2xl font-extrabold text-foreground text-center">Complete Payment in {selectedApp}</h1>
+          <p className="mt-2 text-sm text-muted text-center">Enter your UPI PIN to pay {formatPrice(total)}</p>
 
-          <div className="rounded-2xl border border-border bg-surface-2 p-5 text-left space-y-3">
+          <div className="mt-8 rounded-2xl border border-border p-5 w-full space-y-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted">Paying to</span>
+              <span className="font-bold text-foreground">{MERCHANT_NAME}</span>
+            </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted">Amount</span>
-              <span className="font-bold text-foreground">{formatPrice(total)}</span>
+              <span className="font-extrabold text-foreground text-lg">{formatPrice(total)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted">Order</span>
-              <span className="font-mono font-bold text-foreground">{orderId}</span>
+              <span className="font-mono font-bold text-foreground text-xs">{orderId}</span>
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted">
-            <Shield className="h-3.5 w-3.5" />
-            Secure payment verification in progress
+          <div className="mt-6 w-full space-y-3">
+            <p className="text-xs font-bold text-muted text-center uppercase tracking-wider">
+              After payment, enter your UPI reference number below
+            </p>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">
+                UPI Reference Number <span className="text-brand-red text-xs">*</span>
+              </label>
+              <input
+                type="text"
+                value={upiRef}
+                onChange={(e) => setUpiRef(e.target.value)}
+                placeholder="e.g. 123456789012"
+                className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 tabular-nums"
+              />
+              <p className="text-[10px] text-muted mt-1">
+                Find this in your {selectedApp} app under transaction details
+              </p>
+            </div>
+            {errorMessage && (
+              <p className="text-xs text-red-500 text-center">{errorMessage}</p>
+            )}
+            <button
+              onClick={handleSubmitPayment}
+              disabled={!upiRef.trim()}
+              className="w-full rounded-xl bg-[#2D7D3A] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Submit Payment & Place Order
+            </button>
           </div>
+
+          <button
+            onClick={() => { setState("ready"); setUpiRef(""); setErrorMessage(""); }}
+            className="mt-4 text-xs text-muted hover:text-foreground underline"
+          >
+            ← Choose a different UPI app
+          </button>
         </div>
       </div>
     );
@@ -600,13 +365,11 @@ export default function PaymentScreen({
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
         <div className="w-full max-w-md px-6 text-center">
-          <div className="mb-6">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
-              <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-foreground">Opening Payment</h1>
-            <p className="mt-2 text-sm text-muted">Please complete payment in your UPI app</p>
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
+            <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
           </div>
+          <h1 className="text-2xl font-extrabold text-foreground">Opening {selectedApp}</h1>
+          <p className="mt-2 text-sm text-muted">Complete payment in your UPI app</p>
         </div>
       </div>
     );
@@ -619,8 +382,7 @@ export default function PaymentScreen({
       <div className="sticky top-0 z-10 bg-white border-b border-border">
         <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
           <button onClick={onCancel} className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            Back
+            <ArrowLeft className="h-4 w-4" /> Back
           </button>
           <div className="flex items-center gap-1.5">
             <Shield className="h-4 w-4 text-[#2D7D3A]" />
@@ -711,8 +473,8 @@ export default function PaymentScreen({
             <h2 className="text-sm font-bold text-foreground">Pay with UPI</h2>
           </div>
 
-          {/* Mobile: UPI App Buttons */}
           {isMobileDevice() ? (
+            /* Mobile: UPI App Buttons (open apps directly) */
             <div className="space-y-2">
               {([
                 { id: "gpay" as const, name: "Google Pay", icon: "G", color: "#4285F4" },
@@ -722,7 +484,7 @@ export default function PaymentScreen({
               ]).map((app) => (
                 <button
                   key={app.id}
-                  onClick={() => startPayment(app.id)}
+                  onClick={() => handleAppSelect(app.id, app.name)}
                   className="flex items-center gap-3 w-full p-4 rounded-2xl border-2 border-border bg-white hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5 active:scale-[0.98] transition-all"
                 >
                   <div
@@ -733,19 +495,18 @@ export default function PaymentScreen({
                   </div>
                   <div className="flex-1 text-left">
                     <span className="text-sm font-bold text-foreground">{app.name}</span>
-                    <p className="text-[11px] text-muted">Tap to pay</p>
+                    <p className="text-[11px] text-muted">Tap to pay {formatPrice(total)}</p>
                   </div>
                   <ExternalLink className="h-4 w-4 text-muted" />
                 </button>
               ))}
             </div>
           ) : (
-            /* Desktop: QR Code + Other Options */
+            /* Desktop: QR Code */
             <div className="space-y-4">
-              {/* QR Code */}
               <div className="rounded-2xl border border-border bg-white p-5 text-center">
                 <p className="text-xs font-semibold text-muted mb-3">
-                  Scan QR code with any UPI app
+                  Scan QR code with any UPI app to pay
                 </p>
                 {qrDataUrl ? (
                   <div className="inline-block rounded-xl border border-border p-3 bg-white">
@@ -764,37 +525,13 @@ export default function PaymentScreen({
               {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-border" />
-                <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">or pay via app</span>
+                <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">or pay via UPI ID</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
-              {/* UPI Apps (all open Razorpay checkout) */}
-              <div className="grid grid-cols-2 gap-2">
-                {([
-                  { name: "Google Pay", icon: "G", color: "#4285F4" },
-                  { name: "PhonePe", icon: "P", color: "#5F259F" },
-                  { name: "Paytm", icon: "₹", color: "#00BAF2" },
-                  { name: "BHIM UPI", icon: "B", color: "#097969" },
-                ]).map((app) => (
-                  <button
-                    key={app.name}
-                    onClick={() => startPayment()}
-                    className="flex items-center gap-2.5 p-3 rounded-xl border-2 border-border bg-white hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5 active:scale-[0.98] transition-all"
-                  >
-                    <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-extrabold text-white"
-                      style={{ backgroundColor: app.color }}
-                    >
-                      {app.icon}
-                    </div>
-                    <span className="text-xs font-bold text-foreground">{app.name}</span>
-                  </button>
-                ))}
-              </div>
-
               {/* Copy UPI ID */}
-              <div className="rounded-xl border border-dashed border-border p-3 text-center">
-                <p className="text-[10px] text-muted mb-1.5">Or send money directly to UPI ID</p>
+              <div className="rounded-xl border border-dashed border-border p-4 text-center">
+                <p className="text-[10px] text-muted mb-2">Send payment to this UPI ID</p>
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-mono font-bold text-foreground">{UPI_VPA}</span>
                   <button
@@ -803,12 +540,36 @@ export default function PaymentScreen({
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
-                    className="flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-[10px] font-semibold text-muted hover:bg-surface-2 transition-colors"
+                    className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[10px] font-semibold text-muted hover:bg-surface-2 transition-colors"
                   >
-                    <Copy className="h-3 w-3" />
-                    {copied ? "Copied!" : "Copy"}
+                    <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy"}
                   </button>
                 </div>
+              </div>
+
+              {/* Desktop: Enter reference after scanning */}
+              <div className="rounded-2xl border border-border p-4 space-y-3">
+                <p className="text-xs font-bold text-foreground">After paying, enter your UPI reference number:</p>
+                <input
+                  type="text"
+                  value={upiRef}
+                  onChange={(e) => setUpiRef(e.target.value)}
+                  placeholder="UPI Reference / Transaction ID"
+                  className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 tabular-nums"
+                />
+                <p className="text-[10px] text-muted">
+                  Find this in your UPI app under transaction details
+                </p>
+                {errorMessage && (
+                  <p className="text-xs text-red-500">{errorMessage}</p>
+                )}
+                <button
+                  onClick={handleSubmitPayment}
+                  disabled={!upiRef.trim()}
+                  className="w-full rounded-xl bg-[#2D7D3A] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Submit Payment & Place Order
+                </button>
               </div>
             </div>
           )}
