@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import {
   CheckCircle, X, Loader2, Shield, Smartphone,
   ArrowLeft, Clock, CreditCard, AlertTriangle,
-  Copy, ExternalLink, Leaf, Truck, Banknote,
+  Copy, ExternalLink, Leaf, Truck,
 } from "lucide-react";
 import QRCode from "qrcode";
 import { formatPrice } from "@/lib/utils";
@@ -16,8 +16,7 @@ export type PaymentState =
   | "awaiting"
   | "submitting"
   | "success"
-  | "failed"
-  | "cancelled";
+  | "failed";
 
 export interface PaymentScreenProps {
   items: CartItem[];
@@ -34,42 +33,26 @@ export interface PaymentScreenProps {
 const UPI_VPA = "shubhajit75508@okhdfcbank";
 const MERCHANT_NAME = "Siliguri Fresh Mart";
 
-function buildUpiDeepLink(
-  app: "gpay" | "phonepe" | "paytm" | "bhim",
-  amount: number,
-  orderId: string
-): string {
+function buildUpiIntentUrl(amount: number, orderId: string): string {
   const params = new URLSearchParams({
     pa: UPI_VPA,
     pn: MERCHANT_NAME,
     am: amount.toFixed(2),
     cu: "INR",
     tn: `Order ${orderId}`,
-    mode: "01",
-  });
-  const base = params.toString();
-  switch (app) {
-    case "gpay":
-      return `gpay://upi/pay?${base}`;
-    case "phonepe":
-      return `phonepe://pay?${base}`;
-    case "paytm":
-      return `paytmmp://pay?${base}`;
-    case "bhim":
-      return `bhim://pay?${base}`;
-  }
-}
-
-function buildUpiQrString(amount: number, orderId: string): string {
-  const params = new URLSearchParams({
-    pa: UPI_VPA,
-    pn: MERCHANT_NAME,
-    am: amount.toFixed(2),
-    cu: "INR",
-    tn: `Order ${orderId}`,
-    mode: "01",
   });
   return `upi://pay?${params.toString()}`;
+}
+
+function buildUpiWebUrl(amount: number, orderId: string): string {
+  const params = new URLSearchParams({
+    pa: UPI_VPA,
+    pn: MERCHANT_NAME,
+    am: amount.toFixed(2),
+    cu: "INR",
+    tn: `Order ${orderId}`,
+  });
+  return `https://upi://pay?${params.toString()}`;
 }
 
 function isMobileDevice(): boolean {
@@ -81,6 +64,46 @@ function isMobileDevice(): boolean {
 
 function generateOrderId(): string {
   return "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+}
+
+/* ── UPI App Logos ── */
+function GPayLogo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" fill="#fff"/>
+    </svg>
+  );
+}
+
+function PhonePeLogo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fill="#5F259F"/>
+      <path d="M14.122 7.015c.576-.2 1.198-.318 1.878-.318 1.132 0 2.163.334 2.997.903v3.16c-.846-.584-1.9-.924-3.073-.924-.65 0-1.27.112-1.85.32v-3.14z" fill="#fff" opacity="0.9"/>
+      <path d="M7.005 10.36c0-1.604.668-3.05 1.738-4.095.46-.444.978-.813 1.54-1.103v10.378c-.56-.29-1.076-.66-1.536-1.102A5.836 5.836 0 017.005 10.36z" fill="#fff" opacity="0.9"/>
+      <path d="M10.283 16.736V7.653a8.34 8.34 0 00-1.853-.218 5.836 5.836 0 00-1.425 3.484 5.836 5.836 0 001.425 3.484c.614.72 1.32 1.283 2.102 1.666-.08.06-.16.116-.24.168l.001.001-.001.003z" fill="#fff" opacity="0.7"/>
+      <text x="6" y="16" fill="#fff" fontSize="6.5" fontWeight="bold" fontFamily="Arial">Pe</text>
+    </svg>
+  );
+}
+
+function PaytmLogo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <rect width="24" height="24" rx="5" fill="#00BAF2"/>
+      <text x="4.5" y="17" fill="#fff" fontSize="11" fontWeight="bold" fontFamily="Arial">Pay</text>
+      <text x="15" y="17" fill="#fff" fontSize="11" fontWeight="bold" fontFamily="Arial">tm</text>
+    </svg>
+  );
+}
+
+function BHIMLogo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <rect width="24" height="24" rx="5" fill="#097969"/>
+      <text x="3" y="17" fill="#fff" fontSize="11" fontWeight="bold" fontFamily="Arial">BHIM</text>
+    </svg>
+  );
 }
 
 export default function PaymentScreen({
@@ -99,13 +122,13 @@ export default function PaymentScreen({
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [upiRef, setUpiRef] = useState("");
-  const [selectedApp, setSelectedApp] = useState<string>("");
+  const [selectedApp, setSelectedApp] = useState("");
   const orderId = generateOrderId();
 
   // Generate QR code for desktop
   useState(() => {
     if (!isMobileDevice()) {
-      const qrString = buildUpiQrString(total, orderId);
+      const qrString = buildUpiIntentUrl(total, orderId);
       QRCode.toDataURL(qrString, {
         width: 256,
         margin: 2,
@@ -114,18 +137,27 @@ export default function PaymentScreen({
     }
   });
 
-  const handleAppSelect = useCallback((app: "gpay" | "phonepe" | "paytm" | "bhim", appName: string) => {
+  const handleAppSelect = useCallback((appName: string) => {
     setSelectedApp(appName);
     setState("opening");
 
-    // Open UPI deep link
-    const deepLink = buildUpiDeepLink(app, total, orderId);
-    window.location.href = deepLink;
+    const intentUrl = buildUpiIntentUrl(total, orderId);
 
-    // After a short delay, show the "awaiting payment" state
+    // Try app-specific deep links first, then generic UPI intent
+    let appUrl = intentUrl;
+    if (appName === "Google Pay") {
+      appUrl = `intent://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}#Intent;package=com.google.android.apps.nbu.paisa.user;scheme=upi;end`;
+    } else if (appName === "PhonePe") {
+      appUrl = `intent://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}#Intent;package=com.phonepe.app;scheme=upi;end`;
+    } else if (appName === "Paytm") {
+      appUrl = `intent://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}#Intent;package=com.paytm.mobileapp;scheme=upi;end`;
+    }
+
+    window.location.href = appUrl;
+
     setTimeout(() => {
       setState("awaiting");
-    }, 2000);
+    }, 2500);
   }, [total, orderId]);
 
   const handleSubmitPayment = useCallback(async () => {
@@ -184,7 +216,7 @@ export default function PaymentScreen({
 
   const totalItems = items.reduce((n, i) => n + i.quantity, 0);
 
-  // ── SUCCESS STATE ──
+  // ── SUCCESS ──
   if (state === "success") {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
@@ -196,7 +228,6 @@ export default function PaymentScreen({
             <h1 className="text-2xl font-extrabold text-foreground">Order Placed!</h1>
             <p className="mt-2 text-sm text-muted">Your order has been received</p>
           </div>
-
           <div className="rounded-2xl border border-border bg-surface-2 p-5 text-left space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted">Amount</span>
@@ -210,37 +241,20 @@ export default function PaymentScreen({
               <span className="text-muted">Payment</span>
               <span className="font-semibold text-orange-600">Pending Verification</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted">Delivery</span>
-              <span className="font-medium text-foreground">within 45–60 min</span>
-            </div>
           </div>
-
           <div className="mt-4 rounded-xl bg-orange-50 border border-orange-100 p-3 text-xs text-orange-700">
-            Your UPI reference <span className="font-mono font-bold">{upiRef}</span> is being verified.
-            <br />Your order will be confirmed shortly after payment verification.
+            UPI ref <span className="font-mono font-bold">{upiRef}</span> is being verified. Your order will be confirmed shortly.
           </div>
-
           <div className="mt-6 space-y-2">
-            <button
-              onClick={() => onSuccess(orderId)}
-              className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
-            >
-              Track Order
-            </button>
-            <button
-              onClick={() => window.location.href = "/"}
-              className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors"
-            >
-              Continue Shopping
-            </button>
+            <button onClick={() => onSuccess(orderId)} className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors">Track Order</button>
+            <button onClick={() => window.location.href = "/"} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">Continue Shopping</button>
           </div>
         </div>
       </div>
     );
   }
 
-  // ── FAILED STATE ──
+  // ── FAILED ──
   if (state === "failed") {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
@@ -253,22 +267,15 @@ export default function PaymentScreen({
             <p className="mt-2 text-sm text-muted">{errorMessage || "Please try again."}</p>
           </div>
           <div className="space-y-2">
-            <button
-              onClick={() => { setState("ready"); setErrorMessage(""); setUpiRef(""); }}
-              className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors"
-            >
-              Try Again
-            </button>
-            <button onClick={onCancel} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">
-              Return to Checkout
-            </button>
+            <button onClick={() => { setState("ready"); setErrorMessage(""); setUpiRef(""); }} className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors">Try Again</button>
+            <button onClick={onCancel} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">Return to Checkout</button>
           </div>
         </div>
       </div>
     );
   }
 
-  // ── SUBMITTING STATE ──
+  // ── SUBMITTING ──
   if (state === "submitting") {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
@@ -283,7 +290,7 @@ export default function PaymentScreen({
     );
   }
 
-  // ── AWAITING PAYMENT STATE ──
+  // ── AWAITING PAYMENT ──
   if (state === "awaiting") {
     return (
       <div className="fixed inset-0 z-[100] flex flex-col bg-white overflow-y-auto">
@@ -295,7 +302,6 @@ export default function PaymentScreen({
             <span className="text-xs font-bold text-orange-600">AWAITING PAYMENT</span>
           </div>
         </div>
-
         <div className="flex-1 px-4 py-8 max-w-lg mx-auto w-full flex flex-col items-center">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
             <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
@@ -337,9 +343,7 @@ export default function PaymentScreen({
                 Find this in your {selectedApp} app under transaction details
               </p>
             </div>
-            {errorMessage && (
-              <p className="text-xs text-red-500 text-center">{errorMessage}</p>
-            )}
+            {errorMessage && <p className="text-xs text-red-500 text-center">{errorMessage}</p>}
             <button
               onClick={handleSubmitPayment}
               disabled={!upiRef.trim()}
@@ -360,7 +364,7 @@ export default function PaymentScreen({
     );
   }
 
-  // ── OPENING STATE ──
+  // ── OPENING ──
   if (state === "opening") {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
@@ -375,10 +379,9 @@ export default function PaymentScreen({
     );
   }
 
-  // ── READY STATE (main payment screen) ──
+  // ── READY (main payment screen) ──
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-white overflow-y-auto">
-      {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b border-border">
         <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
           <button onClick={onCancel} className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors">
@@ -441,7 +444,7 @@ export default function PaymentScreen({
           </div>
         </div>
 
-        {/* Order Summary (collapsible) */}
+        {/* Order Summary */}
         <details className="rounded-2xl border border-border mb-5 group">
           <summary className="flex items-center justify-between px-4 py-3 cursor-pointer text-sm font-bold text-foreground">
             <span>Order Summary ({totalItems} items)</span>
@@ -474,24 +477,20 @@ export default function PaymentScreen({
           </div>
 
           {isMobileDevice() ? (
-            /* Mobile: UPI App Buttons (open apps directly) */
             <div className="space-y-2">
               {([
-                { id: "gpay" as const, name: "Google Pay", icon: "G", color: "#4285F4" },
-                { id: "phonepe" as const, name: "PhonePe", icon: "P", color: "#5F259F" },
-                { id: "paytm" as const, name: "Paytm", icon: "₹", color: "#00BAF2" },
-                { id: "bhim" as const, name: "BHIM UPI", icon: "B", color: "#097969" },
+                { name: "Google Pay", color: "#4285F4", bgGrad: "from-[#4285F4] to-[#34A853]", Logo: GPayLogo },
+                { name: "PhonePe", color: "#5F259F", bgGrad: "from-[#5F259F] to-[#7B3FC4]", Logo: PhonePeLogo },
+                { name: "Paytm", color: "#00BAF2", bgGrad: "from-[#00BAF2] to-[#0096D6]", Logo: PaytmLogo },
+                { name: "BHIM UPI", color: "#097969", bgGrad: "from-[#097969] to-[#0B9E8C]", Logo: BHIMLogo },
               ]).map((app) => (
                 <button
-                  key={app.id}
-                  onClick={() => handleAppSelect(app.id, app.name)}
-                  className="flex items-center gap-3 w-full p-4 rounded-2xl border-2 border-border bg-white hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5 active:scale-[0.98] transition-all"
+                  key={app.name}
+                  onClick={() => handleAppSelect(app.name)}
+                  className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 border-border bg-white hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5 active:scale-[0.98] transition-all`}
                 >
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-lg font-extrabold text-white shadow-sm"
-                    style={{ backgroundColor: app.color }}
-                  >
-                    {app.icon}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${app.bgGrad} shadow-md`}>
+                    <app.Logo className="w-7 h-7" />
                   </div>
                   <div className="flex-1 text-left">
                     <span className="text-sm font-bold text-foreground">{app.name}</span>
@@ -502,11 +501,11 @@ export default function PaymentScreen({
               ))}
             </div>
           ) : (
-            /* Desktop: QR Code */
             <div className="space-y-4">
+              {/* QR Code */}
               <div className="rounded-2xl border border-border bg-white p-5 text-center">
                 <p className="text-xs font-semibold text-muted mb-3">
-                  Scan QR code with any UPI app to pay
+                  Scan QR code with any UPI app
                 </p>
                 {qrDataUrl ? (
                   <div className="inline-block rounded-xl border border-border p-3 bg-white">
@@ -517,12 +516,16 @@ export default function PaymentScreen({
                     <Loader2 className="h-6 w-6 animate-spin text-muted" />
                   </div>
                 )}
-                <p className="text-[10px] text-muted mt-3">
+                <div className="flex items-center justify-center gap-3 mt-3">
+                  {([GPayLogo, PhonePeLogo, PaytmLogo, BHIMLogo]).map((Logo, i) => (
+                    <Logo key={i} className="w-6 h-6 opacity-50" />
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted mt-2">
                   Works with Google Pay, PhonePe, Paytm, BHIM & all UPI apps
                 </p>
               </div>
 
-              {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-border" />
                 <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">or pay via UPI ID</span>
@@ -547,7 +550,7 @@ export default function PaymentScreen({
                 </div>
               </div>
 
-              {/* Desktop: Enter reference after scanning */}
+              {/* Desktop: Enter reference */}
               <div className="rounded-2xl border border-border p-4 space-y-3">
                 <p className="text-xs font-bold text-foreground">After paying, enter your UPI reference number:</p>
                 <input
@@ -557,12 +560,8 @@ export default function PaymentScreen({
                   placeholder="UPI Reference / Transaction ID"
                   className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 tabular-nums"
                 />
-                <p className="text-[10px] text-muted">
-                  Find this in your UPI app under transaction details
-                </p>
-                {errorMessage && (
-                  <p className="text-xs text-red-500">{errorMessage}</p>
-                )}
+                <p className="text-[10px] text-muted">Find this in your UPI app under transaction details</p>
+                {errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
                 <button
                   onClick={handleSubmitPayment}
                   disabled={!upiRef.trim()}
@@ -575,7 +574,7 @@ export default function PaymentScreen({
           )}
         </div>
 
-        {/* Security Footer */}
+        {/* Footer */}
         <div className="flex items-center justify-center gap-4 pb-8 flex-wrap">
           {["Secure Checkout", "100% Fresh", "Free Delivery"].map((t) => (
             <span key={t} className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1">

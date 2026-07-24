@@ -74,8 +74,8 @@ function AvailableCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-bold text-foreground truncate">{order.customerName}</p>
-            <Badge variant={order.paymentMethod === "razorpay" ? "fresh" : "orange"}>
-              {order.paymentMethod === "razorpay" ? "Paid" : "COD"}
+            <Badge variant={order.paymentMethod === "upi" ? "fresh" : "orange"}>
+              {order.paymentMethod === "upi" ? "Paid" : "COD"}
             </Badge>
             <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${ageBadgeColor(mins)}`}>
               <Clock className="h-3 w-3" /> {mins < 1 ? "<1 min" : `${mins} min`}

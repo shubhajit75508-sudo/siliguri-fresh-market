@@ -32,7 +32,7 @@ export function WhyChooseUs() {
   const reasons = [
     { icon: "🌿", title: "Farm Fresh Daily", desc: "Sourced from local markets every morning. You get the freshest catch." },
     { icon: "🔄", title: "Easy Returns", desc: "Not satisfied? Get a free replacement within 3 hours. No questions asked." },
-    { icon: "🔒", title: "Secure Checkout", desc: "Razorpay encrypted payments. UPI, Cards, Netbanking & Cash on Delivery." },
+    { icon: "🔒", title: "Secure Checkout", desc: "Direct UPI payments — instant & no middleman. Cash on Delivery also available." },
   ];
 
   return (

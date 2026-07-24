@@ -27,7 +27,6 @@ const paymentBadge: Record<string, "fresh" | "orange" | "red"> = {
 
 const paymentMethodLabels: Record<string, string> = {
   upi: "UPI",
-  razorpay: "Razorpay",
   cod: "COD",
 };
 
@@ -242,7 +241,7 @@ export default function AdminOrdersPage() {
               >
                 <option value="">All</option>
                 <option value="cod">COD</option>
-                <option value="razorpay">Razorpay</option>
+                <option value="upi">UPI</option>
               </select>
             </div>
             <div className="flex items-center gap-2">

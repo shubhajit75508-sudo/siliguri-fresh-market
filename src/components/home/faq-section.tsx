@@ -10,7 +10,7 @@ const faqs = [
   { q: "Can I choose fish cuts and cleaning?", a: "Absolutely — select your species, weight, cut (whole, steaks, curry cut), and cleaning preference just like at the market." },
   { q: "What if I receive a damaged or spoiled item?", a: "No worries — you can request a replacement within 3 hours of delivery. Just go to your order and tap Request Replacement." },
   { q: "How do I cancel my order?", a: "You can cancel anytime before the order is packed. Once it's picked up for delivery, cancellations are not available." },
-  { q: "What payment methods do you accept?", a: "We accept UPI, credit/debit cards, netbanking, wallets via Razorpay, and Cash on Delivery." },
+  { q: "What payment methods do you accept?", a: "We accept UPI (Google Pay, PhonePe, Paytm) and Cash on Delivery." },
 ];
 
 export function FAQSection() {
