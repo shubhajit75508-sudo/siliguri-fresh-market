@@ -25,6 +25,12 @@ const paymentBadge: Record<string, "fresh" | "orange" | "red"> = {
   unpaid: "orange",
 };
 
+const paymentMethodLabels: Record<string, string> = {
+  upi: "UPI",
+  razorpay: "Razorpay",
+  cod: "COD",
+};
+
 const tabs = ["all", "received", "out_for_delivery", "delivered", "cancelled"] as const;
 
 export default function AdminOrdersPage() {
@@ -404,9 +410,9 @@ export default function AdminOrdersPage() {
                   <td className="px-4 py-3 font-medium">{formatPrice(order.total)}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs capitalize">{order.paymentMethod}</span>
+                      <span className="text-xs font-medium">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
                       <Badge variant={paymentBadge[order.paymentStatus] ?? "orange"}>
-                        {order.paymentStatus === "paid" ? "Paid" : "Unpaid"}
+                        {order.paymentStatus === "paid" ? "Paid ✓" : "Unpaid"}
                       </Badge>
                     </div>
                   </td>
@@ -509,9 +515,9 @@ export default function AdminOrdersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted">Payment:</span>
-                <span className="capitalize">{selectedOrder.paymentMethod}</span>
+                <span className="font-medium">{paymentMethodLabels[selectedOrder.paymentMethod] || selectedOrder.paymentMethod}</span>
                 <Badge variant={paymentBadge[selectedOrder.paymentStatus] ?? "orange"}>
-                  {selectedOrder.paymentStatus === "paid" ? "Paid" : "Unpaid"}
+                  {selectedOrder.paymentStatus === "paid" ? "PAID ✓" : "Unpaid"}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">

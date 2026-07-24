@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  CheckCircle, Copy, X, ExternalLink, Loader2,
-  ShoppingCart, Receipt, User, Home, Building2, Pin, Leaf, Zap, Banknote, CreditCard, Smartphone,
-  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, FileText, Package,
+  X, Loader2,
+  ShoppingCart, Receipt, User, Home, Building2, Pin, Leaf, Zap, Banknote, CreditCard,
+  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, cartLineId, cartLineKey } from "@/store/cart-store";
@@ -19,19 +19,7 @@ import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { formatPrice, getWeightMultiplier, getPriceForWeight } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
 import type { Address } from "@/types";
-
-const PAYMENT_UPI_ID = "shubhajit75508@okhdfcbank";
-
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined" && (window as any).Razorpay) return resolve(true);
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
+import PaymentScreen from "@/components/payment/PaymentScreen";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -44,12 +32,10 @@ export default function CheckoutPage() {
   const { coupons } = useCouponStore();
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<"razorpay" | "cod">("razorpay");
+  const [selectedPayment, setSelectedPayment] = useState<"upi" | "cod">("upi");
   const [confirmingOrder, setConfirmingOrder] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [showUPIModal, setShowUPIModal] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [upiTxnId, setUpiTxnId] = useState("");
+  const [showPaymentScreen, setShowPaymentScreen] = useState(false);
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [addressMissing, setAddressMissing] = useState(false);
   const [step, setStep] = useState(1);
@@ -141,17 +127,6 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    setConfirmingOrder(true);
-    try {
-      await placeOrder(selectedPayment === "cod" ? "cod" : "razorpay");
-    } catch {
-      toast.add("Order failed. Please try again.", "error");
-    } finally {
-      setConfirmingOrder(false);
-    }
-  };
-
-  const placeOrder = async (paymentStatus: string) => {
     if (!selectedAddress) {
       toast.add("Please select a delivery address", "error");
       setAddressMissing(true);
@@ -164,84 +139,47 @@ export default function CheckoutPage() {
       return;
     }
 
-    const razorpayLoaded = await loadRazorpayScript();
-    if (paymentStatus === "razorpay" && !razorpayLoaded) {
-      setShowUPIModal(true);
-      return;
-    }
-
-    if (paymentStatus === "razorpay" && razorpayLoaded) {
+    if (selectedPayment === "cod") {
+      setConfirmingOrder(true);
       try {
-        const Rzpay = (window as any).Razorpay;
-        const rzp = new Rzpay({
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_T3eebwyzkSd5mE",
-          amount: Math.round(total * 100),
-          currency: "INR",
-          name: "Siliguri Fresh Mart",
-          description: "Fresh Market Delivery",
-          prefill: {
-            name: currentUser.name,
-            email: currentUser.email,
-            contact: currentUser.phone,
-          },
-          theme: { color: "#2D7D3A" },
-          handler: async () => {
-            // Payment confirmed — NOW create the order as paid
-            try {
-              const orderId = await createOrder({
-                items: items.map(i => ({ ...i })),
-                total: total,
-                address: selectedAddress,
-                paymentMethod: "razorpay",
-                paymentStatus: "paid",
-                customerName: currentUser.name,
-                customerPhone: currentUser.phone || "",
-                customerEmail: currentUser.email || "",
-                userId: currentUser.id,
-              });
-              if (orderId) {
-                setPaymentConfirmed(true);
-                clearCart();
-                router.push(`/track/${orderId}`);
-              } else {
-                toast.add("Order creation failed. Contact support.", "error");
-              }
-            } catch {
-              toast.add("Payment received but order creation failed. Contact support.", "error");
-            }
-          },
-          modal: {
-            ondismiss: () => {
-              toast.add("Payment cancelled", "info");
-            },
-          },
+        const orderId = await createOrder({
+          items: items.map(i => ({ ...i })),
+          total: total,
+          address: selectedAddress,
+          paymentMethod: "cod",
+          paymentStatus: "unpaid",
+          customerName: currentUser.name,
+          customerPhone: currentUser.phone || "",
+          customerEmail: currentUser.email || "",
+          userId: currentUser.id,
         });
-        rzp.open();
+        if (orderId) {
+          setPaymentConfirmed(true);
+          clearCart();
+          router.push(`/track/${orderId}`);
+        } else {
+          toast.add("Order failed. Please try again.", "error");
+        }
       } catch {
-        toast.add("Payment failed. Please try again.", "error");
+        toast.add("Order failed. Please try again.", "error");
+      } finally {
+        setConfirmingOrder(false);
       }
-      return;
-    }
-
-    const orderId = await createOrder({
-      items: items.map(i => ({ ...i })),
-      total: total,
-      address: selectedAddress,
-      paymentMethod: "cod",
-      paymentStatus: "unpaid",
-      customerName: currentUser.name,
-      customerPhone: currentUser.phone || "",
-      customerEmail: currentUser.email || "",
-      userId: currentUser.id,
-    });
-
-    if (orderId) {
-      setPaymentConfirmed(true);
-      clearCart();
-      router.push(`/track/${orderId}`);
     } else {
-      toast.add("Order failed. Please try again.", "error");
+      // Show the branded payment screen for UPI
+      setShowPaymentScreen(true);
     }
+  };
+
+  const handlePaymentSuccess = (orderId: string) => {
+    setShowPaymentScreen(false);
+    setPaymentConfirmed(true);
+    clearCart();
+    router.push(`/track/${orderId}`);
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentScreen(false);
   };
 
   const catBadge = (cat: string) => {
@@ -610,14 +548,14 @@ export default function CheckoutPage() {
                 <div><h2 className="text-sm font-bold text-foreground">Payment Method</h2><p className="text-[10px] text-muted">Choose how to pay</p></div>
               </div>
               <div className="p-4 space-y-2">
-                <button onClick={() => setSelectedPayment("razorpay")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "razorpay" ? "border-[#2D7D3A] bg-[#2D7D3A]/5" : "border-border bg-surface-2 hover:border-[#2D7D3A]/30"}`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "razorpay" ? "bg-[#4A8FE7]/10 text-[#4A8FE7]" : "bg-surface"}`}><Zap className="h-5 w-5" /></div>
+                <button onClick={() => setSelectedPayment("upi")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "upi" ? "border-[#2D7D3A] bg-[#2D7D3A]/5" : "border-border bg-surface-2 hover:border-[#2D7D3A]/30"}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "upi" ? "bg-[#2D7D3A]/10 text-[#2D7D3A]" : "bg-surface"}`}><Zap className="h-5 w-5" /></div>
                   <div className="flex-1 text-left">
-                    <div className="flex items-center gap-2"><span className="text-sm font-bold text-foreground">Razorpay</span>{selectedPayment === "razorpay" && <span className="product-badge fresh text-[9px]">RECOMMENDED</span>}</div>
-                    <p className="text-[11px] text-muted">UPI · Cards · NetBanking · Wallets</p>
+                    <div className="flex items-center gap-2"><span className="text-sm font-bold text-foreground">Online Payment (UPI)</span>{selectedPayment === "upi" && <span className="product-badge fresh text-[9px]">RECOMMENDED</span>}</div>
+                    <p className="text-[11px] text-muted">Google Pay · PhonePe · Paytm · BHIM</p>
                   </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "razorpay" ? "border-[#2D7D3A]" : "border-border"}`}>
-                    {selectedPayment === "razorpay" && <div className="w-2.5 h-2.5 rounded-full bg-[#2D7D3A]" />}
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "upi" ? "border-[#2D7D3A]" : "border-border"}`}>
+                    {selectedPayment === "upi" && <div className="w-2.5 h-2.5 rounded-full bg-[#2D7D3A]" />}
                   </div>
                 </button>
                 <button onClick={() => setSelectedPayment("cod")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "cod" ? "border-[#2D7D3A] bg-[#2D7D3A]/5" : "border-border bg-surface-2 hover:border-[#2D7D3A]/30"}`}>
@@ -675,58 +613,24 @@ export default function CheckoutPage() {
             setEditingAddress(false);
             setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
           } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
-            {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "razorpay" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
+            {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "upi" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>
       </div>
 
-      {/* UPI Fallback Modal */}
-      {showUPIModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 px-3 pb-6 sm:px-0 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl border border-border bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Smartphone className="h-6 w-6" />
-                <h3 className="text-sm font-bold text-foreground">Pay via UPI</h3>
-              </div>
-              <button onClick={() => { setShowUPIModal(false); if (!paymentConfirmed) setSelectedPayment("cod"); }} className="flex h-8 w-8 items-center justify-center rounded-full border border-border hover:bg-surface-2 transition-all">
-                <X className="h-4 w-4 text-muted" />
-              </button>
-            </div>
-            <p className="text-xs text-muted mb-4">Send the exact amount to the UPI ID below using GPay, PhonePe, or Paytm.</p>
-            <div className="rounded-2xl border-2 border-dashed border-[#2D7D3A]/30 bg-[#2D7D3A]/5 p-5 text-center mb-4">
-              <p className="text-[10px] font-medium text-muted mb-1.5">UPI ID</p>
-              <p className="text-sm font-bold text-foreground tracking-wide">{PAYMENT_UPI_ID}</p>
-              <button onClick={() => { navigator.clipboard.writeText(PAYMENT_UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2500); }} className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#2D7D3A]/30 px-3 py-1 text-[10px] font-semibold text-[#2D7D3A] hover:bg-[#2D7D3A]/10 transition-all">
-                <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy UPI ID"}
-              </button>
-            </div>
-            <div className="rounded-xl bg-brand-orange/10 border border-[#f39c12]/20 px-4 py-3 text-center mb-4">
-              <p className="text-[10px] text-brand-orange">Amount to pay</p>
-              <p className="text-xl font-extrabold text-foreground tabular-nums">{formatPrice(getTotal())}</p>
-            </div>
-            <div className="mb-4">
-              <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">UPI Reference ID <span className="text-brand-red text-xs">*</span></label>
-              <input
-                type="text"
-                value={upiTxnId}
-                onChange={(e) => setUpiTxnId(e.target.value)}
-                placeholder="Paste UPI reference from your app"
-                className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10"
-              />
-            </div>
-            <button
-              onClick={() => { setPaymentConfirmed(true); setShowUPIModal(false); placeOrder("paid"); }}
-              disabled={!upiTxnId.trim()}
-              className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <CheckCircle className="mr-1.5 inline h-4 w-4" /> I&apos;ve Paid — Confirm
-            </button>
-            <p className="mt-4 text-[10px] text-center text-muted flex items-center justify-center gap-1">
-              <ExternalLink className="h-3 w-3" /> Open GPay / PhonePe / Paytm to complete
-            </p>
-          </div>
-        </div>
+      {/* Premium UPI Payment Screen */}
+      {showPaymentScreen && selectedAddress && currentUser && (
+        <PaymentScreen
+          items={items.map(i => ({ ...i }))}
+          total={total}
+          address={selectedAddress}
+          customerName={currentUser.name}
+          customerPhone={currentUser.phone || ""}
+          customerEmail={currentUser.email || ""}
+          userId={currentUser.id}
+          onSuccess={handlePaymentSuccess}
+          onCancel={handlePaymentCancel}
+        />
       )}
     </div>
   );

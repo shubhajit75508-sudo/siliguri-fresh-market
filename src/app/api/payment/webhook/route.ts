@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   let event: {
     event: string;
     payload: {
-      payment?: { entity?: { notes?: Record<string, string> } };
+      payment?: { entity?: { id?: string; notes?: Record<string, string> } };
       order?: { entity?: { receipt?: string } };
     };
   };
@@ -55,14 +55,20 @@ export async function POST(req: NextRequest) {
     const orderId =
       event.payload?.payment?.entity?.notes?.order_id ??
       event.payload?.order?.entity?.receipt;
+    const paymentId = event.payload?.payment?.entity?.id;
 
     if (!orderId) {
       return NextResponse.json({ error: "No order ID in webhook payload" }, { status: 400 });
     }
 
+    const updateData: Record<string, unknown> = { payment_status: "paid" };
+    if (paymentId) {
+      updateData.payment_id = paymentId;
+    }
+
     const { error } = await supabaseAdmin
       .from("orders")
-      .update({ payment_status: "paid" })
+      .update(updateData)
       .eq("id", orderId);
 
     if (error) {

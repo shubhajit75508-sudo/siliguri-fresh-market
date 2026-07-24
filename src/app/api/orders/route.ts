@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
   const body = await req.json();
-  const { error } = await supabaseAdmin.from("orders").upsert({
+
+  const orderData: Record<string, unknown> = {
     id: body.id,
     user_id: body.user_id ?? null,
     items: body.items ?? [],
@@ -37,7 +38,14 @@ export async function POST(req: NextRequest) {
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),
     eta: body.eta ?? 30,
-  });
+  };
+
+  // payment_id column may not exist yet — include it only if provided
+  if (body.payment_id) {
+    orderData.payment_id = body.payment_id;
+  }
+
+  const { error } = await supabaseAdmin.from("orders").upsert(orderData);
   if (error) return NextResponse.json({ error: "Order creation failed" }, { status: 500 });
   return NextResponse.json({ success: true });
 }
