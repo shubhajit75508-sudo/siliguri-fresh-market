@@ -146,14 +146,6 @@ export async function proxy(req: NextRequest) {
     }
   }
 
-  // Rate limit payment create
-  if (pathname === "/api/payment/create-order" && req.method === "POST") {
-    const ip = req.headers.get("x-forwarded-for") || "unknown";
-    if (!checkRateLimit(`pay-${ip}`, 10, 60 * 1000)) {
-      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-    }
-  }
-
   // Rate limit auth endpoints
   if (pathname.startsWith("/api/auth") && req.method === "POST") {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
@@ -215,7 +207,7 @@ export const config = {
     "/api/orders/:path*",
     "/api/delivery/confirm",
     "/api/delivery/location/:path*",
-    "/api/payment/create-order",
+
     "/api/auth/:path*",
     "/admin/:path*",
     "/delivery/:path*",
