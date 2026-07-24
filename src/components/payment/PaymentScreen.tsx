@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   CheckCircle, X, Loader2, Shield, Smartphone,
   ArrowLeft, Clock, CreditCard, AlertTriangle,
@@ -62,7 +62,7 @@ function isMobileDevice(): boolean {
   );
 }
 
-function generateOrderId(): string {
+function buildOrderId(): string {
   return "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
 }
 
@@ -123,19 +123,25 @@ export default function PaymentScreen({
   const [copied, setCopied] = useState(false);
   const [upiRef, setUpiRef] = useState("");
   const [selectedApp, setSelectedApp] = useState("");
-  const orderId = generateOrderId();
+  const [isMobile, setIsMobile] = useState(false);
+  const orderIdRef = useRef(buildOrderId());
+  const orderId = orderIdRef.current;
 
-  // Generate QR code for desktop
-  useState(() => {
-    if (!isMobileDevice()) {
-      const qrString = buildUpiIntentUrl(total, orderId);
-      QRCode.toDataURL(qrString, {
-        width: 256,
-        margin: 2,
-        color: { dark: "#1a1a1a", light: "#ffffff" },
-      }).then((url) => setQrDataUrl(url)).catch(() => {});
-    }
-  });
+  // Detect mobile AFTER hydration to avoid SSR mismatch
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
+
+  // Generate QR code for desktop (only client-side)
+  useEffect(() => {
+    if (isMobile) return;
+    const qrString = buildUpiIntentUrl(total, orderId);
+    QRCode.toDataURL(qrString, {
+      width: 256,
+      margin: 2,
+      color: { dark: "#1a1a1a", light: "#ffffff" },
+    }).then((url) => setQrDataUrl(url)).catch(() => {});
+  }, [isMobile, total, orderId]);
 
   const handleAppSelect = useCallback((appName: string) => {
     setSelectedApp(appName);
@@ -476,7 +482,7 @@ export default function PaymentScreen({
             <h2 className="text-sm font-bold text-foreground">Pay with UPI</h2>
           </div>
 
-          {isMobileDevice() ? (
+          {isMobile ? (
             <div className="space-y-2">
               {([
                 { name: "Google Pay", color: "#4285F4", bgGrad: "from-[#4285F4] to-[#34A853]", Logo: GPayLogo },
