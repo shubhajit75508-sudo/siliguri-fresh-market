@@ -27,13 +27,17 @@ const CATEGORIES: { slug: Category | "all"; label: string }[] = [
 
 type StockFilter = "all" | "in" | "out";
 
+function clamp(v: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, v));
+}
+
 export default function AdminInventoryPage() {
   const { products: storeProducts, updateProduct } = useAdminStore();
   const [toggling, setToggling] = useState<string | null>(null);
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
   const [search, setSearch] = useState("");
-  const [localStock, setLocalStock] = useState<Record<string, boolean>>({});
+  const [localOverrides, setLocalOverrides] = useState<Record<string, { inStock: boolean; stock: number }>>({});
   const queryClient = useQueryClient();
   const toast = useToast();
   const supabaseAvailable = isSupabaseConfigured();
@@ -44,10 +48,11 @@ export default function AdminInventoryPage() {
     enabled: supabaseAvailable,
   });
 
-  const products = (supabaseAvailable && liveProducts ? liveProducts : storeProducts).map((p) => ({
-    ...p,
-    inStock: p.id in localStock ? localStock[p.id] : p.inStock,
-  }));
+  const products = (supabaseAvailable && liveProducts ? liveProducts : storeProducts).map((p) => {
+    const o = localOverrides[p.id];
+    if (!o) return p;
+    return { ...p, inStock: o.inStock, stock: o.stock };
+  });
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -61,32 +66,46 @@ export default function AdminInventoryPage() {
     return list.reverse();
   }, [products, catFilter, stockFilter, search]);
 
-  const toggleStock = async (id: string, currentInStock: boolean) => {
-    if (toggling) return;
-    setToggling(id);
-    const newInStock = !currentInStock;
-    setLocalStock((prev) => ({ ...prev, [id]: newInStock }));
+  const save = async (id: string, data: { inStock?: boolean; stock?: number }) => {
     try {
       if (supabaseAvailable) {
         const res = await fetch(API_BASE, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, inStock: newInStock }),
+          body: JSON.stringify({ id, ...data }),
         });
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.error || "Update failed");
         }
       }
-      updateProduct(id, { inStock: newInStock });
+      updateProduct(id, data);
       queryClient.invalidateQueries({ predicate: (query) => (query.queryKey[0] as string)?.startsWith("products") });
     } catch (e) {
-      setLocalStock((prev) => ({ ...prev, [id]: currentInStock }));
-      console.error("Stock toggle failed:", e);
-      toast.add(e instanceof Error ? e.message : "Failed to update stock", "error");
-    } finally {
-      setToggling(null);
+      console.error("Save failed:", e);
+      toast.add(e instanceof Error ? e.message : "Failed to save", "error");
     }
+  };
+
+  const toggleStock = async (id: string, currentInStock: boolean) => {
+    if (toggling) return;
+    setToggling(id);
+    const newInStock = !currentInStock;
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+    const newStock = newInStock ? clamp(product.stock ?? 10, 0, 100) : 0;
+    setLocalOverrides((prev) => ({ ...prev, [id]: { inStock: newInStock, stock: newStock } }));
+    await save(id, { inStock: newInStock, stock: newStock });
+    setToggling(null);
+  };
+
+  const updateStock = async (id: string, raw: number) => {
+    const v = clamp(raw, 0, 100);
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+    const newInStock = v > 0;
+    setLocalOverrides((prev) => ({ ...prev, [id]: { inStock: newInStock, stock: v } }));
+    await save(id, { stock: v, inStock: newInStock });
   };
 
   return (
@@ -98,7 +117,6 @@ export default function AdminInventoryPage() {
 
       {/* Filters */}
       <div className="mb-5 space-y-3">
-        {/* Category pills */}
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIES.map((c) => (
             <button
@@ -115,7 +133,6 @@ export default function AdminInventoryPage() {
           ))}
         </div>
 
-        {/* Search + stock filter */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -175,7 +192,7 @@ export default function AdminInventoryPage() {
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3 text-center">Stock</th>
+                <th className="px-4 py-3 text-center">Stock (0–100)</th>
                 <th className="px-4 py-3 text-center">Status</th>
               </tr>
             </thead>
@@ -185,8 +202,24 @@ export default function AdminInventoryPage() {
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
                   <td className="px-4 py-3">₹{p.price}</td>
-                  <td className={`px-4 py-3 text-center font-semibold ${p.stock !== undefined && p.stock <= 5 ? "text-brand-red" : ""}`}>
-                    {p.stock ?? "∞"}
+                  <td className="px-4 py-3 text-center">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={p.stock ?? 0}
+                      onChange={(e) => {
+                        const raw = parseInt(e.target.value, 10);
+                        if (isNaN(raw)) return;
+                        const v = clamp(raw, 0, 100);
+                        setLocalOverrides((prev) => ({
+                          ...prev,
+                          [p.id]: { inStock: v > 0, stock: v },
+                        }));
+                      }}
+                      onBlur={() => updateStock(p.id, p.stock ?? 0)}
+                      className="w-20 rounded-lg border border-border px-3 py-1.5 text-center text-sm font-semibold outline-none focus:border-[#2D7D3A]/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    />
                   </td>
                   <td className="px-4 py-3 text-center">
                     <button
