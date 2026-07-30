@@ -72,9 +72,7 @@ export default function AdminInventoryPage() {
 
   const toggleStock = (id: string, currentInStock: boolean) => {
     const newInStock = !currentInStock;
-    const product = products.find((p) => p.id === id);
-    if (!product) return;
-    const newStock = newInStock ? clamp(product.stock ?? 10, 0, 100) : 0;
+    const newStock = newInStock ? 100 : 0;
     update(id, { inStock: newInStock, stock: newStock });
   };
 
