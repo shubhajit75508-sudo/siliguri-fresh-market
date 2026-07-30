@@ -33,6 +33,7 @@ export default function AdminInventoryPage() {
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
   const [search, setSearch] = useState("");
+  const [localStock, setLocalStock] = useState<Record<string, boolean>>({});
   const queryClient = useQueryClient();
   const toast = useToast();
   const supabaseAvailable = isSupabaseConfigured();
@@ -43,7 +44,10 @@ export default function AdminInventoryPage() {
     enabled: supabaseAvailable,
   });
 
-  const products = supabaseAvailable && liveProducts ? liveProducts : storeProducts;
+  const products = (supabaseAvailable && liveProducts ? liveProducts : storeProducts).map((p) => ({
+    ...p,
+    inStock: p.id in localStock ? localStock[p.id] : p.inStock,
+  }));
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -57,25 +61,27 @@ export default function AdminInventoryPage() {
     return list.reverse();
   }, [products, catFilter, stockFilter, search]);
 
-  const toggleStock = async (product: typeof products[number]) => {
+  const toggleStock = async (id: string, currentInStock: boolean) => {
     if (toggling) return;
-    setToggling(product.id);
-    const newInStock = !product.inStock;
+    setToggling(id);
+    const newInStock = !currentInStock;
+    setLocalStock((prev) => ({ ...prev, [id]: newInStock }));
     try {
       if (supabaseAvailable) {
         const res = await fetch(API_BASE, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: product.id, inStock: newInStock }),
+          body: JSON.stringify({ id, inStock: newInStock }),
         });
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.error || "Update failed");
         }
       }
-      updateProduct(product.id, { inStock: newInStock });
+      updateProduct(id, { inStock: newInStock });
       queryClient.invalidateQueries({ predicate: (query) => (query.queryKey[0] as string)?.startsWith("products") });
     } catch (e) {
+      setLocalStock((prev) => ({ ...prev, [id]: currentInStock }));
       console.error("Stock toggle failed:", e);
       toast.add(e instanceof Error ? e.message : "Failed to update stock", "error");
     } finally {
@@ -184,7 +190,7 @@ export default function AdminInventoryPage() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <button
-                      onClick={() => toggleStock(p)}
+                      onClick={() => toggleStock(p.id, p.inStock)}
                       disabled={toggling === p.id}
                       className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
                         p.inStock ? "bg-green-500" : "bg-red-300"
