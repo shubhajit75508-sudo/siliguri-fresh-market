@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Package, Search, X } from "lucide-react";
-import { useAdminStore } from "@/store/admin-store";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllProducts } from "@/lib/data";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
-import type { Category } from "@/types";
+import { getAllProducts } from "@/lib/data";
+import { useAdminStore } from "@/store/admin-store";
+import type { Product, Category } from "@/types";
 
 const API_BASE = "/api/admin/products";
 
@@ -32,27 +30,24 @@ function clamp(v: number, min: number, max: number) {
 }
 
 export default function AdminInventoryPage() {
-  const { products: storeProducts, updateProduct } = useAdminStore();
-  const [toggling, setToggling] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
   const [search, setSearch] = useState("");
-  const [localOverrides, setLocalOverrides] = useState<Record<string, { inStock: boolean; stock: number }>>({});
-  const queryClient = useQueryClient();
   const toast = useToast();
-  const supabaseAvailable = isSupabaseConfigured();
 
-  const { data: liveProducts } = useQuery({
-    queryKey: ["products", "all"],
-    queryFn: getAllProducts,
-    enabled: supabaseAvailable,
-  });
+  const supabaseAvailable = typeof window !== "undefined" && !!process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  const products = (supabaseAvailable && liveProducts ? liveProducts : storeProducts).map((p) => {
-    const o = localOverrides[p.id];
-    if (!o) return p;
-    return { ...p, inStock: o.inStock, stock: o.stock };
-  });
+  useEffect(() => {
+    if (supabaseAvailable) {
+      getAllProducts().then(setProducts).catch(() => {
+        setProducts(useAdminStore.getState().products ?? []);
+      });
+    } else {
+      setProducts(useAdminStore.getState().products ?? []);
+    }
+    useAdminStore.subscribe((state) => setProducts([...state.products]));
+  }, []);
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -63,50 +58,33 @@ export default function AdminInventoryPage() {
       const q = search.toLowerCase();
       list = list.filter((p) => p.name.toLowerCase().includes(q));
     }
-    return list.reverse();
+    return list;
   }, [products, catFilter, stockFilter, search]);
 
-  const save = async (id: string, data: { inStock?: boolean; stock?: number }) => {
-    try {
-      if (supabaseAvailable) {
-        const res = await fetch(API_BASE, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, ...data }),
-        });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || "Update failed");
-        }
-      }
-      updateProduct(id, data);
-      queryClient.invalidateQueries({ predicate: (query) => (query.queryKey[0] as string)?.startsWith("products") });
-    } catch (e) {
-      console.error("Save failed:", e);
-      toast.add(e instanceof Error ? e.message : "Failed to save", "error");
-    }
+  const update = (id: string, data: Partial<Product>) => {
+    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } : p)));
+    fetch(API_BASE, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...data }),
+    }).catch(() => {});
   };
 
-  const toggleStock = async (id: string, currentInStock: boolean) => {
-    if (toggling) return;
-    setToggling(id);
+  const toggleStock = (id: string, currentInStock: boolean) => {
     const newInStock = !currentInStock;
     const product = products.find((p) => p.id === id);
     if (!product) return;
     const newStock = newInStock ? clamp(product.stock ?? 10, 0, 100) : 0;
-    setLocalOverrides((prev) => ({ ...prev, [id]: { inStock: newInStock, stock: newStock } }));
-    await save(id, { inStock: newInStock, stock: newStock });
-    setToggling(null);
+    update(id, { inStock: newInStock, stock: newStock });
   };
 
-  const updateStock = async (id: string, raw: number) => {
+  const updateStock = (id: string, raw: number) => {
     const v = clamp(raw, 0, 100);
-    const product = products.find((p) => p.id === id);
-    if (!product) return;
-    const newInStock = v > 0;
-    setLocalOverrides((prev) => ({ ...prev, [id]: { inStock: newInStock, stock: v } }));
-    await save(id, { stock: v, inStock: newInStock });
+    update(id, { stock: v, inStock: v > 0 });
   };
+
+  const empty = products.length === 0;
+  const emptyFiltered = !empty && filtered.length === 0;
 
   return (
     <div>
@@ -115,7 +93,6 @@ export default function AdminInventoryPage() {
         <p className="text-sm text-muted">Manage stock levels</p>
       </div>
 
-      {/* Filters */}
       <div className="mb-5 space-y-3">
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIES.map((c) => (
@@ -171,12 +148,12 @@ export default function AdminInventoryPage() {
         </p>
       </div>
 
-      {products.length === 0 ? (
+      {empty ? (
         <div className="glass-card flex flex-col items-center rounded-2xl p-12">
           <Package className="mb-3 h-10 w-10 text-muted" />
           <p className="text-muted">No products in inventory</p>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : emptyFiltered ? (
         <div className="glass-card flex flex-col items-center rounded-2xl p-12">
           <Search className="mb-3 h-10 w-10 text-muted" />
           <p className="text-muted">No products match your filters</p>
@@ -192,7 +169,7 @@ export default function AdminInventoryPage() {
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3 text-center">Stock (0–100)</th>
+                <th className="px-4 py-3 text-center">Stock (0-100)</th>
                 <th className="px-4 py-3 text-center">Status</th>
               </tr>
             </thead>
@@ -211,11 +188,11 @@ export default function AdminInventoryPage() {
                       onChange={(e) => {
                         const raw = parseInt(e.target.value, 10);
                         if (isNaN(raw)) return;
-                        const v = clamp(raw, 0, 100);
-                        setLocalOverrides((prev) => ({
-                          ...prev,
-                          [p.id]: { inStock: v > 0, stock: v },
-                        }));
+                        setProducts((prev) =>
+                          prev.map((x) =>
+                            x.id === p.id ? { ...x, stock: clamp(raw, 0, 100), inStock: clamp(raw, 0, 100) > 0 } : x
+                          )
+                        );
                       }}
                       onBlur={() => updateStock(p.id, p.stock ?? 0)}
                       className="w-20 rounded-lg border border-border px-3 py-1.5 text-center text-sm font-semibold outline-none focus:border-[#2D7D3A]/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -224,10 +201,9 @@ export default function AdminInventoryPage() {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => toggleStock(p.id, p.inStock)}
-                      disabled={toggling === p.id}
                       className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
                         p.inStock ? "bg-green-500" : "bg-red-300"
-                      } ${toggling === p.id ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
+                      } cursor-pointer`}
                     >
                       <span
                         className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
