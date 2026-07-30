@@ -11,8 +11,8 @@ function getSupabaseAdmin() {
 
 // POST /api/admin/payment — admin confirms a direct UPI payment
 export async function POST(req: NextRequest) {
-  const authError = await requireAdmin(req);
-  if (authError) return authError;
+  const admin = await requireAdmin(req);
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabase = getSupabaseAdmin();
   if (!supabase) return NextResponse.json({ error: "Not configured" }, { status: 500 });
