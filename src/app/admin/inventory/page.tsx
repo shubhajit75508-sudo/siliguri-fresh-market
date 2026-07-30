@@ -81,6 +81,15 @@ export default function AdminInventoryPage() {
     update(id, { stock: v, inStock: v > 0 });
   };
 
+  const allInStock = filtered.length > 0 && filtered.every((p) => p.inStock);
+  const toggleAll = () => {
+    const newInStock = !allInStock;
+    const newStock = newInStock ? 100 : 0;
+    for (const p of filtered) {
+      update(p.id, { inStock: newInStock, stock: newStock });
+    }
+  };
+
   const empty = products.length === 0;
   const emptyFiltered = !empty && filtered.length === 0;
 
@@ -141,9 +150,23 @@ export default function AdminInventoryPage() {
           </div>
         </div>
 
-        <p className="text-xs text-muted">
-          {filtered.length} of {products.length} products
-        </p>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <p className="text-xs text-muted">
+            {filtered.length} of {products.length} products
+          </p>
+          {!empty && filtered.length > 1 && (
+            <button
+              onClick={toggleAll}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
+                allInStock
+                  ? "bg-red-100 text-red-700 hover:bg-red-200"
+                  : "bg-green-100 text-green-700 hover:bg-green-200"
+              }`}
+            >
+              {allInStock ? "Turn All OFF" : "Turn All ON"}
+            </button>
+          )}
+        </div>
       </div>
 
       {empty ? (
