@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSession, getUserId, getRole } from "@/lib/api-auth";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -14,6 +15,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
   }
 
+  const payload = await getSession(req);
+  if (!payload) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  const role = getRole(payload);
+  const userId = getUserId(payload);
+  if (!userId || (role !== "delivery" && role !== "admin")) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+  }
+
   const { orderId, code } = await req.json();
 
   if (!orderId || !code) {
@@ -22,12 +31,17 @@ export async function POST(req: NextRequest) {
 
   const { data: order, error: fetchError } = await supabaseAdmin
     .from("orders")
-    .select("delivery_code, payment_status, payment_method")
+    .select("delivery_code, payment_status, payment_method, delivery_boy_id")
     .eq("id", orderId)
     .single();
 
   if (fetchError || !order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
+
+  // Only the assigned delivery boy (or an admin) can confirm delivery
+  if (role === "delivery" && order.delivery_boy_id !== userId) {
+    return NextResponse.json({ error: "Order not assigned to you" }, { status: 403 });
   }
 
   if (order.delivery_code !== code) {

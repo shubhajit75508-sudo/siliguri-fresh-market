@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSession, getUserId, getRole } from "@/lib/api-auth";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -12,12 +13,11 @@ export async function GET(req: NextRequest) {
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
-  const cookie = req.cookies.get("sfm-auth-session");
-  if (!cookie) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-
-  const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
-  const [userId, role] = raw.split("|");
-  if (!userId || role !== "delivery") return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+  const payload = await getSession(req);
+  if (!payload) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (getRole(payload) !== "delivery") return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+  const userId = getUserId(payload);
+  if (!userId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const boyId = searchParams.get("boy_id") || userId;

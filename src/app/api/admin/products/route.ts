@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/api-auth";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -8,23 +9,19 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
-function checkAuth(req: NextRequest) {
+async function checkAuth(req: NextRequest) {
+  // External service API key — only accepted if a server secret is configured
   const apiKey = req.headers.get("x-api-key");
-  if (apiKey === process.env.API_SECRET_KEY) return null;
+  if (process.env.API_SECRET_KEY && apiKey === process.env.API_SECRET_KEY) return null;
 
-  const cookie = req.cookies.get("sfm-auth-session");
-  if (cookie?.value) {
-    // Handle signed cookies (payload.hash) — extract role from payload
-    const raw = cookie.value.includes(".") ? cookie.value.split(".")[0] : cookie.value;
-    const parts = raw.split("|");
-    if (parts.length === 2 && parts[1] === "admin") return null;
-  }
+  const admin = await requireAdmin(req);
+  if (admin) return null;
 
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 export async function POST(req: NextRequest) {
-  const unauthorized = checkAuth(req);
+  const unauthorized = await checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -66,7 +63,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const unauthorized = checkAuth(req);
+  const unauthorized = await checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -113,7 +110,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const unauthorized = checkAuth(req);
+  const unauthorized = await checkAuth(req);
   if (unauthorized) return unauthorized;
 
   const supabaseAdmin = getSupabaseAdmin();

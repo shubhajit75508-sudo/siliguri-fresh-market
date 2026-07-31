@@ -5,6 +5,10 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
+    // Only customers and delivery boys can be created via this open endpoint.
+    // Admin roles are never assigned here — admins are validated at login.
+    const role = body.role === "delivery" ? "delivery" : "customer";
+
     try {
       const { addLocalUser } = await import("@/lib/local-db");
       addLocalUser({
@@ -12,7 +16,7 @@ export async function POST(req: NextRequest) {
         name: body.name,
         email: body.email,
         phone: body.phone ?? "",
-        role: body.role ?? "customer",
+        role,
         createdAt: new Date().toISOString(),
       });
     } catch {
@@ -32,7 +36,7 @@ export async function POST(req: NextRequest) {
       name: body.name,
       email: body.email,
       phone: body.phone ?? null,
-      role: body.role ?? "customer",
+      role,
       loyalty_points: body.loyalty_points ?? 0,
     });
 

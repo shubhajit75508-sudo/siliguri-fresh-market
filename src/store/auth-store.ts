@@ -5,15 +5,23 @@ import { ADMIN_EMAILS } from "@/lib/admin-creds";
 /** Set session cookie via server-side API (secret never touches browser) */
 async function setSessionCookie(userId: string, role: string): Promise<void> {
   try {
-    await fetch("/api/auth/token", {
+    const res = await fetch("/api/auth/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, role }),
     });
-  } catch {
-    // Fallback: set cookie client-side (old method, will be phased out)
-    document.cookie = `sfm-auth-session=${userId}|${role}; path=/; max-age=604800; Secure; SameSite=Strict`;
+    if (!res.ok) {
+      console.warn("Session token issuance failed:", res.status);
+    }
+  } catch (e) {
+    // Never set an unsigned cookie client-side — the server must sign sessions.
+    console.error("Session token issuance error:", e);
   }
+}
+
+/** Set a server-issued signed cookie directly (used after /api/admin/login) */
+function setSignedCookie(token: string): void {
+  document.cookie = `sfm-auth-session=${token}; path=/; max-age=604800; Secure; SameSite=Strict`;
 }
 
 export type UserRole = "admin" | "delivery" | "customer";
@@ -157,12 +165,35 @@ export const useAuthStore = create<AuthState>()(
                 if (!resp.ok) {
                   return { success: false, error: "Incorrect password" };
                 }
+                const loginData = await resp.json();
+                if (loginData?.token) {
+                  setSignedCookie(loginData.token);
+                  const user = {
+                    id: loginData.user?.id ?? "admin-" + crypto.randomUUID(),
+                    email,
+                    name: email.split("@")[0],
+                    phone: "",
+                    address: "",
+                    role: "admin" as const,
+                    location: null,
+                    createdAt: new Date().toISOString(),
+                  };
+                  set((state) => {
+                    const exists = state.users.some((u) => u.email === email);
+                    return { currentUser: user, users: exists ? state.users : [...state.users, user] };
+                  });
+                  return { success: true, user };
+                }
               } catch {
                 return { success: false, error: "Server unreachable. Try again." };
               }
             }
 
-            const userId = authUser?.id ?? "admin-" + crypto.randomUUID();
+            if (!authUser) {
+              return { success: false, error: "Incorrect password" };
+            }
+
+            const userId = authUser.id;
             const { users } = get();
             let user = users.find((u) => u.email === email);
             if (!user) {

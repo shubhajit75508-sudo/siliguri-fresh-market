@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendOrderConfirmation, sendDeliveryUpdate } from "@/lib/email";
+import { requireAuth } from "@/lib/api-auth";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -99,16 +100,26 @@ export async function POST(req: NextRequest) {
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
+  const auth = await requireAuth(req);
+  if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const body = await req.json();
+
+  const total = Number(body.total);
+  if (!Number.isFinite(total) || total <= 0 || total > 500000) {
+    return NextResponse.json({ error: "Invalid order total" }, { status: 400 });
+  }
+
+  // payment_status is set by the server only — admins confirm payments manually
   const { error } = await supabaseAdmin.from("orders").upsert({
     id: body.id,
     user_id: body.user_id ?? null,
     items: body.items ?? [],
-    total: body.total,
+    total,
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
-    payment_status: body.payment_status ?? "unpaid",
+    payment_status: "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",

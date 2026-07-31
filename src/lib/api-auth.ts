@@ -2,23 +2,11 @@ import { NextRequest } from "next/server";
 import { verifySessionToken } from "@/lib/session";
 
 /** Get and verify session from request cookie. Returns payload or null.
- *  Accepts both HMAC-signed tokens and legacy unsigned cookies during transition. */
+ *  Only HMAC-signed tokens are accepted — unsigned cookies are rejected. */
 export async function getSession(req: NextRequest): Promise<string | null> {
   const cookie = req.cookies.get("sfm-auth-session");
   if (!cookie?.value) return null;
-
-  // Try HMAC-SHA256 verification first
-  const verified = await verifySessionToken(cookie.value);
-  if (verified) return verified;
-
-  // Legacy unsigned cookie fallback (format: userId|role)
-  const raw = cookie.value;
-  if (!raw.includes(".") && raw.includes("|")) {
-    const [userId, role] = raw.split("|");
-    if (userId && role) return raw;
-  }
-
-  return null;
+  return verifySessionToken(cookie.value);
 }
 
 /** Extract userId from a verified session payload (format: "userId|role") */

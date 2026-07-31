@@ -19,15 +19,22 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
 
+  const total = Number(body.total);
+  if (!Number.isFinite(total) || total <= 0 || total > 500000) {
+    return NextResponse.json({ error: "Invalid order total" }, { status: 400 });
+  }
+
+  // Payment status is always set by the server — never trusted from the client.
+  // Admins mark orders paid only after manually verifying the UPI transaction.
   const orderData: Record<string, unknown> = {
     id: body.id,
     user_id: body.user_id ?? null,
     items: body.items ?? [],
-    total: body.total,
+    total,
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: body.payment_method ?? "cod",
-    payment_status: body.payment_status ?? "unpaid",
+    payment_status: "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",

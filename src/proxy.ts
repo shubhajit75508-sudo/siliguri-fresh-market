@@ -41,15 +41,7 @@ async function hmacSign(message: string, secret: string): Promise<string> {
     .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/** Legacy hash (String.hashCode) — used to verify old cookies during transition */
-function legacyHash(payload: string, secret: string): string {
-  let hash = 0;
-  const s = payload + secret;
-  for (let i = 0; i < s.length; i++) { hash = ((hash << 5) - hash) + s.charCodeAt(i); hash |= 0; }
-  return Math.abs(hash).toString(36);
-}
-
-/** Verify a signed cookie — tries HMAC first, falls back to legacy hash */
+/** Verify a signed cookie (HMAC-SHA256 only — unsigned cookies are rejected) */
 async function verifySignedCookie(token: string): Promise<string | null> {
   const parts = token.split(".");
   if (parts.length !== 2) return null;
@@ -57,55 +49,49 @@ async function verifySignedCookie(token: string): Promise<string | null> {
   const secret = getSecret();
   if (!secret) return null;
 
-  // Try HMAC-SHA256 first (new format)
-  try {
-    const expected = await hmacSign(payload, secret);
-    // Constant-time comparison
-    if (sig.length === expected.length) {
-      let ok = 0;
-      for (let i = 0; i < sig.length; i++) {
-        ok |= sig.charCodeAt(i) ^ expected.charCodeAt(i);
-      }
-      if (ok === 0) return payload;
-    }
-  } catch {
-    // HMAC failed, try legacy hash
+  const expected = await hmacSign(payload, secret);
+  // Constant-time comparison
+  if (sig.length !== expected.length) return null;
+  let ok = 0;
+  for (let i = 0; i < sig.length; i++) {
+    ok |= sig.charCodeAt(i) ^ expected.charCodeAt(i);
   }
-
-  // Fallback: legacy hash (String.hashCode) — for backward compatibility
-  const legacyExpected = legacyHash(payload, secret);
-  if (sig.length === legacyExpected.length) {
-    let ok = 0;
-    for (let i = 0; i < sig.length; i++) {
-      ok |= sig.charCodeAt(i) ^ legacyExpected.charCodeAt(i);
-    }
-    if (ok === 0) return payload;
-  }
-
-  return null;
+  return ok === 0 ? payload : null;
 }
 
-/** Extract user payload from cookie, verifying signature if present */
+/** Extract user payload from cookie — signature is always verified */
 async function getSessionPayload(req: NextRequest): Promise<string | null> {
   const cookie = req.cookies.get("sfm-auth-session");
   if (!cookie?.value) return null;
-  const raw = cookie.value;
+  return verifySignedCookie(cookie.value);
+}
 
-  // Signed cookie (contains "." separator)
-  if (raw.includes(".")) {
-    const verified = await verifySignedCookie(raw);
-    if (verified) return verified;
-    // Verification failed — do NOT fall back to unsigned payload
-    return null;
+const ALLOWED_ORIGINS = new Set([
+  "https://siliguri-fresh-market.vercel.app",
+  "https://www.siligurifreshmart.com",
+  "https://siligurifreshmart.com",
+]);
+
+/** Reflect CORS for known origins on API routes (replaces static next.config blocks) */
+function applyCors(req: NextRequest, res: NextResponse): NextResponse {
+  const pathname = req.nextUrl.pathname;
+  if (!pathname.startsWith("/api/")) return res;
+  const origin = req.headers.get("origin");
+  if (!origin) return res;
+  if (ALLOWED_ORIGINS.has(origin)) {
+    res.headers.set("Access-Control-Allow-Origin", origin);
   }
-
-  // Unsigned legacy cookie — accept only for backward compatibility
-  // This path will be removed once all clients have been updated.
-  return raw;
+  return res;
 }
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Allow CORS preflight for API routes
+  if (req.method === "OPTIONS" && pathname.startsWith("/api/")) {
+    const res = NextResponse.json({});
+    return applyCors(req, res);
+  }
 
   // Redirect legacy login pages
   if (pathname === "/admin/login" || pathname === "/delivery/login") {
@@ -194,10 +180,10 @@ export async function proxy(req: NextRequest) {
     if (!payload.endsWith("|admin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    return NextResponse.next();
+    return applyCors(req, NextResponse.next());
   }
 
-  return NextResponse.next();
+  return applyCors(req, NextResponse.next());
 }
 
 export const config = {

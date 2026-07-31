@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { ADMIN_EMAILS } from "@/lib/admin-creds";
 import bcrypt from "bcryptjs";
+import { signSessionToken } from "@/lib/session";
 
 function getAdminPasswordHash(email: string): string | null {
   for (let i = 0; i < ADMIN_EMAILS.length; i++) {
@@ -55,8 +56,12 @@ export async function POST(req: NextRequest) {
       if (match) userId = match.id;
     }
 
+    // Issue the signed session here — this endpoint already validated credentials.
+    const token = await signSessionToken(`${userId}|admin`);
+
     return NextResponse.json({
       success: true,
+      token,
       user: {
         id: userId,
         email,
