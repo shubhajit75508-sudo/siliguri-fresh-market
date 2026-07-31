@@ -61,7 +61,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
 
   const payload = await getSession(_req);
-  if (!payload) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
   const { data, error } = await supabaseAdmin
     .from("orders")
@@ -71,10 +70,22 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   if (error || !data) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
-  const allowed = await canAccessOrder(supabaseAdmin, payload, data as any);
-  if (!allowed) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  let allowed = false;
+  if (payload) allowed = await canAccessOrder(supabaseAdmin, payload, data as any);
 
-  return NextResponse.json({ order: data });
+  // Owners/admins/delivery boys see the full order. Everyone else gets a redacted
+  // tracking view (no PII, no delivery code) so the track page works without a session.
+  if (allowed) return NextResponse.json({ order: data });
+
+  const order = data as Record<string, unknown>;
+  const redacted = { ...order };
+  delete redacted.delivery_code;
+  delete redacted.customer_phone;
+  delete redacted.customer_email;
+  delete redacted.customer_name;
+  delete redacted.address_snapshot;
+  delete redacted.user_id;
+  return NextResponse.json({ order: redacted });
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
