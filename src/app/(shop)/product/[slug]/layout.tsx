@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = "Buy " + product.name + " Online in Siliguri | Free Home Delivery";
-  const description = product.name + " - Rs." + product.price + "/" + product.unit + ". " + (product.discount ? product.discount + "% off. " : "") + "Fresh daily from local market. Free delivery above Rs.299. " + (product.cuts?.length ? "Cut to order. " : "") + (product.cleaningOptions?.length ? "Cleaning available. " : "") + "Order now on Siliguri Fresh Mart.";
+  const description = product.name + " - Rs." + product.price + "/" + product.unit + ". " + (product.discount ? product.discount + "% off. " : "") + "Fresh daily from local market. Free delivery on all orders. " + (product.cuts?.length ? "Cut to order. " : "") + (product.cleaningOptions?.length ? "Cleaning available. " : "") + "Order now on Siliguri Fresh Mart.";
 
   return {
     title,

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Buy Fresh Fish Online in Siliguri | Rohu, Katla, Hilsa, Prawns | Home Delivery",
   description:
-    "Order fresh fish online in Siliguri. Rohu, Katla, Hilsa, Pomfret, Prawns & more. Free delivery above Rs.299. Cut & clean to order. Delivered in 30 min from local rivers.",
+    "Order fresh fish online in Siliguri. Rohu, Katla, Hilsa, Pomfret, Prawns & more. Free delivery on all orders. Cut & clean to order. Delivered in 30 min from local rivers.",
   keywords: [
     "fresh fish delivery Siliguri",
     "rohu fish online Siliguri",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Buy Fresh Fish Online in Siliguri | Siliguri Fresh Mart",
     description:
-      "Fresh river catch delivered daily. Rohu, Katla, Hilsa, Pomfret, Prawns. Free delivery above Rs.299.",
+      "Fresh river catch delivered daily. Rohu, Katla, Hilsa, Pomfret, Prawns. Free delivery on all orders.",
   },
 };
 

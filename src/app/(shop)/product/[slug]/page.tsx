@@ -168,7 +168,7 @@ export default function ProductDetailPage({
             </span>
             <span className="text-xs text-muted">·</span>
             <span className="inline-flex items-center gap-1 text-xs text-brand-fresh font-semibold">
-              <Truck className="h-3 w-3" /> Free over ₹299
+              <Truck className="h-3 w-3" /> Free delivery
             </span>
           </div>
 
@@ -308,7 +308,7 @@ export default function ProductDetailPage({
             {[
               { icon: Star, text: `Freshness guaranteed — ${product.freshnessScore || 95}% score` },
               { icon: Shield, text: "30-min delivery — first batch" },
-              { icon: Truck, text: "Free delivery over ₹299" },
+              { icon: Truck, text: "Free delivery" },
               { icon: MapPin, text: `Sourced from ${product.source || "local markets"}` },
               { icon: Navigation, text: "Replacement guaranteed — request within 3 hours" },
             ].map(({ icon: Icon, text }) => (

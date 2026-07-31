@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   { q: "How fast is delivery?", a: "Most orders are delivered within 30–45 minutes across Siliguri. Fish and meat items are prioritised for freshness." },
-  { q: "Is delivery free?", a: "Yes! Delivery is free on all orders above ₹299. A small ₹40 fee applies for orders under ₹299." },
+  { q: "Is delivery free?", a: "Yes! Delivery is free on all orders, no minimum amount required." },
   { q: "How do you ensure freshness?", a: "We source daily from Siliguri's local markets. Every product shows its freshness score and catch/source date." },
   { q: "Can I choose fish cuts and cleaning?", a: "Absolutely — select your species, weight, cut (whole, steaks, curry cut), and cleaning preference just like at the market." },
   { q: "What if I receive a damaged or spoiled item?", a: "No worries — you can request a replacement within 3 hours of delivery. Just go to your order and tap Request Replacement." },
