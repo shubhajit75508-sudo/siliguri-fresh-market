@@ -24,6 +24,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid order total" }, { status: 400 });
   }
 
+  const paymentMethod = String(body.payment_method ?? "cod");
+  const upiReference = String(body.upi_reference ?? "").replace(/\s+/g, "");
+
+  if (paymentMethod === "upi") {
+    // UPI references (RRN) are 12-digit numbers; accept 10-22 digits to also cover
+    // IMPS/UTR references some banks return.
+    if (!/^\d{10,22}$/.test(upiReference)) {
+      return NextResponse.json(
+        { error: "Invalid UPI reference. Enter the 12-digit transaction number from your UPI app." },
+        { status: 400 }
+      );
+    }
+    // Prevent a single payment reference from being claimed on multiple orders.
+    const { data: existing } = await supabaseAdmin
+      .from("orders")
+      .select("id")
+      .eq("upi_reference", upiReference)
+      .limit(1)
+      .maybeSingle();
+    if (existing) {
+      return NextResponse.json(
+        { error: `This UPI reference was already used for order ${existing.id}.` },
+        { status: 400 }
+      );
+    }
+  }
+
+  // The delivery code is ALWAYS generated server-side — never trusted from the client.
+  const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
+
   // Payment status is always set by the server — never trusted from the client.
   // Admins mark orders paid only after manually verifying the UPI transaction.
   const orderData: Record<string, unknown> = {
@@ -33,14 +63,14 @@ export async function POST(req: NextRequest) {
     total,
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
-    payment_method: body.payment_method ?? "cod",
+    payment_method: paymentMethod,
     payment_status: "unpaid",
     address_snapshot: body.address_snapshot ?? {},
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",
     delivery_boy_id: body.delivery_boy_id ?? null,
-    delivery_code: body.delivery_code ?? "",
+    delivery_code: deliveryCode,
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),
@@ -52,9 +82,9 @@ export async function POST(req: NextRequest) {
     orderData.payment_id = body.payment_id;
   }
 
-  // upi_reference column — include only if provided
-  if (body.upi_reference) {
-    orderData.upi_reference = body.upi_reference;
+  // upi_reference column — include only if provided and valid
+  if (paymentMethod === "upi" && upiReference) {
+    orderData.upi_reference = upiReference;
   }
 
   const { error } = await supabaseAdmin.from("orders").upsert(orderData);

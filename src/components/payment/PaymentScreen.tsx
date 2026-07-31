@@ -238,8 +238,8 @@ export default function PaymentScreen({
   }, [total, orderId]);
 
   const handleSubmitPayment = useCallback(async () => {
-    if (!upiRef.trim()) {
-      setErrorMessage("Please enter the UPI reference number");
+    if (!refValid) {
+      setErrorMessage("Enter the 12-digit UPI reference number from your UPI app.");
       return;
     }
 
@@ -305,6 +305,9 @@ export default function PaymentScreen({
   };
 
   const totalItems = items.reduce((n, i) => n + i.quantity, 0);
+  const refDigits = upiRef.replace(/\D/g, "");
+  const refValid = /^\d{10,22}$/.test(refDigits);
+  const handleRefChange = (value: string) => setUpiRef(value.replace(/\D/g, ""));
 
   // ── SUCCESS ──
   if (state === "success") {
@@ -439,19 +442,45 @@ export default function PaymentScreen({
               </label>
               <input
                 type="text"
+                autoFocus
+                inputMode="numeric"
+                autoComplete="off"
                 value={upiRef}
-                onChange={(e) => setUpiRef(e.target.value)}
-                placeholder="e.g. 123456789012"
-                className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 tabular-nums"
+                onChange={(e) => handleRefChange(e.target.value)}
+                placeholder="12-digit transaction number"
+                maxLength={22}
+                className={`w-full bg-white border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:ring-2 tabular-nums ${
+                  upiRef && !refValid
+                    ? "border-amber-300 focus:border-amber-400 focus:ring-amber-100"
+                    : refValid
+                      ? "border-[#2D7D3A]/50 focus:border-[#2D7D3A]/50 focus:ring-[#2D7D3A]/10"
+                      : "border-border focus:border-[#2D7D3A]/50 focus:ring-[#2D7D3A]/10"
+                }`}
               />
-              <p className="text-[10px] text-muted mt-1">
-                Find this in your UPI app under transaction details
-              </p>
+              {upiRef && !refValid && (
+                <p className="text-[10px] text-amber-600 mt-1">
+                  UPI references are usually 12 digits — check the transaction in your UPI app.
+                </p>
+              )}
+              {refValid && (
+                <p className="text-[10px] text-[#2D7D3A] mt-1">Looks good — ready to submit.</p>
+              )}
+              <details className="mt-1.5">
+                <summary className="cursor-pointer text-[10px] text-muted underline underline-offset-2">
+                  How to find your UPI reference?
+                </summary>
+                <div className="mt-1.5 rounded-lg bg-surface-2 border border-border p-2.5 text-[10px] text-muted space-y-1">
+                  <p><span className="font-semibold text-foreground">Google Pay:</span> Activity → tap the payment → copy Transaction ID.</p>
+                  <p><span className="font-semibold text-foreground">PhonePe:</span> History → tap the payment → copy UPI Transaction ID.</p>
+                  <p><span className="font-semibold text-foreground">Paytm:</span> Passbook → tap the payment → copy UPI Ref No.</p>
+                  <p><span className="font-semibold text-foreground">BHIM:</span> Transaction History → tap the payment → copy Transaction ID.</p>
+                </div>
+              </details>
             </div>
             {errorMessage && <p className="text-xs text-red-500 text-center">{errorMessage}</p>}
             <button
               onClick={handleSubmitPayment}
-              disabled={!upiRef.trim()}
+              disabled={!refValid}
               className="w-full rounded-xl bg-[#2D7D3A] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Submit Payment & Place Order
@@ -700,16 +729,31 @@ export default function PaymentScreen({
                 <p className="text-xs font-bold text-foreground">After paying, enter your UPI reference number:</p>
                 <input
                   type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
                   value={upiRef}
-                  onChange={(e) => setUpiRef(e.target.value)}
-                  placeholder="UPI Reference / Transaction ID"
-                  className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 tabular-nums"
+                  onChange={(e) => handleRefChange(e.target.value)}
+                  placeholder="12-digit transaction number"
+                  maxLength={22}
+                  className={`w-full bg-white border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:ring-2 tabular-nums ${
+                    upiRef && !refValid
+                      ? "border-amber-300 focus:border-amber-400 focus:ring-amber-100"
+                      : refValid
+                        ? "border-[#2D7D3A]/50 focus:border-[#2D7D3A]/50 focus:ring-[#2D7D3A]/10"
+                        : "border-border focus:border-[#2D7D3A]/50 focus:ring-[#2D7D3A]/10"
+                  }`}
                 />
+                {upiRef && !refValid && (
+                  <p className="text-[10px] text-amber-600">UPI references are usually 12 digits — check the transaction in your UPI app.</p>
+                )}
+                {refValid && (
+                  <p className="text-[10px] text-[#2D7D3A]">Looks good — ready to submit.</p>
+                )}
                 <p className="text-[10px] text-muted">Find this in your UPI app under transaction details</p>
                 {errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
                 <button
                   onClick={handleSubmitPayment}
-                  disabled={!upiRef.trim()}
+                  disabled={!refValid}
                   className="w-full rounded-xl bg-[#2D7D3A] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Submit Payment & Place Order
