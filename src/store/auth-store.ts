@@ -314,7 +314,17 @@ export const useAuthStore = create<AuthState>()(
           return users.some((u) => u.role === "admin") || ADMIN_EMAILS.some((email) => users.some((u) => u.email === email));
         },
       }),
-      { name: "sfm-auth-v2" }
+      {
+        name: "sfm-auth-v2",
+        onRehydrateStorage: (state) => {
+          // Self-heal the session cookie: localStorage may persist a login made before
+          // the HMAC-signed-cookie deployment (or after the 7-day cookie expiry), so
+          // re-issue a fresh signed cookie whenever the user is restored.
+          if (state?.currentUser) {
+            void setSessionCookie(state.currentUser.id, state.currentUser.role);
+          }
+        },
+      }
     ),
     { name: "AuthStore" }
   )

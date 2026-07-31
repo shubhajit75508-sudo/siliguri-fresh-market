@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useCallback } from "react";
+import { use, useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 import { useOrderStore } from "@/store/order-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import dynamic from "next/dynamic";
 import { downloadInvoice } from "@/lib/invoice";
@@ -40,6 +41,7 @@ export default function TrackOrderPage({
   const [lastUpdated, setLastUpdated] = useState("");
   const [showCancel, setShowCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const codeRetryRef = useRef(false);
   const toast = useToast();
   const { cancelOrder } = useOrderStore();
 
@@ -86,6 +88,12 @@ export default function TrackOrderPage({
           returnRequested: raw.return_requested as boolean | undefined,
           returnApproved: raw.return_approved as boolean | undefined,
         });
+        // The signed session cookie may still be settling after page load — if a
+        // logged-in customer got a redacted order (no code), refetch once.
+        if (!raw.delivery_code && !codeRetryRef.current && useAuthStore.getState().currentUser) {
+          codeRetryRef.current = true;
+          setTimeout(() => fetchOrder(), 900);
+        }
       })
       .catch(() => setOrder(null))
       .finally(() => setLoading(false));
@@ -118,14 +126,15 @@ export default function TrackOrderPage({
           const raw = json.order as Record<string, unknown>;
           setOrder((prev) => {
             if (!prev) return prev;
-            const newStatus = raw.status as Order["status"];
-            const newDeliveryStatus = (raw.delivery_status as string) ?? undefined;
-            if (newStatus === prev.status && newDeliveryStatus === prev.deliveryStatus) return prev;
-            return {
-              ...prev,
-              status: newStatus,
-              deliveryStatus: newDeliveryStatus as DeliveryStatus | undefined,
-              deliveryCode: (raw.delivery_code as string) ?? prev.deliveryCode,
+          const newStatus = raw.status as Order["status"];
+          const newDeliveryStatus = (raw.delivery_status as string) ?? undefined;
+          const newCode = (raw.delivery_code as string) ?? prev.deliveryCode;
+          if (newStatus === prev.status && newDeliveryStatus === prev.deliveryStatus && newCode === prev.deliveryCode) return prev;
+          return {
+            ...prev,
+            status: newStatus,
+            deliveryStatus: newDeliveryStatus as DeliveryStatus | undefined,
+            deliveryCode: newCode,
               deliveryBoyId: (raw.delivery_boy_id as string) ?? prev.deliveryBoyId,
               deliveryBoyName: (raw.delivery_boy_name as string) ?? prev.deliveryBoyName,
             };

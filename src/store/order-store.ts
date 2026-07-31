@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { Order, CartItem, Address, DeliveryStatus, DeliveryAssignment } from "@/types";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { useAuthStore } from "@/store/auth-store";
 
 const API = "/api/admin/orders";
 
@@ -123,9 +124,25 @@ export const useOrderStore = create<OrderState>()(
             return;
           }
           try {
-            const res = await fetch("/api/orders");
+            let res = await fetch("/api/orders");
             if (!res.ok) throw new Error("Failed to fetch user orders");
-            const json = await res.json();
+            let json: { orders?: Record<string, unknown>[] } = await res.json();
+
+            // The signed session cookie may still be settling right after page load
+            // (re-issued on auth-store rehydration). If a logged-in user got an empty
+            // list, retry once shortly after.
+            if (!json.orders || json.orders.length === 0) {
+              const current = useAuthStore.getState().currentUser;
+              if (current) {
+                await new Promise((r) => setTimeout(r, 700));
+                const retry = await fetch("/api/orders");
+                if (retry.ok) {
+                  const retryJson = await retry.json();
+                  if (retryJson.orders?.length) json = retryJson;
+                }
+              }
+            }
+
             const userOrders: Order[] = (json.orders ?? []).map((r: Record<string, unknown>) => ({
               id: r.id as string,
               items: (r.items as Order["items"]) ?? [],
