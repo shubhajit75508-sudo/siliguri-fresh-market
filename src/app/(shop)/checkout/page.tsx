@@ -79,6 +79,21 @@ export default function CheckoutPage() {
     });
   }, [hydrated, addresses]);
 
+  // If the customer is returning from their UPI app (after a page reload), restore
+  // the in-progress payment screen instead of dropping them back on the checkout form.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("sfm-pending-payment");
+      if (!raw) return;
+      const pending = JSON.parse(raw) as { orderId?: string; total?: number };
+      if (!pending?.orderId) return;
+      if (Math.abs(Number(pending.total) - total) < 1 && items.length > 0) {
+        setShowPaymentScreen(true);
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (hydrated && items.length === 0 && !paymentConfirmed) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center py-20 text-center">

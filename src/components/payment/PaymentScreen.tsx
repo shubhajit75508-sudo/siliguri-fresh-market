@@ -33,6 +33,40 @@ export interface PaymentScreenProps {
 const UPI_VPA = "shubhajit75508@okhdfcbank";
 const MERCHANT_NAME = "Siliguri Fresh Mart";
 
+/** Persist the in-progress UPI payment so returning from the UPI app (even after a
+ *  page reload) restores the "did you pay? enter reference" screen. */
+const PENDING_KEY = "sfm-pending-payment";
+
+interface PendingPayment {
+  orderId: string;
+  total: number;
+  ts: number;
+}
+
+function savePendingPayment(orderId: string, total: number): void {
+  try {
+    sessionStorage.setItem(PENDING_KEY, JSON.stringify({ orderId, total, ts: Date.now() } satisfies PendingPayment));
+  } catch {}
+}
+
+function loadPendingPayment(): PendingPayment | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PendingPayment;
+    if (!parsed?.orderId) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function clearPendingPayment(): void {
+  try {
+    sessionStorage.removeItem(PENDING_KEY);
+  } catch {}
+}
+
 function buildUpiIntentUrl(amount: number, orderId: string): string {
   const params = new URLSearchParams({
     pa: UPI_VPA,
@@ -44,22 +78,16 @@ function buildUpiIntentUrl(amount: number, orderId: string): string {
   return `upi://pay?${params.toString()}`;
 }
 
-function buildUpiWebUrl(amount: number, orderId: string): string {
-  const params = new URLSearchParams({
-    pa: UPI_VPA,
-    pn: MERCHANT_NAME,
-    am: amount.toFixed(2),
-    cu: "INR",
-    tn: `Order ${orderId}`,
-  });
-  return `https://upi://pay?${params.toString()}`;
-}
-
 function isMobileDevice(): boolean {
   if (typeof window === "undefined") return false;
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
   );
+}
+
+function isIOSDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 function buildOrderId(): string {
@@ -123,13 +151,29 @@ export default function PaymentScreen({
   const [copied, setCopied] = useState(false);
   const [upiRef, setUpiRef] = useState("");
   const [selectedApp, setSelectedApp] = useState("");
+  const [openFailed, setOpenFailed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const orderIdRef = useRef(buildOrderId());
   const orderId = orderIdRef.current;
 
-  // Detect mobile AFTER hydration to avoid SSR mismatch
+  // Detect device AFTER hydration to avoid SSR mismatch, and restore an in-progress
+  // payment if the customer is coming back from their UPI app.
   useEffect(() => {
     setIsMobile(isMobileDevice());
+
+    const pending = loadPendingPayment();
+    if (pending) {
+      // Only reuse it if the amount still matches the current cart — otherwise start fresh.
+      if (Math.abs(Number(pending.total) - total) < 1) {
+        orderIdRef.current = pending.orderId;
+        setState("awaiting");
+        return;
+      }
+      clearPendingPayment();
+    }
+
+    savePendingPayment(orderId, total);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Generate QR code for desktop (only client-side)
@@ -143,27 +187,54 @@ export default function PaymentScreen({
     }).then((url) => setQrDataUrl(url)).catch(() => {});
   }, [isMobile, total, orderId]);
 
+  // Detect when the user returns from the UPI app instead of relying on a timeout.
+  // Also surface a fallback if the app never opened (not installed / link blocked).
+  useEffect(() => {
+    if (state !== "opening") return;
+
+    let opened = false;
+    const onVisibility = () => {
+      if (document.hidden) {
+        opened = true;
+      } else if (opened) {
+        setState("awaiting");
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const fallbackTimer = setTimeout(() => {
+      if (!opened && document.visibilityState === "visible") {
+        setOpenFailed(true);
+      }
+    }, 3000);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearTimeout(fallbackTimer);
+    };
+  }, [state]);
+
   const handleAppSelect = useCallback((appName: string) => {
     setSelectedApp(appName);
+    setOpenFailed(false);
     setState("opening");
 
-    const intentUrl = buildUpiIntentUrl(total, orderId);
-
-    // Try app-specific deep links first, then generic UPI intent
-    let appUrl = intentUrl;
-    if (appName === "Google Pay") {
+    // Android uses app-specific intent:// deep links. On iOS (or as a generic
+    // fallback) the plain upi:// scheme triggers the system "open in app" chooser.
+    let appUrl: string;
+    if (isIOSDevice()) {
+      appUrl = buildUpiIntentUrl(total, orderId);
+    } else if (appName === "Google Pay") {
       appUrl = `intent://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}#Intent;package=com.google.android.apps.nbu.paisa.user;scheme=upi;end`;
     } else if (appName === "PhonePe") {
       appUrl = `intent://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}#Intent;package=com.phonepe.app;scheme=upi;end`;
     } else if (appName === "Paytm") {
       appUrl = `intent://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}#Intent;package=com.paytm.mobileapp;scheme=upi;end`;
+    } else {
+      appUrl = buildUpiIntentUrl(total, orderId);
     }
 
     window.location.href = appUrl;
-
-    setTimeout(() => {
-      setState("awaiting");
-    }, 2500);
   }, [total, orderId]);
 
   const handleSubmitPayment = useCallback(async () => {
@@ -211,6 +282,7 @@ export default function PaymentScreen({
 
       if (!res.ok) throw new Error("Order creation failed");
 
+      clearPendingPayment();
       setState("success");
       setTimeout(() => onSuccess(orderId), 2000);
     } catch (e) {
@@ -219,6 +291,18 @@ export default function PaymentScreen({
       setErrorMessage("Failed to submit order. Please try again.");
     }
   }, [upiRef, orderId, items, total, address, customerName, customerPhone, customerEmail, userId, onSuccess]);
+
+  const handleCancel = useCallback(() => {
+    clearPendingPayment();
+    onCancel();
+  }, [onCancel]);
+
+  const copyVpa = () => {
+    navigator.clipboard.writeText(UPI_VPA).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  };
 
   const totalItems = items.reduce((n, i) => n + i.quantity, 0);
 
@@ -274,7 +358,7 @@ export default function PaymentScreen({
           </div>
           <div className="space-y-2">
             <button onClick={() => { setState("ready"); setErrorMessage(""); setUpiRef(""); }} className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors">Try Again</button>
-            <button onClick={onCancel} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">Return to Checkout</button>
+            <button onClick={handleCancel} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">Return to Checkout</button>
           </div>
         </div>
       </div>
@@ -312,13 +396,25 @@ export default function PaymentScreen({
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#2D7D3A]/10">
             <Loader2 className="h-10 w-10 text-[#2D7D3A] animate-spin" />
           </div>
-          <h1 className="text-2xl font-extrabold text-foreground text-center">Complete Payment in {selectedApp}</h1>
-          <p className="mt-2 text-sm text-muted text-center">Enter your UPI PIN to pay {formatPrice(total)}</p>
+          <h1 className="text-2xl font-extrabold text-foreground text-center">Complete Your Payment</h1>
+          <p className="mt-2 text-sm text-muted text-center">Pay {formatPrice(total)} to the UPI ID below using any UPI app</p>
 
-          <div className="mt-8 rounded-2xl border border-border p-5 w-full space-y-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted">Paying to</span>
-              <span className="font-bold text-foreground">{MERCHANT_NAME}</span>
+          <div className="mt-6 rounded-2xl border border-border p-5 w-full space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs text-muted">Paying to</p>
+                <p className="text-sm font-bold text-foreground">{MERCHANT_NAME}</p>
+              </div>
+              <button
+                onClick={copyVpa}
+                className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-[10px] font-semibold text-muted hover:bg-surface-2 transition-colors"
+              >
+                <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy UPI ID"}
+              </button>
+            </div>
+            <div className="flex items-center justify-between gap-3 rounded-xl bg-surface-2 border border-border px-3 py-2.5">
+              <span className="text-sm font-mono font-bold text-foreground truncate">{UPI_VPA}</span>
+              <span className="flex-shrink-0 text-[10px] font-bold text-[#2D7D3A] uppercase tracking-wider">UPI ID</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted">Amount</span>
@@ -328,6 +424,9 @@ export default function PaymentScreen({
               <span className="text-muted">Order</span>
               <span className="font-mono font-bold text-foreground text-xs">{orderId}</span>
             </div>
+            <p className="text-[10px] text-muted">
+              Pay with any UPI app using the reference <span className="font-semibold text-foreground">{orderId}</span> so we can match your payment.
+            </p>
           </div>
 
           <div className="mt-6 w-full space-y-3">
@@ -346,7 +445,7 @@ export default function PaymentScreen({
                 className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 tabular-nums"
               />
               <p className="text-[10px] text-muted mt-1">
-                Find this in your {selectedApp} app under transaction details
+                Find this in your UPI app under transaction details
               </p>
             </div>
             {errorMessage && <p className="text-xs text-red-500 text-center">{errorMessage}</p>}
@@ -380,6 +479,44 @@ export default function PaymentScreen({
           </div>
           <h1 className="text-2xl font-extrabold text-foreground">Opening {selectedApp}</h1>
           <p className="mt-2 text-sm text-muted">Complete payment in your UPI app</p>
+
+          {openFailed && (
+            <div className="mt-8 rounded-2xl border border-orange-200 bg-orange-50 p-5 text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <p className="text-sm font-bold text-orange-700">
+                  {selectedApp} didn't open automatically?
+                </p>
+              </div>
+              <p className="text-xs text-orange-700/80">
+                Pay manually to <span className="font-mono font-bold">{UPI_VPA}</span> using any UPI app,
+                then enter the transaction reference to confirm your order.
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  onClick={copyVpa}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-orange-300 bg-white py-2.5 text-xs font-bold text-orange-700 hover:bg-orange-50 transition-colors"
+                >
+                  <Copy className="h-3.5 w-3.5" /> {copied ? "UPI ID Copied!" : "Copy UPI ID"}
+                </button>
+                <button
+                  onClick={() => setState("awaiting")}
+                  className="w-full rounded-xl bg-[#2D7D3A] py-2.5 text-xs font-bold text-white hover:bg-[#23682E] transition-colors"
+                >
+                  I've paid — enter reference
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!openFailed && (
+            <button
+              onClick={() => setState("ready")}
+              className="mt-8 text-xs text-muted hover:text-foreground underline"
+            >
+              ← Choose a different UPI app
+            </button>
+          )}
         </div>
       </div>
     );
@@ -390,7 +527,7 @@ export default function PaymentScreen({
     <div className="fixed inset-0 z-[100] flex flex-col bg-white overflow-y-auto">
       <div className="sticky top-0 z-10 bg-white border-b border-border">
         <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
-          <button onClick={onCancel} className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors">
+          <button onClick={handleCancel} className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
           <div className="flex items-center gap-1.5">
@@ -505,6 +642,12 @@ export default function PaymentScreen({
                   <ExternalLink className="h-4 w-4 text-muted" />
                 </button>
               ))}
+              <button
+                onClick={() => setState("awaiting")}
+                className="flex items-center justify-center gap-2 w-full p-4 rounded-2xl border-2 border-dashed border-[#2D7D3A]/30 bg-[#2D7D3A]/5 text-sm font-semibold text-[#2D7D3A] hover:bg-[#2D7D3A]/10 transition-all"
+              >
+                <Copy className="h-4 w-4" /> I'll pay via another UPI app
+              </button>
             </div>
           ) : (
             <div className="space-y-4">
@@ -544,11 +687,7 @@ export default function PaymentScreen({
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-mono font-bold text-foreground">{UPI_VPA}</span>
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(UPI_VPA);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
+                    onClick={copyVpa}
                     className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[10px] font-semibold text-muted hover:bg-surface-2 transition-colors"
                   >
                     <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy"}
