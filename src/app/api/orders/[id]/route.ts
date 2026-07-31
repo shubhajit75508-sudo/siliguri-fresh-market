@@ -79,7 +79,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   const order = data as Record<string, unknown>;
   const redacted = { ...order };
-  delete redacted.delivery_code;
+  // The delivery code is intentionally kept in the redacted view: the customer must
+  // be able to show it to the delivery partner without a session, and the confirm
+  // endpoint still requires a verified delivery/admin session + assignment match.
   delete redacted.customer_phone;
   delete redacted.customer_email;
   delete redacted.customer_name;
