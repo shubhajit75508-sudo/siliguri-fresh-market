@@ -37,10 +37,12 @@ export async function POST(req: NextRequest) {
       );
     }
     // Prevent a single payment reference from being claimed on multiple orders.
+    // The reference is stored in the payment_id column (TEXT) — upi_reference
+    // does not exist on the live orders table.
     const { data: existing } = await supabaseAdmin
       .from("orders")
       .select("id")
-      .eq("upi_reference", upiReference)
+      .eq("payment_id", upiReference)
       .limit(1)
       .maybeSingle();
     if (existing) {
@@ -77,14 +79,10 @@ export async function POST(req: NextRequest) {
     eta: body.eta ?? 30,
   };
 
-  // payment_id column may not exist yet — include it only if provided
-  if (body.payment_id) {
-    orderData.payment_id = body.payment_id;
-  }
-
-  // upi_reference column — include only if provided and valid
+  // UPI reference is stored in the existing payment_id column (TEXT) so no
+  // schema migration is required on the live orders table.
   if (paymentMethod === "upi" && upiReference) {
-    orderData.upi_reference = upiReference;
+    orderData.payment_id = upiReference;
   }
 
   const { error } = await supabaseAdmin.from("orders").upsert(orderData);

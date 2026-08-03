@@ -98,7 +98,7 @@ export const useOrderStore = create<OrderState>()(
               customerEmail: (r.customer_email as string) ?? "",
               paymentMethod: (r.payment_method as string) ?? "cod",
               paymentStatus: (r.payment_status as "paid" | "unpaid") ?? "unpaid",
-              upiReference: (r.upi_reference as string) || undefined,
+              upiReference: (r.upi_reference as string) || (r.payment_id as string) || undefined,
               deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
               deliveryBoyId: r.delivery_boy_id as string | undefined,
               deliveryBoyName: r.delivery_boy_name as string | undefined,
@@ -124,10 +124,9 @@ export const useOrderStore = create<OrderState>()(
             return;
           }
           try {
-            let res = await fetch("/api/orders");
+            const res = await fetch("/api/orders");
             if (!res.ok) throw new Error("Failed to fetch user orders");
             let json: { orders?: Record<string, unknown>[] } = await res.json();
-
             // The signed session cookie may still be settling right after page load
             // (re-issued on auth-store rehydration). If a logged-in user got an empty
             // list, retry once shortly after.
@@ -156,7 +155,7 @@ export const useOrderStore = create<OrderState>()(
               customerEmail: (r.customer_email as string) ?? "",
               paymentMethod: (r.payment_method as string) ?? "cod",
               paymentStatus: (r.payment_status as "paid" | "unpaid") ?? "unpaid",
-              upiReference: (r.upi_reference as string) || undefined,
+              upiReference: (r.upi_reference as string) || (r.payment_id as string) || undefined,
               deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
               deliveryBoyId: r.delivery_boy_id as string | undefined,
               deliveryBoyName: r.delivery_boy_name as string | undefined,
