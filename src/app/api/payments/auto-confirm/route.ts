@@ -9,11 +9,19 @@ function getAdmin() {
 }
 
 const AMOUNT_TOLERANCE = 1;
+const ORDER_ID_RE = /\bSFM-[A-Z0-9]{5,20}\b/i;
+const AMOUNT_RE = /(?:Rs\.?|₹|INR)\s?([0-9]+(?:\.[0-9]{1,2})?)/i;
 
 // POST /api/payments/auto-confirm
-// Called by the merchant's Tasker/MacroDroid automation when the bank credit
-// SMS for a UPI payment arrives. Guarded by PAYMENT_AUTO_CONFIRM_SECRET —
-// the same secret lives in the Tasker profile, so it must be kept private.
+// Called by the merchant's MacroDroid/Tasker automation when the bank credit
+// SMS arrives. Guarded by PAYMENT_AUTO_CONFIRM_SECRET — accept it as either a
+// `?key=` query param (simplest for non-technical MacroDroid setup) or an
+// `Authorization: Bearer` header.
+//
+// Accepted bodies:
+//   {"order_id": "SFM-XXX"}              → exact order match (preferred)
+//   {"sms": "<full bank SMS text>"}      → server parses the order ID / amount
+//   {"amount": 123}                      → match by amount against recent unpaid UPI orders
 export async function POST(req: NextRequest) {
   const secret = process.env.PAYMENT_AUTO_CONFIRM_SECRET;
   if (!secret) {
@@ -21,8 +29,9 @@ export async function POST(req: NextRequest) {
   }
 
   const auth = req.headers.get("authorization") ?? "";
-  const provided = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  if (!provided || provided !== secret) {
+  const bearer = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  const queryKey = req.nextUrl.searchParams.get("key") ?? "";
+  if ((bearer !== secret && queryKey !== secret) || (!bearer && !queryKey)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -32,10 +41,22 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
 
-  const orderId = typeof body.order_id === "string" ? body.order_id.trim() : "";
-  const amount = Number(body.amount);
+  // Parse inputs: explicit order_id, or extract from the raw SMS text.
+  let orderId = typeof body.order_id === "string" ? body.order_id.trim() : "";
+  let amount = Number(body.amount);
 
-  // Primary path: order_id extracted from the SMS note "Order SFM-XXXX".
+  if (!orderId && typeof body.sms === "string" && body.sms.trim()) {
+    const sms = body.sms;
+    const idMatch = sms.match(ORDER_ID_RE);
+    if (idMatch) orderId = idMatch[0].toUpperCase();
+
+    if (!Number.isFinite(amount)) {
+      const amtMatch = sms.match(AMOUNT_RE);
+      if (amtMatch) amount = Number(amtMatch[1]);
+    }
+  }
+
+  // Primary path: order_id (explicit or parsed from the SMS note "Order SFM-XXXX").
   if (orderId) {
     const { data: order, error } = await supabase
       .from("orders")
@@ -102,5 +123,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, order_id: match.id, matched_by: "amount" });
   }
 
-  return NextResponse.json({ error: "Provide order_id or amount" }, { status: 400 });
+  return NextResponse.json({ error: "Provide order_id, amount, or sms" }, { status: 400 });
 }
