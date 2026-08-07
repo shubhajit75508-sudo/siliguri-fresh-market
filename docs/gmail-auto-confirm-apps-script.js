@@ -23,7 +23,7 @@ var ENDPOINT = "https://siliguri-fresh-market.vercel.app/api/payments/auto-confi
 var API_KEY = "PASTE_YOUR_SECRET_HERE";
 
 var SEARCH_QUERY = "SFM- newer_than:7d";
-var CHECK_INTERVAL_MINUTES = 2;
+var CHECK_INTERVAL_MINUTES = 1; // Apps Script only allows 1, 5, 10, 15, or 30
 
 /** Scan recent bank credit emails and confirm matching orders. */
 function processBankCredits() {
