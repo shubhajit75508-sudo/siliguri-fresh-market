@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit } from "@/lib/rate-limit";
+import { sendWhatsAppAlert } from "@/lib/whatsapp";
 
 function getAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -33,6 +35,13 @@ export async function POST(req: NextRequest) {
   const queryKey = req.nextUrl.searchParams.get("key") ?? "";
   if ((bearer !== secret && queryKey !== secret) || (!bearer && !queryKey)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Throttle brute-force attempts against the shared secret
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const limited = rateLimit(`auto-confirm:${ip}`, 15, 60_000);
+  if (!limited.allowed) {
+    return NextResponse.json({ error: "Too many requests", retryAfter: limited.retryAfter }, { status: 429 });
   }
 
   const supabase = getAdmin();
@@ -85,6 +94,13 @@ export async function POST(req: NextRequest) {
       .eq("payment_status", "unpaid");
 
     if (updateError) return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+    try {
+      await sendWhatsAppAlert(
+        `💳 *Payment Received* (UPI)\nOrder: ${orderId}\nAmount: ₹${Number(order.total ?? 0).toFixed(2)}`
+      );
+    } catch (e) {
+      console.error("[whatsapp] payment alert failed:", e);
+    }
     return NextResponse.json({ success: true, order_id: orderId });
   }
 
@@ -120,6 +136,13 @@ export async function POST(req: NextRequest) {
       .eq("payment_status", "unpaid");
 
     if (updateError) return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+    try {
+      await sendWhatsAppAlert(
+        `💳 *Payment Received* (UPI)\nOrder: ${match.id}\nAmount: ₹${Number(match.total ?? 0).toFixed(2)}`
+      );
+    } catch (e) {
+      console.error("[whatsapp] payment alert failed:", e);
+    }
     return NextResponse.json({ success: true, order_id: match.id, matched_by: "amount" });
   }
 

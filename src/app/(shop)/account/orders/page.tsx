@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 import { downloadInvoice } from "@/lib/invoice";
+import { PushToggle } from "@/components/push/push-toggle";
 
 const statusBadge: Record<string, "default" | "fresh" | "blue" | "red" | "orange"> = {
   received: "default",
@@ -99,7 +100,10 @@ export default function OrdersPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-lg font-bold">Your Orders</h2>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-bold">Your Orders</h2>
+        <PushToggle />
+      </div>
       {orders.length === 0 ? (
         <div className="flex flex-col items-center py-12 text-center">
           <ShoppingBag className="mb-3 h-10 w-10 text-muted" />

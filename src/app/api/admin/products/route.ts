@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/api-auth";
+import { sendBackInStock } from "@/lib/email";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -106,6 +107,45 @@ export async function PUT(req: NextRequest) {
 
   const { error } = await supabaseAdmin.from("products").update(dbUpdates).filter("id::text", "eq", id);
   if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
+
+  const isBackInStock =
+    (dbUpdates.in_stock === true && dbUpdates.stock !== 0) || (typeof dbUpdates.stock === "number" && dbUpdates.stock > 0);
+  if (isBackInStock) {
+    try {
+      const { data: product } = await supabaseAdmin.from("products").select("name").filter("id::text", "eq", id).maybeSingle();
+      const { data: waitlist } = await supabaseAdmin
+        .from("stock_waitlist")
+        .select("id, user_id")
+        .eq("product_id", id)
+        .is("notified_at", null);
+      if (waitlist?.length) {
+        for (const row of waitlist as { id: string; user_id: string }[]) {
+          const { data: user } = await supabaseAdmin
+            .from("users")
+            .select("email, name")
+            .eq("id", row.user_id)
+            .maybeSingle();
+          const email = (user?.email as string | null) ?? null;
+          if (email) {
+            await sendBackInStock({
+              email,
+              name: (user?.name as string) ?? "",
+              productId: id,
+              productName: (product?.name as string) ?? updates.name ?? "This item",
+            });
+          }
+        }
+        await supabaseAdmin
+          .from("stock_waitlist")
+          .update({ notified_at: new Date().toISOString() })
+          .eq("product_id", id)
+          .is("notified_at", null);
+      }
+    } catch (e) {
+      console.error("[waitlist] notify failed:", e);
+    }
+  }
+
   return NextResponse.json({ success: true });
 }
 

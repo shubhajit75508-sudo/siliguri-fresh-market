@@ -15,6 +15,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import dynamic from "next/dynamic";
 import { downloadInvoice } from "@/lib/invoice";
+import { PushToggle } from "@/components/push/push-toggle";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
@@ -525,6 +526,9 @@ export default function TrackOrderPage({
             <FileText className="h-3.5 w-3.5" /> Download Invoice
           </button>
         )}
+        <div className="mt-3 flex justify-center">
+          <PushToggle />
+        </div>
       </div>
     </div>
   );

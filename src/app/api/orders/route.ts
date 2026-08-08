@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSession, getUserId } from "@/lib/api-auth";
+import { sendWhatsAppAlert } from "@/lib/whatsapp";
 
 function getAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -87,6 +88,27 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabaseAdmin.from("orders").upsert(orderData);
   if (error) return NextResponse.json({ error: "Order creation failed" }, { status: 500 });
+
+  // Fire-and-forget merchant alert on WhatsApp (inert until Green API env vars are set)
+  try {
+    const itemCount = Array.isArray(orderData.items)
+      ? (orderData.items as { quantity?: number }[]).reduce((sum, i) => sum + (i.quantity ?? 1), 0)
+      : 0;
+    await sendWhatsAppAlert(
+      [
+        "🛒 *New Order*",
+        `Order: ${orderData.id}`,
+        `Amount: ₹${Number(orderData.total).toFixed(2)}`,
+        `Payment: ${String(orderData.payment_method).toUpperCase()}`,
+        `Customer: ${orderData.customer_name || "—"}`,
+        `Phone: ${orderData.customer_phone || "—"}`,
+        `Items: ${itemCount}`,
+      ].join("\n")
+    );
+  } catch (e) {
+    console.error("[whatsapp] order alert failed:", e);
+  }
+
   return NextResponse.json({ success: true });
 }
 

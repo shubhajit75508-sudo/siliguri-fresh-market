@@ -97,3 +97,31 @@ export async function sendDeliveryUpdate(params: {
     console.error("[email] sendDeliveryUpdate failed:", e);
   }
 }
+
+export async function sendBackInStock(params: {
+  email: string;
+  name: string;
+  productId: string;
+  productName: string;
+}): Promise<void> {
+  const resend = getResend();
+  if (!resend) return;
+
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: params.email,
+      subject: `Back in stock \u2014 ${params.productName}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+          <h2 style="color:#16a34a">It\u2019s back! \u{1F4E6}</h2>
+          <p>Hi <strong>${escapeHtml(params.name)}</strong>,</p>
+          <p><strong>${escapeHtml(params.productName)}</strong> is back in stock. Order it before it runs out again.</p>
+          <p style="margin-top:24px"><a href="${process.env.NEXT_PUBLIC_APP_URL ?? ""}/product/${encodeURIComponent(params.productId)}" style="background:#16a34a;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none">View Product</a></p>
+        </div>
+      `,
+    });
+  } catch (e) {
+    console.error("[email] sendBackInStock failed:", e);
+  }
+}

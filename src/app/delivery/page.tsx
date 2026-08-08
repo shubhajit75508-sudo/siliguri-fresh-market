@@ -58,6 +58,36 @@ function playNewOrderSound() {
   } catch {}
 }
 
+function EarningsCard() {
+  const [earnings, setEarnings] = useState<{ total: number; weekTotal: number; deliveries: number; weekDeliveries: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/delivery/earnings")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setEarnings(d))
+      .catch(() => {});
+  }, []);
+
+  if (!earnings) return null;
+
+  return (
+    <div className="rounded-2xl border border-brand-fresh/20 bg-gradient-to-br from-brand-fresh/10 to-transparent p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">Total Earnings</p>
+          <p className="text-2xl font-extrabold text-foreground">{formatPrice(earnings.total)}</p>
+          <p className="text-xs text-muted mt-0.5">{earnings.deliveries} deliveries</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">This Week</p>
+          <p className="text-lg font-bold text-brand-fresh">{formatPrice(earnings.weekTotal)}</p>
+          <p className="text-xs text-muted mt-0.5">{earnings.weekDeliveries} deliveries</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Available Order Card ─────────────────────────────
 
 function AvailableCard({
@@ -580,6 +610,8 @@ export default function DeliveryDashboard() {
 
   return (
     <div className="space-y-4 pb-8">
+      <EarningsCard />
+
       {/* Tab Switcher */}
       <div className="flex gap-1 rounded-xl bg-white/5 p-1">
         <button

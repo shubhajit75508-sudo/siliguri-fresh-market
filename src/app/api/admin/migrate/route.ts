@@ -49,6 +49,42 @@ export async function GET() {
   add("realtime publication",
     "ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;"
   );
+  add("push_subscriptions table",
+    `CREATE TABLE IF NOT EXISTS public.push_subscriptions (
+      endpoint TEXT PRIMARY KEY,
+      user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+      keys JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );`
+  );
+  add("push_subscriptions index",
+    "CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user ON public.push_subscriptions(user_id);"
+  );
+  add("stock_waitlist table",
+    `CREATE TABLE IF NOT EXISTS public.stock_waitlist (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      product_id TEXT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      notified_at TIMESTAMPTZ
+    );`
+  );
+  add("stock_waitlist unique index",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_stock_waitlist_product_user ON public.stock_waitlist(product_id, user_id);"
+  );
+  add("delivery_earnings table",
+    `CREATE TABLE IF NOT EXISTS public.delivery_earnings (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      delivery_boy_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+      order_id TEXT NOT NULL UNIQUE,
+      amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+      order_total NUMERIC(10,2) NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );`
+  );
+  add("delivery_earnings index",
+    "CREATE INDEX IF NOT EXISTS idx_delivery_earnings_boy ON public.delivery_earnings(delivery_boy_id);"
+  );
 
   return NextResponse.json({ sql, results });
 }

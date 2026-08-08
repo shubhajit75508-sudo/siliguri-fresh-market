@@ -1,4 +1,4 @@
-const CACHE_NAME = "sfm-v2";
+const CACHE_NAME = "sfm-v3";
 const STATIC_ASSETS = [
   "/",
   "/offline",
@@ -79,4 +79,34 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
+});
+
+// Push notifications — show a notification when a push event arrives
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {}
+  const title = data.title || "Siliguri Fresh Mart";
+  const options = {
+    body: data.body || "",
+    icon: "/icons/icon-192x192.png",
+    badge: "/icons/icon-192x192.png",
+    data: { url: data.url || "/" },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Notification click — open the target page
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if ("focus" in client) return client.focus();
+      }
+      return clients.openWindow(url);
+    })
+  );
 });

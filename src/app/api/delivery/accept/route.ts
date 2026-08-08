@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSession, getUserId, getRole } from "@/lib/api-auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -18,6 +19,11 @@ export async function POST(req: NextRequest) {
   if (getRole(payload) !== "delivery") return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   const userId = getUserId(payload);
   if (!userId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  const limited = rateLimit(`delivery-accept:${userId}`, 20, 60_000);
+  if (!limited.allowed) {
+    return NextResponse.json({ error: "Too many requests", retryAfter: limited.retryAfter }, { status: 429 });
+  }
 
   const { orderId } = await req.json();
   if (!orderId) return NextResponse.json({ error: "Missing orderId" }, { status: 400 });

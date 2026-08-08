@@ -1,5 +1,7 @@
 import type { Order } from "@/types";
 
+const gstin = process.env.NEXT_PUBLIC_GSTIN ?? "";
+
 export async function downloadInvoice(order: Order): Promise<void> {
   const [jsPDF, html2canvas] = await Promise.all([
     import("jspdf").then((m) => new m.default()),
@@ -27,6 +29,7 @@ export async function downloadInvoice(order: Order): Promise<void> {
         <p style="font-weight: 700; margin: 0 0 4px;">Invoice</p>
         <p style="margin: 0; color: #6b7280; font-size: 12px;">Order #${order.id}</p>
         <p style="margin: 0; color: #6b7280; font-size: 12px;">Date: ${new Date(order.createdAt).toLocaleDateString("en-IN")}</p>
+        ${gstin ? `<p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">GSTIN: ${gstin}</p>` : ""}
       </div>
       <div style="text-align: right;">
         <p style="font-weight: 700; margin: 0 0 4px;">Deliver To</p>

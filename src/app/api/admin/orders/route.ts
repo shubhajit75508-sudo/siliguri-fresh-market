@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendOrderConfirmation, sendDeliveryUpdate } from "@/lib/email";
 import { requireAuth } from "@/lib/api-auth";
+import { sendPushToUser } from "@/lib/push";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -91,6 +92,25 @@ export async function PUT(req: NextRequest) {
       orderId: id,
       status: dbUpdates.delivery_status as string,
     });
+  }
+
+  // Web push on high-urgency delivery milestones (best-effort)
+  if (dbUpdates.delivery_status && ["accepted", "picked_up", "out_for_delivery", "delivered"].includes(dbUpdates.delivery_status as string)) {
+    try {
+      const { data: ord } = await supabaseAdmin.from("orders").select("user_id").eq("id", id).maybeSingle();
+      if (ord?.user_id) {
+        const messages: Record<string, { title: string; body: string }> = {
+          accepted: { title: "Order accepted", body: `A delivery partner picked up order ${id}.` },
+          picked_up: { title: "Order on the way 🛵", body: `Order ${id} is out for delivery.` },
+          out_for_delivery: { title: "Out for delivery 🛵", body: `Order ${id} is on the way to you.` },
+          delivered: { title: "Order delivered 🎉", body: `Order ${id} was delivered. Enjoy!` },
+        };
+        const msg = messages[dbUpdates.delivery_status as string];
+        if (msg) await sendPushToUser(supabaseAdmin, ord.user_id as string, { title: msg.title, body: msg.body, url: `/track/${id}` });
+      }
+    } catch (e) {
+      console.error("[push] admin status notify failed:", e);
+    }
   }
 
   return NextResponse.json({ success: true });
