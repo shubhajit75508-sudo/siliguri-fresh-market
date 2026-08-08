@@ -39,15 +39,21 @@ export default function AdminInventoryPage() {
   const supabaseAvailable = typeof window !== "undefined" && !!process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   useEffect(() => {
-    if (supabaseAvailable) {
-      getAllProducts().then(setProducts).catch(() => {
-        setProducts(useAdminStore.getState().products ?? []);
-      });
-    } else {
-      setProducts(useAdminStore.getState().products ?? []);
-    }
-    useAdminStore.subscribe((state) => setProducts([...state.products]));
-  }, []);
+    let cancelled = false;
+    const load = async () => {
+      if (supabaseAvailable) {
+        try {
+          const all = await getAllProducts();
+          if (!cancelled) setProducts(all);
+          return;
+        } catch {}
+      }
+      if (!cancelled) setProducts(useAdminStore.getState().products ?? []);
+    };
+    load();
+    const unsub = useAdminStore.subscribe((state) => setProducts([...state.products]));
+    return () => { cancelled = true; unsub(); };
+  }, [supabaseAvailable]);
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -61,16 +67,28 @@ export default function AdminInventoryPage() {
     return list;
   }, [products, catFilter, stockFilter, search]);
 
-  const update = (id: string, data: Partial<Product>) => {
+  const update = async (id: string, data: Partial<Product>) => {
+    // Optimistic update — both local list and the admin store cache so every
+    // page (shop, inventory) stays in sync even before the DB responds.
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } : p)));
-    fetch(API_BASE, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...data }),
-    }).catch(() => {});
+    useAdminStore.getState().updateProduct(id, data);
+
+    try {
+      const res = await fetch(API_BASE, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...data }),
+      });
+      if (!res.ok) throw new Error(`Save failed (${res.status})`);
+    } catch (e) {
+      console.error("Inventory save failed:", e);
+      toast.add(`Couldn't save "${data.stock !== undefined ? "stock" : "status"}" — refresh and try again`, "error");
+      // Reload authoritative state from the DB so the UI doesn't stay wrong.
+      getAllProducts().then(setProducts).catch(() => {});
+    }
   };
 
-  const toggleStock = (id: string, currentInStock: boolean) => {
+  const toggleStock = (id: string, currentInStock?: boolean) => {
     const newInStock = !currentInStock;
     const newStock = newInStock ? 100 : 0;
     update(id, { inStock: newInStock, stock: newStock });
