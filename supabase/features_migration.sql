@@ -25,7 +25,7 @@ CREATE POLICY "push_subscriptions_owner_delete" ON public.push_subscriptions FOR
 -- 2. Back-in-stock waitlist
 CREATE TABLE IF NOT EXISTS public.stock_waitlist (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  product_id  TEXT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  product_id  UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
   user_id     UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   notified_at TIMESTAMPTZ
