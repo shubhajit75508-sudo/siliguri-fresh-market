@@ -19,6 +19,7 @@ import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { formatPrice, getWeightMultiplier, getPriceForWeight } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
 import type { Address } from "@/types";
+import { DELIVERY_RADIUS_KM, distanceFromStore, isWithinDeliveryZone } from "@/lib/delivery-zone";
 import PaymentScreen from "@/components/payment/PaymentScreen";
 
 export default function CheckoutPage() {
@@ -43,6 +44,7 @@ export default function CheckoutPage() {
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [contactForm, setContactForm] = useState({ name: currentUser?.name || "", phone: currentUser?.phone || "", email: currentUser?.email || "" });
   const addressRef = useRef<HTMLDivElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
 
   const { locating, error: geoError, location, getLocation } = useGeolocation();
 
@@ -55,6 +57,17 @@ export default function CheckoutPage() {
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   const requiredDetailsFilled = !!(detailForm.area?.trim() && detailForm.street?.trim() && detailForm.building?.trim());
+
+  // The customer's pinned GPS location is authoritative for the delivery zone
+  // check — it overrides any stale coords stored on a saved address.
+  const effectiveAddress: Address | undefined = selectedAddress
+    ? location
+      ? { ...selectedAddress, lat: location.lat, lng: location.lng }
+      : selectedAddress
+    : undefined;
+
+  const pinnedDistance = location ? distanceFromStore(location.lat, location.lng) : null;
+  const pinnedInZone = !!location && pinnedDistance !== null && isWithinDeliveryZone(location.lat, location.lng);
 
   // Auto-select saved address on mount and pre-populate form
   useEffect(() => {
@@ -154,13 +167,26 @@ export default function CheckoutPage() {
       return;
     }
 
+    const zoneLat = Number(effectiveAddress?.lat);
+    const zoneLng = Number(effectiveAddress?.lng);
+    if (!Number.isFinite(zoneLat) || !Number.isFinite(zoneLng)) {
+      toast.add("Pin your delivery location to place this order", "error");
+      pinRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    if (!isWithinDeliveryZone(zoneLat, zoneLng)) {
+      toast.add(`Sorry, we deliver within ${DELIVERY_RADIUS_KM} km of our store (Laketown / Gate Bazar, Siliguri)`, "error");
+      pinRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
     if (selectedPayment === "cod") {
       setConfirmingOrder(true);
       try {
         const orderId = await createOrder({
           items: items.map(i => ({ ...i })),
           total: total,
-          address: selectedAddress,
+          address: effectiveAddress!,
           paymentMethod: "cod",
           paymentStatus: "unpaid",
           customerName: currentUser.name,
@@ -175,8 +201,8 @@ export default function CheckoutPage() {
         } else {
           toast.add("Order failed. Please try again.", "error");
         }
-      } catch {
-        toast.add("Order failed. Please try again.", "error");
+      } catch (e) {
+        toast.add(e instanceof Error ? e.message : "Order failed. Please try again.", "error");
       } finally {
         setConfirmingOrder(false);
       }
@@ -499,19 +525,24 @@ export default function CheckoutPage() {
             </div>
 
             {/* Pin Your Location */}
-            <div className="card-white overflow-hidden mb-3.5">
+            <div ref={pinRef} className="card-white overflow-hidden mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
                 <Pin className="h-5 w-5" />
-                <div><h2 className="text-sm font-bold text-foreground">Pin Your Location</h2><p className="text-[10px] text-muted">Helps our rider reach you exactly</p></div>
+                <div><h2 className="text-sm font-bold text-foreground">Pin Your Location</h2><p className="text-[10px] text-muted">We deliver within {DELIVERY_RADIUS_KM} km of our store</p></div>
               </div>
               <div className="p-5">
-                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/5 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-muted mb-4"><Lightbulb className="h-4 w-4" /> Tap <strong className="text-foreground mx-0.5">Detect</strong> to auto-locate or click anywhere on the map.</div>
+                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/5 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-muted mb-4"><Lightbulb className="h-4 w-4" /> Tap <strong className="text-foreground mx-0.5">Detect</strong> to auto-locate — required to place your order.</div>
                 <div className="w-full h-48 rounded-xl bg-surface-2 border border-border flex items-center justify-center mb-3">
                   {location ? (
                     <div className="text-center">
                       <Pin className="h-8 w-8" />
                       <p className="text-xs text-[#2D7D3A] mt-2 font-semibold">GPS Location Saved</p>
                       <p className="text-[10px] text-muted mt-1">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
+                      {pinnedDistance !== null && (
+                        <div className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold ${pinnedInZone ? "bg-[#2D7D3A]/10 text-[#2D7D3A]" : "bg-brand-red/10 text-brand-red"}`}>
+                          {pinnedInZone ? "✓" : "✗"} {pinnedDistance.toFixed(1)} km from store — {pinnedInZone ? "inside delivery area" : `outside ${DELIVERY_RADIUS_KM} km area`}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center opacity-60"><Map className="h-8 w-8" /><p className="text-xs text-muted mt-2">Tap Detect to pin your location</p></div>
@@ -634,11 +665,11 @@ export default function CheckoutPage() {
       </div>
 
       {/* Premium UPI Payment Screen */}
-      {showPaymentScreen && selectedAddress && currentUser && (
+      {showPaymentScreen && selectedAddress && effectiveAddress && currentUser && (
         <PaymentScreen
           items={items.map(i => ({ ...i }))}
           total={total}
-          address={selectedAddress}
+          address={effectiveAddress}
           customerName={currentUser.name}
           customerPhone={currentUser.phone || ""}
           customerEmail={currentUser.email || ""}

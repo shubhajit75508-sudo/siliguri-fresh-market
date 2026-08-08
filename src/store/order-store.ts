@@ -230,8 +230,15 @@ export const useOrderStore = create<OrderState>()(
               });
               if (!res.ok) {
                 const errBody = await res.text();
+                let message = `Order failed (${res.status})`;
+                try {
+                  const j = JSON.parse(errBody) as { error?: string };
+                  if (j.error) message = String(j.error);
+                } catch {
+                  // non-JSON error body — keep generic message
+                }
                 console.error("Order DB create failed:", res.status, errBody);
-                throw new Error(`Order failed (${res.status}): ${errBody.slice(0, 100)}`);
+                throw new Error(message);
               }
             } catch (e) {
               console.error("Order DB error:", e);

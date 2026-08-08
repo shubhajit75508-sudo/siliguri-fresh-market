@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSession, getUserId } from "@/lib/api-auth";
 import { sendWhatsAppAlert } from "@/lib/whatsapp";
+import { DELIVERY_RADIUS_KM, DELIVERY_ZONE_LABEL, distanceFromStore } from "@/lib/delivery-zone";
 
 function getAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -52,6 +53,25 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+  }
+
+  // Delivery zone enforcement — orders are only accepted within the store's
+  // delivery radius. The customer's pinned GPS location is authoritative.
+  const addrSnap = (body.address_snapshot ?? {}) as Record<string, unknown>;
+  const zoneLat = Number(addrSnap.lat);
+  const zoneLng = Number(addrSnap.lng);
+  if (!Number.isFinite(zoneLat) || !Number.isFinite(zoneLng)) {
+    return NextResponse.json(
+      { error: "We couldn't verify your delivery location. Please pin your location in checkout and try again." },
+      { status: 400 }
+    );
+  }
+  const zoneDistance = distanceFromStore(zoneLat, zoneLng);
+  if (zoneDistance > DELIVERY_RADIUS_KM) {
+    return NextResponse.json(
+      { error: `Sorry, we only deliver within ${DELIVERY_RADIUS_KM} km of our store (${DELIVERY_ZONE_LABEL}). Your location is about ${zoneDistance.toFixed(1)} km away.` },
+      { status: 400 }
+    );
   }
 
   // The delivery code is ALWAYS generated server-side — never trusted from the client.
