@@ -22,6 +22,22 @@ export async function POST(req: NextRequest) {
   const { orderId } = await req.json();
   if (!orderId) return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
 
+  const { data: order, error: fetchError } = await supabaseAdmin
+    .from("orders")
+    .select("id, payment_method, payment_status, delivery_status, status")
+    .eq("id", orderId)
+    .single();
+
+  if (fetchError || !order) {
+    return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
+  if (order.status === "cancelled" || order.delivery_status !== "pending") {
+    return NextResponse.json({ error: "Order already accepted or unavailable" }, { status: 409 });
+  }
+  if (order.payment_method === "upi" && order.payment_status !== "paid") {
+    return NextResponse.json({ error: "Order not paid yet — wait for payment confirmation", code: "NOT_PAID" }, { status: 409 });
+  }
+
   const { data, error } = await supabaseAdmin
     .from("orders")
     .update({ delivery_boy_id: userId, delivery_status: "accepted" })

@@ -52,6 +52,9 @@ export async function GET(req: NextRequest) {
   const available = (data ?? []).filter((o: Record<string, unknown>) => {
     const rejectedBy: string[] = Array.isArray(o.rejected_by) ? (o.rejected_by as string[]) : [];
     if (rejectedBy.includes(boyId)) return false;
+    const isUpi = o.payment_method === "upi";
+    const isPaid = o.payment_status === "paid";
+    if (isUpi && !isPaid) return false;
     return true;
   });
 
