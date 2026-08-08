@@ -14,6 +14,7 @@ const CATEGORIES: { slug: Category | "all"; label: string }[] = [
   { slug: "fish", label: "Fish" },
   { slug: "chicken", label: "Chicken" },
   { slug: "mutton", label: "Mutton" },
+  { slug: "pork", label: "Pork" },
   { slug: "seafood", label: "Seafood" },
   { slug: "vegetables", label: "Vegetables" },
   { slug: "fruits", label: "Fruits" },

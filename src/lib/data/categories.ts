@@ -26,6 +26,14 @@ export const categories: CategoryInfo[] = [
     image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=600&q=80",
   },
   {
+    slug: "pork",
+    name: "Pork",
+    description: "Fresh pork cuts",
+    icon: "🍖",
+    color: "#AD3B3B",
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80",
+  },
+  {
     slug: "seafood",
     name: "Seafood",
     description: "Prawns, crabs & more",

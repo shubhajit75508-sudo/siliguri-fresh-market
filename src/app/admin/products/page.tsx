@@ -182,7 +182,7 @@ export default function AdminProductsPage() {
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {["", "fish", "chicken", "mutton", "vegetables", "fruits", "dairy"].map((cat) => (
+        {["", "fish", "chicken", "mutton", "pork", "vegetables", "fruits", "dairy"].map((cat) => (
           <button
             key={cat}
             onClick={() => setFilterCategory(cat)}
@@ -235,6 +235,7 @@ export default function AdminProductsPage() {
               <option value="fish">Fish</option>
               <option value="chicken">Chicken</option>
               <option value="mutton">Mutton</option>
+              <option value="pork">Pork</option>
               <option value="vegetables">Vegetables</option>
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>

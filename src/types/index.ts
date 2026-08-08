@@ -2,6 +2,7 @@ export type Category =
   | "fish"
   | "chicken"
   | "mutton"
+  | "pork"
   | "seafood"
   | "vegetables"
   | "fruits"

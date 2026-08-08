@@ -17,7 +17,7 @@ interface ProductCardProps {
 }
 
 const catBadge = (cat: string): { label: string; cls: string } | null => {
-  if (["fish", "chicken", "mutton", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
+  if (["fish", "chicken", "mutton", "pork", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
   if (["fruits", "vegetables"].includes(cat)) return { label: "ORGANIC", cls: "organic" };
   if (["dairy", "eggs"].includes(cat)) return { label: "FARM", cls: "farm" };
   return null;

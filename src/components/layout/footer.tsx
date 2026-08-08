@@ -5,6 +5,7 @@ const links = {
     { label: "Fish", href: "/fish" },
     { label: "Chicken", href: "/category/chicken" },
     { label: "Mutton", href: "/category/mutton" },
+    { label: "Pork", href: "/category/pork" },
     { label: "Vegetables", href: "/category/vegetables" },
     { label: "Fruits", href: "/category/fruits" },
   ],

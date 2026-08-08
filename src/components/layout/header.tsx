@@ -161,6 +161,7 @@ export function Header() {
                 { href: "/", label: "Home" },
                 { href: "/fish", label: "Fresh Fish" },
                 { href: "/category/chicken", label: "Chicken & Mutton" },
+                { href: "/category/pork", label: "Pork" },
                 { href: "/category/vegetables", label: "Farm Fresh" },
                 ...(currentUser?.role === "admin"
                   ? [

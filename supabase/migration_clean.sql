@@ -358,6 +358,7 @@ INSERT INTO public.categories (slug, name, description, icon, color, image) VALU
   ('fish', 'Fresh Fish', 'River-fresh catch daily', '????', '#1E88E5', '/categories/fish.jpg'),
   ('chicken', 'Chicken', 'Farm-fresh poultry', '????', '#FF7043', '/categories/chicken.jpg'),
   ('mutton', 'Mutton', 'Premium goat meat', '????', '#8D6E63', '/categories/mutton.jpg'),
+  ('pork', 'Pork', 'Fresh pork cuts', '????', '#AD3B3B', '/categories/pork.jpg'),
   ('seafood', 'Seafood', 'Ocean delights', '????', '#00ACC1', '/categories/seafood.jpg'),
   ('vegetables', 'Vegetables', 'Farm-fresh greens', '????', '#66BB6A', '/categories/vegetables.jpg'),
   ('fruits', 'Fruits', 'Seasonal fruits', '????', '#FFA726', '/categories/fruits.jpg'),
