@@ -23,7 +23,7 @@ export function HeroSection() {
   return (
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-xl">
-        <div className="relative aspect-[1/1] sm:min-h-[460px] lg:min-h-[540px]">
+        <div className="relative aspect-[1/1] sm:min-h-[400px] lg:min-h-[460px]">
           <img
             src={hero.image}
             alt="Siliguri Fresh Mart"
@@ -33,7 +33,7 @@ export function HeroSection() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         </div>
 
-        <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-8 lg:p-10">
+        <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-7 lg:p-8">
           <div className="flex flex-1 flex-row flex-wrap items-start justify-between gap-4 lg:gap-8 lg:flex-nowrap lg:items-center">
             <motion.div
               initial={{ opacity: 0, y: 28 }}
@@ -48,7 +48,7 @@ export function HeroSection() {
                 </span>
               </div>
 
-              <h1 className="text-[28px] font-bold leading-[1.3] tracking-[-0.03em] text-white sm:text-[42px] lg:text-[48px]">
+              <h1 className="text-[28px] font-bold leading-[1.3] tracking-[-0.03em] text-white sm:text-[38px] lg:text-[44px]">
                 {hero.title.split("\n").map((line, i) => (
                   <span key={i}>{i > 0 && <br />}{line}</span>
                 ))}

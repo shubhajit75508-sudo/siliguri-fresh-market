@@ -175,9 +175,10 @@ export default function OrdersPage() {
                 {order.status === "received" && (
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCancelId(order.id); }}
-                    className="mt-2 text-[11px] text-muted hover:text-brand-red underline underline-offset-2 transition-colors"
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-brand-red/30 bg-brand-red/5 py-2.5 text-xs font-semibold text-brand-red transition-colors hover:bg-brand-red/10 active:scale-[0.98]"
                   >
-                    Cancel
+                    <Ban className="h-3.5 w-3.5" />
+                    Cancel Order
                   </button>
                 )}
                 {order.status === "delivered" && (
@@ -211,8 +212,11 @@ export default function OrdersPage() {
       )}
 
       {cancelId && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4 pb-8 sm:px-0 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-3xl border border-border/30 bg-surface p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4 sm:p-6 backdrop-blur-sm" onClick={() => !cancelling && setCancelId(null)}>
+          <div
+            className="w-full max-w-sm rounded-3xl border border-border/30 bg-surface p-6 shadow-2xl max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-red/10 mb-4">
               <Ban className="h-8 w-8 text-brand-red" />
             </div>
@@ -220,7 +224,7 @@ export default function OrdersPage() {
             <p className="mt-2 text-center text-sm text-muted">
               This action cannot be undone.
             </p>
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex flex-col-reverse sm:flex-row gap-2.5">
               <Button
                 variant="outline"
                 className="flex-1 rounded-xl py-2.5 text-sm"

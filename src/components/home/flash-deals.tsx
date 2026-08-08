@@ -29,16 +29,16 @@ export function FlashDealsSection() {
 
   return (
     <section className="relative py-6 sm:py-12 overflow-hidden">
-      {/* Big glowing orbs */}
+      {/* Big glowing orbs (desktop only — keeps mobile light) */}
       <motion.div
         animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.9, 0.6] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-[#F5A623]/12 blur-3xl"
+        className="hidden sm:block absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-[#F5A623]/12 blur-3xl"
       />
       <motion.div
         animate={{ scale: [1.1, 1, 1.1], opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-        className="absolute -bottom-16 right-1/4 w-64 h-64 rounded-full bg-[#F5A623]/10 blur-3xl"
+        className="hidden sm:block absolute -bottom-16 right-1/4 w-64 h-64 rounded-full bg-[#F5A623]/10 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-4">
@@ -61,15 +61,15 @@ export function FlashDealsSection() {
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="rounded-3xl px-2 py-3 sm:px-4 sm:py-5"
         >
-          <div className="flex items-center justify-between gap-2 mb-4 sm:mb-6 flex-wrap">
-            <div className="flex items-center gap-2 sm:gap-3">
+          <div className="mb-3 flex items-center justify-between gap-2 sm:mb-5">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               {/* Zap icon with double ping */}
-              <div className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#F5A623] to-[#E8960A] shadow-lg shadow-[#F5A623]/30">
+              <div className="relative flex h-10 w-10 shrink-0 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#F5A623] to-[#E8960A] shadow-lg shadow-[#F5A623]/30">
                 <span className="absolute inset-0 rounded-xl animate-ping bg-[#F5A623]/30" style={{ animationDuration: "1.5s" }} />
                 <Zap className="relative z-10 h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <div>
-                <h2 className="text-base sm:text-xl font-extrabold text-foreground">
+              <div className="min-w-0">
+                <h2 className="truncate text-base sm:text-xl font-extrabold text-foreground">
                   Flash Deals
                 </h2>
                 <motion.div
@@ -91,7 +91,7 @@ export function FlashDealsSection() {
                 "0 0 0 0 rgba(245,166,35,0.3)",
               ]}}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F5A623]/15 to-[#E8960A]/15 px-3 py-1.5 sm:px-4 sm:py-2 ring-1 ring-[#F5A623]/30"
+              className="flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F5A623]/15 to-[#E8960A]/15 px-3 py-1.5 sm:px-4 sm:py-2 ring-1 ring-[#F5A623]/30"
             >
               <motion.span
                 animate={{ rotate: [0, 360] }}
@@ -113,13 +113,15 @@ export function FlashDealsSection() {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {/* Mobile: swipeable rail · Desktop: grid */}
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 snap-x snap-mandatory scroll-smooth no-scrollbar sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
             {deals.map((p, i) => (
               <motion.div
                 key={p.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, duration: 0.4, ease: "easeOut" }}
+                className="w-[68vw] max-w-[230px] shrink-0 snap-start sm:w-auto sm:max-w-none"
               >
                 <ProductCard product={p} badge="Flash Deal" />
               </motion.div>

@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Clock, Plus, Minus, Star, TrendingDown, BellRing } from "lucide-react";
+import { Clock, Plus, Minus, Star, TrendingDown } from "lucide-react";
 import { cartLineKey, useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { useToast } from "@/components/ui/toaster";
+import { RestockNotifyButton } from "@/components/product/restock-notify-button";
 import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import type { Product } from "@/types";
 
@@ -26,9 +27,7 @@ const catBadge = (cat: string): { label: string; cls: string } | null => {
 export function ProductCard({ product, variant = "default", badge }: ProductCardProps) {
   const { addItem, items, updateQuantity, getProductQuantity } = useCartStore();
   const toast = useToast();
-  const { user } = useUserStore();
   const cartQuantity = getProductQuantity(product.id);
-  const [notifySent, setNotifySent] = useState(false);
 
   const weights = getAvailableWeights(product.price, product.category, product.weight, product.weightPrices);
   const [selectedWeight, setSelectedWeight] = useState(weights[0]);
@@ -79,29 +78,6 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
       updateQuantity(cartLineKey(item), item.quantity + 1);
     } else {
       handleAdd(e);
-    }
-  };
-
-  const handleNotifyMe = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) {
-      toast.add("Please login to get restock alerts", "error");
-      window.location.href = "/auth/login";
-      return;
-    }
-    setNotifySent(true);
-    try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id }),
-      });
-      if (!res.ok) throw new Error("failed");
-      toast.add("We'll email you when it's back in stock");
-    } catch {
-      setNotifySent(false);
-      toast.add("Couldn't save your request", "error");
     }
   };
 
@@ -242,14 +218,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
                 Add
               </button>
             ) : (
-              <button
-                onClick={handleNotifyMe}
-                disabled={notifySent}
-                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-dashed border-[#2D7D3A]/40 text-[13px] font-semibold text-[#2D7D3A] transition-all hover:bg-[#2D7D3A]/5 active:scale-[0.98] disabled:opacity-60"
-              >
-                <BellRing className="h-4 w-4" strokeWidth={2} />
-                {notifySent ? "We'll notify you" : "Notify me"}
-              </button>
+              <RestockNotifyButton productId={product.id} productName={product.name} />
             )}
           </div>
         </div>

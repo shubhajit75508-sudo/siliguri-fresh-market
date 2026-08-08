@@ -76,27 +76,27 @@ export function Testimonials() {
   return (
     <section className="py-6">
       <h2 className="section-title mb-5">What Customers Say</h2>
-      <div className="flex gap-3 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0">
+      <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 sm:overflow-visible sm:pb-0">
         {testimonials.map((t) => (
           <div
             key={t.name}
-            className="relative flex-shrink-0 w-[72vw] max-w-[280px] sm:w-auto sm:max-w-none rounded-2xl overflow-hidden aspect-[4/5] group"
+            className="relative flex-shrink-0 w-[58vw] max-w-[200px] sm:w-auto sm:max-w-none rounded-2xl overflow-hidden aspect-[3/4] group"
           >
             <img
               src={t.productImage}
               alt={t.name}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
-            <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-center text-center gap-1.5">
+            <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-center text-center gap-1">
               <div className="flex gap-[1px]">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`h-3.5 w-3.5 ${i < t.rating ? "text-brand-fresh fill-current" : "text-white/30"}`} />
+                  <Star key={i} className={`h-3 w-3 ${i < t.rating ? "text-brand-fresh fill-current" : "text-white/30"}`} />
                 ))}
               </div>
-              <p className="text-xs font-semibold text-white leading-snug">"{t.quote}"</p>
-              <p className="text-[11px] font-medium text-brand-fresh">— {t.name}</p>
+              <p className="text-[11px] font-semibold text-white leading-snug">&ldquo;{t.quote}&rdquo;</p>
+              <p className="text-[10px] font-medium text-brand-fresh">— {t.name}</p>
             </div>
           </div>
         ))}

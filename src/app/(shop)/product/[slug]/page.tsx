@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import { useProductBySlug } from "@/lib/hooks/use-products";
+import { RestockNotifyButton } from "@/components/product/restock-notify-button";
 
 export default function ProductDetailPage({
   params,
@@ -280,16 +281,19 @@ export default function ProductDetailPage({
 
           {/* Add to cart */}
           <div className="mt-6 flex items-center gap-3">
-            <button
-              onClick={() => {
-                addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
-              }}
-              disabled={!available}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2D7D3A] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#2D7D3A] disabled:active:scale-100"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {available ? "Add to Cart" : "Out of Stock"}
-            </button>
+            {available ? (
+              <button
+                onClick={() => {
+                  addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
+                }}
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2D7D3A] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#2D7D3A] disabled:active:scale-100"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                Add to Cart
+              </button>
+            ) : (
+              <RestockNotifyButton productId={product.id} productName={product.name} size="lg" className="flex-1 rounded-2xl" />
+            )}
 
             <button
               onClick={() => toggleWishlist(product.id)}
