@@ -30,6 +30,7 @@ interface ProductRow {
   source: string | null;
   species: string | null;
   river: string | null;
+  origin: string | null;
   catch_date: string | null;
 }
 
@@ -160,6 +161,7 @@ function mapProduct(row: ProductRow): Product {
     source: row.source ?? undefined,
     species: row.species ?? undefined,
     river: row.river ?? undefined,
+    origin: row.origin ?? undefined,
     catchDate: row.catch_date ?? undefined,
   };
 }
