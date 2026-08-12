@@ -103,13 +103,16 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             </div>
             <p className="text-[11px] text-muted">{product.weight?.[0] || `1 ${product.unit}`}</p>
           </Link>
-          <button
-            onClick={handleAdd}
-            disabled={!available}
-            className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full btn-primary text-[12px] font-semibold disabled:opacity-50"
-          >
-            <Plus className="h-3.5 w-3.5" /> {available ? "Add to cart" : "Out of stock"}
-          </button>
+          {available ? (
+            <button
+              onClick={handleAdd}
+              className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full btn-primary text-[12px] font-semibold"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add to cart
+            </button>
+          ) : (
+            <RestockNotifyButton productId={product.id} productName={product.name} variant="icon" className="mt-2 h-9 w-full rounded-full" />
+          )}
         </div>
       </div>
     );
@@ -218,7 +221,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
                 Add
               </button>
             ) : (
-              <RestockNotifyButton productId={product.id} productName={product.name} />
+              <RestockNotifyButton productId={product.id} productName={product.name} variant="icon" />
             )}
           </div>
         </div>

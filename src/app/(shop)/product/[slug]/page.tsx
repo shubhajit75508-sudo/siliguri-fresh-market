@@ -292,7 +292,7 @@ export default function ProductDetailPage({
                 Add to Cart
               </button>
             ) : (
-              <RestockNotifyButton productId={product.id} productName={product.name} size="lg" className="flex-1 rounded-2xl" />
+              <RestockNotifyButton productId={product.id} productName={product.name} size="lg" variant="icon" />
             )}
 
             <button

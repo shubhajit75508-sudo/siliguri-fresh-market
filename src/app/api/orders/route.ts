@@ -111,20 +111,65 @@ export async function POST(req: NextRequest) {
 
   // Fire-and-forget merchant alert on WhatsApp (inert until Green API env vars are set)
   try {
-    const itemCount = Array.isArray(orderData.items)
-      ? (orderData.items as { quantity?: number }[]).reduce((sum, i) => sum + (i.quantity ?? 1), 0)
-      : 0;
-    await sendWhatsAppAlert(
+    const items = Array.isArray(orderData.items)
+      ? (orderData.items as {
+          product?: { name?: string };
+          quantity?: number;
+          selectedWeight?: string;
+          selectedCut?: string;
+          selectedCleaning?: string;
+        }[]).filter(Boolean)
+      : [];
+    const itemLines = items.map((i, idx) => {
+      const name = i.product?.name || "Item";
+      const qty = i.quantity ?? 1;
+      const w = i.selectedWeight ? i.selectedWeight : "";
+      const extras = [i.selectedCut, i.selectedCleaning].filter(Boolean).join(", ");
+      return `${idx + 1}. ${qty} × ${name}${w ? ` (${w})` : ""}${extras ? ` [${extras}]` : ""}`;
+    });
+    const itemCount = items.reduce((sum, i) => sum + (i.quantity ?? 1), 0);
+
+    const addr = (orderData.address_snapshot ?? {}) as Record<string, unknown>;
+    const a = (k: string) => (typeof addr[k] === "string" ? (addr[k] as string).trim() : "");
+    const addrParts = [
+      [a("flat"), a("building")].filter(Boolean).join(", "),
+      a("line1"),
+      a("line2"),
+      a("area"),
+      a("landmark") ? `Near ${a("landmark")}` : "",
+      [a("city"), a("pincode")].filter(Boolean).join(" - "),
+    ].filter(Boolean);
+    const lat = Number(addr.lat);
+    const lng = Number(addr.lng);
+    const maps =
+      Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0
+        ? `Maps: https://maps.google.com/?q=${lat},${lng}`
+        : "";
+
+    const sections = [
       [
-        "🛒 *New Order*",
+        "🛒 *NEW ORDER*",
         `Order: ${orderData.id}`,
         `Amount: ₹${Number(orderData.total).toFixed(2)}`,
         `Payment: ${String(orderData.payment_method).toUpperCase()}`,
-        `Customer: ${orderData.customer_name || "—"}`,
+      ].join("\n"),
+    ];
+    if (itemLines.length) sections.push(["🧾 *ITEMS*", ...itemLines].join("\n"));
+    sections.push(
+      [
+        "👤 *CUSTOMER*",
+        `Name: ${orderData.customer_name || "—"}`,
         `Phone: ${orderData.customer_phone || "—"}`,
-        `Items: ${itemCount}`,
       ].join("\n")
     );
+    if (addrParts.length || maps) {
+      sections.push(["🏠 *DELIVERY ADDRESS*", ...addrParts, maps].filter(Boolean).join("\n"));
+    }
+    if (itemCount > 0) {
+      sections.push(`Total items: ${itemCount}`);
+    }
+
+    await sendWhatsAppAlert(sections.join("\n\n"));
   } catch (e) {
     console.error("[whatsapp] order alert failed:", e);
   }

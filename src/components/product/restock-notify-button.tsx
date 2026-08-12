@@ -10,6 +10,7 @@ interface RestockNotifyButtonProps {
   productId: string;
   productName?: string;
   size?: "sm" | "lg";
+  variant?: "default" | "icon";
   className?: string;
 }
 
@@ -17,6 +18,7 @@ export function RestockNotifyButton({
   productId,
   productName,
   size = "sm",
+  variant = "default",
   className,
 }: RestockNotifyButtonProps) {
   const { user } = useUserStore();
@@ -44,6 +46,41 @@ export function RestockNotifyButton({
       toast.add("Couldn't save your request", "error");
     }
   };
+
+  const iconBox = cn(
+    "flex items-center justify-center border transition-all active:scale-[0.98] disabled:opacity-60",
+    size === "lg" ? "h-[52px] w-[52px] rounded-2xl border-2" : "h-11 w-full rounded-full",
+    variant === "icon"
+      ? "border-dashed border-brand-fresh/40 text-brand-fresh hover:bg-brand-fresh/5"
+      : "",
+    className
+  );
+
+  if (variant === "icon") {
+    if (state === "done") {
+      return (
+        <button
+          type="button"
+          aria-label={`${productName ?? "Product"} — restock alert saved`}
+          disabled
+          className={cn(iconBox, "border-solid border-brand-fresh/40 bg-brand-fresh/10")}
+        >
+          <Check className={size === "lg" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2.5} />
+        </button>
+      );
+    }
+    return (
+      <button
+        type="button"
+        aria-label={`Notify me when ${productName ?? "this product"} is back in stock`}
+        onClick={handleClick}
+        disabled={state === "sending"}
+        className={iconBox}
+      >
+        <BellRing className={size === "lg" ? "h-5 w-5" : "h-4 w-4"} strokeWidth={2} />
+      </button>
+    );
+  }
 
   if (state === "done") {
     return (
