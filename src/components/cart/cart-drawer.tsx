@@ -92,16 +92,40 @@ export function CartDrawer() {
               ) : (
                 <div className="space-y-3">
                   {!storeStatus.isOpen && (
-                    <div className="flex items-start gap-2.5 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3">
-                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-                      <div>
-                        <p className="text-xs font-bold text-amber-900">{storeStatus.headline}</p>
-                        <p className="mt-0.5 flex items-center gap-1 text-[10px] text-amber-700">
-                          <Clock className="h-3 w-3 shrink-0" />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ type: "spring", damping: 20, stiffness: 260 }}
+                      className="relative flex items-start gap-3 overflow-hidden rounded-2xl border-2 border-red-500 bg-red-600 px-4 py-4 shadow-[0_0_25px_rgba(239,68,68,0.55)]"
+                    >
+                      <motion.span
+                        className="absolute inset-0 rounded-2xl"
+                        animate={{ boxShadow: [
+                          "inset 0 0 0px rgba(239,68,68,0)",
+                          "inset 0 0 35px rgba(255,255,255,0.25)",
+                          "inset 0 0 0px rgba(239,68,68,0)",
+                        ] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <motion.span
+                        className="absolute inset-0 rounded-2xl"
+                        animate={{ opacity: [0, 0.5, 0] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                        style={{ boxShadow: "0 0 45px rgba(239,68,68,0.85)" }}
+                      />
+                      <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/20">
+                        <motion.div animate={{ scale: [1, 1.12, 1] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+                          <AlertTriangle className="h-6 w-6 text-white" />
+                        </motion.div>
+                      </div>
+                      <div className="relative z-10 flex-1">
+                        <p className="text-sm font-extrabold text-white leading-snug">{storeStatus.headline}</p>
+                        <p className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold text-red-100">
+                          <Clock className="h-3.5 w-3.5 shrink-0" />
                           {storeStatus.subtext}
                         </p>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
                   {items.map((item) => {
                     const lineKey = cartLineKey(item);
