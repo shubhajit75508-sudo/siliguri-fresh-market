@@ -30,7 +30,7 @@ export interface PaymentScreenProps {
   onCancel: () => void;
 }
 
-const UPI_VPA = "shubhajit75508@okhdfcbank";
+const UPI_VPA = "im.201031144318@indus";
 const MERCHANT_NAME = "Siliguri Fresh Mart";
 
 /** Persist the in-progress UPI payment so returning from the UPI app (even after a
