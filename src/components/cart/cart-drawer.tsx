@@ -2,10 +2,12 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
+import { getStoreStatus } from "@/lib/store-hours";
 
 export function CartDrawer() {
   const {
@@ -23,6 +25,13 @@ export function CartDrawer() {
   const subtotal = getSubtotal();
   const total = getTotal();
   const deliveryFee = getDeliveryFee();
+
+  const [storeStatus, setStoreStatus] = useState(getStoreStatus);
+
+  useEffect(() => {
+    const id = setInterval(() => setStoreStatus(getStoreStatus()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const badge = (cat: string) => {
     if (["fish", "chicken", "mutton", "pork", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
@@ -82,6 +91,18 @@ export function CartDrawer() {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {!storeStatus.isOpen && (
+                    <div className="flex items-start gap-2.5 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3">
+                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                      <div>
+                        <p className="text-xs font-bold text-amber-900">{storeStatus.headline}</p>
+                        <p className="mt-0.5 flex items-center gap-1 text-[10px] text-amber-700">
+                          <Clock className="h-3 w-3 shrink-0" />
+                          {storeStatus.subtext}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   {items.map((item) => {
                     const lineKey = cartLineKey(item);
                     const b = badge(item.product.category);
