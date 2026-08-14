@@ -45,7 +45,13 @@ export default function AdminInventoryPage() {
       if (supabaseAvailable) {
         try {
           const all = await getAllProducts();
-          if (!cancelled) setProducts(all);
+          if (!cancelled) {
+            setProducts(all);
+            // Keep the admin store in sync with the full DB catalog. The store
+            // subscription below would otherwise replace the fetched list with a
+            // stale/empty localStorage cache and make products vanish.
+            useAdminStore.setState({ products: all });
+          }
           return;
         } catch {}
       }
