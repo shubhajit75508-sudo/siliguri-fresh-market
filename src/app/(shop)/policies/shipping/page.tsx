@@ -27,7 +27,13 @@ export default function ShippingPage() {
       </Section>
 
       <Section num="3" title="Delivery Charges">
-        <p>Any applicable delivery charges will be clearly shown at checkout before you confirm your order. We may offer free delivery above certain order values, which will be indicated on the website.</p>
+        <p>Delivery charges are based on the order subtotal (before coupons):</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong className="text-foreground">Orders below ₹99</strong> — ₹59 delivery charge.</li>
+          <li><strong className="text-foreground">Orders between ₹99 and ₹298</strong> — ₹40 delivery charge.</li>
+          <li><strong className="text-foreground">Orders of ₹299 or more</strong> — FREE delivery.</li>
+        </ul>
+        <p>The exact charge is always shown at checkout before you confirm your order.</p>
       </Section>
 
       <Section num="4" title="Order Tracking and Confirmation">

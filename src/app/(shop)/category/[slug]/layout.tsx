@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const name = category?.name ?? slug.charAt(0).toUpperCase() + slug.slice(1);
   const title = "Buy Fresh " + name + " Online in Siliguri | Home Delivery in 30 Min";
-  const description = "Order farm-fresh " + name.toLowerCase() + " online in Siliguri. Premium quality, free delivery, cut to order. Fresh from local market to your doorstep in 30 minutes.";
+  const description = "Order farm-fresh " + name.toLowerCase() + " online in Siliguri. Premium quality, free delivery above ₹299, cut to order. Fresh from local market to your doorstep in 30 minutes.";
 
   return {
     title,

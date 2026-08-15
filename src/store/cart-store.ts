@@ -136,7 +136,16 @@ export const useCartStore = create<CartState>()(
             0
           ),
 
-        getDeliveryFee: () => 0,
+        getDeliveryFee: () => {
+          const subtotal = get().getSubtotal();
+          // Delivery pricing tiers (based on item subtotal, before coupons):
+          //   below ₹99   → ₹59
+          //   ₹99–₹298    → ₹40
+          //   ₹299+       → FREE
+          if (subtotal < 99) return 59;
+          if (subtotal < 299) return 40;
+          return 0;
+        },
 
         getTotal: () => {
           const subtotal = get().getSubtotal();

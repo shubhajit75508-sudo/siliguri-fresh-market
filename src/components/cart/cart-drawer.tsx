@@ -200,6 +200,21 @@ export function CartDrawer() {
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-border bg-white/95 backdrop-blur-sm px-4 pb-6 pt-4 safe-bottom">
+                {deliveryFee > 0 && (
+                  <div className="mb-3 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/15 px-3.5 py-2.5">
+                    <p className="text-[11px] text-foreground font-semibold">
+                      {subtotal < 99
+                        ? `Add ${formatPrice(99 - subtotal)} more to reduce delivery to ₹40`
+                        : `Add ${formatPrice(299 - subtotal)} more for FREE delivery`}
+                    </p>
+                    <div className="mt-1.5 h-1.5 rounded-full bg-[#2D7D3A]/10 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#2D7D3A] transition-all"
+                        style={{ width: `${Math.min(100, Math.round((subtotal / (subtotal < 99 ? 99 : 299)) * 100))}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="mb-4 space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted">Subtotal</span>
@@ -225,7 +240,7 @@ export function CartDrawer() {
                 <div className="mt-3 flex items-center justify-center gap-3 text-[10px] text-muted-light">
                   <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Secure</span>
                   <span><Leaf className="h-3 w-3 inline" /> 100% Fresh</span>
-                  <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
+                  <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery Above ₹299</span>
                 </div>
               </div>
             )}

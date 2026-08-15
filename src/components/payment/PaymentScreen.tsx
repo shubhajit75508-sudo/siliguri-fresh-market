@@ -583,7 +583,7 @@ export default function PaymentScreen({
           <div className="mt-3 flex items-center gap-4 text-xs text-white/70">
             <span>{totalItems} item{totalItems !== 1 ? "s" : ""}</span>
             <span>•</span>
-            <span>Free Delivery</span>
+            <span>Free Delivery Above ₹299</span>
           </div>
         </div>
 
@@ -765,7 +765,7 @@ export default function PaymentScreen({
 
         {/* Footer */}
         <div className="flex items-center justify-center gap-4 pb-8 flex-wrap">
-          {["Secure Checkout", "100% Fresh", "Free Delivery"].map((t) => (
+          {["Secure Checkout", "100% Fresh", "Free Delivery Above ₹299"].map((t) => (
             <span key={t} className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1">
               {t === "Secure Checkout" ? <Shield className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}
               {t}

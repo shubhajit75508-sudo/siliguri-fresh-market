@@ -344,7 +344,7 @@ export default function ProductDetailPage({
           <div className="mt-5 flex items-center justify-center gap-4 pt-3 border-t border-border">
             <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Shield className="h-3 w-3" /> Secure Checkout</span>
             <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Leaf className="h-3 w-3" /> 100% Fresh</span>
-            <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery</span>
+            <span className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1"><Truck className="h-3 w-3" /> Free Delivery Above ₹299</span>
           </div>
         </div>
       </div>

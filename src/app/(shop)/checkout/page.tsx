@@ -58,6 +58,7 @@ export default function CheckoutPage() {
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   const requiredDetailsFilled = !!(detailForm.area?.trim() && detailForm.street?.trim() && detailForm.building?.trim());
+  const deliveryFee = getDeliveryFee();
 
   // The customer's pinned GPS location is authoritative for the delivery zone
   // check — it overrides any stale coords stored on a saved address.
@@ -343,7 +344,7 @@ export default function CheckoutPage() {
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-muted">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-foreground font-semibold">{formatPrice(subtotal)}</span></div>
-                <div className="flex justify-between text-[13px]"><span className="text-muted">Delivery</span><span className="text-[#2D7D3A] font-semibold">FREE</span></div>
+                <div className="flex justify-between text-[13px]"><span className="text-muted">Delivery</span><span className={deliveryFee === 0 ? "text-[#2D7D3A] font-semibold" : "text-foreground font-semibold"}>{deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}</span></div>
                 {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2D7D3A]"><span>Coupon</span><span className="font-semibold">-{formatPrice(couponDiscount)}</span></div>}
                 <div className="border-t border-border pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-foreground">Total</span><span className="text-lg font-extrabold text-foreground">{formatPrice(total)}</span></div>
               </div>
@@ -353,7 +354,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-              {["Secure Checkout","100% Fresh","Free Delivery"].map((t) => (
+              {["Secure Checkout","100% Fresh","Free Delivery Above ₹299"].map((t) => (
                 <span key={t} className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1">
                   {t === "Secure Checkout" ? <Lock className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}{t}
                 </span>
@@ -572,7 +573,7 @@ export default function CheckoutPage() {
             {/* Total Bar */}
             <div className="flex items-center justify-between card-white px-5 py-3 mb-3.5">
               <div><span className="text-[11px] text-muted block">Order Total</span><span className="text-lg font-extrabold text-foreground">{formatPrice(total)}</span></div>
-              <div className="text-right"><span className="text-xs text-[#2D7D3A] font-bold block">FREE</span><span className="text-[10px] text-muted">{items.reduce((n,i) => n + i.quantity, 0)} items</span></div>
+              <div className="text-right"><span className="text-xs text-[#2D7D3A] font-bold block">{deliveryFee === 0 ? "FREE" : `+ ${formatPrice(deliveryFee)} delivery`}</span><span className="text-[10px] text-muted">{items.reduce((n,i) => n + i.quantity, 0)} items</span></div>
             </div>
           </>
         )}
@@ -633,7 +634,7 @@ export default function CheckoutPage() {
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between text-[13px]"><span className="text-muted">Subtotal ({items.reduce((n,i) => n + i.quantity, 0)} items)</span><span className="text-foreground">{formatPrice(subtotal)}</span></div>
-                <div className="flex justify-between text-[13px]"><span className="text-muted">Delivery</span><span className="text-[#2D7D3A] font-semibold">FREE</span></div>
+                <div className="flex justify-between text-[13px]"><span className="text-muted">Delivery</span><span className={deliveryFee === 0 ? "text-[#2D7D3A] font-semibold" : "text-foreground font-semibold"}>{deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}</span></div>
                 {couponDiscount > 0 && <div className="flex justify-between text-[13px] text-[#2D7D3A]"><span>Coupon</span><span className="font-semibold">-{formatPrice(couponDiscount)}</span></div>}
                 <div className="border-t border-border pt-3 flex justify-between"><span className="text-base font-extrabold text-foreground">Total Payable</span><span className="text-lg font-extrabold text-foreground">{formatPrice(total)}</span></div>
               </div>
@@ -643,7 +644,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap mb-4">
-              {["Secure Checkout","100% Fresh","Free Delivery"].map((t) => (
+              {["Secure Checkout","100% Fresh","Free Delivery Above ₹299"].map((t) => (
                 <span key={t} className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1">
                   {t === "Secure Checkout" ? <Lock className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}{t}
                 </span>
