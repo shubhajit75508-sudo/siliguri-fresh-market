@@ -3,6 +3,23 @@ import { createClient } from "@supabase/supabase-js";
 import { getSession, getUserId } from "@/lib/api-auth";
 import { sendWhatsAppAlert } from "@/lib/whatsapp";
 import { DELIVERY_RADIUS_KM, DELIVERY_ZONE_LABEL, distanceFromStore } from "@/lib/delivery-zone";
+import { getWeightMultiplier } from "@/lib/utils";
+
+interface RawOrderItem {
+  product?: { id?: string; name?: string; price?: number; image?: string };
+  quantity?: number;
+  selectedWeight?: string;
+  selectedCut?: string;
+  selectedCleaning?: string;
+}
+
+interface ProductRow {
+  id: string | number;
+  price?: number | string | null;
+  weight?: string | null;
+  weight_prices?: { weight: string; price: number }[] | null;
+  unit?: string | null;
+}
 
 function getAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -20,11 +37,6 @@ export async function POST(req: NextRequest) {
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
   const body = await req.json();
-
-  const total = Number(body.total);
-  if (!Number.isFinite(total) || total <= 0 || total > 500000) {
-    return NextResponse.json({ error: "Invalid order total" }, { status: 400 });
-  }
 
   const paymentMethod = String(body.payment_method ?? "cod");
   const upiReference = String(body.upi_reference ?? "").replace(/\s+/g, "");
@@ -55,6 +67,63 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── Server-side price recompute ──
+  // The client-sent `total` is NOT trusted. The subtotal is rebuilt from the
+  // products table (current price × weight multiplier × quantity), the delivery
+  // fee is re-derived from the same tier table, and the coupon discount is
+  // clamped so the final total can never be dragged below the real product cost.
+  const rawItems = Array.isArray(body.items) ? (body.items as RawOrderItem[]) : [];
+  const productIds = rawItems.map((i) => i?.product?.id).filter(Boolean);
+  let products: ProductRow[] = [];
+  if (productIds.length) {
+    const { data } = await supabaseAdmin
+      .from("products")
+      .select("id, price, weight, weight_prices, unit")
+      .in("id", productIds);
+    products = (data ?? []) as ProductRow[];
+  }
+  const priceById = new Map<string, { price: number; weightPrices?: { weight: string; price: number }[] }>();
+  for (const p of products) {
+    priceById.set(String(p.id), {
+      price: Number(p.price) || 0,
+      weightPrices: Array.isArray(p.weight_prices) ? p.weight_prices : undefined,
+    });
+  }
+
+  let subtotal = 0;
+  const serverItems: Record<string, unknown>[] = [];
+  for (const item of rawItems) {
+    const productId = item?.product?.id as string;
+    const quantity = Number(item?.quantity) || 0;
+    if (quantity <= 0) continue;
+    const known = priceById.get(productId);
+    const clientPrice = Number(item?.product?.price) || 0;
+    // Prefer the server's current price; fall back to the client-sent snapshot
+    // only for products that no longer exist in the DB.
+    const price = known ? known.price : clientPrice;
+    const weight = typeof item?.selectedWeight === "string" ? item.selectedWeight : "";
+    const unitPrice = known?.weightPrices
+      ? (known.weightPrices.find((w) => w.weight.toLowerCase() === weight.toLowerCase())?.price ?? price * getWeightMultiplier(weight))
+      : price * getWeightMultiplier(weight);
+    subtotal += unitPrice * quantity;
+    serverItems.push({
+      product: { id: productId, name: item?.product?.name ?? "", price, image: item?.product?.image ?? "" },
+      quantity,
+      selectedWeight: weight || undefined,
+      selectedCut: item?.selectedCut ?? undefined,
+      selectedCleaning: item?.selectedCleaning ?? undefined,
+    });
+  }
+
+  // Delivery fee tiers (must mirror cart-store getDeliveryFee).
+  const deliveryFee = subtotal < 99 ? 59 : subtotal < 299 ? 40 : 0;
+  const couponDiscount = Math.min(Math.max(Number(body.coupon_discount) || 0, 0), subtotal);
+  const total = Math.round((subtotal + deliveryFee - couponDiscount) * 100) / 100;
+
+  if (!Number.isFinite(total) || total <= 0 || total > 500000) {
+    return NextResponse.json({ error: "Invalid order total" }, { status: 400 });
+  }
+
   // Delivery zone enforcement — orders are only accepted within the store's
   // delivery radius when GPS coords were captured. Customers whose device can't
   // report GPS (permission denied / no GPS / timeout) are NOT blocked — the order
@@ -83,7 +152,10 @@ export async function POST(req: NextRequest) {
   const orderData: Record<string, unknown> = {
     id: body.id,
     user_id: body.user_id ?? null,
-    items: body.items ?? [],
+    items: serverItems,
+    subtotal,
+    delivery_fee: deliveryFee,
+    discount: couponDiscount,
     total,
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",

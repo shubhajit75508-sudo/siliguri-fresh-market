@@ -36,7 +36,7 @@ function SignupForm() {
 
     if (!form.name.trim()) { setError("Name is required"); return; }
     if (!form.email.trim()) { setError("Email is required"); return; }
-    if (!form.phone.trim()) { setError("Phone is required"); return; }
+    if (!/^\d{10}$/.test(form.phone.replace(/\D/g, ""))) { setError("Enter a valid 10-digit phone number"); return; }
     if (form.password.length < 8) { setError("Password must be at least 8 characters"); return; }
     if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return; }
 
@@ -47,7 +47,7 @@ function SignupForm() {
         email: form.email,
         password: form.password,
         name: form.name,
-        phone: form.phone,
+        phone: form.phone.replace(/\D/g, "").slice(-10),
         address: "",
         location: null,
         role: form.role,
@@ -67,8 +67,7 @@ function SignupForm() {
           email: form.email,
           phone: "+91 " + form.phone,
           loyaltyPoints: 0,
-        });
-        toast.add("Welcome! Account created and signed in.");
+        });        toast.add("Welcome! Account created and signed in.");
         router.push("/");
       }
     } else {
@@ -118,7 +117,7 @@ function SignupForm() {
               type="tel"
               placeholder="9876543210"
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) => { let d = e.target.value.replace(/\D/g, ""); if (d.startsWith("91") && d.length > 10) d = d.slice(2); setForm({ ...form, phone: d.slice(0, 10) }); }}
               required
               className="mt-1 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm outline-none transition-colors focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
             />

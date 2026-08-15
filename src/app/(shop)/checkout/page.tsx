@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   X, Loader2,
   ShoppingCart, Receipt, User, Home, Building2, Pin, Leaf, Zap, Banknote, CreditCard,
@@ -40,10 +39,10 @@ export default function CheckoutPage() {
   const [showPaymentScreen, setShowPaymentScreen] = useState(false);
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [addressMissing, setAddressMissing] = useState(false);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2);
   const [couponCode, setCouponCode] = useState("");
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
-  const [contactForm, setContactForm] = useState({ name: currentUser?.name || "", phone: currentUser?.phone || "", email: currentUser?.email || "" });
+  const [contactForm, setContactForm] = useState({ name: currentUser?.name || "", phone: (currentUser?.phone || "").replace(/\D/g, ""), email: currentUser?.email || "" });
   const addressRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +56,8 @@ export default function CheckoutPage() {
   const [editingAddress, setEditingAddress] = useState(false);
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
-  const requiredDetailsFilled = !!(detailForm.area?.trim() && detailForm.street?.trim() && detailForm.building?.trim());
+  // Delivery needs a locality (area) + valid pincode. Street/building/landmark are optional.
+  const requiredDetailsFilled = !!(detailForm.area?.trim() && /^\d{6}$/.test(newAddress.pincode?.trim() || ""));
   const deliveryFee = getDeliveryFee();
 
   // The customer's pinned GPS location is authoritative for the delivery zone
@@ -126,22 +126,6 @@ export default function CheckoutPage() {
     );
   }
 
-  if (hydrated && !currentUser) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center max-w-sm px-4">
-          <Lock className="h-12 w-12 mb-4" />
-          <h2 className="text-2xl font-extrabold text-foreground">Sign Up Required</h2>
-          <p className="mt-2 text-sm text-muted">Create an account to place orders.</p>
-          <div className="mt-6 space-y-3">
-            <Link href="/auth/signup"><Button className="w-full rounded-xl bg-[#2D7D3A] hover:bg-[#23682E] text-white font-bold py-3">Create Account</Button></Link>
-            <Link href="/auth/login"><Button variant="outline" className="w-full rounded-xl py-3">Log In</Button></Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const subtotal = getSubtotal();
   const total = getTotal();
 
@@ -170,8 +154,14 @@ export default function CheckoutPage() {
       setTimeout(() => setAddressMissing(false), 3000);
       return;
     }
-    if (!currentUser) {
-      toast.add("Please sign in first", "error");
+    const name = contactForm.name.trim();
+    const phone = contactForm.phone.replace(/\D/g, "");
+    if (!name) {
+      toast.add("Please enter your name", "error");
+      return;
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      toast.add("Please enter a valid 10-digit phone number", "error");
       return;
     }
 
@@ -196,13 +186,16 @@ export default function CheckoutPage() {
         const orderId = await createOrder({
           items: items.map(i => ({ ...i })),
           total: total,
+          subtotal,
+          deliveryFee,
+          couponDiscount,
           address: effectiveAddress!,
           paymentMethod: "cod",
           paymentStatus: "unpaid",
-          customerName: currentUser.name,
-          customerPhone: currentUser.phone || "",
-          customerEmail: currentUser.email || "",
-          userId: currentUser.id,
+          customerName: name,
+          customerPhone: phone,
+          customerEmail: contactForm.email.trim() || currentUser?.email || "",
+          userId: currentUser?.id,
         });
         if (orderId) {
           setPaymentConfirmed(true);
@@ -379,7 +372,7 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">Phone <span className="text-brand-red text-xs">*</span></label>
-                  <div className="flex"><div className="bg-[#2D7D3A]/5 border border-border border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2D7D3A] whitespace-nowrap flex items-center gap-1">🇮🇳 +91</div><input type="tel" value={contactForm.phone} onChange={(e) => setContactForm(c => ({ ...c, phone: e.target.value }))} className="flex-1 bg-white border border-border rounded-r-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10" placeholder="98765 43210" /></div>
+                  <div className="flex"><div className="bg-[#2D7D3A]/5 border border-border border-r-0 rounded-l-xl px-3 py-2.5 text-xs font-bold text-[#2D7D3A] whitespace-nowrap flex items-center gap-1">🇮🇳 +91</div><input type="tel" value={contactForm.phone} onChange={(e) => { let digits = e.target.value.replace(/\D/g, ""); if (digits.startsWith("91") && digits.length > 10) digits = digits.slice(2); setContactForm(c => ({ ...c, phone: digits.slice(0, 10) })); }} className="flex-1 bg-white border border-border rounded-r-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10" placeholder="98765 43210" /></div>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted mb-1.5 block">Email <span className="product-badge fresh ml-1 text-[8px]">optional</span></label>
@@ -591,7 +584,7 @@ export default function CheckoutPage() {
                 <div className="flex items-start justify-between p-5 gap-3">
                   <div className="text-[13px] text-muted leading-relaxed">
                     <span className="text-[11px] text-[#2D7D3A] font-bold uppercase tracking-wider block mb-1">{selectedAddress.label?.toUpperCase() || "HOME"}</span>
-                    {currentUser?.name} · {currentUser?.phone}<br />
+                    {currentUser?.name || "Guest"} · {currentUser?.phone || (contactForm.phone ? `+91 ${contactForm.phone}` : "—")}<br />
                     {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.street ? `${selectedAddress.street}, ` : ""}{selectedAddress.landmark && `Near ${selectedAddress.landmark}, `}{selectedAddress.city} — {selectedAddress.pincode}
                   </div>
                   <button onClick={() => setStep(2)} className="text-xs font-bold text-[#2D7D3A] whitespace-nowrap hover:underline">Change</button>
@@ -663,7 +656,7 @@ export default function CheckoutPage() {
             <p className="text-[10px] text-muted">{items.reduce((n,i) => n + i.quantity, 0)} items</p>
           </div>
           <button onClick={step === 1 ? () => { setStep(2); window.scrollTo({ top: 0, behavior: "smooth" }); } : step === 2 ? () => {
-            if (!selectedAddress && (!detailForm.area.trim() || !detailForm.landmark.trim())) { toast.add("Please fill Area and Landmark", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
+            if (!selectedAddress && (!detailForm.area.trim() || !/^\d{6}$/.test(newAddress.pincode.trim()))) { toast.add("Please fill Area and a valid 6-digit Pincode", "error"); setAddressMissing(true); addressRef.current?.scrollIntoView({ behavior: "smooth" }); setTimeout(() => setAddressMissing(false), 3000); return; }
             if (!selectedAddress) {
               const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(location ? { lat: location.lat, lng: location.lng } : {}) };
               useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
@@ -677,15 +670,16 @@ export default function CheckoutPage() {
       </div>
 
       {/* Premium UPI Payment Screen */}
-      {showPaymentScreen && selectedAddress && effectiveAddress && currentUser && (
+      {showPaymentScreen && selectedAddress && effectiveAddress && (
         <PaymentScreen
           items={items.map(i => ({ ...i }))}
           total={total}
           address={effectiveAddress}
-          customerName={currentUser.name}
-          customerPhone={currentUser.phone || ""}
-          customerEmail={currentUser.email || ""}
-          userId={currentUser.id}
+          customerName={contactForm.name.trim() || currentUser?.name || "Guest"}
+          customerPhone={contactForm.phone.replace(/\D/g, "") || currentUser?.phone || ""}
+          customerEmail={contactForm.email.trim() || currentUser?.email || ""}
+          userId={currentUser?.id}
+          couponDiscount={couponDiscount}
           onSuccess={handlePaymentSuccess}
           onCancel={handlePaymentCancel}
         />

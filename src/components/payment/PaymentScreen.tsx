@@ -26,6 +26,7 @@ export interface PaymentScreenProps {
   customerPhone: string;
   customerEmail: string;
   userId?: string;
+  couponDiscount?: number;
   onSuccess: (orderId: string) => void;
   onCancel: () => void;
 }
@@ -142,6 +143,7 @@ export default function PaymentScreen({
   customerPhone,
   customerEmail,
   userId,
+  couponDiscount = 0,
   onSuccess,
   onCancel,
 }: PaymentScreenProps) {
@@ -247,7 +249,6 @@ export default function PaymentScreen({
     setErrorMessage("");
 
     try {
-      const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
       const eta = 30 + Math.floor(Math.random() * 31);
       const now = new Date().toISOString();
 
@@ -264,6 +265,7 @@ export default function PaymentScreen({
             selectedCleaning: i.selectedCleaning,
           })),
           total,
+          coupon_discount: couponDiscount || 0,
           status: "received",
           payment_method: "upi",
           payment_status: "unpaid",
@@ -276,7 +278,6 @@ export default function PaymentScreen({
           eta,
           delivery_status: "pending",
           user_id: userId ?? null,
-          delivery_code: deliveryCode,
         }),
       });
 
@@ -290,7 +291,7 @@ export default function PaymentScreen({
       setState("failed");
       setErrorMessage("Failed to submit order. Please try again.");
     }
-  }, [upiRef, orderId, items, total, address, customerName, customerPhone, customerEmail, userId, onSuccess]);
+  }, [upiRef, orderId, items, total, address, customerName, customerPhone, customerEmail, userId, couponDiscount, onSuccess]);
 
   const handleCancel = useCallback(() => {
     clearPendingPayment();

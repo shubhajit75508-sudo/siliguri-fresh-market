@@ -58,6 +58,9 @@ interface OrderState {
     customerEmail: string;
     userId?: string;
     id?: string;
+    subtotal?: number;
+    deliveryFee?: number;
+    couponDiscount?: number;
   }) => Promise<string>;
   updateStatus: (id: string, status: Order["status"]) => Promise<void>;
   assignDeliveryBoy: (orderId: string, boyId: string, boyName: string, boyEmail?: string) => Promise<{ assignment: DeliveryAssignment } | void>;
@@ -203,7 +206,7 @@ export const useOrderStore = create<OrderState>()(
           const id = data.id ?? "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
           const createdAt = new Date().toISOString();
           const eta = 30 + Math.floor(Math.random() * 31);
-          const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
+          // The delivery code is generated server-side only — the client sends none.
 
           if (isSupabaseConfigured()) {
             try {
@@ -214,6 +217,9 @@ export const useOrderStore = create<OrderState>()(
                   id,
                   items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning })),
                   total: data.total,
+                  subtotal: data.subtotal ?? data.total,
+                  delivery_fee: data.deliveryFee ?? 0,
+                  coupon_discount: data.couponDiscount ?? 0,
                   status: "received",
                   payment_method: data.paymentMethod,
                   payment_status: data.paymentStatus,
@@ -225,7 +231,6 @@ export const useOrderStore = create<OrderState>()(
                   eta,
                   delivery_status: "pending",
                   user_id: data.userId ?? null,
-                  delivery_code: deliveryCode,
                 }),
               });
               if (!res.ok) {
@@ -262,7 +267,6 @@ export const useOrderStore = create<OrderState>()(
               paymentStatus: data.paymentStatus,
               deliveryStatus: "pending" as DeliveryStatus,
               userId: data.userId,
-              deliveryCode,
             }],
           }));
           return id;

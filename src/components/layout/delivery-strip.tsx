@@ -131,7 +131,7 @@ export function DeliveryStrip() {
         <div className="hidden items-center gap-1.5 font-medium text-muted sm:flex">
           <Clock className="h-3.5 w-3.5 text-brand-fresh-dim" />
           <span>
-            Arriving in <span className="font-semibold text-foreground">10–15 min</span>
+            Arriving in <span className="font-semibold text-foreground">45–60 min</span>
           </span>
         </div>
       </div>
