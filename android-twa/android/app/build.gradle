@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.siligurifreshmart'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.siligurifreshmart'
+        minSdkVersion 24
+        targetSdkVersion 36
+        versionCode 10
+        versionName '3.0.0'
+    }
+
+    signingConfigs {
+        release {
+            if (file('../key.properties').exists()) {
+                def props = new Properties()
+                file('../key.properties').withInputStream { props.load(it) }
+                storeFile file(props['storeFile'])
+                storePassword props['storePassword']
+                keyAlias props['keyAlias']
+                keyPassword props['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.browser:browser:1.8.0'
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}

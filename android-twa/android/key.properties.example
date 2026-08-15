@@ -1,0 +1,6 @@
+# Copy this file to android/key.properties and fill in your signing key.
+# Paths are relative to the android/ folder where this file lives.
+storeFile=C:/path/to/your/keystore.p12
+storePassword=CHANGE_ME
+keyAlias=my-key-alias
+keyPassword=CHANGE_ME

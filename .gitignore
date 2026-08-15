@@ -49,3 +49,8 @@ generate-icons.ps1
 upload-keystore.p12
 upload_certificate.pem
 .env*
+
+# android twa signing
+android-twa/android/key.properties
+android-twa/android/signing.keystore
+
