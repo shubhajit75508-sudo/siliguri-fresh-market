@@ -50,15 +50,16 @@ export function useGeolocation(): UseGeolocationReturn {
         ? "Timed out — please try again"
         : err.message;
       setError(msg);
-      // Retry once with different options
-      if (err.code === 3) {
+      // Retry once with different options — a second attempt often succeeds
+      // where the first timed out (e.g. GPS still warming up on phones).
+      if (err.code === 3 || err.code === 2) {
         navigator.geolocation.getCurrentPosition(
           onSuccess,
           (e2) => {
-            setError(e2.code === 1 ? "Location denied" : "Location unavailable — try manual entry");
+            setError(e2.code === 1 ? "Location denied" : "Location unavailable — try again");
             setLocating(false);
           },
-          { enableHighAccuracy: false, timeout: 15000 }
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 }
         );
       } else {
         setLocating(false);
@@ -68,6 +69,7 @@ export function useGeolocation(): UseGeolocationReturn {
     navigator.geolocation.getCurrentPosition(onSuccess, onError, {
       enableHighAccuracy: false,
       timeout: 10000,
+      maximumAge: 60000,
     });
   }, []);
 

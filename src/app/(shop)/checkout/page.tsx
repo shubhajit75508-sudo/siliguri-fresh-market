@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const [selectedPayment, setSelectedPayment] = useState<"upi" | "cod">("upi");
   const [confirmingOrder, setConfirmingOrder] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [showLocationFallback, setShowLocationFallback] = useState(false);
   const [showPaymentScreen, setShowPaymentScreen] = useState(false);
   const [detailForm, setDetailForm] = useState({ area: "", landmark: "", building: "", flat: "", floor: "", street: "", deliveryInstructions: "" });
   const [addressMissing, setAddressMissing] = useState(false);
@@ -65,6 +66,12 @@ export default function CheckoutPage() {
       ? { ...selectedAddress, lat: location.lat, lng: location.lng }
       : selectedAddress
     : undefined;
+
+  // If the customer's GPS comes through while the "continue without location"
+  // dialog is open, dismiss it — they can proceed with a verified pin.
+  useEffect(() => {
+    if (location) setShowLocationFallback(false);
+  }, [location]);
 
   const pinnedDistance = location ? distanceFromStore(location.lat, location.lng) : null;
   const pinnedInZone = !!location && pinnedDistance !== null && isWithinDeliveryZone(location.lat, location.lng);
@@ -154,7 +161,7 @@ export default function CheckoutPage() {
     useUserStore.getState().updateAddress(updated);
   };
 
-  const handlePlaceOrder = async () => {
+  const placeOrder = async (bypassLocation = false) => {
     if (!selectedAddress) {
       toast.add("Please select a delivery address", "error");
       setAddressMissing(true);
@@ -169,12 +176,14 @@ export default function CheckoutPage() {
 
     const zoneLat = Number(effectiveAddress?.lat);
     const zoneLng = Number(effectiveAddress?.lng);
-    if (!Number.isFinite(zoneLat) || !Number.isFinite(zoneLng)) {
-      toast.add("Pin your delivery location to place this order", "error");
-      pinRef.current?.scrollIntoView({ behavior: "smooth" });
+    const hasCoords = Number.isFinite(zoneLat) && Number.isFinite(zoneLng) && zoneLat !== 0 && zoneLng !== 0;
+    if (!hasCoords && !bypassLocation) {
+      // Some devices can't report GPS (permission denied / GPS off / old browser).
+      // Offer to continue without a pin instead of blocking the order outright.
+      setShowLocationFallback(true);
       return;
     }
-    if (!isWithinDeliveryZone(zoneLat, zoneLng)) {
+    if (hasCoords && !isWithinDeliveryZone(zoneLat, zoneLng)) {
       toast.add(`Sorry, we deliver within ${DELIVERY_RADIUS_KM} km of our store (Laketown / Gate Bazar, Siliguri)`, "error");
       pinRef.current?.scrollIntoView({ behavior: "smooth" });
       return;
@@ -211,6 +220,8 @@ export default function CheckoutPage() {
       setShowPaymentScreen(true);
     }
   };
+
+  const handlePlaceOrder = () => placeOrder();
 
   const handlePaymentSuccess = (orderId: string) => {
     setShowPaymentScreen(false);
@@ -531,7 +542,7 @@ export default function CheckoutPage() {
                 <div><h2 className="text-sm font-bold text-foreground">Pin Your Location</h2><p className="text-[10px] text-muted">We deliver within {DELIVERY_RADIUS_KM} km of our store</p></div>
               </div>
               <div className="p-5">
-                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/5 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-muted mb-4"><Lightbulb className="h-4 w-4" /> Tap <strong className="text-foreground mx-0.5">Detect</strong> to auto-locate — required to place your order.</div>
+                <div className="flex items-center gap-2 rounded-xl bg-[#4A8FE7]/5 border border-[#4A8FE7]/20 px-4 py-2.5 text-[11px] text-muted mb-4"><Lightbulb className="h-4 w-4" /> Tap <strong className="text-foreground mx-0.5">Detect</strong> to auto-locate. If it fails, you can still place your order — we will confirm your area by phone.</div>
                 <div className="w-full h-48 rounded-xl bg-surface-2 border border-border flex items-center justify-center mb-3">
                   {location ? (
                     <div className="text-center">
@@ -677,6 +688,50 @@ export default function CheckoutPage() {
           onSuccess={handlePaymentSuccess}
           onCancel={handlePaymentCancel}
         />
+      )}
+
+      {/* Location fallback dialog — device couldn't report GPS */}
+      {showLocationFallback && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#4A8FE7]/10">
+                <Map className="h-5 w-5 text-[#4A8FE7]" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">Location not detected</h3>
+                <p className="text-[10px] text-muted">We could not read GPS on this device</p>
+              </div>
+            </div>
+            <div className="p-5">
+              <p className="text-xs text-muted leading-relaxed">
+                You can still place your order — our delivery team will call you to
+                confirm your area before dispatching.
+              </p>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={() => { setShowLocationFallback(false); placeOrder(true); }}
+                  disabled={confirmingOrder}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors disabled:opacity-50"
+                >
+                  {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : <Truck className="h-4 w-4" />}
+                  Continue Without Location
+                </button>
+                <button
+                  onClick={() => { setShowLocationFallback(false); getLocation(); }}
+                  disabled={locating}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-border py-3 text-sm font-semibold text-foreground hover:bg-surface-2 transition-colors disabled:opacity-50"
+                >
+                  {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+                  Try Detecting Again
+                </button>
+              </div>
+              <p className="text-[10px] text-muted text-center mt-3">
+                Tip: allow location access and ensure GPS/WiFi is on.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

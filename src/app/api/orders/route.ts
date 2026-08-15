@@ -56,22 +56,23 @@ export async function POST(req: NextRequest) {
   }
 
   // Delivery zone enforcement — orders are only accepted within the store's
-  // delivery radius. The customer's pinned GPS location is authoritative.
+  // delivery radius when GPS coords were captured. Customers whose device can't
+  // report GPS (permission denied / no GPS / timeout) are NOT blocked — the order
+  // goes through with zone_verified=false so the admin team confirms the area by
+  // phone before dispatch. The pinned GPS location is authoritative when present.
   const addrSnap = (body.address_snapshot ?? {}) as Record<string, unknown>;
   const zoneLat = Number(addrSnap.lat);
   const zoneLng = Number(addrSnap.lng);
-  if (!Number.isFinite(zoneLat) || !Number.isFinite(zoneLng)) {
-    return NextResponse.json(
-      { error: "We couldn't verify your delivery location. Please pin your location in checkout and try again." },
-      { status: 400 }
-    );
-  }
-  const zoneDistance = distanceFromStore(zoneLat, zoneLng);
-  if (zoneDistance > DELIVERY_RADIUS_KM) {
-    return NextResponse.json(
-      { error: `Sorry, we only deliver within ${DELIVERY_RADIUS_KM} km of our store (${DELIVERY_ZONE_LABEL}). Your location is about ${zoneDistance.toFixed(1)} km away.` },
-      { status: 400 }
-    );
+  const hasCoords =
+    Number.isFinite(zoneLat) && Number.isFinite(zoneLng) && zoneLat !== 0 && zoneLng !== 0;
+  if (hasCoords) {
+    const zoneDistance = distanceFromStore(zoneLat, zoneLng);
+    if (zoneDistance > DELIVERY_RADIUS_KM) {
+      return NextResponse.json(
+        { error: `Sorry, we only deliver within ${DELIVERY_RADIUS_KM} km of our store (${DELIVERY_ZONE_LABEL}). Your location is about ${zoneDistance.toFixed(1)} km away.` },
+        { status: 400 }
+      );
+    }
   }
 
   // The delivery code is ALWAYS generated server-side — never trusted from the client.
@@ -88,7 +89,7 @@ export async function POST(req: NextRequest) {
     delivery_status: body.delivery_status ?? "pending",
     payment_method: paymentMethod,
     payment_status: "unpaid",
-    address_snapshot: body.address_snapshot ?? {},
+    address_snapshot: { ...(body.address_snapshot ?? {}), zone_verified: hasCoords },
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",

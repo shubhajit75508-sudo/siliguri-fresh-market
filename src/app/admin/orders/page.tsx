@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle } from "lucide-react";
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange" | "red"> = {
   received: "default",
@@ -602,6 +602,11 @@ export default function AdminOrdersPage() {
                     <a href={`https://www.google.com/maps/dir/?api=1&destination=${selectedOrder.address.lat},${selectedOrder.address.lng}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-brand-blue underline">
                       <MapPin className="h-3 w-3" /> Open in Maps
                     </a>
+                  )}
+                  {(!selectedOrder.address.lat || !selectedOrder.address.lng) && (
+                    <p className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-amber-500/15 px-2 py-1 text-[10px] font-bold text-amber-600">
+                      <AlertTriangle className="h-3 w-3" /> No GPS — confirm delivery area by phone
+                    </p>
                   )}
                 </div>
               </div>
