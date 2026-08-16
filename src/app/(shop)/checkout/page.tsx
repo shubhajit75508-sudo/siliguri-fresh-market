@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   X, Loader2,
   ShoppingCart, Receipt, User, Home, Building2, Pin, Leaf, Zap, Banknote, CreditCard,
-  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, Package,
+  Crosshair, Lock, AlertTriangle, Clock, Lightbulb, Map, Truck, Package, Tag, CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, cartLineId, cartLineKey } from "@/store/cart-store";
@@ -207,6 +207,23 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = () => placeOrder();
+
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) { setCouponMsg({ text: "Enter a coupon code first", ok: false }); return; }
+    const c = coupons.find(c => c.code.toUpperCase() === code);
+    if (c) {
+      const d = c.type === "percentage" ? Math.round(getSubtotal() * c.discount / 100) : c.discount;
+      if (getSubtotal() >= c.minOrder) {
+        applyCartCoupon(c.code, d);
+        setCouponMsg({ text: `"${code}" applied — ${c.discount}${c.type === "percentage" ? "%" : "₹"} off!`, ok: true });
+      } else {
+        setCouponMsg({ text: `Minimum order ₹${c.minOrder} required`, ok: false });
+      }
+    } else {
+      setCouponMsg({ text: "Invalid coupon code", ok: false });
+    }
+  };
 
   const handlePaymentSuccess = (orderId: string) => {
     setShowPaymentScreen(false);
@@ -608,6 +625,35 @@ export default function CheckoutPage() {
                   </div>
                 </button>
               </div>
+            </div>
+
+            {/* Coupon */}
+            <div className="card-white overflow-hidden mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
+                <Tag className="h-5 w-5" />
+                <div><h2 className="text-sm font-bold text-foreground">Coupon / Promo</h2><p className="text-[10px] text-muted">Apply a code to save on this order</p></div>
+              </div>
+              <div className="flex gap-2 p-4">
+                <input
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => { setCouponCode(e.target.value); setCouponMsg(null); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleApplyCoupon(); }}
+                  className="flex-1 bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted/50 outline-none focus:border-[#2D7D3A]/50 focus:ring-2 focus:ring-[#2D7D3A]/10 uppercase tracking-wider"
+                  maxLength={20}
+                />
+                <button
+                  onClick={couponDiscount > 0 ? removeCoupon : handleApplyCoupon}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${couponDiscount > 0 ? "bg-brand-red/10 border border-brand-red/25 text-brand-red hover:bg-brand-red/20" : "bg-[#2D7D3A]/10 border border-[#2D7D3A]/30 text-[#2D7D3A] hover:bg-[#2D7D3A]/20"}`}
+                >
+                  {couponDiscount > 0 ? "Remove" : "Apply"}
+                </button>
+              </div>
+              {couponMsg && (
+                <div className={`px-5 pb-3 text-[11px] font-semibold ${couponMsg.ok ? "text-[#2D7D3A]" : "text-brand-red"}`}>
+                  {couponMsg.ok ? <CheckCircle2 className="h-3 w-3 inline mr-1" /> : <AlertTriangle className="h-3 w-3 inline mr-1" />}{couponMsg.text}
+                </div>
+              )}
             </div>
 
             {/* Bill Summary */}
