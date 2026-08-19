@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
+import { FISH_SUBCATEGORIES } from "@/types";
 import type { Product } from "@/types";
 
 const API_BASE = "/api/admin/products";
@@ -240,6 +241,13 @@ export default function AdminProductsPage() {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy & Eggs</option>
             </select>
+            {(form.category === "fish") && (
+              <select value={form.subcategory || "unassigned"} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40">
+                {FISH_SUBCATEGORIES.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            )}
             <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40 sm:col-span-1" />
             <label className="flex cursor-pointer items-center gap-2 sm:col-span-1">
               <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
@@ -366,6 +374,7 @@ export default function AdminProductsPage() {
               <tr className="border-b border-border bg-surface text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">Category</th>
+                {filterCategory === "fish" && <th className="px-4 py-3">Subcategory</th>}
                 <th className="px-4 py-3">Price</th>
                 <th className="px-4 py-3">Discount</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -375,7 +384,7 @@ export default function AdminProductsPage() {
               {[...filteredProducts].reverse().map((p) =>
                 editingId === p.id ? (
                   <tr key={p.id} className="border-b border-border">
-                    <td className="px-4 py-3" colSpan={5}>
+                    <td className="px-4 py-3" colSpan={filterCategory === "fish" ? 6 : 5}>
                       <div className="grid gap-3 sm:grid-cols-4">
                         <input value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Name" />
                         <div className="flex items-center gap-2">
@@ -421,6 +430,15 @@ export default function AdminProductsPage() {
                           <input placeholder="Cuts (comma-separated)" value={(form.cuts || []).join(", ")} onChange={(e) => setForm({ ...form, cuts: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
                           <input placeholder="Cleaning Options (comma-separated)" value={(form.cleaningOptions || []).join(", ")} onChange={(e) => setForm({ ...form, cleaningOptions: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
                         </div>
+                        {form.category === "fish" && (
+                          <div className="sm:col-span-4">
+                            <select value={form.subcategory || "unassigned"} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none">
+                              {FISH_SUBCATEGORIES.map((s) => (
+                                <option key={s.value} value={s.value}>{s.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
                           <input placeholder="Species" value={form.species || ""} onChange={(e) => setForm({ ...form, species: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
                           <input placeholder="River" value={form.river || ""} onChange={(e) => setForm({ ...form, river: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
@@ -453,6 +471,19 @@ export default function AdminProductsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
+                    {filterCategory === "fish" && (
+                      <td className="px-4 py-3">
+                        {p.subcategory && p.subcategory !== "unassigned" ? (
+                          <span className="inline-flex items-center rounded-full bg-[#2D7D3A]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#2D7D3A]">
+                            {FISH_SUBCATEGORIES.find((s) => s.value === p.subcategory)?.label ?? p.subcategory}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-muted/10 px-2.5 py-0.5 text-[11px] font-medium text-muted italic">
+                            Unassigned
+                          </span>
+                        )}
+                      </td>
+                    )}
                     <td className="px-4 py-3">₹{p.price}</td>
                     <td className="px-4 py-3">{p.discount ? `${p.discount}%` : "—"}</td>
                     <td className="px-4 py-3 text-right">

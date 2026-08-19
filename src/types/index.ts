@@ -11,6 +11,18 @@ export type Category =
   | "grocery"
   | "essentials";
 
+export const FISH_SUBCATEGORIES = [
+  { value: "unassigned", label: "Unassigned" },
+  { value: "river", label: "River Fish" },
+  { value: "sea", label: "Sea Fish" },
+  { value: "hilsa", label: "Hilsa / Ilish" },
+  { value: "prawns", label: "Prawns / Chingri" },
+  { value: "small", label: "Small Fish" },
+  { value: "other", label: "Other" },
+] as const;
+
+export type FishSubcategory = typeof FISH_SUBCATEGORIES[number]["value"];
+
 export interface Product {
   id: string;
   slug: string;
@@ -42,6 +54,7 @@ export interface Product {
   species?: string;
   cleaningOptions?: string[];
   discount?: number;
+  subcategory?: string;
 }
 
 export interface CartItem {
