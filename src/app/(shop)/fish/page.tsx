@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
 import { ProductFilterBar, type ProductFiltersState } from "@/components/product/product-filter-bar";
 import { FISH_SUBCATEGORIES } from "@/types";
 import { cn } from "@/lib/utils";
-import { Waves, Fish, Anchor, Shell, Sparkles, Grid3X3 } from "lucide-react";
+import { Waves, Fish, Anchor, Shell, Sparkles, Grid3X3, ChevronRight } from "lucide-react";
 
 const SUBCAT_ICONS: Record<string, React.ReactNode> = {
   all: <Grid3X3 className="h-5 w-5" />,
@@ -33,6 +33,18 @@ export default function FishPage() {
   const { data: fish = [] } = useProductsByCategory("fish");
   const [filters, setFilters] = useState<ProductFiltersState>({ sort: "name", inStockOnly: false });
   const [subcat, setSubcat] = useState("all");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => { el.removeEventListener("scroll", check); window.removeEventListener("resize", check); };
+  }, [fish.length]);
 
   const processed = useMemo(() => {
     let list = [...fish];
@@ -81,8 +93,9 @@ export default function FishPage() {
       </div>
 
       {/* Subcategory Filter Cards */}
-      <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none">
-        <div className="flex gap-3 min-w-max pb-2">
+      <div className="relative mb-6 -mx-4 px-4">
+        <div ref={scrollRef} className="overflow-x-auto scrollbar-none">
+          <div className="flex gap-3 min-w-max pb-2">
           {/* All Card */}
           <button
             onClick={() => setSubcat("all")}
@@ -171,6 +184,14 @@ export default function FishPage() {
             );
           })}
         </div>
+        </div>
+        {canScrollRight && (
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center pr-1">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-md shadow-black/10 backdrop-blur-sm border border-border/50">
+              <ChevronRight className="h-5 w-5 text-[#2D7D3A] animate-pulse" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Sort + Filter Bar */}
