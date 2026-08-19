@@ -108,7 +108,7 @@ export default function FishPage() {
       {/* Hero Banner */}
       <div className="relative mb-10 overflow-hidden rounded-[32px] shadow-xl">
         <div className="relative min-h-[280px] sm:min-h-[320px]">
-          <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299704/Picsart_26-06-24_11-09-55-236_cmcwt5.jpg"
+          <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg"
             alt="Fresh fish"
             className="absolute inset-0 w-full h-full object-cover hero-zoom"
           />
