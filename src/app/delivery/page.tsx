@@ -91,9 +91,9 @@ function EarningsCard() {
 // ── Available Order Card ─────────────────────────────
 
 function AvailableCard({
-  order, boyId, atCapacity, onAccept, onReject, accepting, rejecting,
+  order, boyId, onAccept, onReject, accepting, rejecting,
 }: {
-  order: Order; boyId: string; atCapacity: boolean;
+  order: Order; boyId: string;
   onAccept: (id: string) => void; onReject: (id: string) => void;
   accepting: string | null; rejecting: string | null;
 }) {
@@ -165,11 +165,6 @@ function AvailableCard({
         >
           <Phone className="h-3.5 w-3.5" /> Call
         </a>
-        {atCapacity && (
-          <span className="text-[10px] text-brand-orange flex items-center gap-1">
-            <AlertTriangle className="h-3 w-3" /> Queue full
-          </span>
-        )}
         <div className="ml-auto flex gap-2">
           <Button variant="outline" size="sm" disabled={rejecting === order.id}
             onClick={() => onReject(order.id)}
@@ -178,7 +173,7 @@ function AvailableCard({
             {rejecting === order.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
             Reject
           </Button>
-          <Button variant="fresh" size="sm" disabled={accepting === order.id || atCapacity}
+          <Button variant="fresh" size="sm" disabled={accepting === order.id}
             onClick={() => onAccept(order.id)}
             className="bg-brand-fresh hover:bg-brand-fresh/90"
           >
@@ -406,7 +401,6 @@ export default function DeliveryDashboard() {
 
   // Available orders state
   const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
-  const [atCapacity, setAtCapacity] = useState(false);
   const [accepting, setAccepting] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [tab, setTab] = useState<"available" | "my">("available");
@@ -439,7 +433,6 @@ export default function DeliveryDashboard() {
       }
       prevAvailableCountRef.current = orders.length;
       setAvailableOrders(orders);
-      setAtCapacity(json.atCapacity ?? false);
     } catch (e) { console.warn("[available] fetchAvailable error:", e); }
   }, []);
 
@@ -458,7 +451,6 @@ export default function DeliveryDashboard() {
         }
         prevAvailableCountRef.current = orders.length;
         setAvailableOrders(orders);
-        setAtCapacity(json.atCapacity ?? false);
       } catch (e) { console.warn("[available] doFetch error:", e); }
     };
     doFetch();
@@ -641,18 +633,11 @@ export default function DeliveryDashboard() {
           </div>
         ) : (
           <div>
-            {atCapacity && (
-              <div className="mb-3 rounded-xl bg-brand-orange/10 px-4 py-2.5 text-xs text-brand-orange flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 shrink-0" />
-                You've reached your active delivery limit. Complete a delivery to accept new orders.
-              </div>
-            )}
             {availableOrders.map((o) => (
               <AvailableCard
                 key={o.id}
                 order={o}
                 boyId={boy!.id}
-                atCapacity={atCapacity}
                 onAccept={handleAccept}
                 onReject={handleReject}
                 accepting={accepting}

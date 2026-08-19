@@ -98,7 +98,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <Link href={`/product/${product.slug}`} className="block min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="truncate text-[13px] font-bold text-foreground">{product.name}</p>
+              <p className="line-clamp-1 text-[13px] font-bold text-foreground">{product.name}</p>
               {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
             </div>
             <p className="text-[11px] text-muted">{product.weight?.[0] || `1 ${product.unit}`}</p>
@@ -155,7 +155,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             {product.deliveryEta} min
           </div>
 
-          <h3 className="line-clamp-1 text-[15px] font-bold text-foreground">{product.name}</h3>
+          <h3 className="line-clamp-2 leading-snug text-[15px] font-bold text-foreground">{product.name}</h3>
 
           {weights.length > 1 ? (
             <div className="mt-1.5 flex flex-wrap gap-1">

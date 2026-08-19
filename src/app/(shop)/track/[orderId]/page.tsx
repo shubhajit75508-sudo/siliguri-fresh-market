@@ -355,12 +355,12 @@ export default function TrackOrderPage({
       </div>
 
       {/* Delivery Code */}
-      {order.deliveryCode && (isOutForDelivery || order.status === "delivered") && (
+      {order.deliveryCode && (
         <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2D7D3A]/30 bg-[#2D7D3A]/5 p-5 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <KeyRound className="h-4 w-4 text-[#2D7D3A]" />
             <p className="text-xs font-semibold text-muted">
-              {isDelivered ? "Delivery code used" : "Share this code with delivery partner"}
+              {isDelivered ? "Delivery code used" : isOutForDelivery ? "Share this code with delivery partner" : "Show this code to your delivery partner when they arrive"}
             </p>
           </div>
           <div className="flex items-center justify-center gap-3">

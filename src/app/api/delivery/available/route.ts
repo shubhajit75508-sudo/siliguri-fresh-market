@@ -22,21 +22,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const boyId = searchParams.get("boy_id") || userId;
 
-  const { data: profile } = await supabaseAdmin
-    .from("delivery_boys")
-    .select("max_active_orders")
-    .eq("id", boyId)
-    .single();
-  const maxActive = (profile?.max_active_orders as number) ?? 5;
-
-  const { count: activeCount } = await supabaseAdmin
-    .from("orders")
-    .select("*", { count: "exact", head: true })
-    .eq("delivery_boy_id", boyId)
-    .in("delivery_status", ["accepted", "picked_up"]);
-
-  const atCapacity = (activeCount ?? 0) >= maxActive;
-
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select("*")
@@ -58,5 +43,5 @@ export async function GET(req: NextRequest) {
     return true;
   });
 
-  return NextResponse.json({ orders: available, atCapacity });
+  return NextResponse.json({ orders: available, atCapacity: false });
 }

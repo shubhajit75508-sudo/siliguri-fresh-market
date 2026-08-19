@@ -6,6 +6,7 @@ import { DeliveryStrip } from "@/components/layout/delivery-strip";
 import { StoreHoursBanner } from "@/components/layout/store-hours-banner";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { WhatsAppFab } from "@/components/whatsapp-fab";
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
       {!hideFooter && <Footer />}
+      {!hideFooter && <WhatsAppFab />}
       <BottomNav />
     </div>
   );
