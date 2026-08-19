@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/policies/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/policies/returns`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/policies/cancellation`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: `${baseUrl}/policies/reviews`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
 
   const zonePages: MetadataRoute.Sitemap = DELIVERY_ZONES.map((z) => ({

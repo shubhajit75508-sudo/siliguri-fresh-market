@@ -191,7 +191,7 @@ export default function CheckoutPage() {
         if (orderId) {
           setPaymentConfirmed(true);
           clearCart();
-          router.push(`/track/${orderId}`);
+          router.push(`/order-success?id=${orderId}`);
         } else {
           toast.add("Order failed. Please try again.", "error");
         }
@@ -229,7 +229,7 @@ export default function CheckoutPage() {
     setShowPaymentScreen(false);
     setPaymentConfirmed(true);
     clearCart();
-    router.push(`/track/${orderId}`);
+    router.push(`/order-success?id=${orderId}`);
   };
 
   const handlePaymentCancel = () => {

@@ -7,6 +7,7 @@ import { StoreHoursBanner } from "@/components/layout/store-hours-banner";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { WhatsAppFab } from "@/components/whatsapp-fab";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -22,6 +23,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       </main>
       {!hideFooter && <Footer />}
       {!hideFooter && <WhatsAppFab />}
+      <PWAInstallPrompt />
       <BottomNav />
     </div>
   );

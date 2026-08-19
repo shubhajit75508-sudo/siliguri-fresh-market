@@ -109,7 +109,7 @@ export function ReviewsSection() {
 
       <div className="mt-4 text-center">
         <a
-          href="https://g.page/r/CYExample/review"
+          href="https://share.google/LFEJFhqvrXi9Zcyhk"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D7D3A] hover:underline"
