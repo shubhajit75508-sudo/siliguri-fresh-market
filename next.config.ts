@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     return [
       // Block search engines from private routes
       {
-        source: "/(admin|delivery|auth|api|checkout|account|track)(/.*)?",
+        source: "/(admin|delivery|auth|api|checkout|account)(/.*)?",
         headers: [
           { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
