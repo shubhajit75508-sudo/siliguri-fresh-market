@@ -13,7 +13,7 @@ function SearchResults() {
   const { data: results = [] } = useSearchProducts(query);
   const { data: trending = [] } = useTrendingProducts();
   const { data: allProducts = [] } = useProducts();
-  const browseProducts = query ? results : trending;
+  const browseProducts = query ? results : (trending.length > 0 ? trending : allProducts);
 
   return (
     <div className="py-6">
@@ -30,13 +30,15 @@ function SearchResults() {
             <>
               Browse Products
               <span className="ml-2 text-base font-normal text-muted">
-                ({allProducts.length} items)
+                ({browseProducts.length} items)
               </span>
             </>
           )}
         </h1>
         {!query && (
-          <p className="mt-1 text-sm text-muted">Trending picks — or search for something specific</p>
+          <p className="mt-1 text-sm text-muted">
+            {trending.length > 0 ? "Trending picks — or search for something specific" : "All products — or search for something specific"}
+          </p>
         )}
       </FadeIn>
 
@@ -46,22 +48,22 @@ function SearchResults() {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-      ) : query ? (
+      ) : (
         <div className="mt-16 flex flex-col items-center text-center">
           <Search className="mb-4 h-12 w-12 text-muted" />
-          <h3 className="text-lg font-semibold">No results found</h3>
+          <h3 className="text-lg font-semibold">No products found</h3>
           <p className="mt-1 text-sm text-muted">
             Try searching for fish, chicken, vegetables, or fruits
           </p>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="py-6 skeleton h-8 w-48 rounded-xl" />}>
+    <Suspense fallback={<div className="py-6 text-muted text-sm">Loading products...</div>}>
       <SearchResults />
     </Suspense>
   );

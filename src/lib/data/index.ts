@@ -16,9 +16,8 @@ function getAdminProducts(): Product[] {
 function mergeWithAdmin(products: Product[]): Product[] {
   const admin = getAdminProducts();
   if (!admin.length) return products;
-  // Put DB/mock products first — admin store is a cache, DB is authoritative for stock
-  const adminIds = new Set(admin.map((p) => p.id));
-  const extraAdmin = admin.filter((p) => !products.some((db) => db.id === p.id));
+  const productIds = new Set(products.map((p) => p.id));
+  const extraAdmin = admin.filter((p) => !productIds.has(p.id));
   return [...products, ...extraAdmin];
 }
 
@@ -31,14 +30,18 @@ export async function getProductsByCategory(category: string): Promise<Product[]
   }
   const admin = getAdminProducts().filter((p) => p.category === category);
   if (!admin.length) return products;
-  const adminIds = new Set(admin.map((p) => p.id));
-  return [...products, ...admin.filter((p) => !adminIds.has(p.id))];
+  const productIds = new Set(products.map((p) => p.id));
+  return [...products, ...admin.filter((p) => !productIds.has(p.id))];
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (isSupabaseConfigured()) {
-    const dbProduct = await db.fetchProductBySlug(slug);
-    if (dbProduct) return dbProduct;
+    try {
+      const dbProduct = await db.fetchProductBySlug(slug);
+      if (dbProduct) return dbProduct;
+    } catch {
+      // Supabase failed, fall through to mock/admin
+    }
   }
   const mockProduct = mock.getProductBySlug(slug);
   if (mockProduct) return mockProduct;
@@ -63,8 +66,8 @@ export async function getFlashDeals(): Promise<Product[]> {
 
   const admin = getAdminProducts().filter((p) => p.isFlashDeal);
   if (admin.length) {
-    const adminIds = new Set(admin.map((p) => p.id));
-    products = [...products, ...admin.filter((p) => !adminIds.has(p.id))];
+    const productIds = new Set(products.map((p) => p.id));
+    products = [...products, ...admin.filter((p) => !productIds.has(p.id))];
   }
 
   return products;
@@ -73,14 +76,14 @@ export async function getFlashDeals(): Promise<Product[]> {
 export async function getTrendingProducts(): Promise<Product[]> {
   let products: Product[];
   if (isSupabaseConfigured()) {
-    try { products = await db.fetchTrendingProducts(); } catch { products = []; }
+    try { products = await db.fetchTrendingProducts(); } catch { products = mock.getTrendingProducts(); }
   } else {
     products = mock.getTrendingProducts();
   }
   const admin = getAdminProducts().filter((p) => p.isTrending);
   if (!admin.length) return products;
-  const adminIds = new Set(admin.map((p) => p.id));
-  return [...products, ...admin.filter((p) => !adminIds.has(p.id))];
+  const productIds = new Set(products.map((p) => p.id));
+  return [...products, ...admin.filter((p) => !productIds.has(p.id))];
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
@@ -90,16 +93,16 @@ export async function searchProducts(query: string): Promise<Product[]> {
       const admin = getAdminProducts().filter((p) =>
         p.name.toLowerCase().includes(query.toLowerCase())
       );
-      const adminIds = new Set(admin.map((p) => p.id));
-      return [...dbResults, ...admin.filter((p) => !adminIds.has(p.id))];
+      const productIds = new Set(dbResults.map((p) => p.id));
+      return [...dbResults, ...admin.filter((p) => !productIds.has(p.id))];
     } catch {}
   }
   const mockResults = mock.searchProducts(query);
   const admin = getAdminProducts().filter((p) =>
     p.name.toLowerCase().includes(query.toLowerCase())
   );
-  const adminIds = new Set(admin.map((p) => p.id));
-  return [...mockResults, ...admin.filter((p) => !adminIds.has(p.id))];
+  const productIds = new Set(mockResults.map((p) => p.id));
+  return [...mockResults, ...admin.filter((p) => !productIds.has(p.id))];
 }
 
 export async function getAllProducts(): Promise<Product[]> {
