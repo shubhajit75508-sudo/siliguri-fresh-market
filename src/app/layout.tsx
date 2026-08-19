@@ -68,6 +68,9 @@ export const metadata: Metadata = {
     description: siteDesc,
     images: ["https://res.cloudinary.com/dc5fh5afb/image/upload/v1782373060/og-image_uhkk9p.png"],
   },
+  alternates: {
+    canonical: "https://www.siligurifreshmart.com",
+  },
   robots: {
     index: true,
     follow: true,

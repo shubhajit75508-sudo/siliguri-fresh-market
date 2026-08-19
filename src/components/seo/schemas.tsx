@@ -63,24 +63,37 @@ export function LocalBusinessSchema() {
       dangerouslySetInnerHTML={{
         __html: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "LocalBusiness",
+          "@type": "GroceryStore",
+          "@id": "https://www.siligurifreshmart.com/#localbusiness",
           name: "Siliguri Fresh Mart",
           image: "https://www.siligurifreshmart.com/logo.png",
           telephone: "+91 7029908278",
           email: "siligurifreshmart@gmail.com",
           address: {
             "@type": "PostalAddress",
+            streetAddress: "Laketown, Gate Bazar",
             addressLocality: "Siliguri",
             addressRegion: "West Bengal",
             postalCode: "734001",
             addressCountry: "IN",
           },
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 26.7271,
+            longitude: 88.3953,
+          },
           url: "https://www.siligurifreshmart.com",
+          priceRange: "₹50-₹500",
+          paymentAccepted: "Cash, UPI (Google Pay, PhonePe, Paytm)",
+          servesCuisine: ["Fresh Fish", "Chicken", "Mutton", "Pork", "Seafood", "Vegetables", "Fruits", "Dairy", "Groceries"],
           openingHoursSpecification: [
-            { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "06:00", closes: "22:00" },
+            { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "06:00", closes: "15:00" },
           ],
-          areaServed: ["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Siliguri Town","Champasari","Sukna","Burdwan Road"],
-          priceRange: "",
+          areaServed: [
+            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.7271, longitude: 88.3953 } },
+          ],
+          hasMenu: "https://www.siligurifreshmart.com/category/fish",
+          sameAs: [],
         }),
       }}
     />
@@ -95,17 +108,34 @@ export function ProductSchema({ product }: { product: { name: string; descriptio
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Product",
+          "@id": "https://www.siligurifreshmart.com/product/" + product.slug + "#product",
           name: product.name,
           description: product.description,
           image: product.image,
           sku: product.slug,
           category: product.category,
+          brand: { "@type": "Brand", name: "Siliguri Fresh Mart" },
           offers: {
             "@type": "Offer",
             price: product.price,
             priceCurrency: "INR",
             availability: product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             url: "https://www.siligurifreshmart.com/product/" + product.slug,
+            itemCondition: "https://schema.org/NewCondition",
+            seller: { "@type": "Organization", name: "Siliguri Fresh Mart" },
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingRate: { "@type": "MonetaryAmount", price: "0", priceCurrency: "INR" },
+              shippingDestination: { "@type": "DefinedRegion", addressCountry: "IN" },
+              deliveryTime: { "@type": "ShippingDeliveryTime", handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" }, transitTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" } },
+            },
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "IN",
+              returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 1,
+              returnMethod: "https://schema.org/ReturnByMail",
+            },
           },
           aggregateRating: {
             "@type": "AggregateRating",

@@ -8,6 +8,36 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
       },
+      {
+        userAgent: ["GPTBot", "ChatGPT-User", "OAI-SearchBot"],
+        allow: "/",
+        disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
+      },
+      {
+        userAgent: ["ClaudeBot", "Claude-User"],
+        allow: "/",
+        disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
+      },
+      {
+        userAgent: ["PerplexityBot", "Perplexity-User"],
+        allow: "/",
+        disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
+      },
+      {
+        userAgent: ["Google-Extended"],
+        allow: "/",
+        disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
+      },
+      {
+        userAgent: ["Bingbot", "BingWebBot"],
+        allow: "/",
+        disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
+      },
+      {
+        userAgent: ["Amazonbot"],
+        allow: "/",
+        disallow: ["/admin/", "/delivery/", "/auth/", "/api/", "/checkout", "/account/", "/track/"],
+      },
     ],
     sitemap: "https://www.siligurifreshmart.com/sitemap.xml",
   };
