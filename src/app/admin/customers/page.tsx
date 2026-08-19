@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 const DEFAULT_MSG =
-  "🐟 Fresh fish, 🍗 chicken & 🦐 prawns available today! Order now: siligurifreshmart.com 📞7029908278";
+  "Good morning!\n\nFresh from Siliguri's morning market:\n- Rohu, Katla, Mrigel - freshly caught\n- Country chicken - farm fresh\n- Tiger prawns - iced & clean\n- Mutton - premium cuts\n\nOrder on WhatsApp: siligurifreshmart.com\nDelivery in 30 mins!\n\nCall: 7029908278";
 
 function normalizePhone(raw: string): string {
   const digits = raw.replace(/\D/g, "");
