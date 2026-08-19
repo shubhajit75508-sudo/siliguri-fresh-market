@@ -66,8 +66,10 @@ export default function AboutPage() {
           From the Fish Market<br />to Your Doorstep
         </h1>
         <p className="mt-4 text-[15px] text-muted leading-relaxed">
-          Siliguri Fresh Mart started with a simple idea: what if the freshest fish, meat and vegetables
-          from Siliguri&apos;s morning markets could reach your kitchen without you stepping out?
+          Siliguri Fresh Mart is a direct-to-consumer fresh delivery service in Siliguri, West Bengal.
+          Unlike marketplace listings or aggregator apps, we source fish, chicken and mutton ourselves from
+          Siliguri&apos;s morning markets every day and deliver directly to your doorstep within 30 minutes —
+          no middlemen, no warehouses, no frozen storage.
         </p>
       </div>
 

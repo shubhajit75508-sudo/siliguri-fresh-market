@@ -85,6 +85,9 @@ export default function HomePage() {
       <div className="mt-4 mb-6">
         <TrustBar />
       </div>
+      <p className="mb-6 text-center text-[13px] text-muted leading-relaxed max-w-2xl mx-auto">
+        Unlike marketplace listings or aggregator apps, Siliguri Fresh Mart sources fish, chicken and mutton directly from Siliguri&apos;s morning markets and delivers within 30 minutes — no middlemen, no warehouses, no frozen storage.
+      </p>
       <CategoriesSection />
       <FreshnessBanner />
       <FlashDealsSection />
