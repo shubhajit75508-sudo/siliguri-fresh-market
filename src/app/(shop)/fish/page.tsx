@@ -35,6 +35,12 @@ export default function FishPage() {
   const [subcat, setSubcat] = useState("all");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -68,12 +74,43 @@ export default function FishPage() {
 
   return (
     <div className="py-6 sm:py-8">
+      <style>{`
+        @keyframes subcard-in {
+          0% { opacity: 0; transform: translateY(20px) scale(0.92); }
+          60% { opacity: 1; transform: translateY(-4px) scale(1.03); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes badge-pop {
+          0% { transform: scale(0); }
+          70% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+        @keyframes glow-pulse {
+          0%, 100% { box-shadow: 0 0 8px 2px rgba(45,125,58,0.25); }
+          50% { box-shadow: 0 0 16px 4px rgba(45,125,58,0.45); }
+        }
+        @keyframes hero-zoom {
+          0% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .subcard-enter { animation: subcard-in 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .badge-pop { animation: badge-pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .glow-active { animation: glow-pulse 2s ease-in-out infinite; }
+        .hero-zoom { animation: hero-zoom 0.8s ease-out both; }
+        .subcard-active-img { transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+        .group:hover .subcard-active-img { transform: scale(1.12); }
+      `}</style>
+
       {/* Hero Banner */}
       <div className="relative mb-10 overflow-hidden rounded-[32px] shadow-xl">
         <div className="relative min-h-[280px] sm:min-h-[320px]">
           <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299704/Picsart_26-06-24_11-09-55-236_cmcwt5.jpg"
             alt="Fresh fish"
-            className="absolute inset-0 w-full h-full object-cover product-img"
+            className="absolute inset-0 w-full h-full object-cover hero-zoom"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/30" />
         </div>
@@ -100,48 +137,53 @@ export default function FishPage() {
           <button
             onClick={() => setSubcat("all")}
             className={cn(
-              "group flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-3 transition-all min-h-[44px] min-w-[88px] shrink-0",
+              "group flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-3 min-h-[44px] min-w-[88px] shrink-0 active:scale-95 transition-transform duration-150",
+              mounted ? "subcard-enter" : "opacity-0",
               subcat === "all"
-                ? "border-[#2D7D3A] bg-[#2D7D3A]/10 shadow-lg shadow-[#2D7D3A]/15"
-                : "border-border bg-surface hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5"
+                ? "border-[#2D7D3A] bg-[#2D7D3A]/10 shadow-lg shadow-[#2D7D3A]/15 glow-active"
+                : "border-border bg-surface hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5 hover:scale-105 hover:shadow-md"
             )}
+            style={{ animationDelay: "0ms" }}
           >
             <div className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-xl transition-all",
+              "flex h-14 w-14 items-center justify-center rounded-xl transition-all duration-300",
               subcat === "all"
                 ? "bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/30"
-                : "bg-[#2D7D3A]/10 text-[#2D7D3A] group-hover:bg-[#2D7D3A]/15"
+                : "bg-[#2D7D3A]/10 text-[#2D7D3A] group-hover:bg-[#2D7D3A]/15 group-hover:scale-110 group-hover:rotate-3"
             )}>
               {SUBCAT_ICONS.all}
             </div>
             <span className={cn(
-              "text-[11px] font-bold whitespace-nowrap",
+              "text-[11px] font-bold whitespace-nowrap transition-colors duration-200",
               subcat === "all" ? "text-[#2D7D3A]" : "text-muted group-hover:text-foreground"
             )}>
               All
             </span>
             <span className={cn(
-              "rounded-full px-2 py-0.5 text-[10px] font-bold leading-none",
+              "rounded-full px-2 py-0.5 text-[10px] font-bold leading-none badge-pop",
               subcat === "all" ? "bg-[#2D7D3A] text-white" : "bg-muted/10 text-muted"
-            )}>
+            )} style={{ animationDelay: "200ms" }}>
               {fish.length}
             </span>
           </button>
 
           {/* Category Cards */}
-          {FISH_SUBCATEGORIES.filter((s) => s.value !== "unassigned").map((sub) => {
+          {FISH_SUBCATEGORIES.filter((s) => s.value !== "unassigned").map((sub, i) => {
             const count = fish.filter((p) => (p.subcategory || []).includes(sub.value)).length;
             const img = SUBCAT_IMAGES[sub.value];
+            const delay = (i + 1) * 70;
             return (
               <button
                 key={sub.value}
                 onClick={() => setSubcat(sub.value)}
                 className={cn(
-                  "group flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-3 transition-all min-h-[44px] min-w-[88px] shrink-0",
+                  "group flex flex-col items-center gap-2 rounded-2xl border-2 px-4 py-3 min-h-[44px] min-w-[88px] shrink-0 active:scale-95 transition-transform duration-150",
+                  mounted ? "subcard-enter" : "opacity-0",
                   subcat === sub.value
-                    ? "border-[#2D7D3A] bg-[#2D7D3A]/10 shadow-lg shadow-[#2D7D3A]/15"
-                    : "border-border bg-surface hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5"
+                    ? "border-[#2D7D3A] bg-[#2D7D3A]/10 shadow-lg shadow-[#2D7D3A]/15 glow-active"
+                    : "border-border bg-surface hover:border-[#2D7D3A]/30 hover:bg-[#2D7D3A]/5 hover:scale-105 hover:shadow-md"
                 )}
+                style={{ animationDelay: `${delay}ms` }}
               >
                 {img ? (
                   <div className="relative h-14 w-14 overflow-hidden rounded-xl shadow-sm">
@@ -149,35 +191,35 @@ export default function FishPage() {
                       src={img}
                       alt={sub.label}
                       className={cn(
-                        "h-full w-full object-cover transition-all",
+                        "subcard-active-img h-full w-full object-cover transition-all duration-300",
                         subcat === sub.value ? "brightness-110 saturate-110" : "group-hover:brightness-105"
                       )}
                     />
                     <div className={cn(
-                      "absolute inset-0 rounded-xl transition-all",
+                      "absolute inset-0 rounded-xl transition-all duration-300",
                       subcat === sub.value ? "ring-2 ring-[#2D7D3A] ring-offset-1" : ""
                     )} />
                   </div>
                 ) : (
                   <div className={cn(
-                    "flex h-14 w-14 items-center justify-center rounded-xl transition-all",
+                    "flex h-14 w-14 items-center justify-center rounded-xl transition-all duration-300",
                     subcat === sub.value
                       ? "bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/30"
-                      : "bg-[#2D7D3A]/10 text-[#2D7D3A] group-hover:bg-[#2D7D3A]/15"
+                      : "bg-[#2D7D3A]/10 text-[#2D7D3A] group-hover:bg-[#2D7D3A]/15 group-hover:scale-110 group-hover:rotate-3"
                   )}>
                     {SUBCAT_ICONS[sub.value] ?? <Fish className="h-5 w-5" />}
                   </div>
                 )}
                 <span className={cn(
-                  "text-[11px] font-bold whitespace-nowrap",
+                  "text-[11px] font-bold whitespace-nowrap transition-colors duration-200",
                   subcat === sub.value ? "text-[#2D7D3A]" : "text-muted group-hover:text-foreground"
                 )}>
                   {sub.label}
                 </span>
                 <span className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-bold leading-none",
+                  "rounded-full px-2 py-0.5 text-[10px] font-bold leading-none badge-pop",
                   subcat === sub.value ? "bg-[#2D7D3A] text-white" : "bg-muted/10 text-muted"
-                )}>
+                )} style={{ animationDelay: `${delay + 150}ms` }}>
                   {count}
                 </span>
               </button>
