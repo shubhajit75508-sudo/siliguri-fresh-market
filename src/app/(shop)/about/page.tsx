@@ -37,7 +37,10 @@ export default function AboutPage() {
               name: "Siliguri Fresh Mart",
               url: "https://www.siligurifreshmart.com",
               description: "A Siliguri-based hyperlocal startup delivering fresh fish, meat, and vegetables to every doorstep in Siliguri.",
-              founder: { "@type": "Person", name: "Shubhajit Sahas" },
+              founder: [
+                { "@type": "Person", name: "Shubhajit Saha", jobTitle: "Co-Founder, Online & Technology" },
+                { "@type": "Person", name: "Rahul Barman", jobTitle: "Co-Founder, Operations & Sourcing" },
+              ],
               foundingDate: "2025",
               numberOfEmployees: { "@type": "QuantitativeValue", minValue: 1, maxValue: 5 },
               address: {
@@ -68,27 +71,37 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Founder Story */}
+      {/* Founders */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-foreground mb-3">The Founder</h2>
-        <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-          <p className="text-[14px] text-muted leading-relaxed mb-3">
-            I&apos;m <strong className="text-foreground">Shubhajit Sahas</strong>, a solo founder based in Siliguri.
-            Growing up in North Bengal, I spent mornings at the fish market with my family — learning to pick
-            the freshest Rohu, spot a good Hilsa, and negotiate with the daily vendors.
-          </p>
-          <p className="text-[14px] text-muted leading-relaxed mb-3">
-            After years of watching Siliguri families struggle with inconsistent quality and the hassle of
-            daily market runs, I decided to build something different. Siliguri Fresh Mart is not a big
-            warehouse operation — it&apos;s a hyperlocal delivery service run by a small, passionate team
-            that sources directly from the same morning markets I grew up visiting.
-          </p>
-          <p className="text-[14px] text-muted leading-relaxed">
-            Every order is hand-picked, carefully packed in insulated bags, and delivered within 30 minutes.
-            We serve Siliguri — Hakimpara, Pradhan Nagar, Matigara, Bagdogra, and beyond — because
-            this is home, and our neighbours deserve the best.
-          </p>
+        <h2 className="text-lg font-bold text-foreground mb-3">The Founders</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2D7D3A]/10 text-lg font-bold text-[#2D7D3A]">S</div>
+            <h3 className="mt-3 text-base font-bold text-foreground">Shubhajit Saha</h3>
+            <p className="mt-0.5 text-xs font-semibold text-[#2D7D3A]">Co-Founder &bull; Online &amp; Technology</p>
+            <p className="mt-2 text-[13px] text-muted leading-relaxed">
+              Handles everything digital — the website, payments, customer experience, delivery tracking,
+              and the technology that makes 30-minute delivery possible. Grew up visiting Siliguri&apos;s
+              fish markets and wanted to bring that freshness to every doorstep through technology.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2D7D3A]/10 text-lg font-bold text-[#2D7D3A]">R</div>
+            <h3 className="mt-3 text-base font-bold text-foreground">Rahul Barman</h3>
+            <p className="mt-0.5 text-xs font-semibold text-[#2D7D3A]">Co-Founder &bull; Operations &amp; Sourcing</p>
+            <p className="mt-2 text-[13px] text-muted leading-relaxed">
+              The backbone of Siliguri Fresh Mart on the ground. Rahul manages inventory, sources the
+              freshest fish, meat and vegetables from Siliguri&apos;s morning markets every day, oversees
+              the packing team, and ensures every order meets our freshness guarantee before it leaves the store.
+            </p>
+          </div>
         </div>
+        <p className="mt-4 text-[14px] text-muted leading-relaxed">
+          Together, Shubhajit and Rahul built Siliguri Fresh Mart because we saw families struggling
+          with inconsistent quality and the hassle of daily market runs. We wanted to build something
+          different — a hyperlocal delivery service that sources directly from the same morning markets
+          we grew up visiting, delivering within 30 minutes because this is home, and our neighbours deserve the best.
+        </p>
       </section>
 
       {/* Mission */}
