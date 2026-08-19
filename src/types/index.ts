@@ -13,12 +13,13 @@ export type Category =
 
 export const FISH_SUBCATEGORIES = [
   { value: "unassigned", label: "Unassigned" },
-  { value: "river", label: "River Fish" },
-  { value: "sea", label: "Sea Fish" },
-  { value: "hilsa", label: "Hilsa / Ilish" },
-  { value: "prawns", label: "Prawns / Chingri" },
-  { value: "small", label: "Small Fish" },
-  { value: "other", label: "Other" },
+  { value: "river", label: "River Fish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_120,h_120,c_fill,q_80/v1782299704/Picsart_26-06-24_11-09-55-236_cmcwt5.jpg" },
+  { value: "sea", label: "Sea Fish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_120,h_120,c_fill,q_80/v1750803563/1000020357_lq3qjy.jpg" },
+  { value: "hilsa", label: "Hilsa / Ilish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_120,h_120,c_fill,q_80/v1750803634/1000020362_bxnhvf.jpg" },
+  { value: "prawns", label: "Prawns", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_120,h_120,c_fill,q_80/v1750803710/1000020363_f8wkjv.jpg" },
+  { value: "small", label: "Small Fish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_120,h_120,c_fill,q_80/v1750803776/1000020364_kx9z2p.jpg" },
+  { value: "exotic", label: "Exotic", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/w_120,h_120,c_fill,q_80/v1750803844/1000020365_r3t8qn.jpg" },
+  { value: "other", label: "Other", image: "" },
 ] as const;
 
 export type FishSubcategory = typeof FISH_SUBCATEGORIES[number]["value"];
