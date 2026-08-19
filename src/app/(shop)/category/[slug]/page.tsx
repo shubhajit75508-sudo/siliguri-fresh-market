@@ -8,13 +8,6 @@ import { useProductsByCategory } from "@/lib/hooks/use-products";
 import { useCategories } from "@/lib/hooks/use-products";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { ProductFilterBar, type ProductFiltersState } from "@/components/product/product-filter-bar";
-import { FISH_SUBCATEGORIES } from "@/types";
-import { cn } from "@/lib/utils";
-
-const FISH_FILTER_CHIPS = [
-  { value: "all", label: "All" },
-  ...FISH_SUBCATEGORIES.filter((s) => s.value !== "unassigned"),
-];
 
 export default function CategoryPage({
   params,
@@ -28,16 +21,9 @@ export default function CategoryPage({
   const hydrated = useHydrated();
 
   const [filters, setFilters] = useState<ProductFiltersState>({ sort: "name", inStockOnly: false });
-  const [subcat, setSubcat] = useState("all");
-  const isFish = slug === "fish";
 
   const processed = useMemo(() => {
     let list = [...products];
-
-    if (isFish && subcat !== "all") {
-      list = list.filter((p) => p.subcategory === subcat);
-    }
-
     if (filters.inStockOnly) list = list.filter((p) => p.inStock);
     switch (filters.sort) {
       case "price-asc": list.sort((a, b) => a.price - b.price); break;
@@ -46,7 +32,7 @@ export default function CategoryPage({
       case "rating": list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return list;
-  }, [products, filters, subcat, isFish]);
+  }, [products, filters]);
 
   const category = categories.find((c) => c.slug === slug);
   if (hydrated && !catsLoading && !category) notFound();
@@ -88,40 +74,6 @@ export default function CategoryPage({
         <h1 className="mt-2 text-2xl font-extrabold">{category!.name}</h1>
         <p className="mt-1 text-sm text-muted">{category!.description}</p>
       </div>
-
-      {isFish && (
-        <div className="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-none">
-          <div className="flex gap-2 min-w-max pb-1">
-            {FISH_FILTER_CHIPS.map((chip) => {
-              const count = chip.value === "all"
-                ? products.length
-                : products.filter((p) => p.subcategory === chip.value).length;
-              return (
-                <button
-                  key={chip.value}
-                  onClick={() => setSubcat(chip.value)}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-xs font-semibold transition-all min-h-[44px] whitespace-nowrap",
-                    subcat === chip.value
-                      ? "border-[#2D7D3A] bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/25"
-                      : "border-border bg-surface text-muted hover:border-[#2D7D3A]/40 hover:text-foreground"
-                  )}
-                >
-                  {chip.label}
-                  {chip.value !== "all" && (
-                    <span className={cn(
-                      "ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none",
-                      subcat === chip.value ? "bg-white/20 text-white" : "bg-muted/10 text-muted"
-                    )}>
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       <ProductFilterBar
         total={products.length}
