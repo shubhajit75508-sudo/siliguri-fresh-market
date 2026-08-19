@@ -36,7 +36,7 @@ export default function FishPage() {
   const processed = useMemo(() => {
     let list = [...fish];
     if (subcat !== "all") {
-      list = list.filter((p) => p.subcategory === subcat);
+      list = list.filter((p) => (p.subcategory || []).includes(subcat));
     }
     if (filters.inStockOnly) list = list.filter((p) => p.inStock);
     switch (filters.sort) {
@@ -116,7 +116,7 @@ export default function FishPage() {
 
           {/* Category Cards */}
           {FISH_SUBCATEGORIES.filter((s) => s.value !== "unassigned").map((sub) => {
-            const count = fish.filter((p) => p.subcategory === sub.value).length;
+            const count = fish.filter((p) => (p.subcategory || []).includes(sub.value)).length;
             const img = SUBCAT_IMAGES[sub.value];
             return (
               <button

@@ -32,7 +32,7 @@ interface ProductRow {
   river: string | null;
   origin: string | null;
   catch_date: string | null;
-  subcategory: string | null;
+  subcategory: string[] | null;
 }
 
 interface CategoryRow {
@@ -164,7 +164,7 @@ function mapProduct(row: ProductRow): Product {
     river: row.river ?? undefined,
     origin: row.origin ?? undefined,
     catchDate: row.catch_date ?? undefined,
-    subcategory: row.subcategory ?? "unassigned",
+    subcategory: row.subcategory ?? [],
   };
 }
 
@@ -485,7 +485,7 @@ export async function insertProduct(product: Product): Promise<void> {
       is_trending: product.isTrending ?? false,
       tags: product.tags ?? null,
       discount: product.discount ?? 0,
-      subcategory: product.subcategory ?? "unassigned",
+      subcategory: product.subcategory ?? [],
     });
   if (error) throw error;
 }
@@ -501,6 +501,7 @@ export async function updateProductBySlug(slug: string, updates: Partial<Product
   if (updates.discount !== undefined) dbUpdates.discount = updates.discount;
   if (updates.inStock !== undefined) dbUpdates.in_stock = updates.inStock;
   if (updates.stock !== undefined) dbUpdates.stock = updates.stock;
+  if (updates.subcategory !== undefined) dbUpdates.subcategory = updates.subcategory;
 
   const { error } = await supabase!
     .from("products")

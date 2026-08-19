@@ -242,11 +242,32 @@ export default function AdminProductsPage() {
               <option value="dairy">Dairy & Eggs</option>
             </select>
             {(form.category === "fish") && (
-              <select value={form.subcategory || "unassigned"} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40">
-                {FISH_SUBCATEGORIES.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-xs font-medium text-muted">Subcategories</label>
+                <div className="flex flex-wrap gap-2">
+                  {FISH_SUBCATEGORIES.filter(s => s.value !== "unassigned").map((s) => {
+                    const tags = form.subcategory || [];
+                    const active = tags.includes(s.value);
+                    return (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => {
+                          const tags = form.subcategory || [];
+                          setForm({ ...form, subcategory: active ? tags.filter(v => v !== s.value) : [...tags, s.value] });
+                        }}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                          active
+                            ? "border-[#2D7D3A] bg-[#2D7D3A] text-white"
+                            : "border-border bg-surface text-muted hover:border-[#2D7D3A]/40"
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
             <input placeholder="Discount % (0)" type="number" value={form.discount || 0} onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-brand-fresh/40 sm:col-span-1" />
             <label className="flex cursor-pointer items-center gap-2 sm:col-span-1">
@@ -432,11 +453,30 @@ export default function AdminProductsPage() {
                         </div>
                         {form.category === "fish" && (
                           <div className="sm:col-span-4">
-                            <select value={form.subcategory || "unassigned"} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none">
-                              {FISH_SUBCATEGORIES.map((s) => (
-                                <option key={s.value} value={s.value}>{s.label}</option>
-                              ))}
-                            </select>
+                            <label className="mb-1 block text-xs font-medium text-muted">Subcategories</label>
+                            <div className="flex flex-wrap gap-2">
+                              {FISH_SUBCATEGORIES.filter(s => s.value !== "unassigned").map((s) => {
+                                const tags = form.subcategory || [];
+                                const active = tags.includes(s.value);
+                                return (
+                                  <button
+                                    key={s.value}
+                                    type="button"
+                                    onClick={() => {
+                                      const tags = form.subcategory || [];
+                                      setForm({ ...form, subcategory: active ? tags.filter(v => v !== s.value) : [...tags, s.value] });
+                                    }}
+                                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                                      active
+                                        ? "border-[#2D7D3A] bg-[#2D7D3A] text-white"
+                                        : "border-border bg-surface text-muted hover:border-[#2D7D3A]/40"
+                                    }`}
+                                  >
+                                    {s.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
                         )}
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
@@ -473,10 +513,14 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
                     {filterCategory === "fish" && (
                       <td className="px-4 py-3">
-                        {p.subcategory && p.subcategory !== "unassigned" ? (
-                          <span className="inline-flex items-center rounded-full bg-[#2D7D3A]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#2D7D3A]">
-                            {FISH_SUBCATEGORIES.find((s) => s.value === p.subcategory)?.label ?? p.subcategory}
-                          </span>
+                        {(p.subcategory || []).length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {p.subcategory!.map((s) => (
+                              <span key={s} className="inline-flex items-center rounded-full bg-[#2D7D3A]/10 px-2 py-0.5 text-[10px] font-semibold text-[#2D7D3A]">
+                                {FISH_SUBCATEGORIES.find((sc) => sc.value === s)?.label ?? s}
+                              </span>
+                            ))}
+                          </div>
                         ) : (
                           <span className="inline-flex items-center rounded-full bg-muted/10 px-2.5 py-0.5 text-[11px] font-medium text-muted italic">
                             Unassigned

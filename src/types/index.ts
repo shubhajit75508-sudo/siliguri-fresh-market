@@ -55,7 +55,7 @@ export interface Product {
   species?: string;
   cleaningOptions?: string[];
   discount?: number;
-  subcategory?: string;
+  subcategory?: string[];
 }
 
 export interface CartItem {

@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     species: body.species ?? null,
     river: body.river ?? null,
     catch_date: body.catchDate ?? null,
-    subcategory: body.subcategory ?? "unassigned",
+    subcategory: body.subcategory ?? [],
   });
   if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
   return NextResponse.json({ success: true });
@@ -106,7 +106,6 @@ export async function PUT(req: NextRequest) {
   if (updates.river !== undefined) dbUpdates.river = updates.river;
   if (updates.catchDate !== undefined) dbUpdates.catch_date = updates.catchDate;
   if (updates.subcategory !== undefined) dbUpdates.subcategory = updates.subcategory;
-
   const { error } = await supabaseAdmin.from("products").update(dbUpdates).filter("id::text", "eq", id);
   if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
 
