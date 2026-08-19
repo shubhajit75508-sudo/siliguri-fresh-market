@@ -10,6 +10,7 @@ const links = {
     { label: "Fruits", href: "/category/fruits" },
   ],
   Company: [
+    { label: "Our Story", href: "/about" },
     { label: "Contact", href: "/account/support" },
     { label: "Track order", href: "/account/orders" },
     { label: "Delivery info", href: "/policies/shipping" },
@@ -41,9 +42,10 @@ export function Footer() {
               From market to your home — in minutes, every day.
             </p>
             <div className="mt-4 space-y-1 text-[12px] text-muted">
-              <p>📍 Siliguri, West Bengal 734001</p>
+              <p>📍 Laketown, Gate Bazar, Siliguri, West Bengal 734001</p>
               <p>📞 +91 7029908278</p>
               <p>📧 siligurifreshmart@gmail.com</p>
+              <p>⏰ Open daily 7:00 AM – 3:00 PM</p>
             </div>
             <div className="mt-4 flex flex-wrap gap-1.5">
               {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Siliguri Town","Champasari","Sukna","Burdwan Road"].map((area) => (
@@ -70,7 +72,7 @@ export function Footer() {
 
         <div className="mt-3 border-t border-border/80 pt-2 text-center text-[12px] text-muted">
           <p className="mb-1">💳 We accept: UPI · Cards · Netbanking · Cash on Delivery</p>
-          © 2026 Siliguri Fresh Mart · Siliguri, West Bengal
+          © 2026 Siliguri Fresh Mart · Laketown, Gate Bazar, Siliguri, West Bengal 734001
         </div>
       </div>
     </footer>

@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/toaster";
 import dynamic from "next/dynamic";
 import { downloadInvoice } from "@/lib/invoice";
 import { PushToggle } from "@/components/push/push-toggle";
+import { ReviewPrompt } from "@/components/review-prompt";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
@@ -528,6 +529,9 @@ export default function TrackOrderPage({
         )}
         <div className="mt-3 flex justify-center">
           <PushToggle />
+        </div>
+        <div className="mt-4">
+          <ReviewPrompt customerName={order.customerName || ""} />
         </div>
       </div>
     </div>

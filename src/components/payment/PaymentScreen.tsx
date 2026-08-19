@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import QRCode from "qrcode";
 import { formatPrice } from "@/lib/utils";
+import { ReviewPrompt } from "@/components/review-prompt";
 import type { CartItem, Address } from "@/types";
 
 export type PaymentState =
@@ -342,6 +343,9 @@ export default function PaymentScreen({
           <div className="mt-6 space-y-2">
             <button onClick={() => onSuccess(orderId)} className="w-full rounded-xl bg-[#2D7D3A] py-3 text-sm font-bold text-white hover:bg-[#23682E] transition-colors">Track Order</button>
             <button onClick={() => window.location.href = "/"} className="w-full rounded-xl border border-border py-3 text-sm font-semibold text-muted hover:bg-surface-2 transition-colors">Continue Shopping</button>
+          </div>
+          <div className="mt-4">
+            <ReviewPrompt />
           </div>
         </div>
       </div>

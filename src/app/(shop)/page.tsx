@@ -8,6 +8,7 @@ import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
 import { FAQSection } from "@/components/home/faq-section";
 import { TrustBar } from "@/components/home/trust-bar";
+import { ReviewsSection } from "@/components/home/reviews-section";
 import { FreshnessBanner, Testimonials } from "@/components/home/testimonials";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 
@@ -116,6 +117,7 @@ export default function HomePage() {
       })}
 
       <Testimonials />
+      <ReviewsSection />
       <div id="faq">
         <FAQSection />
       </div>

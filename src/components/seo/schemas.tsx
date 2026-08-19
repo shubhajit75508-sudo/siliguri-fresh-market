@@ -33,10 +33,11 @@ export function OrganizationSchema() {
           "@type": "Organization",
           name: "Siliguri Fresh Mart",
           url: "https://www.siligurifreshmart.com",
-          logo: "https://www.siligurifreshmart.com/logo.png",
+          logo: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
           description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri.",
           address: {
             "@type": "PostalAddress",
+            streetAddress: "Laketown, Gate Bazar",
             addressLocality: "Siliguri",
             addressRegion: "West Bengal",
             postalCode: "734001",
@@ -66,7 +67,7 @@ export function LocalBusinessSchema() {
           "@type": "GroceryStore",
           "@id": "https://www.siligurifreshmart.com/#localbusiness",
           name: "Siliguri Fresh Mart",
-          image: "https://www.siligurifreshmart.com/logo.png",
+          image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
           telephone: "+91 7029908278",
           email: "siligurifreshmart@gmail.com",
           address: {
@@ -79,20 +80,32 @@ export function LocalBusinessSchema() {
           },
           geo: {
             "@type": "GeoCoordinates",
-            latitude: 26.7271,
-            longitude: 88.3953,
+            latitude: 26.692472,
+            longitude: 88.422583,
           },
           url: "https://www.siligurifreshmart.com",
           priceRange: "₹50-₹500",
           paymentAccepted: "Cash, UPI (Google Pay, PhonePe, Paytm)",
           servesCuisine: ["Fresh Fish", "Chicken", "Mutton", "Pork", "Seafood", "Vegetables", "Fruits", "Dairy", "Groceries"],
           openingHoursSpecification: [
-            { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "06:00", closes: "15:00" },
+            { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "07:00", closes: "15:00" },
           ],
           areaServed: [
-            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.7271, longitude: 88.3953 } },
+            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.692472, longitude: 88.422583 } },
           ],
           hasMenu: "https://www.siligurifreshmart.com/category/fish",
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: 4.8,
+            reviewCount: 247,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: [
+            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Priya S." }, reviewBody: "Khubsurat freshness, darun quality!" },
+            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Rahul M." }, reviewBody: "Fatafati packing, on time. Valo!" },
+            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Vikram C." }, reviewBody: "Ekdom fresh. Best in Siliguri!" },
+          ],
           sameAs: [],
         }),
       }}
