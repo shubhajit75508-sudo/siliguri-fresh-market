@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllProducts, getCategories } from "@/lib/data";
 import { DELIVERY_ZONES } from "@/lib/zones";
+import { FISH_SUBCAT_SEO } from "@/lib/fish-subcat-seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.siligurifreshmart.com";
@@ -19,6 +20,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/policies/cancellation`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/policies/reviews`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
+
+  const fishSubcatPages: MetadataRoute.Sitemap = Object.keys(FISH_SUBCAT_SEO).map((slug) => ({
+    url: `${baseUrl}/fish/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  }));
 
   const zonePages: MetadataRoute.Sitemap = DELIVERY_ZONES.map((z) => ({
     url: `${baseUrl}/siliguri/${z.slug}`,
@@ -41,5 +49,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...zonePages, ...productPages, ...categoryPages];
+  return [...staticPages, ...fishSubcatPages, ...zonePages, ...productPages, ...categoryPages];
 }
