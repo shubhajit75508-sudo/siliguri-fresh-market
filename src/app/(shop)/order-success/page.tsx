@@ -2,13 +2,21 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { CheckCircle, Package, MapPin, Truck, ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/animations/motion-wrapper";
+import { fbq } from "@/components/analytics/meta-pixel";
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("id");
+
+  useEffect(() => {
+    fbq("Purchase", {
+      content_type: "product",
+      order_id: orderId || undefined,
+    });
+  }, [orderId]);
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-10">

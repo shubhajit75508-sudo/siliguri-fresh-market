@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { notFound, useRouter } from "next/navigation";
 import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Navigation, Share2, BadgeCheck } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
@@ -8,6 +8,7 @@ import { useUserStore } from "@/store/user-store";
 import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import { useProductBySlug } from "@/lib/hooks/use-products";
 import { RestockNotifyButton } from "@/components/product/restock-notify-button";
+import { fbq } from "@/components/analytics/meta-pixel";
 
 export default function ProductDetailPage({
   params,
@@ -23,6 +24,18 @@ export default function ProductDetailPage({
   const [selectedImage, setSelectedImage] = useState(0);
   const addToCart = useCartStore((s) => s.addItem);
   const { wishlist, toggleWishlist } = useUserStore();
+
+  useEffect(() => {
+    if (product) {
+      fbq("ViewContent", {
+        content_name: product.name,
+        content_ids: [product.id],
+        content_type: "product",
+        value: product.price,
+        currency: "INR",
+      });
+    }
+  }, [product?.id]);
 
   if (isLoading) return <div className="py-6 space-y-4"><div className="skeleton h-80 w-full rounded-[24px]" /><div className="skeleton h-6 w-48 rounded-xl" /><div className="skeleton h-4 w-96 rounded-xl" /><div className="skeleton h-12 w-64 rounded-xl" /></div>;
   if (!product) notFound();
@@ -285,6 +298,14 @@ export default function ProductDetailPage({
               <button
                 onClick={() => {
                   addToCart(product, 1, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
+                  fbq("AddToCart", {
+                    content_name: product.name,
+                    content_ids: [product.id],
+                    content_type: "product",
+                    value: displayPrice,
+                    currency: "INR",
+                    contents: [{ id: product.id, quantity: 1 }],
+                  });
                 }}
                 className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2D7D3A] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#2D7D3A]/25 transition-all hover:bg-[#23682E] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#2D7D3A] disabled:active:scale-100"
               >

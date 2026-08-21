@@ -17,6 +17,7 @@ import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { formatPrice, getWeightMultiplier, getPriceForWeight } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
+import { fbq } from "@/components/analytics/meta-pixel";
 import type { Address } from "@/types";
 import { DELIVERY_RADIUS_KM, distanceFromStore, isWithinDeliveryZone } from "@/lib/delivery-zone";
 import PaymentScreen from "@/components/payment/PaymentScreen";
@@ -94,6 +95,16 @@ export default function CheckoutPage() {
       deliveryInstructions: addr.deliveryInstructions || "",
     });
   }, [hydrated, addresses]);
+
+  useEffect(() => {
+    if (hydrated && items.length > 0) {
+      fbq("InitiateCheckout", {
+        value: getTotal(),
+        currency: "INR",
+        num_items: items.length,
+      });
+    }
+  }, [hydrated]);
 
   // If the customer is returning from their UPI app (after a page reload), restore
   // the in-progress payment screen instead of dropping them back on the checkout form.

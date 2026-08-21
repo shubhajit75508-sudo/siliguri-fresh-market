@@ -1,11 +1,12 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Search } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { FadeIn } from "@/components/animations/motion-wrapper";
 import { useSearchProducts, useTrendingProducts, useProducts } from "@/lib/hooks/use-products";
+import { fbq } from "@/components/analytics/meta-pixel";
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -14,6 +15,12 @@ function SearchResults() {
   const { data: trending = [] } = useTrendingProducts();
   const { data: allProducts = [] } = useProducts();
   const browseProducts = query ? results : (trending.length > 0 ? trending : allProducts);
+
+  useEffect(() => {
+    if (query) {
+      fbq("Search", { search_string: query });
+    }
+  }, [query]);
 
   return (
     <div className="py-6">

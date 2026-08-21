@@ -9,6 +9,7 @@ import { useUserStore } from "@/store/user-store";
 import { useToast } from "@/components/ui/toaster";
 import { RestockNotifyButton } from "@/components/product/restock-notify-button";
 import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
+import { fbq } from "@/components/analytics/meta-pixel";
 import type { Product } from "@/types";
 
 interface ProductCardProps {
@@ -58,6 +59,14 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
       return;
     }
     addItem(product, 1, { weight: selectedWeight });
+    fbq("AddToCart", {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: "product",
+      value: displayPrice,
+      currency: "INR",
+      contents: [{ id: product.id, quantity: 1 }],
+    });
     toast.add(`${product.name} added to cart`);
   };
 
