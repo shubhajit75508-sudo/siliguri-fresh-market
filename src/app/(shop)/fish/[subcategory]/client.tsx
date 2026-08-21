@@ -2,11 +2,14 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { ChevronRight, Truck, Clock, Star, MapPin, Phone, ArrowLeft } from "lucide-react";
+import * as Accordion from "@radix-ui/react-accordion";
+import { ChevronRight, ChevronDown, Truck, Clock, Star, MapPin, Phone, ArrowLeft } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
 import { FISH_SUBCAT_SEO, type FishSubcatSEO } from "@/lib/fish-subcat-seo";
 import { FISH_SUBCATEGORIES } from "@/types";
+import { DELIVERY_ZONES } from "@/lib/zones";
+import { FAQSchema } from "@/components/seo/schemas";
 
 const SUBCAT_IMAGES: Record<string, string> = {
   river: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg",
@@ -33,6 +36,10 @@ export function FishSubcatClient({ slug }: { slug: string }) {
 
   return (
     <div className="py-6 sm:py-8">
+      <FAQSchema
+        questions={seo.faq.map((f) => ({ question: f.question, answer: f.answer }))}
+      />
+
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-1 text-xs text-muted">
         <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
@@ -165,6 +172,54 @@ export function FishSubcatClient({ slug }: { slug: string }) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* FAQ Section */}
+      {seo.faq.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-base font-extrabold text-foreground mb-4">
+            Frequently Asked Questions
+          </h2>
+          <Accordion.Root type="single" collapsible className="space-y-2">
+            {seo.faq.map((f, i) => (
+              <Accordion.Item
+                key={i}
+                value={`faq-${i}`}
+                className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
+              >
+                <Accordion.Trigger className="group flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold text-foreground">
+                  {f.question}
+                  <ChevronDown className="h-4 w-4 shrink-0 text-muted transition-transform group-data-[state=open]:rotate-180" />
+                </Accordion.Trigger>
+                <Accordion.Content className="px-5 pb-4 text-sm leading-relaxed text-muted">
+                  {f.answer}
+                </Accordion.Content>
+              </Accordion.Item>
+            ))}
+          </Accordion.Root>
+        </div>
+      )}
+
+      {/* Delivery Areas */}
+      <div className="mb-8 rounded-2xl border border-border bg-surface p-6">
+        <h2 className="text-sm font-extrabold text-foreground mb-3">
+          We Deliver Across Siliguri
+        </h2>
+        <p className="text-xs text-muted mb-4">
+          {seo.heroHeading.split("—")[0].trim()} delivered fresh to all these areas:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {DELIVERY_ZONES.map((zone) => (
+            <Link
+              key={zone.slug}
+              href={`/siliguri/${zone.slug}`}
+              className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:border-[#2D7D3A]/40 hover:bg-[#2D7D3A]/5 hover:text-[#2D7D3A]"
+            >
+              <MapPin className="h-3 w-3" />
+              {zone.name}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Other subcategories */}

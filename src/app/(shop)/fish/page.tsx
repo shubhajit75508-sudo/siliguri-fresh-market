@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import Link from "next/link";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
 import { ProductFilterBar, type ProductFiltersState } from "@/components/product/product-filter-bar";
@@ -234,6 +235,31 @@ export default function FishPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Popular Fish Species Links */}
+      <div className="mb-6">
+        <h2 className="text-sm font-extrabold text-foreground mb-3">Popular Fish</h2>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Rohu", href: "/fish/species/rohu" },
+            { label: "Katla", href: "/fish/species/katla" },
+            { label: "Hilsa (Ilish)", href: "/fish/species/hilsa" },
+            { label: "Bhetki", href: "/fish/species/bhetki" },
+            { label: "Pomfret", href: "/fish/species/pomfret" },
+            { label: "Tiger Prawns", href: "/fish/species/prawns" },
+            { label: "Norwegian Salmon", href: "/fish/species/salmon" },
+            { label: "Pabda", href: "/fish/species/pabda" },
+          ].map((f) => (
+            <Link
+              key={f.href}
+              href={f.href}
+              className="inline-flex items-center gap-1 rounded-full border border-[#2D7D3A]/20 bg-[#2D7D3A]/5 px-3 py-1.5 text-xs font-semibold text-[#2D7D3A] transition-all hover:bg-[#2D7D3A]/10 hover:shadow-sm active:scale-[0.97]"
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Sort + Filter Bar */}

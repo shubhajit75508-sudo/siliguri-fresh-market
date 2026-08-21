@@ -94,6 +94,30 @@ export function ZonePageClient({ zone }: { zone: DeliveryZone }) {
       {fish.length > 0 && (
         <ProductSection title="Fresh Fish" subtitle={`Delivered fresh to ${zone.name}`} products={fish.slice(0, 4)} viewAllHref="/fish" />
       )}
+
+      {/* Popular Fish Links */}
+      <div className="mb-6">
+        <h2 className="text-sm font-bold text-foreground mb-3">Popular Fish We Deliver to {zone.name}</h2>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Rohu Fish", href: "/fish/species/rohu" },
+            { label: "Katla Fish", href: "/fish/species/katla" },
+            { label: "Hilsa (Ilish)", href: "/fish/species/hilsa" },
+            { label: "Bhetki", href: "/fish/species/bhetki" },
+            { label: "Pomfret", href: "/fish/species/pomfret" },
+            { label: "Tiger Prawns", href: "/fish/species/prawns" },
+            { label: "Pabda", href: "/fish/species/pabda" },
+          ].map((f) => (
+            <Link
+              key={f.href}
+              href={f.href}
+              className="inline-flex items-center gap-1 rounded-full border border-[#2D7D3A]/20 bg-[#2D7D3A]/5 px-3 py-1.5 text-xs font-semibold text-[#2D7D3A] transition-all hover:bg-[#2D7D3A]/10"
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
+      </div>
       {chicken.length > 0 && (
         <ProductSection title="Chicken" subtitle={`Farm-fresh poultry for ${zone.name}`} products={chicken.slice(0, 4)} viewAllHref="/category/chicken" />
       )}
