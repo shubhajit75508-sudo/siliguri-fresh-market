@@ -163,6 +163,7 @@ export function Header() {
                 { href: "/category/chicken", label: "Chicken & Mutton" },
                 { href: "/category/pork", label: "Pork" },
                 { href: "/category/vegetables", label: "Farm Fresh" },
+                { href: "/bulk", label: "Bulk Order" },
                 ...(currentUser?.role === "admin"
                   ? [
                       { href: "/admin", label: "Admin Panel" },
