@@ -16,7 +16,6 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronUp,
-  ShoppingBag,
   Building2,
   UtensilsCrossed,
   ChefHat,
@@ -27,7 +26,7 @@ import {
   Check,
 } from "lucide-react";
 import { useProducts } from "@/lib/hooks/use-products";
-import { formatPrice, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
 const STORE_PHONE = "917029908278";
@@ -94,19 +93,12 @@ function buildBulkMessage(
 
   lines.push("\u{1F4E6} ITEMS:");
   let idx = 0;
-  let subtotal = 0;
   items.forEach(({ product, qty }) => {
     idx++;
-    const lineTotal = product.price * qty;
-    subtotal += lineTotal;
     lines.push(
-      `${idx}. ${product.name} (${product.unit}) \u2014 ${qty} \u00D7 ${formatPrice(product.price)} = ${formatPrice(lineTotal)}`,
+      `${idx}. ${product.name} (${product.unit}) \u2014 ${qty} ${product.unit}`,
     );
   });
-
-  lines.push("");
-  lines.push("\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501");
-  lines.push(`Subtotal: ${formatPrice(subtotal)}`);
 
   if (deliveryDate) {
     const formatted = new Date(deliveryDate + "T00:00:00").toLocaleDateString("en-IN", {
@@ -120,8 +112,7 @@ function buildBulkMessage(
   if (notes) lines.push(`\u{1F4DD} Note: ${notes}`);
 
   lines.push("");
-  lines.push(`\u{1F4B0} Estimated Total: ${formatPrice(subtotal)}`);
-  lines.push("(Final pricing may vary based on market rates)");
+  lines.push("Please share your best wholesale prices for the above items.");
 
   return lines.join("\n");
 }
@@ -172,13 +163,6 @@ export function BulkOrderClient() {
   }, [quantities, products]);
 
   const selectedCount = selectedItems.size;
-  const estimatedTotal = useMemo(() => {
-    let total = 0;
-    selectedItems.forEach(({ product, qty }) => {
-      total += product.price * qty;
-    });
-    return total;
-  }, [selectedItems]);
 
   const setQty = (productId: string, delta: number) => {
     setQuantities((prev) => {
@@ -345,10 +329,6 @@ export function BulkOrderClient() {
                       {product.name}
                     </h3>
                     <p className="text-xs text-muted-foreground">{product.unit}</p>
-                    <p className="text-sm font-semibold text-emerald-700">
-                      {formatPrice(product.price)}
-                      <span className="text-xs font-normal text-muted-foreground">/{product.unit}</span>
-                    </p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     {qty > 0 ? (
@@ -393,10 +373,6 @@ export function BulkOrderClient() {
             <div>
               <p className="text-sm font-semibold text-foreground">
                 {selectedCount} item{selectedCount !== 1 ? "s" : ""} selected
-              </p>
-              <p className="text-lg font-bold text-emerald-700">
-                {formatPrice(estimatedTotal)}
-                <span className="text-xs font-normal text-muted-foreground ml-1">(estimated)</span>
               </p>
             </div>
             <button
