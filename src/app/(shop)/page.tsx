@@ -11,6 +11,8 @@ import { TrustBar } from "@/components/home/trust-bar";
 import { ReviewsSection } from "@/components/home/reviews-section";
 import { FreshnessBanner, Testimonials } from "@/components/home/testimonials";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
+import Link from "next/link";
+import { Package } from "lucide-react";
 
 function SectionRenderer({ category, title, subtitle }: { category: string; title: string; subtitle: string }) {
   const { data: products = [] } = useProductsByCategory(category);
@@ -86,6 +88,25 @@ export default function HomePage() {
         <TrustBar />
       </div>
       <CategoriesSection />
+      <Link
+        href="/bulk"
+        className="my-4 flex items-center gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 transition-all hover:border-emerald-300 hover:shadow-md sm:px-6 sm:py-4"
+      >
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+          <Package className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-emerald-800 sm:text-base">
+            Bulk Orders for Hotels, Restaurants & Events
+          </p>
+          <p className="text-xs text-emerald-600/80">
+            Fresh fish & meat in bulk — best prices, delivered to your kitchen
+          </p>
+        </div>
+        <span className="whitespace-nowrap rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white">
+          Order Now
+        </span>
+      </Link>
       <FreshnessBanner />
       <FlashDealsSection />
 
