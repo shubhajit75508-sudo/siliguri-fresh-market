@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const { coupons } = useCouponStore();
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<"upi" | "cod">("upi");
+  const [selectedPayment, setSelectedPayment] = useState<"upi" | "cod">("cod");
   const [confirmingOrder, setConfirmingOrder] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [showPaymentScreen, setShowPaymentScreen] = useState(false);
@@ -621,7 +621,7 @@ export default function CheckoutPage() {
                 <button onClick={() => setSelectedPayment("upi")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "upi" ? "border-[#2D7D3A] bg-[#2D7D3A]/5" : "border-border bg-surface-2 hover:border-[#2D7D3A]/30"}`}>
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${selectedPayment === "upi" ? "bg-[#2D7D3A]/10 text-[#2D7D3A]" : "bg-surface"}`}><Zap className="h-5 w-5" /></div>
                   <div className="flex-1 text-left">
-                    <div className="flex items-center gap-2"><span className="text-sm font-bold text-foreground">Online Payment (UPI)</span>{selectedPayment === "upi" && <span className="product-badge fresh text-[9px]">RECOMMENDED</span>}</div>
+                    <div className="flex items-center gap-2"><span className="text-sm font-bold text-foreground">Online Payment (UPI)</span></div>
                     <p className="text-[11px] text-muted">Google Pay · PhonePe · Paytm · BHIM</p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "upi" ? "border-[#2D7D3A]" : "border-border"}`}>
@@ -630,7 +630,7 @@ export default function CheckoutPage() {
                 </button>
                 <button onClick={() => setSelectedPayment("cod")} className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all ${selectedPayment === "cod" ? "border-[#2D7D3A] bg-[#2D7D3A]/5" : "border-border bg-surface-2 hover:border-[#2D7D3A]/30"}`}>
                   <div className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-lg"><Banknote className="h-5 w-5" /></div>
-                  <div className="flex-1 text-left"><span className="text-sm font-bold text-foreground">Cash on Delivery</span><p className="text-[11px] text-muted">Pay the rider when your order arrives</p></div>
+                  <div className="flex-1 text-left"><span className="text-sm font-bold text-foreground">Cash on Delivery</span>{selectedPayment === "cod" && <span className="ml-2 product-badge fresh text-[9px]">RECOMMENDED</span>}<p className="text-[11px] text-muted">Pay the rider when your order arrives</p></div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "cod" ? "border-[#2D7D3A]" : "border-border"}`}>
                     {selectedPayment === "cod" && <div className="w-2.5 h-2.5 rounded-full bg-[#2D7D3A]" />}
                   </div>
