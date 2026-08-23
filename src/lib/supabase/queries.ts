@@ -223,9 +223,11 @@ export async function searchProductsByQuery(query: string): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
     .select("*")
-    .or(`name.ilike.${q},category.ilike.${q},species.ilike.${q}`)
+    .or(
+      `name.ilike.${q},category.ilike.${q},species.ilike.${q},description.ilike.${q},source.ilike.${q},tags::text.ilike.${q},subcategory::text.ilike.${q}`
+    )
     .eq("in_stock", true)
-    .limit(20);
+    .limit(50);
   if (error) throw error;
   return (data ?? []).map((row) => mapProduct(row as ProductRow));
 }

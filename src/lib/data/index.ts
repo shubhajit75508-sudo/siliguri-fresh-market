@@ -86,21 +86,29 @@ export async function getTrendingProducts(): Promise<Product[]> {
   return [...products, ...admin.filter((p) => !productIds.has(p.id))];
 }
 
+function matchesQuery(p: Product, query: string): boolean {
+  const q = query.toLowerCase();
+  if (p.name.toLowerCase().includes(q)) return true;
+  if (p.category.toLowerCase().includes(q)) return true;
+  if (p.description?.toLowerCase().includes(q)) return true;
+  if (p.species?.toLowerCase().includes(q)) return true;
+  if (p.source?.toLowerCase().includes(q)) return true;
+  if (p.tags?.some((t) => t.toLowerCase().includes(q))) return true;
+  if (p.subcategory?.some((s) => s.toLowerCase().includes(q))) return true;
+  return false;
+}
+
 export async function searchProducts(query: string): Promise<Product[]> {
   if (isSupabaseConfigured()) {
     try {
       const dbResults = await db.searchProductsByQuery(query);
-      const admin = getAdminProducts().filter((p) =>
-        p.name.toLowerCase().includes(query.toLowerCase())
-      );
+      const admin = getAdminProducts().filter((p) => matchesQuery(p, query));
       const productIds = new Set(dbResults.map((p) => p.id));
       return [...dbResults, ...admin.filter((p) => !productIds.has(p.id))];
     } catch {}
   }
   const mockResults = mock.searchProducts(query);
-  const admin = getAdminProducts().filter((p) =>
-    p.name.toLowerCase().includes(query.toLowerCase())
-  );
+  const admin = getAdminProducts().filter((p) => matchesQuery(p, query));
   const productIds = new Set(mockResults.map((p) => p.id));
   return [...mockResults, ...admin.filter((p) => !productIds.has(p.id))];
 }

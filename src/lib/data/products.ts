@@ -332,7 +332,10 @@ export function searchProducts(query: string): Product[] {
     (p) =>
       p.name.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q) ||
+      p.description?.toLowerCase().includes(q) ||
       p.tags?.some((t) => t.toLowerCase().includes(q)) ||
-      p.species?.toLowerCase().includes(q)
+      p.species?.toLowerCase().includes(q) ||
+      p.source?.toLowerCase().includes(q) ||
+      p.subcategory?.some((s) => s.toLowerCase().includes(q))
   );
 }
