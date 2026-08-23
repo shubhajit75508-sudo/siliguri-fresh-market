@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
 const STORE_PHONE = "917029908278";
+const STORE_PHONE_2 = "919832966112";
 
 const OCCASIONS = [
   { value: "hotel", label: "Hotel", icon: Building2 },
@@ -112,6 +113,7 @@ function buildBulkMessage(
   if (notes) lines.push(`\u{1F4DD} Note: ${notes}`);
 
   lines.push("");
+  lines.push("\u{1F4B3} Payment: COD (Cash on Delivery) preferred");
   lines.push("Please share your best wholesale prices for the above items.");
 
   return lines.join("\n");
@@ -189,7 +191,11 @@ export function BulkOrderClient() {
       contactPhone,
       notes,
     );
-    window.open(`https://wa.me/${STORE_PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
+    const encoded = encodeURIComponent(msg);
+    window.open(`https://wa.me/${STORE_PHONE}?text=${encoded}`, "_blank");
+    setTimeout(() => {
+      window.open(`https://wa.me/${STORE_PHONE_2}?text=${encoded}`, "_blank");
+    }, 1500);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 4000);
   };
