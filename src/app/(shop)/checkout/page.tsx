@@ -381,7 +381,9 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-foreground">Total</span><span className="text-lg font-extrabold text-foreground">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/10 px-4 py-2.5 text-[11px] text-muted">
-                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">{selectedSlot.deliveryWindow}</strong> (order before {selectedSlot.orderBefore})
+                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">
+                  {pinnedDistance !== null && pinnedDistance > 8 ? `${selectedSlot.deliveryWindow} (order before ${selectedSlot.orderBefore})` : `within ${eta}`}
+                </strong>
               </div>
             </div>
 
@@ -600,7 +602,7 @@ export default function CheckoutPage() {
                           </div>
                           {pinnedInZone && (
                             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold bg-blue-50 text-blue-700 ml-1">
-                              <Clock className="h-3 w-3" /> Delivery: {selectedSlot.deliveryWindow}
+                              <Clock className="h-3 w-3" /> {pinnedDistance > 8 ? `Delivery: ${selectedSlot.deliveryWindow}` : `Est. delivery: ${eta}`}
                             </div>
                           )}
                         </div>
@@ -675,13 +677,14 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Delivery Slot Selection */}
+            {/* Delivery Slot Selection — only shown for 8km+ (long delivery times) */}
+            {pinnedDistance !== null && pinnedDistance > 8 && (
             <div className="card-white overflow-hidden mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
                 <Clock className="h-5 w-5" />
                 <div>
                   <h2 className="text-sm font-bold text-foreground">Choose Delivery Slot</h2>
-                  <p className="text-[10px] text-muted">Select when you want your order delivered</p>
+                  <p className="text-[10px] text-muted">Your location is {pinnedDistance.toFixed(1)} km away — select your preferred time window</p>
                 </div>
               </div>
               <div className="p-5 space-y-2.5">
@@ -718,6 +721,7 @@ export default function CheckoutPage() {
                 </p>
               </div>
             </div>
+            )}
 
             {/* Total Bar */}
             <div className="flex items-center justify-between card-white px-5 py-3 mb-3.5">
