@@ -219,16 +219,8 @@ export default function LandingClient() {
               <span className="relative">Download the App</span>
             </motion.button>
 
-            <motion.a
-              href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(0,0,0,0.3)" }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative w-full sm:w-auto px-8 py-4 bg-black border-2 border-white/20 rounded-2xl flex items-center gap-4 shadow-xl hover:border-white/40 transition-all overflow-hidden"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <svg className="relative h-10 w-10 flex-shrink-0" viewBox="0 0 512 512">
+            <div className="relative w-full sm:w-auto px-8 py-4 bg-black/40 border-2 border-white/10 rounded-2xl flex items-center gap-4 shadow-lg opacity-50 cursor-not-allowed overflow-hidden">
+              <svg className="relative h-10 w-10 flex-shrink-0 opacity-50 grayscale" viewBox="0 0 512 512">
                 <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
                 <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
                 <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
@@ -239,11 +231,11 @@ export default function LandingClient() {
                 <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
               </svg>
               <div className="relative flex flex-col items-start">
-                <span className="text-[10px] font-medium text-white/60 leading-tight">GET IT ON</span>
-                <span className="text-xl font-bold text-white leading-tight">Google Play</span>
+                <span className="text-[10px] font-medium text-white/40 leading-tight">GET IT ON</span>
+                <span className="text-xl font-bold text-white/50 leading-tight">Google Play</span>
               </div>
-              <span className="relative text-[9px] font-bold uppercase tracking-wider bg-amber-500 px-2 py-0.5 rounded-full text-white shadow-sm ml-2">Soon</span>
-            </motion.a>
+              <span className="relative text-[9px] font-bold uppercase tracking-wider bg-amber-500/70 px-2 py-0.5 rounded-full text-white/80 shadow-sm ml-2">Soon</span>
+            </div>
           </motion.div>
 
           {/* Secondary CTAs */}
@@ -364,16 +356,8 @@ export default function LandingClient() {
                   <span className="relative">Download the App</span>
                 </motion.button>
 
-                <motion.a
-                  href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(0,0,0,0.3)" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="group relative px-8 py-4 bg-black border-2 border-white/20 rounded-2xl flex items-center gap-4 shadow-xl hover:border-white/40 transition-all overflow-hidden"
-                >
-                  <span className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <svg className="relative h-10 w-10 flex-shrink-0" viewBox="0 0 512 512">
+                <div className="relative px-8 py-4 bg-black/40 border-2 border-white/10 rounded-2xl flex items-center gap-4 shadow-lg opacity-50 cursor-not-allowed overflow-hidden">
+                  <svg className="relative h-10 w-10 flex-shrink-0 opacity-50 grayscale" viewBox="0 0 512 512">
                     <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
                     <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
                     <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
@@ -384,11 +368,11 @@ export default function LandingClient() {
                     <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
                   </svg>
                   <div className="relative flex flex-col items-start">
-                    <span className="text-[10px] font-medium text-white/60 leading-tight">GET IT ON</span>
-                    <span className="text-xl font-bold text-white leading-tight">Google Play</span>
+                    <span className="text-[10px] font-medium text-white/40 leading-tight">GET IT ON</span>
+                    <span className="text-xl font-bold text-white/50 leading-tight">Google Play</span>
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-500 px-2 py-0.5 rounded-full text-white shadow-sm">Soon</span>
-                </motion.a>
+                  <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-500/70 px-2 py-0.5 rounded-full text-white/80 shadow-sm">Soon</span>
+                </div>
               </div>
             </motion.div>
 
@@ -691,31 +675,23 @@ export default function LandingClient() {
                 <Download className="relative h-7 w-7 group-hover:translate-y-[-2px] transition-transform" />
                 <span className="relative">Download the App</span>
               </motion.button>
-              <motion.a
-                href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(0,0,0,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative w-full sm:w-auto px-8 py-4 bg-black border-2 border-white/20 rounded-2xl flex items-center gap-4 shadow-xl hover:border-white/40 transition-all overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <svg className="relative h-10 w-10 flex-shrink-0" viewBox="0 0 512 512">
-                  <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
-                  <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
-                  <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
-                  <path d="M377.3 271.6L306.8 201.1 357.2 150.7l70.1 69.5c19.7 11.3 19.7 29.7 0 41l-50 10.4z" fill="#FBBC05"/>
-                  <path d="M47 0l282.6 161.2-60.1 60.1L47 35.3V0z" fill="#34A853"/>
-                  <path d="M47 512l222.5-186L412.6 430.3 47 512z" fill="#EA4335"/>
-                  <path d="M377.3 271.6L306.8 201.1l-60.1 60.1L47 0h0l260.8 151.4 69.5 120.2z" fill="#4285F4"/>
-                  <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
-                </svg>
-                <div className="relative flex flex-col items-start">
-                  <span className="text-[10px] font-medium text-white/60 leading-tight">GET IT ON</span>
-                  <span className="text-xl font-bold text-white leading-tight">Google Play</span>
+                <div className="relative w-full sm:w-auto px-8 py-4 bg-black/40 border-2 border-white/10 rounded-2xl flex items-center gap-4 shadow-lg opacity-50 cursor-not-allowed overflow-hidden">
+                  <svg className="relative h-10 w-10 flex-shrink-0 opacity-50 grayscale" viewBox="0 0 512 512">
+                    <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
+                    <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
+                    <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
+                    <path d="M377.3 271.6L306.8 201.1 357.2 150.7l70.1 69.5c19.7 11.3 19.7 29.7 0 41l-50 10.4z" fill="#FBBC05"/>
+                    <path d="M47 0l282.6 161.2-60.1 60.1L47 35.3V0z" fill="#34A853"/>
+                    <path d="M47 512l222.5-186L412.6 430.3 47 512z" fill="#EA4335"/>
+                    <path d="M377.3 271.6L306.8 201.1l-60.1 60.1L47 0h0l260.8 151.4 69.5 120.2z" fill="#4285F4"/>
+                    <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
+                  </svg>
+                  <div className="relative flex flex-col items-start">
+                    <span className="text-[10px] font-medium text-white/40 leading-tight">GET IT ON</span>
+                    <span className="text-xl font-bold text-white/50 leading-tight">Google Play</span>
+                  </div>
+                  <span className="relative text-[9px] font-bold uppercase tracking-wider bg-amber-500/70 px-2 py-0.5 rounded-full text-white/80 shadow-sm ml-2">Soon</span>
                 </div>
-                <span className="relative text-[9px] font-bold uppercase tracking-wider bg-amber-500 px-2 py-0.5 rounded-full text-white shadow-sm ml-2">Soon</span>
-              </motion.a>
             </div>
           </motion.div>
         </div>
