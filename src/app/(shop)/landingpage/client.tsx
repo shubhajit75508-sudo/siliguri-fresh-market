@@ -231,13 +231,21 @@ export default function LandingClient() {
               onClick={() => {
                 if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
                   (window as any).deferredInstallPrompt.prompt();
-                } else {
-                  window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank");
                 }
               }}
               className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-2xl text-lg backdrop-blur-md hover:bg-white/15 transition-all flex items-center gap-2"
             >
-              <Download className="h-5 w-5" /> Get the App
+              <Download className="h-5 w-5" /> Install App
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank")}
+              className="px-8 py-4 border border-white/10 text-white/40 font-bold rounded-2xl text-lg backdrop-blur-sm cursor-not-allowed flex items-center gap-2"
+            >
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
+              Play Store
+              <span className="text-[9px] font-bold uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full text-white/40">Soon</span>
             </motion.button>
           </motion.div>
 
@@ -458,13 +466,21 @@ export default function LandingClient() {
                 onClick={() => {
                   if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
                     (window as any).deferredInstallPrompt.prompt();
-                  } else {
-                    window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank");
                   }
                 }}
                 className="px-10 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-2xl text-lg backdrop-blur-md hover:bg-white/15 transition-all flex items-center gap-2"
               >
-                <Download className="h-5 w-5" /> Download App
+                <Download className="h-5 w-5" /> Install App
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank")}
+                className="px-10 py-4 border border-white/10 text-white/40 font-bold rounded-2xl text-lg backdrop-blur-sm cursor-not-allowed flex items-center gap-2"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
+                Play Store
+                <span className="text-[9px] font-bold uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full text-white/40">Soon</span>
               </motion.button>
             </div>
           </motion.div>
