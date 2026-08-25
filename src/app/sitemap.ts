@@ -21,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/policies/returns`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/policies/cancellation`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/policies/reviews`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: `${baseUrl}/policies/weight-pricing`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
 
   const fishSubcatPages: MetadataRoute.Sitemap = Object.keys(FISH_SUBCAT_SEO).map((slug) => ({

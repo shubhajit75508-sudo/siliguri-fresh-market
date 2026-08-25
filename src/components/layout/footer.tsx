@@ -22,6 +22,7 @@ const links = {
     { label: "Shipping & Delivery", href: "/policies/shipping" },
     { label: "Cancellation", href: "/policies/cancellation" },
     { label: "Reviews & Ratings", href: "/policies/reviews" },
+    { label: "Weight & Pricing", href: "/policies/weight-pricing" },
   ],
 };
 
