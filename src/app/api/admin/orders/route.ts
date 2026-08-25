@@ -15,6 +15,13 @@ export async function GET() {
   const supabaseAdmin = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
+  // Self-heal: fix any delivered orders that still say unpaid
+  await supabaseAdmin
+    .from("orders")
+    .update({ payment_status: "paid" })
+    .eq("status", "delivered")
+    .neq("payment_status", "paid");
+
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select("*")
