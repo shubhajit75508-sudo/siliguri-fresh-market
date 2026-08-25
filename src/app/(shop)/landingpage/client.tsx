@@ -847,9 +847,9 @@ export default function LandingClient() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-12 py-5 bg-[#2D7D3A] text-white font-bold rounded-2xl text-xl shadow-xl shadow-[#2D7D3A]/25 flex items-center gap-3 mx-auto"
+                className="px-16 py-6 bg-[#2D7D3A] text-white font-black rounded-2xl text-2xl shadow-xl shadow-[#2D7D3A]/30 flex items-center gap-3 mx-auto"
               >
-                <ShoppingBag className="h-6 w-6" /> Shop Now
+                <ShoppingBag className="h-7 w-7" /> Shop Now
               </motion.button>
             </Link>
             <div className="flex items-center justify-center gap-6 mt-8 text-sm text-muted">
