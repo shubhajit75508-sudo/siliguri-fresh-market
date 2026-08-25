@@ -133,6 +133,18 @@ export default function LandingClient() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      (window as any).deferredInstallPrompt = e;
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      delete (window as any).deferredInstallPrompt;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white overflow-hidden">
       {/* ===== HERO ===== */}

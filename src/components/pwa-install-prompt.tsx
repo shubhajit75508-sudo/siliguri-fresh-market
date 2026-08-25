@@ -21,11 +21,16 @@ export function PWAInstallPrompt() {
 
     const handler = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      const prompt = e as BeforeInstallPromptEvent;
+      setDeferredPrompt(prompt);
+      (window as any).deferredInstallPrompt = prompt;
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      delete (window as any).deferredInstallPrompt;
+    };
   }, []);
 
   if (dismissed || !deferredPrompt) return null;
@@ -37,6 +42,7 @@ export function PWAInstallPrompt() {
       setDismissed(true);
     }
     setDeferredPrompt(null);
+    delete (window as any).deferredInstallPrompt;
   };
 
   const handleDismiss = () => {
