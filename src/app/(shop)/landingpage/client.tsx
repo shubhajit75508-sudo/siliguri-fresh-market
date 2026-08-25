@@ -216,19 +216,26 @@ export default function LandingClient() {
             >
               <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#2D7D3A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <Download className="relative h-7 w-7 group-hover:translate-y-[-2px] transition-transform" />
-              <span className="relative">Install PWA App</span>
+              <span className="relative">Download the App</span>
             </motion.button>
 
-            <motion.button
+            <motion.a
+              href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank")}
-              className="group relative w-full sm:w-auto px-10 py-5 bg-white/10 border-2 border-white/20 text-white font-extrabold rounded-2xl text-xl backdrop-blur-md hover:bg-white/15 transition-all flex items-center justify-center gap-3"
+              className="group relative w-full sm:w-auto flex items-center justify-center"
             >
-              <svg className="relative h-7 w-7 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
-              <span className="relative">Play Store</span>
-              <span className="relative text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 px-2.5 py-1 rounded-full text-white shadow-sm">Coming Soon</span>
-            </motion.button>
+              <div className="relative overflow-hidden rounded-2xl shadow-xl shadow-black/30 group-hover:shadow-2xl transition-shadow">
+                <img
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                  alt="Get it on Google Play"
+                  className="h-[72px] sm:h-[80px] w-auto"
+                />
+              </div>
+              <span className="absolute -top-2 -right-2 text-[10px] font-bold uppercase tracking-wider bg-amber-500 px-2.5 py-1 rounded-full text-white shadow-md">Coming Soon</span>
+            </motion.a>
           </motion.div>
 
           {/* Secondary CTAs */}
@@ -485,18 +492,25 @@ export default function LandingClient() {
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#2D7D3A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Download className="relative h-7 w-7 group-hover:translate-y-[-2px] transition-transform" />
-                <span className="relative">Install PWA App</span>
+                <span className="relative">Download the App</span>
               </motion.button>
-              <motion.button
+              <motion.a
+                href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank")}
-                className="group relative w-full sm:w-auto px-10 py-5 bg-white/10 border-2 border-white/20 text-white font-extrabold rounded-2xl text-xl backdrop-blur-md hover:bg-white/15 transition-all flex items-center justify-center gap-3"
+                className="group relative w-full sm:w-auto flex items-center justify-center"
               >
-                <svg className="relative h-7 w-7 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
-                <span className="relative">Play Store</span>
-                <span className="relative text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 px-2.5 py-1 rounded-full text-white shadow-sm">Coming Soon</span>
-              </motion.button>
+                <div className="relative overflow-hidden rounded-2xl shadow-xl shadow-black/30 group-hover:shadow-2xl transition-shadow">
+                  <img
+                    src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                    alt="Get it on Google Play"
+                    className="h-[72px] sm:h-[80px] w-auto"
+                  />
+                </div>
+                <span className="absolute -top-2 -right-2 text-[10px] font-bold uppercase tracking-wider bg-amber-500 px-2.5 py-1 rounded-full text-white shadow-md">Coming Soon</span>
+              </motion.a>
             </div>
           </motion.div>
         </div>
