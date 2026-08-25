@@ -274,7 +274,7 @@ export function CartDrawer() {
                   <div className="mb-3 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/15 px-3.5 py-2.5">
                     <p className="text-[11px] text-foreground font-semibold">
                       {minOrderShortfall > 0
-                        ? `Add ${formatPrice(minOrderShortfall)} more to waive the ₹${minOrder > 800 ? "79" : "99"} delivery fee`
+                        ? `Add ${formatPrice(minOrderShortfall)} more to waive the ₹${minOrder >= 1999 ? "99" : "79"} delivery fee`
                         : subtotal < 99
                         ? `Add ${formatPrice(99 - subtotal)} more to reduce delivery to ₹40`
                         : `Add ${formatPrice(299 - subtotal)} more for FREE delivery`}

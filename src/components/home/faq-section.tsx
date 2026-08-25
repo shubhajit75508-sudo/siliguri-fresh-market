@@ -10,7 +10,11 @@ const faqs = [
   },
   {
     q: "Does Siliguri Fresh Mart deliver same-day?",
-    a: "Yes. Siliguri Fresh Mart delivers every day between 7:00 AM and 3:00 PM. Orders placed before 3:00 PM are delivered the same day. Delivery time depends on your distance from our hub at NJP Gate Bazar — within 1 km takes 10–20 min, within 4 km takes 20–30 min, within 8 km takes 45–60 min, 8–15 km takes 1.5–2 hrs, and 15–20 km takes 2–3 hrs.",
+    a: "Yes! We deliver via two daily slots: Morning Slot (order before 10 AM, delivered 11 AM–12 PM) and Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Delivery time also depends on your distance from our hub at NJP Gate Bazar — within 1 km takes 10–20 min, within 4 km takes 20–30 min, within 8 km takes 45–60 min, 8–15 km takes 1.5–2 hrs, and 15–20 km takes 2–3 hrs.",
+  },
+  {
+    q: "How do the delivery slots work?",
+    a: "We have two delivery slots daily: Morning Slot — order before 10 AM for delivery between 11 AM and 12 PM. Afternoon Slot — order before 12 PM for delivery between 1 PM and 3 PM. Both slots run every day, Monday to Sunday. If you miss a cutoff, your order is assigned to the next available slot. You can also place orders for tomorrow's slot.",
   },
   {
     q: "What areas does Siliguri Fresh Mart cover?",
@@ -18,7 +22,7 @@ const faqs = [
   },
   {
     q: "What is the minimum order and delivery fee?",
-    a: "Within 4 km, delivery is free with no minimum order. Within 8 km, there is no minimum — orders under ₹99 pay ₹59, under ₹299 pay ₹40, and ₹299+ are free. For 8–15 km, the minimum order is ₹800 (₹79 delivery fee otherwise). For 15–20 km, the minimum is ₹1,499 (₹99 fee otherwise). GPS location is required at checkout so we can calculate the correct distance, time, and fees.",
+    a: "Within 4 km, delivery is free with no minimum order. Within 8 km, there is no minimum — orders under ₹99 pay ₹59, under ₹299 pay ₹40, and ₹299+ are free. For 8–15 km, the minimum order is ₹1,499 (₹79 delivery fee otherwise). For 15–20 km, the minimum is ₹1,999 (₹99 fee otherwise). GPS location is required at checkout so we can calculate the correct distance, time, and fees.",
   },
   {
     q: "Why do you need my GPS location?",

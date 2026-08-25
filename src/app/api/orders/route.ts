@@ -174,6 +174,8 @@ export async function POST(req: NextRequest) {
     customer_email: body.customer_email ?? "",
     delivery_boy_id: body.delivery_boy_id ?? null,
     delivery_code: deliveryCode,
+    delivery_slot: body.delivery_slot ?? null,
+    delivery_window: body.delivery_window ?? null,
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),

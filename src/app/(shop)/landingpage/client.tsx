@@ -803,6 +803,61 @@ export default function LandingClient() {
         </div>
       </section>
 
+      {/* ===== DELIVERY SLOTS ===== */}
+      <section className="relative py-24 sm:py-32">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.6 }} className="text-center mb-12">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#2D7D3A]">{t.deliveryTime.hubLabel}</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground mt-3 tracking-tight">{t.deliveryTime.slotTitle}</h2>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6, delay: 0.1 }}>
+            <div className="rounded-2xl bg-card border border-border shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-[#2D7D3A] to-emerald-500 px-6 py-5">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  {t.deliveryTime.slotTitle}
+                </h3>
+              </div>
+
+              <div className="p-6 grid sm:grid-cols-2 gap-5">
+                {/* Morning Slot */}
+                <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow-md">
+                      <Clock className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-blue-800">{t.deliveryTime.slotMorningLabel}</p>
+                      <p className="text-xs text-blue-600 font-medium">{t.deliveryTime.slotMorningTime}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-blue-700/80 leading-relaxed">{t.deliveryTime.slotMorningDesc}</p>
+                </div>
+
+                {/* Afternoon Slot */}
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow-md">
+                      <Clock className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-amber-800">{t.deliveryTime.slotAfternoonLabel}</p>
+                      <p className="text-xs text-amber-600 font-medium">{t.deliveryTime.slotAfternoonTime}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-amber-700/80 leading-relaxed">{t.deliveryTime.slotAfternoonDesc}</p>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 bg-muted/30 border-t border-border">
+                <p className="text-sm text-muted leading-relaxed text-center">Both slots run daily, Monday to Sunday. Orders placed outside cutoff times are assigned to the next available slot.</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ===== DELIVERY TIME & CHARGES ===== */}
       <section className="relative py-24 sm:py-32 bg-gradient-to-b from-[#f7fdf8] to-white">
         <div className="max-w-5xl mx-auto px-4">

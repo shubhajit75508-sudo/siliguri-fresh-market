@@ -20,7 +20,7 @@ import { formatPrice, getWeightMultiplier, getPriceForWeight } from "@/lib/utils
 import { useToast } from "@/components/ui/toaster";
 import { fbq } from "@/components/analytics/meta-pixel";
 import type { Address } from "@/types";
-import { DELIVERY_RADIUS_KM, distanceFromStore, isWithinDeliveryZone, getDeliveryTier, getMinOrderForDistance } from "@/lib/delivery-zone";
+import { DELIVERY_RADIUS_KM, distanceFromStore, isWithinDeliveryZone, getDeliveryTier, getMinOrderForDistance, DELIVERY_SLOTS, getCurrentSlot, getNextSlot, type DeliverySlot } from "@/lib/delivery-zone";
 import PaymentScreen from "@/components/payment/PaymentScreen";
 
 export default function CheckoutPage() {
@@ -49,6 +49,7 @@ export default function CheckoutPage() {
 
   const { locating, error: geoError, location, getLocation } = useGeolocation();
   const [showHelp, setShowHelp] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<DeliverySlot>(getCurrentSlot());
 
   const [newAddress, setNewAddress] = useState({
     city: "Siliguri",
@@ -215,6 +216,8 @@ export default function CheckoutPage() {
           customerPhone: phone,
           customerEmail: contactForm.email.trim() || currentUser?.email || "",
           userId: currentUser?.id,
+          deliverySlot: selectedSlot.id,
+          deliveryWindow: selectedSlot.deliveryWindow,
         });
         if (orderId) {
           setPaymentConfirmed(true);
@@ -378,7 +381,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-3 flex justify-between"><span className="text-[15px] font-extrabold text-foreground">Total</span><span className="text-lg font-extrabold text-foreground">{formatPrice(total)}</span></div>
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/10 px-4 py-2.5 text-[11px] text-muted">
-                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">within {eta}</strong> after order confirmation.
+                <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">{selectedSlot.deliveryWindow}</strong> (order before {selectedSlot.orderBefore})
               </div>
             </div>
 
@@ -597,7 +600,7 @@ export default function CheckoutPage() {
                           </div>
                           {pinnedInZone && (
                             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold bg-blue-50 text-blue-700 ml-1">
-                              <Clock className="h-3 w-3" /> Est. delivery: {eta}
+                              <Clock className="h-3 w-3" /> Delivery: {selectedSlot.deliveryWindow}
                             </div>
                           )}
                         </div>
@@ -671,6 +674,50 @@ export default function CheckoutPage() {
                 </p>
               </div>
             )}
+
+            {/* Delivery Slot Selection */}
+            <div className="card-white overflow-hidden mb-3.5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
+                <Clock className="h-5 w-5" />
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">Choose Delivery Slot</h2>
+                  <p className="text-[10px] text-muted">Select when you want your order delivered</p>
+                </div>
+              </div>
+              <div className="p-5 space-y-2.5">
+                {DELIVERY_SLOTS.map((slot) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => setSelectedSlot(slot)}
+                    className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${
+                      selectedSlot.id === slot.id
+                        ? "border-[#2D7D3A] bg-[#2D7D3A]/5 ring-2 ring-[#2D7D3A]/15"
+                        : "border-border bg-surface hover:border-muted"
+                    }`}
+                  >
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      selectedSlot.id === slot.id ? "border-[#2D7D3A] bg-[#2D7D3A]" : "border-muted"
+                    }`}>
+                      {selectedSlot.id === slot.id && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-foreground">{slot.label}</span>
+                        {slot.id === "morning" && (
+                          <span className="text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Before 10 AM</span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted mt-0.5">
+                        Order before {slot.orderBefore} → Delivered <strong>{slot.deliveryWindow}</strong>
+                      </p>
+                    </div>
+                  </button>
+                ))}
+                <p className="text-[10px] text-muted text-center mt-2">
+                  You can also place orders for the <strong>next available slot</strong> (e.g. order today for tomorrow&apos;s slot)
+                </p>
+              </div>
+            </div>
 
             {/* Total Bar */}
             <div className="flex items-center justify-between card-white px-5 py-3 mb-3.5">

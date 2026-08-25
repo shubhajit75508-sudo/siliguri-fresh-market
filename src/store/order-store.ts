@@ -61,6 +61,8 @@ interface OrderState {
     subtotal?: number;
     deliveryFee?: number;
     couponDiscount?: number;
+    deliverySlot?: string;
+    deliveryWindow?: string;
   }) => Promise<string>;
   updateStatus: (id: string, status: Order["status"]) => Promise<void>;
   assignDeliveryBoy: (orderId: string, boyId: string, boyName: string, boyEmail?: string) => Promise<{ assignment: DeliveryAssignment } | void>;
@@ -231,6 +233,8 @@ export const useOrderStore = create<OrderState>()(
                   eta,
                   delivery_status: "pending",
                   user_id: data.userId ?? null,
+                  delivery_slot: data.deliverySlot ?? null,
+                  delivery_window: data.deliveryWindow ?? null,
                 }),
               });
               if (!res.ok) {

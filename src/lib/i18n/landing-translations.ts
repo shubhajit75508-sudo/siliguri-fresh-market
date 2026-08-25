@@ -88,6 +88,14 @@ export interface LandingTranslations {
     row5Dist: string; row5Eta: string; row5Min: string; row5Fee: string; row5FeeFree: string;
     note: string;
     whatsapp: string;
+    slotTitle: string;
+    slotSubtitle: string;
+    slotMorningLabel: string;
+    slotMorningDesc: string;
+    slotMorningTime: string;
+    slotAfternoonLabel: string;
+    slotAfternoonDesc: string;
+    slotAfternoonTime: string;
   };
   guarantees: { label: string; sub: string }[];
   footer: {
@@ -140,7 +148,7 @@ const en: LandingTranslations = {
     steps: [
       { title: "Browse & Pick", desc: "Choose from 200+ fresh items — fish, chicken, mutton, vegetables, fruits & more." },
       { title: "We Source & Check", desc: "We personally source, clean, and quality-check every item before packing." },
-      { title: "Delivered Fresh", desc: "Your order arrives at your doorstep in 10-30 minutes, fresh and ready." },
+      { title: "Delivered Fresh", desc: "Your order arrives at your doorstep in your chosen time slot (11 AM–12 PM or 1 PM–3 PM), fresh and ready." },
     ],
   },
   categories: {
@@ -221,10 +229,18 @@ const en: LandingTranslations = {
     row1Dist: "Within 1 km", row1Eta: "10-20 min", row1Min: "No minimum", row1Fee: "Free",
     row2Dist: "1 - 4 km", row2Eta: "20-30 min", row2Min: "No minimum", row2Fee: "Free",
     row3Dist: "4 - 8 km", row3Eta: "45-60 min", row3Min: "No minimum", row3FeeFree: "Free", row3FeeSmall: "₹59 if < ₹99, ₹40 if < ₹299",
-    row4Dist: "8 - 15 km", row4Eta: "1.5 - 2 hrs", row4Min: "₹800", row4Fee: "₹79", row4FeeFree: "Free if ₹800+",
-    row5Dist: "15 - 20 km", row5Eta: "2 - 3 hrs", row5Min: "₹1,499", row5Fee: "₹99", row5FeeFree: "Free if ₹1,499+",
+    row4Dist: "8 - 15 km", row4Eta: "1.5 - 2 hrs", row4Min: "₹1,499", row4Fee: "₹79", row4FeeFree: "Free if ₹1,499+",
+    row5Dist: "15 - 20 km", row5Eta: "2 - 3 hrs", row5Min: "₹1,999", row5Fee: "₹99", row5FeeFree: "Free if ₹1,999+",
     note: "GPS location is mandatory at checkout — your order cannot proceed without it. This allows us to calculate the exact distance, time, and fees for your address. If your phone cannot detect GPS, order via WhatsApp or call us and we will help you place your order.",
     whatsapp: "Order via WhatsApp",
+    slotTitle: "Delivery Slots",
+    slotSubtitle: "Choose from two daily delivery windows. We deliver every day, Monday to Sunday.",
+    slotMorningLabel: "Morning Slot",
+    slotMorningDesc: "Order before 10 AM",
+    slotMorningTime: "Delivered 11 AM – 12 PM",
+    slotAfternoonLabel: "Afternoon Slot",
+    slotAfternoonDesc: "Order before 12 PM",
+    slotAfternoonTime: "Delivered 1 PM – 3 PM",
   },
   guarantees: [
     { label: "Quality Checked", sub: "Every single order" },
@@ -283,7 +299,7 @@ const bn: LandingTranslations = {
     steps: [
       { title: "ব্রাউজ ও বাছাই", desc: "২০০+ তাজা পণ্য থেকে বেছে নিন — মাছ, মুরগি, খসুর মাংস, সবজি, ফল ও আরও।" },
       { title: "আমরা সংগ্রহ ও চেক করি", desc: "প্যাকিংয়ের আগে আমরা নিজেরা প্রতিটি পণ্য সংগ্রহ, পরিষ্কার ও মান পরীক্ষা করি।" },
-      { title: "তাজা ডেলিভারি", desc: "আপনার অর্ডার ১০-৩০ মিনিটে দোরগোড়ায় পৌঁছায়, তাজা ও প্রস্তুত।" },
+      { title: "তাজা ডেলিভারি", desc: "আপনার অর্ডার আপনার নির্বাচিত সময়ের স্লটে (১১ AM – ১২ PM বা ১ PM – ৩ PM) দোরগোড়ায় পৌঁছায়, তাজা ও প্রস্তুত।" },
     ],
   },
   categories: {
@@ -364,10 +380,18 @@ const bn: LandingTranslations = {
     row1Dist: "১ কিমির মধ্যে", row1Eta: "১০-২০ মিনিট", row1Min: "কোনো ন্যূনতম নেই", row1Fee: "বিনামূল্যে",
     row2Dist: "১ - ৪ কিমি", row2Eta: "২০-৩০ মিনিট", row2Min: "কোনো ন্যূনতম নেই", row2Fee: "বিনামূল্যে",
     row3Dist: "৪ - ৮ কিমি", row3Eta: "৪৫-৬০ মিনিট", row3Min: "কোনো ন্যূনতম নেই", row3FeeFree: "বিনামূল্যে", row3FeeSmall: "₹৯৯-এর কম হলে ₹৫৯, ₹২৯৯-এর কম হলে ₹৪০",
-    row4Dist: "৮ - ১৫ কিমি", row4Eta: "১.৫ - ২ ঘণ্টা", row4Min: "₹৮০০", row4Fee: "₹৭৯", row4FeeFree: "₹৮০০+ হলে বিনামূল্যে",
-    row5Dist: "১৫ - ২০ কিমি", row5Eta: "২ - ৩ ঘণ্টা", row5Min: "₹১,৪৯৯", row5Fee: "₹৯৯", row5FeeFree: "₹১,৪৯৯+ হলে বিনামূল্যে",
+    row4Dist: "৮ - ১৫ কিমি", row4Eta: "১.৫ - ২ ঘণ্টা", row4Min: "₹১,৪৯৯", row4Fee: "₹৭৯", row4FeeFree: "₹১,৪৯৯+ হলে বিনামূল্যে",
+    row5Dist: "১৫ - ২০ কিমি", row5Eta: "২ - ৩ ঘণ্টা", row5Min: "₹১,৯৯৯", row5Fee: "₹৯৯", row5FeeFree: "₹১,৯৯৯+ হলে বিনামূল্যে",
     note: "চেকআউটে জিপিএস লোকেশন বাধ্যতামূলক — এটি ছাড়া আপনার অর্ডার এগিয়ে যাওয়ার অনুমতি নেই। এটি আপনার ঠিকানার সঠিক দূরত্ব, সময় এবং ফি গণনা করতে সাহায্য করে। আপনার ফোন জিপিএস সনাক্ত করতে না পারলে, হোয়াটসঅ্যাপে অর্ডার করুন বা আমাদের কল করুন।",
     whatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন",
+    slotTitle: "ডেলিভারি স্লট",
+    slotSubtitle: "দৈনিক দুটি ডেলিভারি স্লট থেকে বেছে নিন। সপ্তাহের প্রতিদিন ডেলিভারি করি।",
+    slotMorningLabel: "সকালের স্লট",
+    slotMorningDesc: "১০ টার আগে অর্ডার করুন",
+    slotMorningTime: "১১ AM – ১২ PM ডেলিভারি",
+    slotAfternoonLabel: "দুপুরের স্লট",
+    slotAfternoonDesc: "১২ টার আগে অর্ডার করুন",
+    slotAfternoonTime: "১ PM – ৩ PM ডেলিভারি",
   },
   guarantees: [
     { label: "কোয়ালিটি চেকড", sub: "প্রতিটি অর্ডার" },
@@ -426,7 +450,7 @@ const hi: LandingTranslations = {
     steps: [
       { title: "ब्राउज़ करें", desc: "200+ ताज़े प्रोडक्ट्स में से चुनें — मछली, मुर्गी, मटन, सब्ज़ियाँ, फल और बहुत कुछ।" },
       { title: "हम सोर्स और चेक करते हैं", desc: "पैक करने से पहले हम खुद हर चीज़ सोर्स, साफ़ और क्वालिटी चेक करते हैं।" },
-      { title: "ताज़ा डिलीवरी", desc: "आपका ऑर्डर 10-30 मिनट में दरवाज़े पर पहुँच जाता है, ताज़ा और रेडी।" },
+      { title: "ताज़ा डिलीवरी", desc: "आपका ऑर्डर आपके चुने हुए स्लॉट (11 AM – 12 PM या 1 PM – 3 PM) में दरवाज़े पर पहुँच जाता है, ताज़ा और रेडी।" },
     ],
   },
   categories: {
@@ -507,10 +531,18 @@ const hi: LandingTranslations = {
     row1Dist: "1 किमी के अंदर", row1Eta: "10-20 मिनट", row1Min: "कोई न्यूनतम नहीं", row1Fee: "मुफ्त",
     row2Dist: "1 - 4 किमी", row2Eta: "20-30 मिनट", row2Min: "कोई न्यूनतम नहीं", row2Fee: "मुफ्त",
     row3Dist: "4 - 8 किमी", row3Eta: "45-60 मिनट", row3Min: "कोई न्यूनतम नहीं", row3FeeFree: "मुफ्त", row3FeeSmall: "₹99 से कम पर ₹59, ₹299 से कम पर ₹40",
-    row4Dist: "8 - 15 किमी", row4Eta: "1.5 - 2 घंटे", row4Min: "₹800", row4Fee: "₹79", row4FeeFree: "₹800+ पर मुफ्त",
-    row5Dist: "15 - 20 किमी", row5Eta: "2 - 3 घंटे", row5Min: "₹1,499", row5Fee: "₹99", row5FeeFree: "₹1,499+ पर मुफ्त",
+    row4Dist: "8 - 15 किमी", row4Eta: "1.5 - 2 घंटे", row4Min: "₹1,499", row4Fee: "₹79", row4FeeFree: "₹1,499+ पर मुफ्त",
+    row5Dist: "15 - 20 किमी", row5Eta: "2 - 3 घंटे", row5Min: "₹1,999", row5Fee: "₹99", row5FeeFree: "₹1,999+ पर मुफ्त",
     note: "चेकआउट पर GPS लोकेशन अनिवार्य है — इसके बिना ऑर्डर आगे नहीं बढ़ सकता। यह आपके पते की सही दूरी, समय और शुल्क कैलकुलेट करने में मदद करता है। अगर आपका फोन GPS डिटेक्ट नहीं कर पा रहा, तो WhatsApp पर ऑर्डर करें या हमें कॉल करें।",
     whatsapp: "WhatsApp पर ऑर्डर करें",
+    slotTitle: "डिलीवरी स्लॉट",
+    slotSubtitle: "दो दैनिक डिलीवरी विंडो में से चुनें। सोमवार से रविवार तक हर दिन डिलीवरी।",
+    slotMorningLabel: "मॉर्निंग स्लॉट",
+    slotMorningDesc: "10 बजे से पहले ऑर्डर करें",
+    slotMorningTime: "11 AM – 12 PM डिलीवरी",
+    slotAfternoonLabel: "आफ्टरनून स्लॉट",
+    slotAfternoonDesc: "12 बजे से पहले ऑर्डर करें",
+    slotAfternoonTime: "1 PM – 3 PM डिलीवरी",
   },
   guarantees: [
     { label: "क्वालिटी चेक्ड", sub: "हर ऑर्डर" },

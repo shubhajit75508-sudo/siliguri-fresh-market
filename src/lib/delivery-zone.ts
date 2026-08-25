@@ -19,9 +19,48 @@ export const DELIVERY_TIERS: DeliveryTier[] = [
   { maxKm: 1, eta: "10-20 min", minOrder: 0, deliveryFee: 0, label: "Within 1 km" },
   { maxKm: 4, eta: "20-30 min", minOrder: 0, deliveryFee: 0, label: "Within 4 km" },
   { maxKm: 8, eta: "45-60 min", minOrder: 0, deliveryFee: 0, label: "Within 8 km" },
-  { maxKm: 15, eta: "1.5-2 hrs", minOrder: 800, deliveryFee: 79, label: "8-15 km" },
-  { maxKm: 20, eta: "2-3 hrs", minOrder: 1499, deliveryFee: 99, label: "15-20 km" },
+  { maxKm: 15, eta: "1.5-2 hrs", minOrder: 1499, deliveryFee: 79, label: "8-15 km" },
+  { maxKm: 20, eta: "2-3 hrs", minOrder: 1999, deliveryFee: 99, label: "15-20 km" },
 ];
+
+export interface DeliverySlot {
+  id: string;
+  label: string;
+  description: string;
+  orderBefore: string;
+  deliveryWindow: string;
+}
+
+export const DELIVERY_SLOTS: DeliverySlot[] = [
+  {
+    id: "morning",
+    label: "Morning Slot",
+    description: "Order before 10 AM",
+    orderBefore: "10:00 AM",
+    deliveryWindow: "11:00 AM - 12:00 PM",
+  },
+  {
+    id: "afternoon",
+    label: "Afternoon Slot",
+    description: "Order before 12 PM",
+    orderBefore: "12:00 PM",
+    deliveryWindow: "1:00 PM - 3:00 PM",
+  },
+];
+
+export function getCurrentSlot(): DeliverySlot {
+  const now = new Date();
+  const hours = now.getHours();
+  if (hours < 12) return DELIVERY_SLOTS[0];
+  return DELIVERY_SLOTS[1];
+}
+
+export function getNextSlot(): DeliverySlot {
+  const now = new Date();
+  const hours = now.getHours();
+  if (hours < 12) return DELIVERY_SLOTS[1];
+  return DELIVERY_SLOTS[0];
+}
 
 export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
@@ -59,8 +98,7 @@ export function getDeliveryFeeForDistance(distanceKm: number, subtotal: number):
 }
 
 export function getMinOrderForDistance(distanceKm: number): number {
-  const tier = getDeliveryTier(distanceKm);
-  return tier.minOrder;
+  return getDeliveryTier(distanceKm).minOrder;
 }
 
 export function getEtaForDistance(distanceKm: number): string {
