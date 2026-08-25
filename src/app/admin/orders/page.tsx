@@ -23,7 +23,13 @@ const statusColors: Record<string, "default" | "blue" | "fresh" | "orange" | "re
 const paymentBadge: Record<string, "fresh" | "orange" | "red"> = {
   paid: "fresh",
   unpaid: "orange",
+  refunded: "red",
 };
+
+function getPaymentStatus(order: { status: string; paymentStatus: string }) {
+  if (order.status === "delivered") return "paid";
+  return order.paymentStatus;
+}
 
 const paymentMethodLabels: Record<string, string> = {
   upi: "UPI",
@@ -130,7 +136,7 @@ export default function AdminOrdersPage() {
               csvRows = csvRows.filter((o) => o.paymentMethod === exportPaymentMethod);
             }
             if (exportPaymentStatus) {
-              csvRows = csvRows.filter((o) => o.paymentStatus === exportPaymentStatus);
+              csvRows = csvRows.filter((o) => getPaymentStatus(o) === exportPaymentStatus);
             }
             if (exportMinTotal) {
               const min = Number(exportMinTotal);
@@ -410,8 +416,8 @@ export default function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-medium">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</span>
-                      <Badge variant={paymentBadge[order.paymentStatus] ?? "orange"}>
-                        {order.paymentStatus === "paid" ? "Paid ✓" : "Unpaid"}
+                      <Badge variant={paymentBadge[getPaymentStatus(order)] ?? "orange"}>
+                        {getPaymentStatus(order) === "paid" ? "Paid ✓" : "Unpaid"}
                       </Badge>
                       {order.upiReference && (
                         <span className="text-[10px] font-mono text-muted" title="UPI Reference">Ref: {order.upiReference}</span>
@@ -514,7 +520,7 @@ export default function AdminOrdersPage() {
             <h3 className="text-lg font-bold">Cancel Order</h3>
             <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-foreground">{confirmCancel}</span>?</p>
             <div className="mt-6 flex gap-3">
-              <Button variant="default" onClick={() => { cancelOrder(confirmCancel); setConfirmCancel(null); }} className="bg-brand-red hover:bg-brand-red/80">
+              <Button variant="default" onClick={async () => { try { await cancelOrder(confirmCancel); toast.add("Order cancelled", "success"); } catch (e) { toast.add(e instanceof Error ? e.message : "Cancel failed", "error"); } setConfirmCancel(null); }} className="bg-brand-red hover:bg-brand-red/80">
                 <XCircle className="mr-1 h-4 w-4" /> Yes, Cancel
               </Button>
               <Button variant="outline" onClick={() => setConfirmCancel(null)}>No</Button>
@@ -547,8 +553,8 @@ export default function AdminOrdersPage() {
               <div className="flex items-center gap-2">
                 <span className="text-muted">Payment:</span>
                 <span className="font-medium">{paymentMethodLabels[selectedOrder.paymentMethod] || selectedOrder.paymentMethod}</span>
-                <Badge variant={paymentBadge[selectedOrder.paymentStatus] ?? "orange"}>
-                  {selectedOrder.paymentStatus === "paid" ? "PAID ✓" : "Unpaid"}
+                <Badge variant={paymentBadge[getPaymentStatus(selectedOrder)] ?? "orange"}>
+                  {getPaymentStatus(selectedOrder) === "paid" ? "PAID ✓" : "Unpaid"}
                 </Badge>
               </div>
               {selectedOrder.upiReference && (
