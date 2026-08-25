@@ -106,13 +106,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     .single();
   if (fetchError || !order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
   if (order.status === "cancelled") return NextResponse.json({ error: "Order already cancelled" }, { status: 400 });
-  if (order.status === "delivered" || order.delivery_status === "delivered") {
-    return NextResponse.json({ error: "Cannot cancel a delivered order" }, { status: 400 });
-  }
 
   const isAdmin = Boolean(admin);
   if (!isAdmin) {
-    // Non-admin callers can only cancel their own order while it's still "received"
+    if (order.status === "delivered" || order.delivery_status === "delivered") {
+      return NextResponse.json({ error: "Cannot cancel a delivered order" }, { status: 400 });
+    }
     if (!payload) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const allowed = await canAccessOrder(supabaseAdmin, payload, order as any);
     if (!allowed) return NextResponse.json({ error: "Order not found" }, { status: 404 });
