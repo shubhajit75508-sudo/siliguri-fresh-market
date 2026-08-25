@@ -12,19 +12,20 @@ import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const hideFooter = pathname === "/checkout";
+  const isLanding = pathname === "/landingpage";
 
   return (
     <div className="min-h-screen">
-      <Header />
-      <StoreHoursBanner />
-      <DeliveryStrip />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 sm:px-6 lg:pb-12">
+      {!isLanding && <Header />}
+      {!isLanding && <StoreHoursBanner />}
+      {!isLanding && <DeliveryStrip />}
+      <main className={`mx-auto w-full flex-1 px-4 pb-28 sm:px-6 lg:pb-12 ${isLanding ? "" : "max-w-7xl"}`}>
         {children}
       </main>
-      {!hideFooter && <Footer />}
-      {!hideFooter && <WhatsAppFab />}
-      <PWAInstallPrompt />
-      <BottomNav />
+      {!hideFooter && !isLanding && <Footer />}
+      {!hideFooter && !isLanding && <WhatsAppFab />}
+      {!isLanding && <PWAInstallPrompt />}
+      {!isLanding && <BottomNav />}
     </div>
   );
 }
