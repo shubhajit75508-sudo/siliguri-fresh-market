@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 interface GeoLocation {
   lat: number;
@@ -21,6 +21,7 @@ export function useGeolocation(): UseGeolocationReturn {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState("");
   const [resolvedAddress, setResolvedAddress] = useState("");
+  const autoFired = useRef(false);
 
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -50,8 +51,6 @@ export function useGeolocation(): UseGeolocationReturn {
         ? "Timed out — please try again"
         : err.message;
       setError(msg);
-      // Retry once with different options — a second attempt often succeeds
-      // where the first timed out (e.g. GPS still warming up on phones).
       if (err.code === 3 || err.code === 2) {
         navigator.geolocation.getCurrentPosition(
           onSuccess,
@@ -78,6 +77,13 @@ export function useGeolocation(): UseGeolocationReturn {
     setError("");
     setResolvedAddress("");
   }, []);
+
+  // Auto-detect on mount (fires once)
+  useEffect(() => {
+    if (autoFired.current) return;
+    autoFired.current = true;
+    getLocation();
+  }, [getLocation]);
 
   return { location, locating, error, resolvedAddress, getLocation, reset };
 }

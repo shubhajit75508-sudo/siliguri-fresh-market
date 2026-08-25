@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { CartItem, Product } from "@/types";
 import { getWeightMultiplier } from "@/lib/utils";
+import { getDeliveryFeeForDistance, getMinOrderForDistance, getEtaForDistance } from "@/lib/delivery-zone";
 
 export type CartLineKey = {
   productId: string;
@@ -39,6 +40,7 @@ interface CartState {
   couponCode: string | null;
   couponDiscount: number;
   isOpen: boolean;
+  distance: number | null;
   addItem: (
     product: Product,
     quantity?: number,
@@ -51,8 +53,11 @@ interface CartState {
   closeCart: () => void;
   applyCoupon: (code: string, discount: number) => void;
   removeCoupon: () => void;
+  setDistance: (km: number | null) => void;
   getSubtotal: () => number;
   getDeliveryFee: () => number;
+  getMinOrder: () => number;
+  getEta: () => string;
   getTotal: () => number;
   getItemCount: () => number;
   getProductQuantity: (productId: string) => number;
@@ -66,6 +71,7 @@ export const useCartStore = create<CartState>()(
         couponCode: null,
         couponDiscount: 0,
         isOpen: false,
+        distance: null,
 
         addItem: (product, quantity = 1, options) => {
           if (!product.inStock) return;
@@ -129,6 +135,8 @@ export const useCartStore = create<CartState>()(
 
         removeCoupon: () => set({ couponCode: null, couponDiscount: 0 }),
 
+        setDistance: (km) => set({ distance: km }),
+
         getSubtotal: () =>
           get().items.reduce(
             (sum, i) =>
@@ -138,13 +146,23 @@ export const useCartStore = create<CartState>()(
 
         getDeliveryFee: () => {
           const subtotal = get().getSubtotal();
-          // Delivery pricing tiers (based on item subtotal, before coupons):
-          //   below ₹99   → ₹59
-          //   ₹99–₹298    → ₹40
-          //   ₹299+       → FREE
+          const distance = get().distance;
+          if (distance !== null) return getDeliveryFeeForDistance(distance, subtotal);
           if (subtotal < 99) return 59;
           if (subtotal < 299) return 40;
           return 0;
+        },
+
+        getMinOrder: () => {
+          const distance = get().distance;
+          if (distance !== null) return getMinOrderForDistance(distance);
+          return 0;
+        },
+
+        getEta: () => {
+          const distance = get().distance;
+          if (distance !== null) return getEtaForDistance(distance);
+          return "45-60 min";
         },
 
         getTotal: () => {

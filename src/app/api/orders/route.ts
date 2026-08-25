@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSession, getUserId } from "@/lib/api-auth";
 import { sendWhatsAppAlert } from "@/lib/whatsapp";
-import { DELIVERY_RADIUS_KM, DELIVERY_ZONE_LABEL, distanceFromStore } from "@/lib/delivery-zone";
+import { DELIVERY_RADIUS_KM, DELIVERY_ZONE_LABEL, distanceFromStore, getDeliveryFeeForDistance } from "@/lib/delivery-zone";
 import { getWeightMultiplier } from "@/lib/utils";
 
 interface RawOrderItem {
@@ -115,8 +115,16 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // Delivery fee tiers (must mirror cart-store getDeliveryFee).
-  const deliveryFee = subtotal < 99 ? 59 : subtotal < 299 ? 40 : 0;
+  // Delivery fee tiers — distance-based when GPS coords are available.
+  const addrSnap = (body.address_snapshot ?? {}) as Record<string, unknown>;
+  const zoneLat = Number(addrSnap.lat);
+  const zoneLng = Number(addrSnap.lng);
+  const hasCoords =
+    Number.isFinite(zoneLat) && Number.isFinite(zoneLng) && zoneLat !== 0 && zoneLng !== 0;
+  const distanceKm = hasCoords ? distanceFromStore(zoneLat, zoneLng) : null;
+  const deliveryFee = distanceKm !== null
+    ? getDeliveryFeeForDistance(distanceKm, subtotal)
+    : subtotal < 99 ? 59 : subtotal < 299 ? 40 : 0;
   const couponDiscount = Math.min(Math.max(Number(body.coupon_discount) || 0, 0), subtotal);
   const total = Math.round((subtotal + deliveryFee - couponDiscount) * 100) / 100;
 
@@ -125,20 +133,19 @@ export async function POST(req: NextRequest) {
   }
 
   // Delivery zone enforcement — orders are only accepted within the store's
-  // delivery radius when GPS coords were captured. Customers whose device can't
-  // report GPS (permission denied / no GPS / timeout) are NOT blocked — the order
-  // goes through with zone_verified=false so the admin team confirms the area by
-  // phone before dispatch. The pinned GPS location is authoritative when present.
-  const addrSnap = (body.address_snapshot ?? {}) as Record<string, unknown>;
-  const zoneLat = Number(addrSnap.lat);
-  const zoneLng = Number(addrSnap.lng);
-  const hasCoords =
-    Number.isFinite(zoneLat) && Number.isFinite(zoneLng) && zoneLat !== 0 && zoneLng !== 0;
-  if (hasCoords) {
+  // delivery radius when GPS coords were captured. GPS is mandatory — orders
+  // without location data are rejected.
+  if (!hasCoords) {
+    return NextResponse.json(
+      { error: "Location is required to place an order. Please enable location detection." },
+      { status: 400 }
+    );
+  }
+  {
     const zoneDistance = distanceFromStore(zoneLat, zoneLng);
     if (zoneDistance > DELIVERY_RADIUS_KM) {
       return NextResponse.json(
-        { error: `Sorry, we only deliver within ${DELIVERY_RADIUS_KM} km of our store (${DELIVERY_ZONE_LABEL}). Your location is about ${zoneDistance.toFixed(1)} km away.` },
+        { error: `Sorry, we only deliver within ${DELIVERY_RADIUS_KM} km of our hub at ${DELIVERY_ZONE_LABEL}. Your location is about ${zoneDistance.toFixed(1)} km away.` },
         { status: 400 }
       );
     }
@@ -161,7 +168,7 @@ export async function POST(req: NextRequest) {
     delivery_status: body.delivery_status ?? "pending",
     payment_method: paymentMethod,
     payment_status: "unpaid",
-    address_snapshot: { ...(body.address_snapshot ?? {}), zone_verified: hasCoords },
+    address_snapshot: { ...(body.address_snapshot ?? {}), zone_verified: hasCoords, distance_km: distanceKm },
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",

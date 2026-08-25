@@ -9,6 +9,7 @@ import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
 import { getStoreStatus } from "@/lib/store-hours";
 import { useProducts } from "@/lib/hooks/use-products";
+import { getMinOrderForDistance } from "@/lib/delivery-zone";
 import type { Category } from "@/types";
 
 export function CartDrawer() {
@@ -21,12 +22,16 @@ export function CartDrawer() {
     getSubtotal,
     getTotal,
     getDeliveryFee,
+    getMinOrder,
     getItemCount,
+    distance,
   } = useCartStore();
 
   const subtotal = getSubtotal();
   const total = getTotal();
   const deliveryFee = getDeliveryFee();
+  const minOrder = getMinOrder();
+  const minOrderShortfall = minOrder > 0 && subtotal < minOrder ? minOrder - subtotal : 0;
 
   const [storeStatus, setStoreStatus] = useState(getStoreStatus);
 
@@ -268,14 +273,16 @@ export function CartDrawer() {
                 {deliveryFee > 0 && (
                   <div className="mb-3 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/15 px-3.5 py-2.5">
                     <p className="text-[11px] text-foreground font-semibold">
-                      {subtotal < 99
+                      {minOrderShortfall > 0
+                        ? `Add ${formatPrice(minOrderShortfall)} more to waive the ₹${minOrder > 800 ? "79" : "99"} delivery fee`
+                        : subtotal < 99
                         ? `Add ${formatPrice(99 - subtotal)} more to reduce delivery to ₹40`
                         : `Add ${formatPrice(299 - subtotal)} more for FREE delivery`}
                     </p>
                     <div className="mt-1.5 h-1.5 rounded-full bg-[#2D7D3A]/10 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-[#2D7D3A] transition-all"
-                        style={{ width: `${Math.min(100, Math.round((subtotal / (subtotal < 99 ? 99 : 299)) * 100))}%` }}
+                        style={{ width: `${Math.min(100, Math.round((subtotal / (minOrderShortfall > 0 ? minOrder : subtotal < 99 ? 99 : 299)) * 100))}%` }}
                       />
                     </div>
                   </div>

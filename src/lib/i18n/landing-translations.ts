@@ -73,6 +73,22 @@ export interface LandingTranslations {
     heading: string;
     items: { text: string; name: string; area: string }[];
   };
+  deliveryTime: {
+    hubLabel: string;
+    title: string;
+    subtitle: string;
+    headerDistance: string;
+    headerEta: string;
+    headerMinOrder: string;
+    headerFee: string;
+    row1Dist: string; row1Eta: string; row1Min: string; row1Fee: string;
+    row2Dist: string; row2Eta: string; row2Min: string; row2Fee: string;
+    row3Dist: string; row3Eta: string; row3Min: string; row3FeeFree: string; row3FeeSmall: string;
+    row4Dist: string; row4Eta: string; row4Min: string; row4Fee: string; row4FeeFree: string;
+    row5Dist: string; row5Eta: string; row5Min: string; row5Fee: string; row5FeeFree: string;
+    note: string;
+    whatsapp: string;
+  };
   guarantees: { label: string; sub: string }[];
   footer: {
     phone: string;
@@ -144,9 +160,9 @@ const en: LandingTranslations = {
     eyebrow: "Why Choose Us",
     heading: "The Fresh Mart Difference",
     items: [
-      { title: "10-30 Min Delivery", desc: "From market to your door — blazing fast across all 8 zones of Siliguri." },
+      { title: "10-30 Min Delivery", desc: "From market to your door — blazing fast within 4 km. We deliver up to 20 km from our NJP Gate Bazar hub." },
       { title: "Quality Guaranteed", desc: "Every item checked before dispatch. Not satisfied? We replace it — no questions asked." },
-      { title: "Free Over ₹299", desc: "Free delivery on orders above ₹299. No hidden charges, no surge pricing." },
+      { title: "Distance-Based Pricing", desc: "Within 8 km: free delivery. 8-20 km: small fee with minimum order. No hidden charges, no surge pricing." },
       { title: "Same-Day Fresh", desc: "Nothing stored overnight. What you get was sourced that very morning." },
     ],
   },
@@ -193,6 +209,22 @@ const en: LandingTranslations = {
       { text: "I order fish every week now. Consistent quality. The delivery boy always handles items carefully.", name: "Suman G.", area: "Matigara" },
       { text: "Tried their tiger prawns — absolute perfection. Restaurant quality at home. Worth every rupee.", name: "Rina B.", area: "Champasari" },
     ],
+  },
+  deliveryTime: {
+    hubLabel: "Our Hub: NJP Gate Bazar, Siliguri",
+    title: "Delivery Time & Charges",
+    subtitle: "All orders are dispatched from our hub at NJP Gate Bazar, Siliguri. Delivery time and fees depend on your distance from the hub — GPS location is calculated automatically at checkout.",
+    headerDistance: "Distance from Hub",
+    headerEta: "Est. Time",
+    headerMinOrder: "Min Order",
+    headerFee: "Delivery Fee",
+    row1Dist: "Within 1 km", row1Eta: "10-20 min", row1Min: "No minimum", row1Fee: "Free",
+    row2Dist: "1 - 4 km", row2Eta: "20-30 min", row2Min: "No minimum", row2Fee: "Free",
+    row3Dist: "4 - 8 km", row3Eta: "45-60 min", row3Min: "No minimum", row3FeeFree: "Free", row3FeeSmall: "₹59 if < ₹99, ₹40 if < ₹299",
+    row4Dist: "8 - 15 km", row4Eta: "1.5 - 2 hrs", row4Min: "₹800", row4Fee: "₹79", row4FeeFree: "Free if ₹800+",
+    row5Dist: "15 - 20 km", row5Eta: "2 - 3 hrs", row5Min: "₹1,499", row5Fee: "₹99", row5FeeFree: "Free if ₹1,499+",
+    note: "GPS location is mandatory at checkout — your order cannot proceed without it. This allows us to calculate the exact distance, time, and fees for your address. If your phone cannot detect GPS, order via WhatsApp or call us and we will help you place your order.",
+    whatsapp: "Order via WhatsApp",
   },
   guarantees: [
     { label: "Quality Checked", sub: "Every single order" },
@@ -271,9 +303,9 @@ const bn: LandingTranslations = {
     eyebrow: "কেন আমাদের বেছে নেবেন",
     heading: "ফ্রেশ মার্টের পার্থক্য",
     items: [
-      { title: "১০-৩০ মিনিটে ডেলিভারি", desc: "বাজার থেকে আপনার দোরগোড়ায় — শিলিগুড়ির ৮টি জোনে দ্রুত ডেলিভারি।" },
+      { title: "১০-৩০ মিনিটে ডেলিভারি", desc: "বাজার থেকে আপনার দোরগোড়ায় — ৪ কিমির মধ্যে দ্রুত ডেলিভারি। আমরা NJP গেট বাজার হাব থেকে ২০ কিমি পর্যন্ত ডেলিভারি করি।" },
       { title: "মান নিশ্চিত", desc: "প্রতিটি পণ্য পাঠানোর আগে চেক করা হয়। সন্তুষ্ট নন? আমরা বদলে দেবি।" },
-      { title: "₹২৯৯+ তে ফ্রি", desc: "₹২৯৯-এর বেশি অর্ডারে ফ্রি ডেলিভারি। কোনো লুকানো খরচ নেই।" },
+      { title: "দূরত্ব নির্ভর মূল্য", desc: "৮ কিমির মধ্যে ফ্রি ডেলিভারি। ৮-২০ কিমিতে সর্বনিম্ন অর্ডারসহ সামান্য ফি। কোনো লুকানো খরচ নেই।" },
       { title: "একই দিনের তাজা", desc: "রাতভর সংরক্ষিত কিছু নেই। আপনি যা পাবেন তা সকালেই সংগ্রহ করা হয়েছে।" },
     ],
   },
@@ -320,6 +352,22 @@ const bn: LandingTranslations = {
       { text: "আমি এখন প্রতি সপ্তাহে মাছ অর্ডার করি। নিরবচ্ছিন্ন মান। ডেলিভারি বয় সবসময় যত্নে নিয়ে আসে।", name: "সুমন জি.", area: "মাটিগাড়া" },
       { text: "তাদের টাইগার প্রawn ট্রাই করেছি — একদম পারফেক্ট। রেস্তোরাঁর মান ঘরে।", name: "রিনা বি.", area: "চম্পাসারি" },
     ],
+  },
+  deliveryTime: {
+    hubLabel: "আমাদের হাব: এনজেপি গেট বাজার, শিলিগুড়ি",
+    title: "ডেলিভারি সময় ও চার্জ",
+    subtitle: "সমস্ত অর্ডার আমাদের শিলিগুড়ির এনজেপি গেট বাজার হাব থেকে পাঠানো হয়। ডেলিভারি সময় ও ফি আপনার হাব থেকে দূরত্বের উপর নির্ভর করে — চেকআউটে জিপিএস লোকেশন স্বয়ংক্রিয়ভাবে গণনা করা হয়।",
+    headerDistance: "হাব থেকে দূরত্ব",
+    headerEta: "আনুমানিক সময়",
+    headerMinOrder: "সর্বনিম্ন অর্ডার",
+    headerFee: "ডেলিভারি ফি",
+    row1Dist: "১ কিমির মধ্যে", row1Eta: "১০-২০ মিনিট", row1Min: "কোনো ন্যূনতম নেই", row1Fee: "বিনামূল্যে",
+    row2Dist: "১ - ৪ কিমি", row2Eta: "২০-৩০ মিনিট", row2Min: "কোনো ন্যূনতম নেই", row2Fee: "বিনামূল্যে",
+    row3Dist: "৪ - ৮ কিমি", row3Eta: "৪৫-৬০ মিনিট", row3Min: "কোনো ন্যূনতম নেই", row3FeeFree: "বিনামূল্যে", row3FeeSmall: "₹৯৯-এর কম হলে ₹৫৯, ₹২৯৯-এর কম হলে ₹৪০",
+    row4Dist: "৮ - ১৫ কিমি", row4Eta: "১.৫ - ২ ঘণ্টা", row4Min: "₹৮০০", row4Fee: "₹৭৯", row4FeeFree: "₹৮০০+ হলে বিনামূল্যে",
+    row5Dist: "১৫ - ২০ কিমি", row5Eta: "২ - ৩ ঘণ্টা", row5Min: "₹১,৪৯৯", row5Fee: "₹৯৯", row5FeeFree: "₹১,৪৯৯+ হলে বিনামূল্যে",
+    note: "চেকআউটে জিপিএস লোকেশন বাধ্যতামূলক — এটি ছাড়া আপনার অর্ডার এগিয়ে যাওয়ার অনুমতি নেই। এটি আপনার ঠিকানার সঠিক দূরত্ব, সময় এবং ফি গণনা করতে সাহায্য করে। আপনার ফোন জিপিএস সনাক্ত করতে না পারলে, হোয়াটসঅ্যাপে অর্ডার করুন বা আমাদের কল করুন।",
+    whatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন",
   },
   guarantees: [
     { label: "কোয়ালিটি চেকড", sub: "প্রতিটি অর্ডার" },
@@ -398,9 +446,9 @@ const hi: LandingTranslations = {
     eyebrow: "क्यों चुनें हमें",
     heading: "फ्रेश मार्ट का फ़र्क",
     items: [
-      { title: "10-30 मिनट में डिलीवरी", desc: "बाज़ार से आपके दरवाज़े तक — शिलिगुड़ी के सभी 8 ज़ोन में तेज़ डिलीवरी।" },
+      { title: "10-30 मिनट में डिलीवरी", desc: "बाज़ार से आपके दरवाज़े तक — 4 किमी के अंदर तेज़ डिलीवरी। हम NJP गेट बाज़ार हब से 20 किमी तक डिलीवरी करते हैं।" },
       { title: "क्वालिटी गारंटीड", desc: "हर चीज़ भेजने से पहले चेक। संतुष्ट नहीं? बदल देंगे — कोई सवाल नहीं।" },
-      { title: "₹299+ पर फ्री", desc: "₹299 से ज़्यादा के ऑर्डर पर फ्री डिलीवरी। कोई छुपी हुई फीस नहीं।" },
+      { title: "दूरी आधारित प्राइसिंग", desc: "8 किमी तक फ्री डिलीवरी। 8-20 किमी में न्यूनतम ऑर्डर के साथ छोटा शुल्क। कोई छुपी हुई फीस नहीं।" },
       { title: "आज का ताज़ा", desc: "रात भर स्टोर कुछ नहीं। जो मिलेगा वो सुबह का सोर्स किया हुआ।" },
     ],
   },
@@ -447,6 +495,22 @@ const hi: LandingTranslations = {
       { text: "अब हर हफ़्ते मछली ऑर्डर करता हूँ। क्वालिटी कंसिस्टेंट। डिलीवरी बॉय हमेशा केयर से लाता है।", name: "सुमन जी.", area: "माटीगाड़ा" },
       { text: "इनके टाइगर प्रॉन्स ट्राई किए — एकदम परफेक्ट। घर पर रेस्टोरेंट जैसा। हर पैसा वर्थ।", name: "रिना बी.", area: "चंपासारी" },
     ],
+  },
+  deliveryTime: {
+    hubLabel: "हमारा हब: NJP गेट बाज़ार, शिलिगुड़ी",
+    title: "डिलीवरी समय और चार्ज",
+    subtitle: "सभी ऑर्डर हमारे शिलिगुड़ी के NJP गेट बाज़ार हब से भेजे जाते हैं। डिलीवरी का समय और शुल्क आपकी हब से दूरी पर निर्भर करता है — चेकआउट पर GPS लोकेशन अपने आप कैलकुलेट होता है।",
+    headerDistance: "हब से दूरी",
+    headerEta: "अनुमानित समय",
+    headerMinOrder: "न्यूनतम ऑर्डर",
+    headerFee: "डिलीवरी शुल्क",
+    row1Dist: "1 किमी के अंदर", row1Eta: "10-20 मिनट", row1Min: "कोई न्यूनतम नहीं", row1Fee: "मुफ्त",
+    row2Dist: "1 - 4 किमी", row2Eta: "20-30 मिनट", row2Min: "कोई न्यूनतम नहीं", row2Fee: "मुफ्त",
+    row3Dist: "4 - 8 किमी", row3Eta: "45-60 मिनट", row3Min: "कोई न्यूनतम नहीं", row3FeeFree: "मुफ्त", row3FeeSmall: "₹99 से कम पर ₹59, ₹299 से कम पर ₹40",
+    row4Dist: "8 - 15 किमी", row4Eta: "1.5 - 2 घंटे", row4Min: "₹800", row4Fee: "₹79", row4FeeFree: "₹800+ पर मुफ्त",
+    row5Dist: "15 - 20 किमी", row5Eta: "2 - 3 घंटे", row5Min: "₹1,499", row5Fee: "₹99", row5FeeFree: "₹1,499+ पर मुफ्त",
+    note: "चेकआउट पर GPS लोकेशन अनिवार्य है — इसके बिना ऑर्डर आगे नहीं बढ़ सकता। यह आपके पते की सही दूरी, समय और शुल्क कैलकुलेट करने में मदद करता है। अगर आपका फोन GPS डिटेक्ट नहीं कर पा रहा, तो WhatsApp पर ऑर्डर करें या हमें कॉल करें।",
+    whatsapp: "WhatsApp पर ऑर्डर करें",
   },
   guarantees: [
     { label: "क्वालिटी चेक्ड", sub: "हर ऑर्डर" },

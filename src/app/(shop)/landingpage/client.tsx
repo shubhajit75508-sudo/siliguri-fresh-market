@@ -803,6 +803,169 @@ export default function LandingClient() {
         </div>
       </section>
 
+      {/* ===== DELIVERY TIME & CHARGES ===== */}
+      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-[#f7fdf8] to-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.6 }} className="text-center mb-12">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#2D7D3A]">{t.deliveryTime.hubLabel}</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground mt-3 tracking-tight">{t.deliveryTime.title}</h2>
+            <p className="text-muted mt-4 max-w-2xl mx-auto text-lg leading-relaxed">{t.deliveryTime.subtitle}</p>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6, delay: 0.1 }}>
+            <div className="rounded-2xl bg-card border border-border shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-[#2D7D3A] to-emerald-500 px-6 py-5">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  {t.deliveryTime.title}
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-muted">{t.deliveryTime.headerDistance}</th>
+                      <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-muted">{t.deliveryTime.headerEta}</th>
+                      <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-muted">{t.deliveryTime.headerMinOrder}</th>
+                      <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-muted">{t.deliveryTime.headerFee}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Row 1 — Within 1 km */}
+                    <tr className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2D7D3A]/10 text-[#2D7D3A] text-sm font-bold">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row1Dist}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-sm font-semibold text-foreground">{t.deliveryTime.row1Eta}</td>
+                      <td className="px-5 py-4 text-sm text-muted">{t.deliveryTime.row1Min}</td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-200">
+                          <Check className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row1Fee}
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 2 — 1-4 km */}
+                    <tr className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2D7D3A]/10 text-[#2D7D3A] text-sm font-bold">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row2Dist}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-sm font-semibold text-foreground">{t.deliveryTime.row2Eta}</td>
+                      <td className="px-5 py-4 text-sm text-muted">{t.deliveryTime.row2Min}</td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-200">
+                          <Check className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row2Fee}
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 3 — 4-8 km */}
+                    <tr className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2D7D3A]/10 text-[#2D7D3A] text-sm font-bold">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row3Dist}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-sm font-semibold text-foreground">{t.deliveryTime.row3Eta}</td>
+                      <td className="px-5 py-4 text-sm text-muted">{t.deliveryTime.row3Min}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-200">
+                            <Check className="h-3.5 w-3.5" />
+                            {t.deliveryTime.row3FeeFree}
+                          </span>
+                          <span className="text-xs text-amber-600 font-medium">{t.deliveryTime.row3FeeSmall}</span>
+                        </div>
+                      </td>
+                    </tr>
+
+                    {/* Row 4 — 8-15 km */}
+                    <tr className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row4Dist}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-sm font-semibold text-foreground">{t.deliveryTime.row4Eta}</td>
+                      <td className="px-5 py-4">
+                        <span className="text-sm font-semibold text-foreground">{t.deliveryTime.row4Min}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200">
+                            {t.deliveryTime.row4Fee}
+                          </span>
+                          <span className="text-xs text-emerald-600 font-medium">{t.deliveryTime.row4FeeFree}</span>
+                        </div>
+                      </td>
+                    </tr>
+
+                    {/* Row 5 — 15-20 km */}
+                    <tr className="hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {t.deliveryTime.row5Dist}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-sm font-semibold text-foreground">{t.deliveryTime.row5Eta}</td>
+                      <td className="px-5 py-4">
+                        <span className="text-sm font-semibold text-foreground">{t.deliveryTime.row5Min}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200">
+                            {t.deliveryTime.row5Fee}
+                          </span>
+                          <span className="text-xs text-emerald-600 font-medium">{t.deliveryTime.row5FeeFree}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* GPS Note */}
+              <div className="px-6 py-5 bg-amber-50/60 border-t border-amber-200/60">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MapPin className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <p className="text-sm text-amber-800 leading-relaxed font-medium">{t.deliveryTime.note}</p>
+                </div>
+              </div>
+
+              {/* WhatsApp CTA */}
+              <div className="px-6 py-5 border-t border-border bg-muted/20">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-center sm:text-left">
+                    <p className="text-sm font-bold text-foreground">{t.deliveryTime.hubLabel}</p>
+                    <p className="text-xs text-muted mt-0.5">{t.deliveryTime.subtitle}</p>
+                  </div>
+                  <a href="https://wa.me/917029908278?text=Hi!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer">
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white font-bold rounded-2xl shadow-lg shadow-[#25D366]/30 hover:shadow-xl hover:shadow-[#25D366]/40 transition-shadow">
+                      <MessageCircle className="h-5 w-5" />
+                      {t.deliveryTime.whatsapp}
+                    </motion.button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ===== GUARANTEES BAR ===== */}
       <section className="py-16 border-y border-border bg-[#fafcfa]">
         <div className="max-w-6xl mx-auto px-4">

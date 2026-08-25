@@ -10,11 +10,19 @@ const faqs = [
   },
   {
     q: "Does Siliguri Fresh Mart deliver same-day?",
-    a: "Yes. Siliguri Fresh Mart delivers every day between 7:00 AM and 3:00 PM. Orders placed before 3:00 PM are delivered the same day, typically within 20-40 minutes depending on your location in Siliguri. Free delivery is available on all orders above Rs 299.",
+    a: "Yes. Siliguri Fresh Mart delivers every day between 7:00 AM and 3:00 PM. Orders placed before 3:00 PM are delivered the same day. Delivery time depends on your distance from our hub at NJP Gate Bazar — within 1 km takes 10–20 min, within 4 km takes 20–30 min, within 8 km takes 45–60 min, 8–15 km takes 1.5–2 hrs, and 15–20 km takes 2–3 hrs.",
   },
   {
     q: "What areas does Siliguri Fresh Mart cover?",
-    a: "Siliguri Fresh Mart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within an 8 km radius of our store at Laketown, Gate Bazar, Siliguri.",
+    a: "Siliguri Fresh Mart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 20 km radius of our hub at NJP Gate Bazar, Siliguri. Delivery times vary by distance — within 1 km takes 10–20 min, within 4 km takes 20–30 min, within 8 km takes 45–60 min, 8–15 km takes 1.5–2 hrs, and 15–20 km takes 2–3 hrs.",
+  },
+  {
+    q: "What is the minimum order and delivery fee?",
+    a: "Within 4 km, delivery is free with no minimum order. Within 8 km, there is no minimum — orders under ₹99 pay ₹59, under ₹299 pay ₹40, and ₹299+ are free. For 8–15 km, the minimum order is ₹800 (₹79 delivery fee otherwise). For 15–20 km, the minimum is ₹1,499 (₹99 fee otherwise). GPS location is required at checkout so we can calculate the correct distance, time, and fees.",
+  },
+  {
+    q: "Why do you need my GPS location?",
+    a: "GPS location is mandatory to calculate your exact delivery distance from our hub at NJP Gate Bazar, determine the correct delivery time, and check whether your address falls within our 20 km delivery area. If your phone struggles with GPS, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278 or +91 9832966112.",
   },
   {
     q: "How is freshness guaranteed?",

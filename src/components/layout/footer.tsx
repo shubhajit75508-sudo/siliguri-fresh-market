@@ -39,17 +39,21 @@ export function Footer() {
                 <p className="text-[12px] font-medium text-brand-fresh-dim">Fresh Mart</p>
               </div>
             </div>
-            <p className="mt-5 max-w-[280px] text-[14px] leading-relaxed text-muted">
-              From market to your home — in minutes, every day.
+            <p className="mt-5 max-w-[320px] text-[14px] leading-relaxed text-muted">
+              From market to your home — in minutes, every day. We deliver within 20 km of our hub at NJP Gate Bazar, Siliguri.
             </p>
             <div className="mt-4 space-y-1 text-[12px] text-muted">
-              <p>📍 Laketown, Gate Bazar, Siliguri, West Bengal 734001</p>
-              <p>📞 +91 7029908278</p>
+              <p>📍 NJP Gate Bazar, Siliguri, West Bengal 734001</p>
+              <p>📞 +91 7029908278 · +91 9832966112</p>
               <p>📧 siligurifreshmart@gmail.com</p>
               <p>⏰ Open daily 7:00 AM – 3:00 PM</p>
             </div>
+            <div className="mt-3 text-[11px] text-muted leading-relaxed">
+              <p>🚚 Within 1 km: 10–20 min · Within 4 km: 20–30 min · Within 8 km: 45–60 min</p>
+              <p>🚚 8–15 km: 1.5–2 hrs · 15–20 km: 2–3 hrs</p>
+            </div>
             <div className="mt-4 flex flex-wrap gap-1.5">
-              {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Siliguri Town","Champasari","Sukna","Burdwan Road"].map((area) => (
+              {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Champasari","Sukna","Burdwan Road","Sevoke Road"].map((area) => (
                 <span key={area} className="text-[10px] text-muted px-2 py-0.5 rounded-full border border-border/60">{area}</span>
               ))}
             </div>
@@ -73,7 +77,7 @@ export function Footer() {
 
         <div className="mt-3 border-t border-border/80 pt-2 text-center text-[12px] text-muted">
           <p className="mb-1">💳 We accept: UPI · Cards · Netbanking · Cash on Delivery</p>
-          © 2026 Siliguri Fresh Mart · Laketown, Gate Bazar, Siliguri, West Bengal 734001
+          © 2026 Siliguri Fresh Mart · NJP Gate Bazar, Siliguri, West Bengal 734001
         </div>
       </div>
     </footer>
