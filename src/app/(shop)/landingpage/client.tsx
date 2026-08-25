@@ -223,18 +223,26 @@ export default function LandingClient() {
               href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={{ scale: 1.06 }}
+              whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(0,0,0,0.3)" }}
               whileTap={{ scale: 0.95 }}
-              className="group relative w-full sm:w-auto flex items-center justify-center"
+              className="group relative w-full sm:w-auto px-8 py-4 bg-black border-2 border-white/20 rounded-2xl flex items-center gap-4 shadow-xl hover:border-white/40 transition-all overflow-hidden"
             >
-              <div className="relative overflow-hidden rounded-2xl shadow-xl shadow-black/30 group-hover:shadow-2xl transition-shadow">
-                <img
-                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                  alt="Get it on Google Play"
-                  className="h-[72px] sm:h-[80px] w-auto"
-                />
+              <span className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <svg className="relative h-10 w-10 flex-shrink-0" viewBox="0 0 512 512">
+                <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
+                <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
+                <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
+                <path d="M377.3 271.6L306.8 201.1 357.2 150.7l70.1 69.5c19.7 11.3 19.7 29.7 0 41l-50 10.4z" fill="#FBBC05"/>
+                <path d="M47 0l282.6 161.2-60.1 60.1L47 35.3V0z" fill="#34A853"/>
+                <path d="M47 512l222.5-186L412.6 430.3 47 512z" fill="#EA4335"/>
+                <path d="M377.3 271.6L306.8 201.1l-60.1 60.1L47 0h0l260.8 151.4 69.5 120.2z" fill="#4285F4"/>
+                <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
+              </svg>
+              <div className="relative flex flex-col items-start">
+                <span className="text-[10px] font-medium text-white/60 leading-tight">GET IT ON</span>
+                <span className="text-xl font-bold text-white leading-tight">Google Play</span>
               </div>
-              <span className="absolute -top-2 -right-2 text-[10px] font-bold uppercase tracking-wider bg-amber-500 px-2.5 py-1 rounded-full text-white shadow-md">Coming Soon</span>
+              <span className="relative text-[9px] font-bold uppercase tracking-wider bg-amber-500 px-2 py-0.5 rounded-full text-white shadow-sm ml-2">Soon</span>
             </motion.a>
           </motion.div>
 
@@ -304,6 +312,195 @@ export default function LandingClient() {
             <div className="w-1 h-2.5 bg-white/40 rounded-full" />
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* ===== DOWNLOAD APP SECTION ===== */}
+      <section className="relative py-20 sm:py-28 bg-gradient-to-b from-[#0a1a0d] via-[#0d2614] to-white overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/2 w-[600px] h-[600px] bg-[#2D7D3A]/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2" />
+        </div>
+        <div className="max-w-6xl mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left text */}
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#2D7D3A] mb-4 block">Download the App</span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                Fresh Fish,
+                <br />
+                <span className="bg-gradient-to-r from-[#2D7D3A] to-emerald-400 bg-clip-text text-transparent">One Tap Away</span>
+              </h2>
+              <p className="text-white/50 text-lg mb-8 leading-relaxed max-w-md">
+                Order from 200+ fresh items. Track live delivery. Pay on delivery or UPI. Available on Android now — iOS coming soon.
+              </p>
+
+              {/* Feature pills */}
+              <div className="flex flex-wrap gap-3 mb-10">
+                {["Live Tracking", "UPI & COD", "10 Min Delivery", "Quality Checked"].map((f) => (
+                  <span key={f} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-white/70">
+                    <Check className="h-3.5 w-3.5 text-[#2D7D3A]" /> {f}
+                  </span>
+                ))}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(45,125,58,0.4)" }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
+                      (window as any).deferredInstallPrompt.prompt();
+                    }
+                  }}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-[#2D7D3A] to-emerald-500 text-white font-extrabold rounded-2xl text-lg shadow-xl shadow-[#2D7D3A]/30 overflow-hidden flex items-center gap-3"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#2D7D3A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <Download className="relative h-6 w-6 group-hover:translate-y-[-2px] transition-transform" />
+                  <span className="relative">Download the App</span>
+                </motion.button>
+
+                <motion.a
+                  href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(0,0,0,0.3)" }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group relative px-8 py-4 bg-black border-2 border-white/20 rounded-2xl flex items-center gap-4 shadow-xl hover:border-white/40 transition-all overflow-hidden"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <svg className="relative h-10 w-10 flex-shrink-0" viewBox="0 0 512 512">
+                    <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
+                    <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
+                    <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
+                    <path d="M377.3 271.6L306.8 201.1 357.2 150.7l70.1 69.5c19.7 11.3 19.7 29.7 0 41l-50 10.4z" fill="#FBBC05"/>
+                    <path d="M47 0l282.6 161.2-60.1 60.1L47 35.3V0z" fill="#34A853"/>
+                    <path d="M47 512l222.5-186L412.6 430.3 47 512z" fill="#EA4335"/>
+                    <path d="M377.3 271.6L306.8 201.1l-60.1 60.1L47 0h0l260.8 151.4 69.5 120.2z" fill="#4285F4"/>
+                    <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
+                  </svg>
+                  <div className="relative flex flex-col items-start">
+                    <span className="text-[10px] font-medium text-white/60 leading-tight">GET IT ON</span>
+                    <span className="text-xl font-bold text-white leading-tight">Google Play</span>
+                  </div>
+                  <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-500 px-2 py-0.5 rounded-full text-white shadow-sm">Soon</span>
+                </motion.a>
+              </div>
+            </motion.div>
+
+            {/* Right — phone mockup */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative flex justify-center"
+            >
+              <div className="relative">
+                {/* Glow behind phone */}
+                <div className="absolute inset-0 bg-[#2D7D3A]/20 rounded-[60px] blur-[60px] scale-110" />
+                {/* Phone frame */}
+                <div className="relative w-[280px] h-[560px] sm:w-[300px] sm:h-[600px] bg-gray-900 rounded-[48px] border-4 border-gray-700 shadow-2xl overflow-hidden">
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-gray-900 rounded-b-2xl z-20" />
+                  {/* Screen */}
+                  <div className="absolute inset-[4px] rounded-[44px] overflow-hidden bg-gradient-to-b from-[#0d2614] to-[#0a1a0d]">
+                    {/* Status bar */}
+                    <div className="flex items-center justify-between px-6 pt-10 pb-2">
+                      <span className="text-[10px] text-white/60 font-medium">9:41</span>
+                      <div className="flex gap-1">
+                        <div className="w-4 h-2 rounded-sm bg-white/40" />
+                        <div className="w-1 h-2 rounded-sm bg-white/40" />
+                      </div>
+                    </div>
+                    {/* App content mockup */}
+                    <div className="px-5 pt-4">
+                      <div className="flex items-center gap-2 mb-5">
+                        <div className="w-8 h-8 rounded-lg bg-[#2D7D3A] flex items-center justify-center">
+                          <Fish className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">Siliguri Fresh Mart</p>
+                          <p className="text-[9px] text-white/40">Delivering fresh since 2024</p>
+                        </div>
+                      </div>
+                      {/* Search bar */}
+                      <div className="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2 mb-4">
+                        <svg className="h-3.5 w-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        <span className="text-[11px] text-white/30">Search fresh fish...</span>
+                      </div>
+                      {/* Category cards */}
+                      <div className="grid grid-cols-3 gap-2 mb-4">
+                        {[
+                          { name: "Fish", color: "#0EA5E9" },
+                          { name: "Chicken", color: "#F97316" },
+                          { name: "Mutton", color: "#DC2626" },
+                          { name: "Veg", color: "#16A34A" },
+                          { name: "Fruits", color: "#E11D48" },
+                          { name: "Eggs", color: "#CA8A04" },
+                        ].map((cat) => (
+                          <div key={cat.name} className="bg-white/5 rounded-xl p-3 text-center border border-white/5">
+                            <div className="w-8 h-8 mx-auto rounded-lg mb-1.5 flex items-center justify-center" style={{ backgroundColor: cat.color + "20" }}>
+                              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: cat.color }} />
+                            </div>
+                            <span className="text-[9px] text-white/70 font-medium">{cat.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Product cards */}
+                      <div className="space-y-2.5">
+                        {[
+                          { name: "Rohu Fish", price: "₹280/kg", tag: "Fresh" },
+                          { name: "Country Chicken", price: "₹350/kg", tag: "Popular" },
+                        ].map((item) => (
+                          <div key={item.name} className="bg-white/5 rounded-xl p-3 flex items-center gap-3 border border-white/5">
+                            <div className="w-12 h-12 rounded-lg bg-[#2D7D3A]/20 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-semibold text-white truncate">{item.name}</p>
+                              <p className="text-[10px] text-[#2D7D3A] font-bold">{item.price}</p>
+                            </div>
+                            <span className="text-[8px] font-bold uppercase bg-[#2D7D3A]/20 text-[#2D7D3A] px-1.5 py-0.5 rounded-full">{item.tag}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Floating badges */}
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -right-4 top-24 bg-white rounded-xl px-3 py-2 shadow-xl flex items-center gap-2"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                    <Truck className="h-4 w-4 text-[#2D7D3A]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-900">On the way!</p>
+                    <p className="text-[9px] text-gray-500">Arriving in 8 min</p>
+                  </div>
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute -left-4 bottom-32 bg-white rounded-xl px-3 py-2 shadow-xl flex items-center gap-2"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                    <Star className="h-4 w-4 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-900">4.8 ★ Rating</p>
+                    <p className="text-[9px] text-gray-500">5000+ orders</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
@@ -498,18 +695,26 @@ export default function LandingClient() {
                 href="https://play.google.com/store/apps/details?id=com.siligurifreshmart"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.06 }}
+                whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(0,0,0,0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative w-full sm:w-auto flex items-center justify-center"
+                className="group relative w-full sm:w-auto px-8 py-4 bg-black border-2 border-white/20 rounded-2xl flex items-center gap-4 shadow-xl hover:border-white/40 transition-all overflow-hidden"
               >
-                <div className="relative overflow-hidden rounded-2xl shadow-xl shadow-black/30 group-hover:shadow-2xl transition-shadow">
-                  <img
-                    src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                    alt="Get it on Google Play"
-                    className="h-[72px] sm:h-[80px] w-auto"
-                  />
+                <span className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <svg className="relative h-10 w-10 flex-shrink-0" viewBox="0 0 512 512">
+                  <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#4285F4"/>
+                  <path d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z" fill="#34A853"/>
+                  <path d="M47 512c13 6.8 21.7 19.2 21.7 35.3V430.3L306.8 274.4 47 512z" fill="#EA4335"/>
+                  <path d="M377.3 271.6L306.8 201.1 357.2 150.7l70.1 69.5c19.7 11.3 19.7 29.7 0 41l-50 10.4z" fill="#FBBC05"/>
+                  <path d="M47 0l282.6 161.2-60.1 60.1L47 35.3V0z" fill="#34A853"/>
+                  <path d="M47 512l222.5-186L412.6 430.3 47 512z" fill="#EA4335"/>
+                  <path d="M377.3 271.6L306.8 201.1l-60.1 60.1L47 0h0l260.8 151.4 69.5 120.2z" fill="#4285F4"/>
+                  <path d="M377.3 240.4L306.8 170l-60.1 60.1-199.4 282h0l260.8-151.4 70.1 120.2z" fill="#EA4335"/>
+                </svg>
+                <div className="relative flex flex-col items-start">
+                  <span className="text-[10px] font-medium text-white/60 leading-tight">GET IT ON</span>
+                  <span className="text-xl font-bold text-white leading-tight">Google Play</span>
                 </div>
-                <span className="absolute -top-2 -right-2 text-[10px] font-bold uppercase tracking-wider bg-amber-500 px-2.5 py-1 rounded-full text-white shadow-md">Coming Soon</span>
+                <span className="relative text-[9px] font-bold uppercase tracking-wider bg-amber-500 px-2 py-0.5 rounded-full text-white shadow-sm ml-2">Soon</span>
               </motion.a>
             </div>
           </motion.div>
