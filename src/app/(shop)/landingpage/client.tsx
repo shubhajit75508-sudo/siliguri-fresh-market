@@ -197,56 +197,67 @@ export default function LandingClient() {
             <span className="text-white/80 font-semibold">10-30 minutes</span>.
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* Download App Buttons — Big & Prominent */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            transition={{ delay: 0.8 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
           >
-            <Link href="/fish">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative px-8 py-4 bg-[#2D7D3A] text-white font-bold rounded-2xl text-lg shadow-lg shadow-[#2D7D3A]/30 overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Order Now <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#23662B] to-[#2D7D3A]" />
-              </motion.button>
-            </Link>
-            <Link href="/bulk">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border border-white/15 text-white/80 font-bold rounded-2xl text-lg backdrop-blur-sm hover:bg-white/5 transition-colors"
-              >
-                Bulk Orders
-              </motion.button>
-            </Link>
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(45,125,58,0.4)" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
                   (window as any).deferredInstallPrompt.prompt();
                 }
               }}
-              className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-2xl text-lg backdrop-blur-md hover:bg-white/15 transition-all flex items-center gap-2"
+              className="group relative w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-[#2D7D3A] to-emerald-500 text-white font-extrabold rounded-2xl text-xl shadow-xl shadow-[#2D7D3A]/30 overflow-hidden flex items-center justify-center gap-3"
             >
-              <Download className="h-5 w-5" /> Install App
+              <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#2D7D3A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Download className="relative h-7 w-7 group-hover:translate-y-[-2px] transition-transform" />
+              <span className="relative">Install PWA App</span>
             </motion.button>
+
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank")}
-              className="px-8 py-4 border border-white/10 text-white/40 font-bold rounded-2xl text-lg backdrop-blur-sm cursor-not-allowed flex items-center gap-2"
+              className="group relative w-full sm:w-auto px-10 py-5 bg-white/10 border-2 border-white/20 text-white font-extrabold rounded-2xl text-xl backdrop-blur-md hover:bg-white/15 transition-all flex items-center justify-center gap-3"
             >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
-              Play Store
-              <span className="text-[9px] font-bold uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full text-white/40">Soon</span>
+              <svg className="relative h-7 w-7 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
+              <span className="relative">Play Store</span>
+              <span className="relative text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 px-2.5 py-1 rounded-full text-white shadow-sm">Coming Soon</span>
             </motion.button>
+          </motion.div>
+
+          {/* Secondary CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link href="/fish">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative px-8 py-4 bg-[#2D7D3A]/80 text-white font-bold rounded-2xl text-base border border-[#2D7D3A]/50 backdrop-blur-sm overflow-hidden flex items-center gap-2"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Order Now <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </motion.button>
+            </Link>
+            <Link href="/bulk">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 border border-white/15 text-white/60 font-bold rounded-2xl text-base backdrop-blur-sm hover:bg-white/5 hover:text-white/80 transition-all"
+              >
+                Bulk Orders
+              </motion.button>
+            </Link>
           </motion.div>
 
           {/* Stats row */}
@@ -451,36 +462,40 @@ export default function LandingClient() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/fish">
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-10 py-4 bg-[#2D7D3A] text-white font-bold rounded-2xl text-lg shadow-lg shadow-[#2D7D3A]/30 flex items-center gap-2">
+                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-10 py-5 bg-[#2D7D3A] text-white font-extrabold rounded-2xl text-xl shadow-lg shadow-[#2D7D3A]/30 flex items-center gap-2">
                   Start Shopping <ArrowRight className="h-5 w-5" />
                 </motion.button>
               </Link>
               <a href="https://wa.me/917029908278" target="_blank" rel="noopener noreferrer">
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-10 py-4 border border-white/15 text-white/80 font-bold rounded-2xl text-lg backdrop-blur-sm hover:bg-white/5 transition-colors flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5" /> Chat on WhatsApp
+                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-10 py-5 border border-white/15 text-white/80 font-extrabold rounded-2xl text-xl backdrop-blur-sm hover:bg-white/5 transition-colors flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5" /> WhatsApp Us
                 </motion.button>
               </a>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(45,125,58,0.4)" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
                     (window as any).deferredInstallPrompt.prompt();
                   }
                 }}
-                className="px-10 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-2xl text-lg backdrop-blur-md hover:bg-white/15 transition-all flex items-center gap-2"
+                className="group relative w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-[#2D7D3A] to-emerald-500 text-white font-extrabold rounded-2xl text-xl shadow-xl shadow-[#2D7D3A]/30 overflow-hidden flex items-center justify-center gap-3"
               >
-                <Download className="h-5 w-5" /> Install App
+                <span className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#2D7D3A] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Download className="relative h-7 w-7 group-hover:translate-y-[-2px] transition-transform" />
+                <span className="relative">Install PWA App</span>
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank")}
-                className="px-10 py-4 border border-white/10 text-white/40 font-bold rounded-2xl text-lg backdrop-blur-sm cursor-not-allowed flex items-center gap-2"
+                className="group relative w-full sm:w-auto px-10 py-5 bg-white/10 border-2 border-white/20 text-white font-extrabold rounded-2xl text-xl backdrop-blur-md hover:bg-white/15 transition-all flex items-center justify-center gap-3"
               >
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
-                Play Store
-                <span className="text-[9px] font-bold uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full text-white/40">Soon</span>
+                <svg className="relative h-7 w-7 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.394 12l2.304-2.492zM5.864 2.658L16.8 8.991l-2.302 2.302L5.864 2.658z"/></svg>
+                <span className="relative">Play Store</span>
+                <span className="relative text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 px-2.5 py-1 rounded-full text-white shadow-sm">Coming Soon</span>
               </motion.button>
             </div>
           </motion.div>
