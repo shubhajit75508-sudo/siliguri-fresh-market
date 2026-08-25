@@ -50,6 +50,11 @@ export default function CheckoutPage() {
   const { locating, error: geoError, location, getLocation } = useGeolocation();
   const [showHelp, setShowHelp] = useState(false);
 
+  // Auto-show help when GPS fails
+  useEffect(() => {
+    if (geoError) setShowHelp(true);
+  }, [geoError]);
+
   const [newAddress, setNewAddress] = useState({
     city: "Siliguri",
     pincode: "734001",
@@ -624,7 +629,7 @@ export default function CheckoutPage() {
                     {locating ? "Detecting..." : "Detect Location"}
                   </button>
                 </div>
-                {geoError && (
+                {geoError && !location && (
                   <div className="mt-3">
                     <p className="text-[10px] text-brand-red text-center mb-2">{geoError}</p>
                     <button onClick={() => setShowHelp(!showHelp)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-surface-2 border border-border text-xs font-semibold text-muted hover:text-foreground transition-colors">
@@ -850,8 +855,13 @@ export default function CheckoutPage() {
               useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
             } else { saveAddressDetails(); }
             setEditingAddress(false);
+            if (!location) {
+              toast.add("Please detect your location to continue. It's required for delivery.", "error");
+              pinRef.current?.scrollIntoView({ behavior: "smooth" });
+              return;
+            }
             setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
-          } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled || !location)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "upi" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>
