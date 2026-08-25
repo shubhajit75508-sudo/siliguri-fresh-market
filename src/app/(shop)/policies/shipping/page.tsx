@@ -25,7 +25,7 @@ const faqSchema = {
       name: "How does the delivery slot system work?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "We operate two delivery slots daily: Morning Slot (order before 10 AM, delivered 11 AM – 12 PM) and Afternoon Slot (order before 12 PM, delivered 1 PM – 3 PM). You can also place orders for the next available slot.",
+        text: "Your delivery slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you are assigned the Morning Slot (order before 10 AM, delivered 11 AM – 12 PM). If you are 15–20 km away, you are assigned the Afternoon Slot (order before 12 PM, delivered 1 PM – 3 PM). If you are within 8 km, no slot is needed — your order is delivered directly within 10–60 minutes.",
       },
     },
     {
@@ -57,7 +57,7 @@ const faqSchema = {
       name: "What are the delivery slots?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "We have two daily delivery slots: Morning Slot — place your order before 10 AM for delivery between 11 AM and 12 PM. Afternoon Slot — place your order before 12 PM for delivery between 1 PM and 3 PM. Both same-day slots and next-day orders are available.",
+        text: "We have two daily delivery slots, assigned automatically by distance. Morning Slot (8–15 km): order before 10 AM for delivery between 11 AM and 12 PM. Afternoon Slot (15–20 km): order before 12 PM for delivery between 1 PM and 3 PM. Within 8 km, no slot is needed — delivery arrives within 10–60 minutes directly.",
       },
     },
     {
@@ -81,7 +81,7 @@ const faqSchema = {
       name: "When are delivery slots available?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Morning Slot: order before 10 AM, delivered 11 AM–12 PM. Afternoon Slot: order before 12 PM, delivered 1 PM–3 PM. Both slots run daily from Monday to Sunday. Orders placed outside slot cutoff times are automatically assigned to the next available slot.",
+        text: "Both slots run daily, Monday to Sunday. Morning Slot (8–15 km): order before 10 AM, delivered 11 AM–12 PM. Afternoon Slot (15–20 km): order before 12 PM, delivered 1 PM–3 PM. Within 8 km: no slot needed, direct delivery within 10–60 minutes.",
       },
     },
   ],
@@ -121,22 +121,28 @@ export default function ShippingPolicyPage() {
           <section className="mb-8">
             <h2 className="mb-3 text-xl font-bold text-foreground">Delivery Slots</h2>
             <p className="text-sm text-muted leading-relaxed mb-4">
-              We operate <strong>two delivery slots daily</strong>. Choose the one that works for you:
+              We operate <strong>two delivery slots daily</strong>. Your slot is automatically assigned based on your distance from our hub:
             </p>
             <div className="grid gap-4 sm:grid-cols-2 mb-4">
               <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
                 <p className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">Morning Slot</p>
-                <p className="text-sm font-bold text-foreground">Order before 10 AM</p>
-                <p className="text-sm text-blue-700 mt-1">Delivered <strong>11 AM – 12 PM</strong></p>
+                <p className="text-sm font-bold text-foreground">8–15 km from hub</p>
+                <p className="text-sm text-blue-700 mt-1">Order before 10 AM → Delivered <strong>11 AM – 12 PM</strong></p>
+                <p className="text-xs text-blue-600 mt-2">₹79 delivery fee if order is under ₹1,499. Free at ₹1,499+.</p>
               </div>
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-2">Afternoon Slot</p>
-                <p className="text-sm font-bold text-foreground">Order before 12 PM</p>
-                <p className="text-sm text-amber-700 mt-1">Delivered <strong>1 PM – 3 PM</strong></p>
+                <p className="text-sm font-bold text-foreground">15–20 km from hub</p>
+                <p className="text-sm text-amber-700 mt-1">Order before 12 PM → Delivered <strong>1 PM – 3 PM</strong></p>
+                <p className="text-xs text-amber-600 mt-2">₹99 delivery fee if order is under ₹1,999. Free at ₹1,999+.</p>
               </div>
             </div>
-            <p className="text-sm text-muted leading-relaxed">
-              Both slots run daily, Monday to Sunday. Orders placed outside slot cutoff times are automatically assigned to the <strong>next available slot</strong>. You can also place orders for tomorrow&apos;s slot.
+            <div className="rounded-2xl bg-surface-2 border border-border p-4 text-sm text-muted">
+              <p className="font-semibold text-foreground mb-1">Within 8 km? No slot needed.</p>
+              <p>Orders within 8 km of NJP Gate Bazar are delivered directly within10–60 minutes. No time slot selection required — your order is dispatched as soon as it&apos;s packed.</p>
+            </div>
+            <p className="text-sm text-muted leading-relaxed mt-4">
+              Both slots run daily, Monday to Sunday. Orders placed outside slot cutoff times are automatically assigned to the <strong>next available slot</strong>.
             </p>
           </section>
 

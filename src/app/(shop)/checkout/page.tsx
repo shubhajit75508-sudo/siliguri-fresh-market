@@ -49,7 +49,6 @@ export default function CheckoutPage() {
 
   const { locating, error: geoError, location, getLocation } = useGeolocation();
   const [showHelp, setShowHelp] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<DeliverySlot>(getCurrentSlot());
 
   const [newAddress, setNewAddress] = useState({
     city: "Siliguri",
@@ -75,6 +74,13 @@ export default function CheckoutPage() {
   // it just upgrades the zone check — no dialog blocks the order.
   const pinnedDistance = location ? distanceFromStore(location.lat, location.lng) : null;
   const pinnedInZone = !!location && pinnedDistance !== null && isWithinDeliveryZone(location.lat, location.lng);
+
+  // Slot auto-assigned by distance: 8-15km → Morning, 15-20km → Afternoon, ≤8km → none
+  const deliverySlot: DeliverySlot | null = pinnedDistance !== null && pinnedDistance > 8
+    ? pinnedDistance <= 15
+      ? DELIVERY_SLOTS[0] // Morning: 11 AM–12 PM
+      : DELIVERY_SLOTS[1] // Afternoon: 1 PM–3 PM
+    : null;
 
   // Sync distance to cart store for delivery fee calculation
   useEffect(() => {
@@ -216,8 +222,8 @@ export default function CheckoutPage() {
           customerPhone: phone,
           customerEmail: contactForm.email.trim() || currentUser?.email || "",
           userId: currentUser?.id,
-          deliverySlot: selectedSlot.id,
-          deliveryWindow: selectedSlot.deliveryWindow,
+          deliverySlot: deliverySlot?.id || undefined,
+          deliveryWindow: deliverySlot?.deliveryWindow || undefined,
         });
         if (orderId) {
           setPaymentConfirmed(true);
@@ -382,7 +388,7 @@ export default function CheckoutPage() {
               </div>
               <div className="mx-5 mb-5 flex items-center gap-2 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/10 px-4 py-2.5 text-[11px] text-muted">
                 <Clock className="h-4 w-4" /> Estimated delivery <strong className="text-foreground mx-1">
-                  {pinnedDistance !== null && pinnedDistance > 8 ? `${selectedSlot.deliveryWindow} (order before ${selectedSlot.orderBefore})` : `within ${eta}`}
+                  {deliverySlot ? `${deliverySlot.deliveryWindow} (order before ${deliverySlot.orderBefore})` : `within ${eta}`}
                 </strong>
               </div>
             </div>
@@ -602,7 +608,7 @@ export default function CheckoutPage() {
                           </div>
                           {pinnedInZone && (
                             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold bg-blue-50 text-blue-700 ml-1">
-                              <Clock className="h-3 w-3" /> {pinnedDistance > 8 ? `Delivery: ${selectedSlot.deliveryWindow}` : `Est. delivery: ${eta}`}
+                              <Clock className="h-3 w-3" /> {deliverySlot ? `Delivery: ${deliverySlot.deliveryWindow}` : `Est. delivery: ${eta}`}
                             </div>
                           )}
                         </div>
@@ -677,47 +683,40 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Delivery Slot Selection — only shown for 8km+ (long delivery times) */}
-            {pinnedDistance !== null && pinnedDistance > 8 && (
+            {/* Delivery Slot Info — auto-assigned by distance, 8km+ only */}
+            {deliverySlot && pinnedDistance !== null && (
             <div className="card-white overflow-hidden mb-3.5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
                 <Clock className="h-5 w-5" />
                 <div>
-                  <h2 className="text-sm font-bold text-foreground">Choose Delivery Slot</h2>
-                  <p className="text-[10px] text-muted">Your location is {pinnedDistance.toFixed(1)} km away — select your preferred time window</p>
+                  <h2 className="text-sm font-bold text-foreground">Your Delivery Slot</h2>
+                  <p className="text-[10px] text-muted">Auto-assigned based on your location ({pinnedDistance.toFixed(1)} km from hub)</p>
                 </div>
               </div>
-              <div className="p-5 space-y-2.5">
-                {DELIVERY_SLOTS.map((slot) => (
-                  <button
-                    key={slot.id}
-                    onClick={() => setSelectedSlot(slot)}
-                    className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${
-                      selectedSlot.id === slot.id
-                        ? "border-[#2D7D3A] bg-[#2D7D3A]/5 ring-2 ring-[#2D7D3A]/15"
-                        : "border-border bg-surface hover:border-muted"
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                      selectedSlot.id === slot.id ? "border-[#2D7D3A] bg-[#2D7D3A]" : "border-muted"
+              <div className="p-5">
+                <div className={`rounded-xl border-2 px-4 py-3 ${
+                  deliverySlot.id === "morning"
+                    ? "border-blue-300 bg-blue-50"
+                    : "border-amber-300 bg-amber-50"
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-foreground">{deliverySlot.label}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      deliverySlot.id === "morning"
+                        ? "bg-blue-200 text-blue-700"
+                        : "bg-amber-200 text-amber-700"
                     }`}>
-                      {selectedSlot.id === slot.id && <div className="w-2 h-2 rounded-full bg-white" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-foreground">{slot.label}</span>
-                        {slot.id === "morning" && (
-                          <span className="text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Before 10 AM</span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-muted mt-0.5">
-                        Order before {slot.orderBefore} → Delivered <strong>{slot.deliveryWindow}</strong>
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                      {deliverySlot.id === "morning" ? "8-15 km" : "15-20 km"}
+                    </span>
+                  </div>
+                  <p className={`text-[11px] mt-1 font-semibold ${
+                    deliverySlot.id === "morning" ? "text-blue-700" : "text-amber-700"
+                  }`}>
+                    Order before {deliverySlot.orderBefore} → Delivered <strong>{deliverySlot.deliveryWindow}</strong>
+                  </p>
+                </div>
                 <p className="text-[10px] text-muted text-center mt-2">
-                  You can also place orders for the <strong>next available slot</strong> (e.g. order today for tomorrow&apos;s slot)
+                  Your slot is automatically assigned based on your distance from NJP Gate Bazar
                 </p>
               </div>
             </div>

@@ -14,7 +14,7 @@ const faqs = [
   },
   {
     q: "How do the delivery slots work?",
-    a: "We have two delivery slots daily: Morning Slot — order before 10 AM for delivery between 11 AM and 12 PM. Afternoon Slot — order before 12 PM for delivery between 1 PM and 3 PM. Both slots run every day, Monday to Sunday. If you miss a cutoff, your order is assigned to the next available slot. You can also place orders for tomorrow's slot.",
+    a: "Your slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you get the Morning Slot (order before 10 AM, delivered 11 AM–12 PM). If you are 15–20 km away, you get the Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Within 8 km, no slot is needed — delivery arrives directly within 10–60 minutes.",
   },
   {
     q: "What areas does Siliguri Fresh Mart cover?",
