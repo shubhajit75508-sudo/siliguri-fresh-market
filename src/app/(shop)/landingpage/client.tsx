@@ -33,6 +33,7 @@ import {
   RotateCcw,
   MessageCircle,
   ShoppingBag,
+  Download,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -224,6 +225,20 @@ export default function LandingClient() {
                 Bulk Orders
               </motion.button>
             </Link>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
+                  (window as any).deferredInstallPrompt.prompt();
+                } else {
+                  window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank");
+                }
+              }}
+              className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-2xl text-lg backdrop-blur-md hover:bg-white/15 transition-all flex items-center gap-2"
+            >
+              <Download className="h-5 w-5" /> Get the App
+            </motion.button>
           </motion.div>
 
           {/* Stats row */}
@@ -437,6 +452,20 @@ export default function LandingClient() {
                   <MessageCircle className="h-5 w-5" /> Chat on WhatsApp
                 </motion.button>
               </a>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
+                    (window as any).deferredInstallPrompt.prompt();
+                  } else {
+                    window.open("https://play.google.com/store/apps/details?id=com.siligurifreshmart", "_blank");
+                  }
+                }}
+                className="px-10 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-2xl text-lg backdrop-blur-md hover:bg-white/15 transition-all flex items-center gap-2"
+              >
+                <Download className="h-5 w-5" /> Download App
+              </motion.button>
             </div>
           </motion.div>
         </div>
