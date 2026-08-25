@@ -46,6 +46,11 @@ export async function PUT(req: NextRequest) {
   if (updates.status !== undefined) dbUpdates.status = updates.status;
   if (updates.payment_status !== undefined) dbUpdates.payment_status = updates.payment_status;
   if (updates.delivery_status !== undefined) dbUpdates.delivery_status = updates.delivery_status;
+
+  // Auto-mark as paid when order is delivered
+  if (dbUpdates.status === "delivered") {
+    dbUpdates.payment_status = "paid";
+  }
   if (updates.delivery_boy_id !== undefined) {
     dbUpdates.delivery_boy_id = await resolveBoyId(supabaseAdmin, updates.delivery_boy_id, updates.delivery_boy_email);
   }

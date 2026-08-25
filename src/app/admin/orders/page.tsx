@@ -493,6 +493,11 @@ export default function AdminOrdersPage() {
                           <RotateCcw className="mr-1 h-3 w-3" /> Return
                         </Button>
                       )}
+                      {order.status === "delivered" && (
+                        <Button variant="outline" size="sm" onClick={() => setConfirmCancel(order.id)} className="text-brand-red border-brand-red/30 hover:bg-brand-red/5">
+                          <XCircle className="mr-1 h-3 w-3" /> Cancel
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -671,6 +676,11 @@ export default function AdminOrdersPage() {
                 </>
               )}
               <Button variant="outline" onClick={() => setSelectedOrder(null)}>Close</Button>
+              {selectedOrder.status === "delivered" && (
+                <Button variant="outline" onClick={() => { setConfirmCancel(selectedOrder.id); setSelectedOrder(null); }} className="text-brand-red border-brand-red/30">
+                  <XCircle className="mr-1 h-3 w-3" /> Cancel Order
+                </Button>
+              )}
             </div>
           </div>
         </div>

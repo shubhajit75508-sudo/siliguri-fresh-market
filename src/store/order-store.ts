@@ -278,12 +278,15 @@ export const useOrderStore = create<OrderState>()(
 
         updateStatus: async (id, status) => {
           const prev = get().orders;
+          const isDelivered = status === "delivered";
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === id ? { ...o, status } : o
+              o.id === id ? { ...o, status, ...(isDelivered ? { paymentStatus: "paid" as const } : {}) } : o
             ),
           }));
-          const ok = await apiPut({ id, status });
+          const payload: Record<string, unknown> = { id, status };
+          if (isDelivered) payload.payment_status = "paid";
+          const ok = await apiPut(payload);
           if (!ok) set({ orders: prev });
         },
 

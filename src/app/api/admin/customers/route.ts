@@ -9,7 +9,7 @@ export async function GET() {
   const supabaseAdmin = createClient(url, key);
   const { data, error } = await supabaseAdmin
     .from("users")
-    .select("id, name, email, phone, role, loyalty_points, created_at")
+    .select("id, name, email, phone, role, loyalty_points, created_at, last_sign_in_at, updated_at")
     .eq("role", "customer")
     .order("created_at", { ascending: false });
 
@@ -17,5 +17,17 @@ export async function GET() {
     console.error("customers error:", error.code);
     return NextResponse.json({ error: "Failed to load customers" }, { status: 500 });
   }
-  return NextResponse.json({ customers: data ?? [] });
+
+  const customers = (data ?? []).map((c) => ({
+    id: c.id,
+    name: c.name,
+    email: c.email,
+    phone: c.phone,
+    createdAt: c.created_at,
+    lastSignInAt: c.last_sign_in_at ?? null,
+    updatedAt: c.updated_at ?? null,
+    loyaltyPoints: c.loyalty_points ?? 0,
+  }));
+
+  return NextResponse.json({ customers });
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useOrderStore } from "@/store/order-store";
@@ -13,6 +12,14 @@ import {
   ChevronUp,
   Phone,
   Send,
+  Calendar,
+  Clock,
+  ShoppingBag,
+  IndianRupee,
+  Star,
+  MapPin,
+  CreditCard,
+  ChevronRight,
 } from "lucide-react";
 
 const DEFAULT_MSG =
@@ -30,6 +37,59 @@ function waLink(phone: string, msg: string): string {
   return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
 }
 
+function timeAgo(dateStr: string): string {
+  if (!dateStr) return "Never";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  if (days < 30) return `${Math.floor(days / 7)}w ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+}
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatDateTime(dateStr: string): string {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+interface CustomerDetail {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  orderCount: number;
+  totalSpent: number;
+  createdAt: string;
+  lastSignInAt: string | null;
+  firstOrderDate: string | null;
+  lastOrderDate: string | null;
+  avgOrderValue: number;
+  paymentMethods: Record<string, number>;
+  deliveredCount: number;
+  cancelledCount: number;
+  pendingCount: number;
+  addresses: string[];
+}
+
 export default function CustomersPage() {
   const { users } = useAuthStore();
   const { orders, loadOrders } = useOrderStore();
@@ -38,6 +98,7 @@ export default function CustomersPage() {
   const [showTemplate, setShowTemplate] = useState(false);
   const [copiedNumbers, setCopiedNumbers] = useState(false);
   const [copiedMsg, setCopiedMsg] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -58,30 +119,40 @@ export default function CustomersPage() {
   }, []);
 
   const customers = useMemo(() => {
-    const byPhone = new Map<
-      string,
-      {
-        id: string;
-        name: string;
-        email: string;
-        phone: string;
-        orderCount: number;
-        totalSpent: number;
-        createdAt: string;
-      }
-    >();
-    const noPhone: typeof byPhone extends Map<string, infer V> ? V[] : never = [];
+    const byPhone = new Map<string, CustomerDetail>();
+    const noPhone: CustomerDetail[] = [];
 
     const upsert = (
-      data: { id: string; name: string; email: string; phone: string; createdAt: string },
-      customerOrders: { total: number }[]
+      data: { id: string; name: string; email: string; phone: string; createdAt: string; lastSignInAt?: string | null },
+      customerOrders: { total: number; status: string; paymentMethod: string; createdAt: string; address?: { line1?: string } }[]
     ) => {
       const norm = normalizePhone(data.phone);
       const key = norm.length >= 10 ? norm : `__nophone__${data.email}`;
       const existing = byPhone.get(key);
+
       const orderCount = customerOrders.length;
       const totalSpent = customerOrders.reduce((s, o) => s + o.total, 0);
-      const entry = {
+      const deliveredCount = customerOrders.filter((o) => o.status === "delivered").length;
+      const cancelledCount = customerOrders.filter((o) => o.status === "cancelled").length;
+      const pendingCount = customerOrders.filter((o) => o.status === "received" || o.status === "out_for_delivery").length;
+      const avgOrderValue = orderCount > 0 ? Math.round(totalSpent / orderCount) : 0;
+
+      const paymentMethods: Record<string, number> = {};
+      for (const o of customerOrders) {
+        const pm = o.paymentMethod || "cod";
+        paymentMethods[pm] = (paymentMethods[pm] || 0) + 1;
+      }
+
+      const dates = customerOrders.map((o) => o.createdAt).filter(Boolean).sort();
+      const firstOrderDate = dates[0] || null;
+      const lastOrderDate = dates[dates.length - 1] || null;
+
+      const addresses = customerOrders
+        .map((o) => o.address?.line1)
+        .filter((a): a is string => !!a && typeof a === "string")
+        .filter((v, i, a) => a.indexOf(v) === i);
+
+      const entry: CustomerDetail = {
         id: existing?.id || data.id,
         name: existing?.name && existing.name !== "Unknown" ? existing.name : data.name || "Unknown",
         email: existing?.email || data.email,
@@ -90,8 +161,17 @@ export default function CustomersPage() {
         totalSpent: (existing?.totalSpent ?? 0) + totalSpent,
         createdAt:
           !existing?.createdAt || (data.createdAt && data.createdAt < existing.createdAt)
-            ? existing?.createdAt ?? data.createdAt
-            : data.createdAt,
+            ? data.createdAt
+            : existing?.createdAt ?? data.createdAt,
+        lastSignInAt: data.lastSignInAt || existing?.lastSignInAt || null,
+        firstOrderDate: firstOrderDate || existing?.firstOrderDate || null,
+        lastOrderDate: lastOrderDate || existing?.lastOrderDate || null,
+        avgOrderValue,
+        paymentMethods,
+        deliveredCount: (existing?.deliveredCount ?? 0) + deliveredCount,
+        cancelledCount: (existing?.cancelledCount ?? 0) + cancelledCount,
+        pendingCount: (existing?.pendingCount ?? 0) + pendingCount,
+        addresses: [...(existing?.addresses ?? []), ...addresses].filter((v, i, a) => a.indexOf(v) === i),
       };
       byPhone.set(key, entry);
     };
@@ -100,8 +180,8 @@ export default function CustomersPage() {
       if (u.role !== "customer") continue;
       const uOrders = orders.filter((o) => o.customerEmail === u.email);
       upsert(
-        { id: u.id, name: u.name, email: u.email, phone: u.phone, createdAt: u.createdAt },
-        uOrders
+        { id: u.id, name: u.name, email: u.email, phone: u.phone, createdAt: u.createdAt, lastSignInAt: null },
+        uOrders.map((o) => ({ total: o.total, status: o.status, paymentMethod: o.paymentMethod, createdAt: o.createdAt, address: o.address }))
       );
     }
 
@@ -115,13 +195,16 @@ export default function CustomersPage() {
           email,
           phone: (r.phone as string) ?? "",
           createdAt: (r.created_at as string) ?? "",
+          lastSignInAt: (r.lastSignInAt as string | null) ?? null,
         },
-        rOrders
+        rOrders.map((o) => ({ total: o.total, status: o.status, paymentMethod: o.paymentMethod, createdAt: o.createdAt, address: o.address }))
       );
     }
 
     for (const o of orders) {
-      const oOrders = orders.filter((x) => x.customerEmail === o.customerEmail);
+      const norm = normalizePhone(o.customerPhone);
+      const key = norm.length >= 10 ? norm : `__nophone__${o.customerEmail}`;
+      if (byPhone.has(key)) continue;
       upsert(
         {
           id: o.id,
@@ -130,14 +213,14 @@ export default function CustomersPage() {
           phone: o.customerPhone,
           createdAt: o.createdAt,
         },
-        oOrders
+        [{ total: o.total, status: o.status, paymentMethod: o.paymentMethod, createdAt: o.createdAt, address: o.address }]
       );
     }
 
     const all = [...byPhone.values()];
     all.sort((a, b) => {
-      const at = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bt = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const at = a.lastOrderDate ? new Date(a.lastOrderDate).getTime() : a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bt = b.lastOrderDate ? new Date(b.lastOrderDate).getTime() : b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return bt - at;
     });
     return all;
@@ -228,72 +311,155 @@ export default function CustomersPage() {
         </div>
       )}
 
-      <div className="mt-6 overflow-x-auto rounded-xl border bg-surface shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-white/5 text-left">
-              <th className="px-4 py-3 font-medium text-muted">Name</th>
-              <th className="px-4 py-3 font-medium text-muted hidden sm:table-cell">Email</th>
-              <th className="px-4 py-3 font-medium text-muted">Phone</th>
-              <th className="px-4 py-3 font-medium text-muted hidden sm:table-cell">Orders</th>
-              <th className="px-4 py-3 font-medium text-muted hidden sm:table-cell">Total</th>
-              <th className="px-4 py-3 font-medium text-muted text-right">WhatsApp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {customers.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-light">
-                  No customers yet.
-                </td>
-              </tr>
-            ) : (
-              customers.map((c) => {
-                const hasPhone = normalizePhone(c.phone).length >= 10;
-                return (
-                  <tr key={c.id} className="border-b hover:bg-white/5">
-                    <td className="px-4 py-3">
-                      <span className="font-medium">{c.name}</span>
-                      <span className="sm:hidden ml-1 text-xs text-muted">
-                        {c.orderCount} orders
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-muted hidden sm:table-cell">{c.email}</td>
-                    <td className="px-4 py-3">
-                      {hasPhone ? (
-                        <span className="inline-flex items-center gap-1 text-muted">
-                          <Phone className="h-3 w-3 text-[#25D366]" />
-                          {c.phone}
+      <div className="mt-6 space-y-2">
+        {customers.length === 0 ? (
+          <div className="rounded-xl border bg-surface p-8 text-center text-sm text-muted-light">
+            No customers yet.
+          </div>
+        ) : (
+          customers.map((c) => {
+            const hasPhone = normalizePhone(c.phone).length >= 10;
+            const isExpanded = expandedId === c.id;
+            const topPayment = Object.entries(c.paymentMethods).sort((a, b) => b[1] - a[1])[0];
+            return (
+              <div key={c.id} className="rounded-xl border bg-surface shadow-sm overflow-hidden">
+                {/* Main row */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : c.id)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-[#2D7D3A]/20 to-[#2D7D3A]/5 border border-[#2D7D3A]/20 flex items-center justify-center text-sm font-bold text-[#2D7D3A]">
+                    {c.name?.charAt(0)?.toUpperCase() || "?"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm truncate">{c.name}</span>
+                      {hasPhone && (
+                        <span className="inline-flex items-center gap-0.5 rounded-full bg-[#25D366]/10 px-1.5 py-0.5 text-[9px] font-bold text-[#25D366]">
+                          <Phone className="h-2.5 w-2.5" /> WA
                         </span>
-                      ) : (
-                        <span className="text-muted-light italic text-xs">No phone</span>
                       )}
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">{c.orderCount}</td>
-                    <td className="px-4 py-3 font-medium hidden sm:table-cell">
-                      {formatPrice(c.totalSpent)}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {hasPhone ? (
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted">
+                      <span>{c.orderCount} order{c.orderCount !== 1 ? "s" : ""}</span>
+                      <span className="font-medium text-foreground">{formatPrice(c.totalSpent)}</span>
+                      {c.lastOrderDate && (
+                        <span className="hidden sm:inline">Last: {timeAgo(c.lastOrderDate)}</span>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight className={`h-4 w-4 text-muted transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                </button>
+
+                {/* Expanded details */}
+                {isExpanded && (
+                  <div className="border-t bg-white/30 px-4 py-3 space-y-3">
+                    {/* Contact */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div className="flex items-center gap-2 text-muted">
+                        <Phone className="h-3 w-3" />
+                        <span>{c.phone || "No phone"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted">
+                        <span className="text-[10px]">@</span>
+                        <span className="truncate">{c.email || "No email"}</span>
+                      </div>
+                    </div>
+
+                    {/* Dates */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="rounded-lg bg-surface-2 px-3 py-2">
+                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted mb-0.5">
+                          <Calendar className="h-3 w-3" /> Account Created
+                        </div>
+                        <div className="text-xs font-semibold">{formatDate(c.createdAt)}</div>
+                      </div>
+                      <div className="rounded-lg bg-surface-2 px-3 py-2">
+                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted mb-0.5">
+                          <Clock className="h-3 w-3" /> Last Login
+                        </div>
+                        <div className="text-xs font-semibold">{c.lastSignInAt ? formatDateTime(c.lastSignInAt) : "Never logged in"}</div>
+                      </div>
+                      <div className="rounded-lg bg-surface-2 px-3 py-2">
+                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted mb-0.5">
+                          <ShoppingBag className="h-3 w-3" /> First Order
+                        </div>
+                        <div className="text-xs font-semibold">{c.firstOrderDate ? formatDate(c.firstOrderDate) : "No orders yet"}</div>
+                      </div>
+                    </div>
+
+                    {/* Order stats */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div className="rounded-lg bg-surface-2 px-3 py-2 text-center">
+                        <div className="text-lg font-bold text-foreground">{c.orderCount}</div>
+                        <div className="text-[10px] text-muted">Total Orders</div>
+                      </div>
+                      <div className="rounded-lg bg-surface-2 px-3 py-2 text-center">
+                        <div className="text-lg font-bold text-[#2D7D3A]">{formatPrice(c.totalSpent)}</div>
+                        <div className="text-[10px] text-muted">Total Spent</div>
+                      </div>
+                      <div className="rounded-lg bg-surface-2 px-3 py-2 text-center">
+                        <div className="text-lg font-bold text-foreground">{formatPrice(c.avgOrderValue)}</div>
+                        <div className="text-[10px] text-muted">Avg Order</div>
+                      </div>
+                      <div className="rounded-lg bg-surface-2 px-3 py-2 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="text-sm font-bold text-[#2D7D3A]">{c.deliveredCount}</span>
+                          <span className="text-muted">/</span>
+                          <span className="text-sm font-bold text-brand-red">{c.cancelledCount}</span>
+                          {c.pendingCount > 0 && (
+                            <>
+                              <span className="text-muted">/</span>
+                              <span className="text-sm font-bold text-amber-500">{c.pendingCount}</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-muted">Done/Cancel/Pending</div>
+                      </div>
+                    </div>
+
+                    {/* Payment & Address */}
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      {topPayment && (
+                        <div className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-blue-700 font-medium">
+                          <CreditCard className="h-3 w-3" />
+                          {topPayment[0] === "cod" ? "COD" : "UPI"} ({topPayment[1]}x)
+                        </div>
+                      )}
+                      {c.addresses.length > 0 && (
+                        <div className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-muted font-medium">
+                          <MapPin className="h-3 w-3" />
+                          {c.addresses.length} address{c.addresses.length !== 1 ? "es" : ""}
+                        </div>
+                      )}
+                      {c.lastOrderDate && (
+                        <div className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-muted font-medium">
+                          <Clock className="h-3 w-3" />
+                          Last order {timeAgo(c.lastOrderDate)}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-1">
+                      {hasPhone && (
                         <a
                           href={waLink(c.phone, template)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#1fb954] hover:shadow active:scale-95"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#1fb954] hover:shadow active:scale-95"
                         >
                           <MessageCircle className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">Send</span>
+                          WhatsApp
                         </a>
-                      ) : (
-                        <span className="text-xs text-muted-light italic">No number</span>
                       )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
 
       {withPhone.length > 0 && (
