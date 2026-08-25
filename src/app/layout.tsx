@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Fresh Mart",
+    title: "Siliguri Freshmart",
   },
   openGraph: {
     title: "Siliguri Fresh Mart",
