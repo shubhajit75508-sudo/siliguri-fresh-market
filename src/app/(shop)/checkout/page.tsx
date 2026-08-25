@@ -626,7 +626,7 @@ export default function CheckoutPage() {
                 <div className="flex gap-2">
                   <button onClick={getLocation} disabled={locating} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#4A8FE7]/10 border border-[#4A8FE7]/30 text-[#4A8FE7] text-xs font-bold hover:bg-[#4A8FE7]/20 transition-colors disabled:opacity-50">
                     {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crosshair className="h-4 w-4" />}
-                    {locating ? "Detecting..." : "Detect Location"}
+                    {locating ? "Detecting..." : location ? "Re-detect Location" : "Detect Location"}
                   </button>
                 </div>
                 {!location && !locating && (
@@ -656,6 +656,10 @@ export default function CheckoutPage() {
                             <li>Select <strong>While Using the App</strong></li>
                           </ol>
                         </div>
+                        <button onClick={getLocation} disabled={locating} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#4A8FE7] text-white text-xs font-bold hover:bg-[#3a7ad4] transition-colors disabled:opacity-50 mt-2">
+                          {locating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+                          {locating ? "Detecting..." : "Try Detecting Again"}
+                        </button>
                         <div className="border-t border-blue-200 pt-3">
                           <p className="font-bold text-blue-900">Still struggling? Order via WhatsApp or call us:</p>
                           <div className="mt-2 space-y-1.5">
