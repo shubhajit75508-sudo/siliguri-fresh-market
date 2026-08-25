@@ -629,9 +629,9 @@ export default function CheckoutPage() {
                     {locating ? "Detecting..." : "Detect Location"}
                   </button>
                 </div>
-                {geoError && !location && (
+                {!location && !locating && (
                   <div className="mt-3">
-                    <p className="text-[10px] text-brand-red text-center mb-2">{geoError}</p>
+                    <p className="text-[10px] text-brand-red text-center mb-2">{geoError || "Location not detected. Please check your phone settings below, or order via WhatsApp/call."}</p>
                     <button onClick={() => setShowHelp(!showHelp)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-surface-2 border border-border text-xs font-semibold text-muted hover:text-foreground transition-colors">
                       <HelpCircle className="h-3.5 w-3.5" /> Need help enabling location? {showHelp ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                     </button>
