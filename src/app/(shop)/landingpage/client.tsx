@@ -219,10 +219,12 @@ export default function LandingClient() {
             <motion.button
               whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(45,125,58,0.4)" }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => {
+              onClick={async () => {
                 if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
-                  (window as any).deferredInstallPrompt.prompt();
+                  const p = (window as any).deferredInstallPrompt;
+                  await p.prompt();
                 }
+                window.location.href = "/fish";
               }}
               className="group relative w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-[#2D7D3A] to-emerald-500 text-white font-extrabold rounded-2xl text-xl shadow-xl shadow-[#2D7D3A]/30 overflow-hidden flex items-center justify-center gap-3"
             >
@@ -356,10 +358,12 @@ export default function LandingClient() {
                 <motion.button
                   whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(45,125,58,0.4)" }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => {
+                  onClick={async () => {
                     if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
-                      (window as any).deferredInstallPrompt.prompt();
+                      const p = (window as any).deferredInstallPrompt;
+                      await p.prompt();
                     }
+                    window.location.href = "/fish";
                   }}
                   className="group relative px-8 py-4 bg-gradient-to-r from-[#2D7D3A] to-emerald-500 text-white font-extrabold rounded-2xl text-lg shadow-xl shadow-[#2D7D3A]/30 overflow-hidden flex items-center gap-3"
                 >
@@ -676,10 +680,12 @@ export default function LandingClient() {
               <motion.button
                 whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(45,125,58,0.4)" }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => {
+                onClick={async () => {
                   if (typeof window !== "undefined" && (window as any).deferredInstallPrompt) {
-                    (window as any).deferredInstallPrompt.prompt();
+                    const p = (window as any).deferredInstallPrompt;
+                    await p.prompt();
                   }
+                  window.location.href = "/fish";
                 }}
                 className="group relative w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-[#2D7D3A] to-emerald-500 text-white font-extrabold rounded-2xl text-xl shadow-xl shadow-[#2D7D3A]/30 overflow-hidden flex items-center justify-center gap-3"
               >

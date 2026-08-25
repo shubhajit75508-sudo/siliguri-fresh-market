@@ -2,12 +2,14 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
 import { getStoreStatus } from "@/lib/store-hours";
+import { useProducts } from "@/lib/hooks/use-products";
+import type { Category } from "@/types";
 
 export function CartDrawer() {
   const {
@@ -38,6 +40,35 @@ export function CartDrawer() {
     if (["fruits", "vegetables"].includes(cat)) return { label: "ORGANIC", cls: "organic" };
     if (["dairy", "eggs"].includes(cat)) return { label: "FARM", cls: "farm" };
     return null;
+  };
+
+  const { data: allProducts = [] } = useProducts();
+
+  const cartCategorySet = useMemo(() => {
+    const cats = new Set<string>(items.map((i) => i.product.category));
+    return cats;
+  }, [items]);
+
+  const cartProductIds = useMemo(() => new Set(items.map((i) => i.product.id)), [items]);
+
+  const suggestions = useMemo(() => {
+    if (items.length === 0 || allProducts.length === 0) return [];
+    const relatedCats = new Set<string>();
+    if (cartCategorySet.has("fish")) { relatedCats.add("chicken"); relatedCats.add("mutton"); relatedCats.add("seafood"); }
+    if (cartCategorySet.has("chicken")) { relatedCats.add("fish"); relatedCats.add("mutton"); }
+    if (cartCategorySet.has("mutton")) { relatedCats.add("fish"); relatedCats.add("chicken"); }
+    if (cartCategorySet.has("vegetables")) { relatedCats.add("fruits"); relatedCats.add("fish"); }
+    if (cartCategorySet.has("fruits")) { relatedCats.add("vegetables"); relatedCats.add("dairy"); }
+    relatedCats.forEach((c) => cartCategorySet.add(c));
+    const candidates = allProducts
+      .filter((p) => p.inStock && !cartProductIds.has(p.id) && (relatedCats.has(p.category) || cartCategorySet.has(p.category)))
+      .slice(0, 6);
+    return candidates;
+  }, [items, allProducts, cartCategorySet, cartProductIds]);
+
+  const addSuggestionToCart = (product: typeof allProducts[0]) => {
+    const state = useCartStore.getState();
+    state.addItem(product, 1);
   };
 
   return (
@@ -193,6 +224,40 @@ export function CartDrawer() {
                       </motion.div>
                     );
                   })}
+                </div>
+              )}
+              {/* Cross-sell suggestions */}
+              {items.length > 0 && suggestions.length > 0 && (
+                <div className="mt-6 border-t border-border pt-4">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <Sparkles className="h-4 w-4 text-amber-500" />
+                    <p className="text-xs font-bold text-foreground">You might also like</p>
+                  </div>
+                  <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+                    {suggestions.map((p) => (
+                      <motion.div
+                        key={p.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative flex-shrink-0 w-[140px] rounded-xl border border-border bg-white p-2.5 shadow-sm"
+                      >
+                        <div className="relative h-16 w-full overflow-hidden rounded-lg bg-surface-2 mb-2">
+                          <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
+                        </div>
+                        <h4 className="text-[11px] font-semibold text-foreground truncate">{p.name}</h4>
+                        <p className="text-[10px] text-muted mt-0.5">{p.unit}</p>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <p className="text-xs font-bold text-brand-fresh">{formatPrice(p.price)}</p>
+                          <button
+                            onClick={() => addSuggestionToCart(p)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2D7D3A] text-white hover:bg-[#23682E] transition-colors shadow-sm"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
