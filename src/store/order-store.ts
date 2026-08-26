@@ -103,13 +103,13 @@ export const useOrderStore = create<OrderState>()(
               customerEmail: (r.customer_email as string) ?? "",
               paymentMethod: (r.payment_method as string) ?? "cod",
               paymentStatus: (r.status as string) === "delivered" ? "paid" as const : ((r.payment_status as "paid" | "unpaid") ?? "unpaid"),
-              upiReference: (r.upi_reference as string) || (r.payment_id as string) || undefined,
+              upiReference: (r.upi_reference as string) || (r.payment_id as string) || ((r.address_snapshot as Record<string, unknown>)?.payment_id as string) || undefined,
               deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
               deliveryBoyId: r.delivery_boy_id as string | undefined,
               deliveryBoyName: r.delivery_boy_name as string | undefined,
               returnRequested: Boolean(r.return_requested),
               returnApproved: Boolean(r.return_approved),
-              deliveryCode: (r.delivery_code as string) ?? "",
+              deliveryCode: (r.delivery_code as string) || ((r.address_snapshot as Record<string, unknown>)?.delivery_code as string) || "",
             }));
             set((state) => {
               const local = state.orders;
@@ -162,13 +162,13 @@ export const useOrderStore = create<OrderState>()(
               customerEmail: (r.customer_email as string) ?? "",
               paymentMethod: (r.payment_method as string) ?? "cod",
               paymentStatus: (r.status as string) === "delivered" ? "paid" as const : ((r.payment_status as "paid" | "unpaid") ?? "unpaid"),
-              upiReference: (r.upi_reference as string) || (r.payment_id as string) || undefined,
+              upiReference: (r.upi_reference as string) || (r.payment_id as string) || ((r.address_snapshot as Record<string, unknown>)?.payment_id as string) || undefined,
               deliveryStatus: (r.delivery_status as DeliveryStatus) ?? "pending",
               deliveryBoyId: r.delivery_boy_id as string | undefined,
               deliveryBoyName: r.delivery_boy_name as string | undefined,
               returnRequested: Boolean(r.return_requested),
               returnApproved: Boolean(r.return_approved),
-              deliveryCode: (r.delivery_code as string) ?? "",
+              deliveryCode: (r.delivery_code as string) || ((r.address_snapshot as Record<string, unknown>)?.delivery_code as string) || "",
             }));
             set((state) => {
               const local = state.orders;

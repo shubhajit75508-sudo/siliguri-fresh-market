@@ -51,12 +51,12 @@ export async function POST(req: NextRequest) {
       );
     }
     // Prevent a single payment reference from being claimed on multiple orders.
-    // The reference is stored in the payment_id column (TEXT) — upi_reference
-    // does not exist on the live orders table.
+    // payment_id may not exist as a top-level column, so we also check the
+    // JSONB address_snapshot where it is stored as a fallback.
     const { data: existing } = await supabaseAdmin
       .from("orders")
       .select("id")
-      .eq("payment_id", upiReference)
+      .or(`payment_id.eq.${upiReference},address_snapshot->>payment_id.eq.${upiReference}`)
       .limit(1)
       .maybeSingle();
     if (existing) {
@@ -156,44 +156,61 @@ export async function POST(req: NextRequest) {
 
   // Payment status is always set by the server — never trusted from the client.
   // Admins mark orders paid only after manually verifying the UPI transaction.
+  //
+  // Store extra metadata inside address_snapshot (JSONB) so the upsert only
+  // writes to columns that are guaranteed to exist in the original orders table.
+  // Columns like subtotal, delivery_fee, discount, payment_id, delivery_slot,
+  // delivery_window, and delivery_code may not exist yet if the migrations
+  // haven't been run. Keeping them in address_snapshot avoids "column does not
+  // exist" errors while the migration is still pending.
+  const enrichedSnapshot = {
+    ...(body.address_snapshot ?? {}),
+    zone_verified: hasCoords,
+    distance_km: distanceKm,
+    subtotal,
+    delivery_fee: deliveryFee,
+    discount: couponDiscount,
+    delivery_code: deliveryCode,
+    delivery_slot: body.delivery_slot ?? null,
+    delivery_window: body.delivery_window ?? null,
+    payment_id: paymentMethod === "upi" && upiReference ? upiReference : null,
+  };
+
+  // Only use columns guaranteed to exist in the live DB.
+  // - Original migration columns: id, user_id, items, total, status, address_snapshot, payment_method, payment_status, delivery_boy_id, delivery_status, return_requested, return_approved, eta, customer_name, customer_phone, customer_email, created_at
+  // - delivery_code: added by delivery_code_migration.sql (APPLIED)
+  // NOT included (column may not exist): subtotal, delivery_fee, discount, payment_id, delivery_slot, delivery_window
   const orderData: Record<string, unknown> = {
     id: body.id,
     user_id: body.user_id ?? null,
     items: serverItems,
-    subtotal,
-    delivery_fee: deliveryFee,
-    discount: couponDiscount,
     total,
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: paymentMethod,
     payment_status: "unpaid",
-    address_snapshot: { ...(body.address_snapshot ?? {}), zone_verified: hasCoords, distance_km: distanceKm },
+    address_snapshot: enrichedSnapshot,
     customer_name: body.customer_name ?? "",
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",
     delivery_boy_id: body.delivery_boy_id ?? null,
     delivery_code: deliveryCode,
-    delivery_slot: body.delivery_slot ?? null,
-    delivery_window: body.delivery_window ?? null,
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),
     eta: body.eta ?? 30,
   };
 
-  // UPI reference is stored in the existing payment_id column (TEXT) so no
-  // schema migration is required on the live orders table.
-  if (paymentMethod === "upi" && upiReference) {
-    orderData.payment_id = upiReference;
+  const { error } = await supabaseAdmin.from("orders").upsert(orderData);
+  if (error) {
+    console.error("[orders] Supabase upsert error:", JSON.stringify(error, null, 2));
+    return NextResponse.json({ error: "Order creation failed — please try again" }, { status: 500 });
   }
 
-  const { error } = await supabaseAdmin.from("orders").upsert(orderData);
-  if (error) return NextResponse.json({ error: "Order creation failed" }, { status: 500 });
-
-  // Fire-and-forget merchant alert on WhatsApp (inert until Green API env vars are set)
-  try {
-    const items = Array.isArray(orderData.items)
+  // Fire-and-forget merchant alert on WhatsApp — do NOT await (prevents
+  // Vercel serverless timeout if Green API is slow/down).
+  {
+    const alertItems = Array.isArray(orderData.items)
       ? (orderData.items as {
           product?: { name?: string };
           quantity?: number;
@@ -202,16 +219,16 @@ export async function POST(req: NextRequest) {
           selectedCleaning?: string;
         }[]).filter(Boolean)
       : [];
-    const itemLines = items.map((i, idx) => {
+    const itemLines = alertItems.map((i, idx) => {
       const name = i.product?.name || "Item";
       const qty = i.quantity ?? 1;
       const w = i.selectedWeight ? i.selectedWeight : "";
       const extras = [i.selectedCut, i.selectedCleaning].filter(Boolean).join(", ");
       return `${idx + 1}. ${qty} × ${name}${w ? ` (${w})` : ""}${extras ? ` [${extras}]` : ""}`;
     });
-    const itemCount = items.reduce((sum, i) => sum + (i.quantity ?? 1), 0);
+    const itemCount = alertItems.reduce((sum, i) => sum + (i.quantity ?? 1), 0);
 
-    const addr = (orderData.address_snapshot ?? {}) as Record<string, unknown>;
+    const addr = enrichedSnapshot as Record<string, unknown>;
     const a = (k: string) => (typeof addr[k] === "string" ? (addr[k] as string).trim() : "");
     const addrParts = [
       [a("flat"), a("building")].filter(Boolean).join(", "),
@@ -251,9 +268,10 @@ export async function POST(req: NextRequest) {
       sections.push(`Total items: ${itemCount}`);
     }
 
-    await sendWhatsAppAlert(sections.join("\n\n"));
-  } catch (e) {
-    console.error("[whatsapp] order alert failed:", e);
+    // Fire-and-forget — intentionally not awaited
+    sendWhatsAppAlert(sections.join("\n\n")).catch((e) =>
+      console.error("[whatsapp] order alert failed:", e)
+    );
   }
 
   return NextResponse.json({ success: true });
