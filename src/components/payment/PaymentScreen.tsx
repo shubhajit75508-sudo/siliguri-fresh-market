@@ -282,7 +282,10 @@ export default function PaymentScreen({
         }),
       });
 
-      if (!res.ok) throw new Error("Order creation failed");
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error((errJson as Record<string, string>).error || "Order creation failed");
+      }
 
       clearPendingPayment();
       setState("success");
@@ -290,7 +293,7 @@ export default function PaymentScreen({
     } catch (e) {
       console.error("Order creation error:", e);
       setState("failed");
-      setErrorMessage("Failed to submit order. Please try again.");
+      setErrorMessage(e instanceof Error ? e.message : "Failed to submit order. Please try again.");
     }
   }, [upiRef, orderId, items, total, address, customerName, customerPhone, customerEmail, userId, couponDiscount, onSuccess]);
 

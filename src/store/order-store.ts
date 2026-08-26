@@ -134,15 +134,17 @@ export const useOrderStore = create<OrderState>()(
             let json: { orders?: Record<string, unknown>[] } = await res.json();
             // The signed session cookie may still be settling right after page load
             // (re-issued on auth-store rehydration). If a logged-in user got an empty
-            // list, retry once shortly after.
+            // list, retry up to 2 times with increasing delay.
             if (!json.orders || json.orders.length === 0) {
               const current = useAuthStore.getState().currentUser;
               if (current) {
-                await new Promise((r) => setTimeout(r, 700));
-                const retry = await fetch("/api/orders");
-                if (retry.ok) {
-                  const retryJson = await retry.json();
-                  if (retryJson.orders?.length) json = retryJson;
+                for (let attempt = 0; attempt < 2; attempt++) {
+                  await new Promise((r) => setTimeout(r, 1000 + attempt * 1000));
+                  const retry = await fetch("/api/orders");
+                  if (retry.ok) {
+                    const retryJson = await retry.json();
+                    if (retryJson.orders?.length) { json = retryJson; break; }
+                  }
                 }
               }
             }

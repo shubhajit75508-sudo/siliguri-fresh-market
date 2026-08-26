@@ -65,6 +65,7 @@ export default function CheckoutPage() {
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   // Delivery needs a locality (area) + valid pincode. Street/building/landmark are optional.
   const requiredDetailsFilled = !!(detailForm.area?.trim() && /^\d{6}$/.test(newAddress.pincode?.trim() || ""));
+  const hasSavedCoords = !!(selectedAddress?.lat && selectedAddress?.lng);
   const deliveryFee = getDeliveryFee();
 
   // The customer's pinned GPS location is authoritative for the delivery zone
@@ -196,14 +197,16 @@ export default function CheckoutPage() {
     }
 
     // GPS location is mandatory — order cannot proceed without it
-    if (!location) {
+    // But allow if the selected address already has GPS coordinates from a previous session
+    const hasExistingCoords = selectedAddress?.lat && selectedAddress?.lng;
+    if (!location && !hasExistingCoords) {
       toast.add("Please detect your location to continue. It's required for delivery.", "error");
       pinRef.current?.scrollIntoView({ behavior: "smooth" });
       return;
     }
 
-    const zoneLat = Number(location.lat);
-    const zoneLng = Number(location.lng);
+    const zoneLat = Number(location?.lat ?? selectedAddress?.lat);
+    const zoneLng = Number(location?.lng ?? selectedAddress?.lng);
     const hasCoords = Number.isFinite(zoneLat) && Number.isFinite(zoneLng) && zoneLat !== 0 && zoneLng !== 0;
     if (hasCoords && !isWithinDeliveryZone(zoneLat, zoneLng)) {
       toast.add(`Sorry, we deliver within ${DELIVERY_RADIUS_KM} km of our hub at NJP Gate Bazar, Siliguri`, "error");
@@ -591,13 +594,20 @@ export default function CheckoutPage() {
                   </h2>
                   <p className="text-[10px] text-muted">Required — we deliver within {DELIVERY_RADIUS_KM} km of NJP Gate Bazar</p>
                 </div>
-                {!location && <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 px-2 py-1 rounded-full">Required</span>}
+                {!location && !hasSavedCoords && <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 px-2 py-1 rounded-full">Required</span>}
+                {hasSavedCoords && !location && <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-[#2D7D3A]/10 text-[#2D7D3A] px-2 py-1 rounded-full">Using Saved GPS</span>}
               </div>
               <div className="p-5">
-                {!location && (
+                {!location && !hasSavedCoords && (
                   <div className="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5 text-[11px] text-amber-700 mb-4">
                     <AlertTriangle className="h-4 w-4 flex-shrink-0" />
                     <span>Please tap <strong>Detect Location</strong> below. Your location is required to calculate delivery time and verify we can reach you.</span>
+                  </div>
+                )}
+                {hasSavedCoords && !location && (
+                  <div className="flex items-center gap-2 rounded-xl bg-[#2D7D3A]/5 border border-[#2D7D3A]/20 px-4 py-2.5 text-[11px] text-[#2D7D3A] mb-4">
+                    <Pin className="h-4 w-4 flex-shrink-0" />
+                    <span>Using GPS from your saved address. <button onClick={getLocation} className="font-bold underline">Re-detect</button> for current location.</span>
                   </div>
                 )}
                 <div className="w-full h-48 rounded-xl bg-surface-2 border border-border flex items-center justify-center mb-3">
@@ -629,7 +639,7 @@ export default function CheckoutPage() {
                     {locating ? "Detecting..." : location ? "Re-detect Location" : "Detect Location"}
                   </button>
                 </div>
-                {!location && !locating && (
+                {!location && !hasSavedCoords && !locating && (
                   <div className="mt-3">
                     <p className="text-[10px] text-brand-red text-center mb-2">{geoError || "Location not detected. Please check your phone settings below, or order via WhatsApp/call."}</p>
                     <button onClick={() => setShowHelp(!showHelp)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-surface-2 border border-border text-xs font-semibold text-muted hover:text-foreground transition-colors">
@@ -859,13 +869,13 @@ export default function CheckoutPage() {
               useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
             } else { saveAddressDetails(); }
             setEditingAddress(false);
-            if (!location) {
+            if (!location && !(selectedAddress?.lat && selectedAddress?.lng)) {
               toast.add("Please detect your location to continue. It's required for delivery.", "error");
               pinRef.current?.scrollIntoView({ behavior: "smooth" });
               return;
             }
             setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
-          } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled || !location)} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled || (!location && !(selectedAddress?.lat && selectedAddress?.lng)))} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "upi" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
         </div>
