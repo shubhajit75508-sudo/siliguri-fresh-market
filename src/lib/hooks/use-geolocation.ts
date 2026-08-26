@@ -78,12 +78,7 @@ export function useGeolocation(): UseGeolocationReturn {
     setResolvedAddress("");
   }, []);
 
-  // Auto-detect on mount (fires once)
-  useEffect(() => {
-    if (autoFired.current) return;
-    autoFired.current = true;
-    getLocation();
-  }, [getLocation]);
+  // Location only detected when user clicks "Detect Location" — never auto-fire
 
   return { location, locating, error, resolvedAddress, getLocation, reset };
 }
