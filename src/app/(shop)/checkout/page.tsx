@@ -160,6 +160,16 @@ export default function CheckoutPage() {
   const eta = getEta();
   const minOrderShortfall = minOrder > 0 && subtotal < minOrder ? minOrder - subtotal : 0;
 
+  // Auto-save GPS coords to the selected address when detected, so next
+  // order automatically has the location without re-detecting.
+  useEffect(() => {
+    if (!location || !selectedAddressId) return;
+    const addr = addresses.find(a => a.id === selectedAddressId);
+    if (!addr) return;
+    if (Number(addr.lat) === location.lat && Number(addr.lng) === location.lng) return;
+    useUserStore.getState().updateAddress({ ...addr, lat: location.lat, lng: location.lng });
+  }, [location?.lat, location?.lng, selectedAddressId]);
+
   const saveAddressDetails = () => {
     if (!selectedAddressId) return;
     const addr = addresses.find(a => a.id === selectedAddressId);
@@ -173,6 +183,8 @@ export default function CheckoutPage() {
       area: detailForm.area || addr.area,
       landmark: detailForm.landmark || addr.landmark,
       deliveryInstructions: detailForm.deliveryInstructions || addr.deliveryInstructions,
+      // Also persist fresh GPS if available
+      ...(location ? { lat: location.lat, lng: location.lng } : {}),
     };
     useUserStore.getState().updateAddress(updated);
   };
