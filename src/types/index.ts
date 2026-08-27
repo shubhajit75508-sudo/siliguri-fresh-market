@@ -56,6 +56,7 @@ export interface Product {
   cleaningOptions?: string[];
   discount?: number;
   subcategory?: string[];
+  buyingPrices?: { weight: string; price: number }[];
 }
 
 export interface CartItem {
@@ -110,6 +111,7 @@ export interface Order {
   returnRequested?: boolean;
   returnApproved?: boolean;
   deliveryCode?: string;
+  deliveredAt?: string;
 }
 
 export interface User {

@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
   const updates: Record<string, unknown> = {
     delivery_status: "delivered",
     status: "delivered",
+    delivered_at: new Date().toISOString(),
   };
 
   if (order.payment_method === "cod" && order.payment_status !== "paid") {

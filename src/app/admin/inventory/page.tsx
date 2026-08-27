@@ -215,6 +215,7 @@ export default function AdminInventoryPage() {
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Cost</th>
                 <th className="px-4 py-3 text-center">Stock (0-100)</th>
                 <th className="px-4 py-3 text-center">Status</th>
               </tr>
@@ -225,6 +226,13 @@ export default function AdminInventoryPage() {
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
                   <td className="px-4 py-3">₹{p.price}</td>
+                  <td className="px-4 py-3">
+                    {p.buyingPrices?.[0]?.price ? (
+                      <span className="text-orange-600">₹{p.buyingPrices[0].price}</span>
+                    ) : (
+                      <span className="text-muted/50">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <input
                       type="number"

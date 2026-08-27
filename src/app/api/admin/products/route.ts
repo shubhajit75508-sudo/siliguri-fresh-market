@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
     river: body.river ?? null,
     catch_date: body.catchDate ?? null,
     subcategory: body.subcategory ?? [],
+    weight_prices: body.weightPrices ?? [],
+    buying_prices: body.buyingPrices ?? [],
   });
   if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
   return NextResponse.json({ success: true });
@@ -106,6 +108,8 @@ export async function PUT(req: NextRequest) {
   if (updates.river !== undefined) dbUpdates.river = updates.river;
   if (updates.catchDate !== undefined) dbUpdates.catch_date = updates.catchDate;
   if (updates.subcategory !== undefined) dbUpdates.subcategory = updates.subcategory;
+  if (updates.weightPrices !== undefined) dbUpdates.weight_prices = updates.weightPrices;
+  if (updates.buyingPrices !== undefined) dbUpdates.buying_prices = updates.buyingPrices;
   const { error } = await supabaseAdmin.from("products").update(dbUpdates).filter("id::text", "eq", id);
   if (error) return NextResponse.json({ error: "Product operation failed" }, { status: 500 });
 

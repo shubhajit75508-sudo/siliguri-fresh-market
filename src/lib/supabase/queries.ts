@@ -33,6 +33,8 @@ interface ProductRow {
   origin: string | null;
   catch_date: string | null;
   subcategory: string[] | null;
+  weight_prices?: { weight: string; price: number }[] | null;
+  buying_prices?: { weight: string; price: number }[] | null;
 }
 
 interface CategoryRow {
@@ -165,6 +167,8 @@ function mapProduct(row: ProductRow): Product {
     origin: row.origin ?? undefined,
     catchDate: row.catch_date ?? undefined,
     subcategory: row.subcategory ?? [],
+    weightPrices: row.weight_prices ?? undefined,
+    buyingPrices: row.buying_prices ?? undefined,
   };
 }
 

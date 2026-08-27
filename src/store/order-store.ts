@@ -291,7 +291,7 @@ export const useOrderStore = create<OrderState>()(
           const isDelivered = status === "delivered";
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === id ? { ...o, status, ...(isDelivered ? { paymentStatus: "paid" as const } : {}) } : o
+              o.id === id ? { ...o, status, ...(isDelivered ? { paymentStatus: "paid" as const, deliveredAt: new Date().toISOString() } : {}) } : o
             ),
           }));
           const payload: Record<string, unknown> = { id, status };

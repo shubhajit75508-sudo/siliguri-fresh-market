@@ -57,6 +57,7 @@ export async function PUT(req: NextRequest) {
   // Auto-mark as paid when order is delivered
   if (dbUpdates.status === "delivered") {
     dbUpdates.payment_status = "paid";
+    dbUpdates.delivered_at = new Date().toISOString();
   }
   if (updates.delivery_boy_id !== undefined) {
     dbUpdates.delivery_boy_id = await resolveBoyId(supabaseAdmin, updates.delivery_boy_id, updates.delivery_boy_email);

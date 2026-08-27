@@ -103,6 +103,8 @@ export default function AdminProductsPage() {
       category: "fish",
       description: "",
       weight: [],
+      weightPrices: [],
+      buyingPrices: [],
     });
   };
 
@@ -367,6 +369,78 @@ export default function AdminProductsPage() {
             )}
           </div>
 
+          {/* Cost Prices */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-bold text-foreground">Cost Prices (per weight)</h4>
+              <button
+                type="button"
+                onClick={() => {
+                  const bps = form.buyingPrices || [];
+                  const wps = form.weightPrices || [];
+                  const nextWeight = wps[bps.length]?.weight || "";
+                  setForm({ ...form, buyingPrices: [...bps, { weight: nextWeight, price: 0 }] });
+                }}
+                className="text-xs font-bold text-orange-500 hover:underline"
+              >
+                + Add Cost Tier
+              </button>
+            </div>
+            <div className="space-y-2">
+              {(form.buyingPrices || []).map((bp, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    placeholder="Weight (match selling tier)"
+                    value={bp.weight}
+                    onChange={(e) => {
+                      const bps = [...(form.buyingPrices || [])];
+                      bps[i] = { ...bps[i], weight: e.target.value };
+                      setForm({ ...form, buyingPrices: bps });
+                    }}
+                    className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-orange-500/40"
+                  />
+                  <span className="text-muted text-sm">₹</span>
+                  <input
+                    placeholder="Cost"
+                    type="number"
+                    value={bp.price || ""}
+                    onChange={(e) => {
+                      const bps = [...(form.buyingPrices || [])];
+                      bps[i] = { ...bps[i], price: +e.target.value };
+                      setForm({ ...form, buyingPrices: bps });
+                    }}
+                    className="w-24 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-orange-500/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const bps = (form.buyingPrices || []).filter((_, j) => j !== i);
+                      setForm({ ...form, buyingPrices: bps });
+                    }}
+                    className="text-brand-red hover:bg-brand-red/10 rounded-lg p-1.5"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {(form.buyingPrices || []).length === 0 && (
+              <p className="text-xs text-muted mt-1">Add cost prices matching your weight tiers. Profit = selling price - cost price.</p>
+            )}
+            {(form.weightPrices || []).length > 0 && (form.buyingPrices || []).length === 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const bps = (form.weightPrices || []).map(wp => ({ weight: wp.weight, price: 0 }));
+                  setForm({ ...form, buyingPrices: bps });
+                }}
+                className="mt-2 text-[11px] font-bold text-orange-500 hover:underline"
+              >
+                Auto-copy weight tiers from selling prices
+              </button>
+            )}
+          </div>
+
           <div className="mt-4 flex gap-2">
             <button onClick={saveAdd} className="inline-flex items-center gap-2 rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim">
               <Save className="h-4 w-4" /> Save
@@ -397,6 +471,7 @@ export default function AdminProductsPage() {
                 <th className="px-4 py-3">Category</th>
                 {filterCategory === "fish" && <th className="px-4 py-3">Subcategory</th>}
                 <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Cost</th>
                 <th className="px-4 py-3">Discount</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -405,7 +480,7 @@ export default function AdminProductsPage() {
               {[...filteredProducts].reverse().map((p) =>
                 editingId === p.id ? (
                   <tr key={p.id} className="border-b border-border">
-                    <td className="px-4 py-3" colSpan={filterCategory === "fish" ? 6 : 5}>
+                    <td className="px-4 py-3" colSpan={filterCategory === "fish" ? 7 : 6}>
                       <div className="grid gap-3 sm:grid-cols-4">
                         <input value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Name" />
                         <div className="flex items-center gap-2">
@@ -415,6 +490,7 @@ export default function AdminProductsPage() {
                             <span className="text-[11px] font-medium text-muted">Flash</span>
                           </label>
                         </div>
+                        <input value={form.buyingPrices?.[0]?.price || 0} type="number" onChange={(e) => { const bps = [...(form.buyingPrices || [])]; bps[0] = { ...bps[0], weight: (form.weightPrices?.[0]?.weight || form.buyingPrices?.[0]?.weight || ""), price: +e.target.value }; setForm({ ...form, buyingPrices: bps }); }} className="rounded-lg border border-orange-500/30 bg-orange-500/5 px-3 py-2 text-sm outline-none" placeholder="Cost (base)" />
                         <input value={form.discount || 0} type="number" onChange={(e) => setForm({ ...form, discount: +e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Discount %" />
                         <div className="sm:col-span-2">
                           <input value={form.image || ""} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Primary Image URL" />
@@ -436,9 +512,34 @@ export default function AdminProductsPage() {
                             <div key={i} className="flex gap-1 items-center">
                               <input value={wp.weight} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], weight: e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Wt" />
                               <span className="text-muted text-xs">₹</span>
-                              <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Price" />
+                              <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Sell" />
                             </div>
                           ))}
+                        </div>
+                        <div className="sm:col-span-4 grid gap-2 sm:grid-cols-4">
+                          {(form.weightPrices || []).map((wp, i) => {
+                            const bps = form.buyingPrices || [];
+                            const bp = bps.find(b => b.weight === wp.weight) || bps[i];
+                            return (
+                              <div key={i} className="flex gap-1 items-center">
+                                <span className="text-[10px] text-orange-500 font-medium shrink-0">Cost</span>
+                                <span className="text-muted text-xs">₹</span>
+                                <input
+                                  type="number"
+                                  value={bp?.price || ""}
+                                  onChange={(e) => {
+                                    const bps = [...(form.buyingPrices || [])];
+                                    const idx = bps.findIndex(b => b.weight === wp.weight);
+                                    if (idx >= 0) { bps[idx] = { ...bps[idx], price: +e.target.value }; }
+                                    else { bps[i] = { weight: wp.weight, price: +e.target.value }; }
+                                    setForm({ ...form, buyingPrices: bps });
+                                  }}
+                                  className="w-16 rounded-lg border border-orange-500/30 bg-orange-500/5 px-2 py-1.5 text-xs outline-none"
+                                  placeholder="Cost"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                         <div className="sm:col-span-4 grid gap-2 sm:grid-cols-3">
                           <input placeholder="Unit" value={form.unit || ""} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" />
@@ -529,6 +630,13 @@ export default function AdminProductsPage() {
                       </td>
                     )}
                     <td className="px-4 py-3">₹{p.price}</td>
+                    <td className="px-4 py-3">
+                      {p.buyingPrices?.[0]?.price ? (
+                        <span className="text-orange-500">₹{p.buyingPrices[0].price}</span>
+                      ) : (
+                        <span className="text-muted/50">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">{p.discount ? `${p.discount}%` : "—"}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-1">
