@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { CartItem, Product } from "@/types";
-import { getWeightMultiplier } from "@/lib/utils";
+import { getPriceForWeight } from "@/lib/utils";
 import { getDeliveryFeeForDistance, getMinOrderForDistance, getEtaForDistance } from "@/lib/delivery-zone";
 
 export type CartLineKey = {
@@ -140,7 +140,7 @@ export const useCartStore = create<CartState>()(
         getSubtotal: () =>
           get().items.reduce(
             (sum, i) =>
-              sum + i.product.price * getWeightMultiplier(i.selectedWeight) * i.quantity,
+              sum + getPriceForWeight(i.product.price, i.selectedWeight || i.product.unit || "1kg", i.product.weightPrices) * i.quantity,
             0
           ),
 

@@ -72,6 +72,7 @@ interface OrderState {
   requestReturn: (orderId: string) => Promise<void>;
   approveReturn: (orderId: string) => Promise<void>;
   getStats: () => OrderStats;
+  addLocalOrder: (order: Order) => void;
 }
 
 export const useOrderStore = create<OrderState>()(
@@ -79,6 +80,13 @@ export const useOrderStore = create<OrderState>()(
     (set, get) => ({
         orders: [],
         loaded: false,
+
+        addLocalOrder: (order) => {
+          set((state) => {
+            if (state.orders.some(o => o.id === order.id)) return state;
+            return { orders: [...state.orders, order] };
+          });
+        },
 
         loadOrders: async () => {
           if (!isSupabaseConfigured()) {

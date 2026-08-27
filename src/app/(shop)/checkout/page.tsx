@@ -190,6 +190,7 @@ export default function CheckoutPage() {
   };
 
   const placeOrder = async () => {
+    if (confirmingOrder) return;
     if (!selectedAddress) {
       toast.add("Please select a delivery address", "error");
       setAddressMissing(true);
@@ -283,6 +284,21 @@ export default function CheckoutPage() {
   };
 
   const handlePaymentSuccess = (orderId: string) => {
+    useOrderStore.getState().addLocalOrder({
+      id: orderId,
+      items: items.map(i => ({ ...i })),
+      status: "received",
+      total,
+      createdAt: new Date().toISOString(),
+      address: effectiveAddress!,
+      eta: 30,
+      customerName: contactForm.name.trim() || currentUser?.name || "Guest",
+      customerPhone: contactForm.phone.replace(/\D/g, "") || currentUser?.phone || "",
+      customerEmail: contactForm.email.trim() || currentUser?.email || "",
+      paymentMethod: "upi",
+      paymentStatus: "unpaid",
+      deliveryStatus: "pending",
+    });
     setShowPaymentScreen(false);
     setPaymentConfirmed(true);
     clearCart();
@@ -879,14 +895,14 @@ export default function CheckoutPage() {
             if (!selectedAddress) {
               const addr: Address = { id: crypto.randomUUID(), label: addrType === "work" ? "Work" : addrType === "other" ? "Other" : "Home", line1: `${detailForm.building || "N/A"}, ${detailForm.area}`, city: newAddress.city || "Siliguri", pincode: newAddress.pincode || "734001", street: detailForm.street || undefined, area: detailForm.area, landmark: detailForm.landmark, building: detailForm.building || undefined, flat: detailForm.flat || undefined, floor: detailForm.floor || undefined, deliveryInstructions: detailForm.deliveryInstructions || undefined, isDefault: addresses.length === 0, ...(location ? { lat: location.lat, lng: location.lng } : {}) };
               useUserStore.getState().addAddress(addr); setSelectedAddressId(addr.id);
-            } else { saveAddressDetails(); }
-            setEditingAddress(false);
-            if (!location && !(selectedAddress?.lat && selectedAddress?.lng)) {
-              toast.add("Please detect your location to continue. It's required for delivery.", "error");
-              pinRef.current?.scrollIntoView({ behavior: "smooth" });
-              return;
-            }
-            setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
+              setEditingAddress(false);
+              if (!location && !(addr.lat && addr.lng)) {
+                toast.add("Please detect your location to continue. It's required for delivery.", "error");
+                pinRef.current?.scrollIntoView({ behavior: "smooth" });
+                return;
+              }
+              setStep(3); window.scrollTo({ top: 0, behavior: "smooth" });
+            } else { saveAddressDetails(); setEditingAddress(false); setStep(3); window.scrollTo({ top: 0, behavior: "smooth" }); }
           } : handlePlaceOrder} disabled={step !== 3 ? false : (confirmingOrder || !selectedAddress || !requiredDetailsFilled || (!location && !(selectedAddress?.lat && selectedAddress?.lng)))} className="rounded-xl py-3 px-6 text-sm font-bold bg-[#2D7D3A] text-white shadow-lg shadow-[#2D7D3A]/20 hover:bg-[#23682E] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             {confirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : step === 1 ? "Proceed →" : step === 2 ? "Continue →" : selectedPayment === "upi" ? `Pay ₹${total.toLocaleString()}` : "Place Order"}
           </button>
