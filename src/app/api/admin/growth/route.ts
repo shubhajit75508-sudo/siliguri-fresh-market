@@ -135,6 +135,7 @@ export async function GET(req: NextRequest) {
 
   // ================= PROFIT / CATEGORY / ZONE aggregation (delivered only) =================
   const summary = { revenue: 0, cost: 0, profit: 0, deliveryFees: 0, orderCount: 0 };
+  let missingCostItems = 0;
   const dailyMap = new Map<string, { date: string; revenue: number; cost: number; profit: number; orderCount: number }>();
   const categoryAgg = new Map<string, { category: string; orders: number; revenue: number; cost: number; profit: number; qty: number }>();
   const productAgg = new Map<string, { name: string; qty: number; revenue: number; cost: number; profit: number }>();
@@ -162,6 +163,8 @@ export async function GET(req: NextRequest) {
       const basePrice = info ? info.basePrice : Number(prod?.price ?? 0);
       const wps = info?.weightPrices ?? [];
       const bps = info?.buyingPrices ?? [];
+
+      if (!bps.length) missingCostItems += 1;
 
       const sellUnit = priceForWeight(basePrice, selW, wps.length ? wps : undefined);
       const buyUnit = priceForWeight(bps[0]?.price || 0, selW, bps.length ? bps : undefined);
@@ -410,6 +413,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     summary,
     margin,
+    missingCostItems,
     daily: [...dailyMap.values()].sort((a, b) => a.date.localeCompare(b.date)),
     categories,
     topProducts,

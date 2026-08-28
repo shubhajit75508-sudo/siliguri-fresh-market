@@ -14,6 +14,7 @@ interface WeightPrice { weight: string; price: number }
 interface GrowthData {
   summary: { revenue: number; cost: number; profit: number; deliveryFees: number; orderCount: number };
   margin: number;
+  missingCostItems: number;
   daily: { date: string; revenue: number; cost: number; profit: number; orderCount: number }[];
   categories: { category: string; orders: number; revenue: number; cost: number; profit: number; qty: number; margin: number }[];
   topProducts: { name: string; quantity: number; revenue: number; cost: number; profit: number }[];
@@ -311,7 +312,8 @@ export default function AnalyticsPage() {
             </div>
             <div className="mt-6 rounded-lg border border-brand-fresh/20 bg-brand-fresh/5 p-4">
               <h4 className="flex items-center gap-2 text-sm font-bold text-brand-fresh"><Target className="h-4 w-4" /> Profit Formula</h4>
-              <p className="mt-2 text-xs text-muted">Net Profit = (Selling − Buying per weight) × qty + Delivery fee, for delivered orders only. Set buying prices on products for accurate numbers.</p>
+              <p className="mt-2 text-xs text-muted">Net Profit = (Selling − Buying per weight) × qty + Delivery fee, for delivered orders only.
+              {data!.missingCostItems > 0 ? <span className="font-semibold text-amber-600"> ⚠ {data!.missingCostItems} item(s) have no buying price — set cost prices in Admin → Products so profit reflects buying vs selling, not total sales.</span> : " Set buying prices on every product for accurate numbers."}</p>
             </div>
           </div>
         </div>
@@ -558,6 +560,21 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
+
+      {/* Missing buying-price warning */}
+      {data!.missingCostItems > 0 && (
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <div className="shrink-0 rounded-lg bg-amber-500 p-2 text-white"><PackageOpen className="h-4 w-4" /></div>
+          <div className="text-sm">
+            <p className="font-bold text-amber-600">Buying prices missing on some products</p>
+            <p className="mt-0.5 text-amber-700/90">
+              {data!.missingCostItems} order item(s) have no buying (cost) price set, so they're counted with ₹0 cost — making profit look equal to sales.
+              Set the <b>Cost price</b> for each product in <b>Admin → Products</b> (Add/Edit) for accurate profit.
+              Also ensure you've run <code className="rounded bg-white/40 px-1">supabase/profit_analytics_migration.sql</code> in Supabase.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Tab bar */}
       <div className="mt-4 flex flex-wrap gap-2">
