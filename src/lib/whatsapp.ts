@@ -10,7 +10,7 @@ const MERCHANT_PHONES = () =>
     process.env.WHATSAPP_MERCHANT_PHONE_3,
   ].filter((p): p is string => Boolean(p && p.trim()));
 
-async function sendToPhone(instanceId: string, token: string, phone: string, message: string) {
+async function sendToPhone(instanceId: string, token: string, chatId: string, message: string) {
   try {
     const res = await fetch(
       `https://api.green-api.com/waInstance${instanceId}/sendMessage/${token}`,
@@ -18,7 +18,7 @@ async function sendToPhone(instanceId: string, token: string, phone: string, mes
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chatId: `${phone}@c.us`,
+          chatId,
           message,
         }),
       }
@@ -33,8 +33,13 @@ export async function sendWhatsAppAlert(message: string): Promise<void> {
   const instanceId = process.env.GREEN_API_INSTANCE_ID;
   const token = process.env.GREEN_API_TOKEN;
   const phones = MERCHANT_PHONES();
+  const groupId = process.env.WHATSAPP_GROUP_ID;
 
-  if (!instanceId || !token || phones.length === 0) return;
+  const targets = phones
+    .map((p) => `${p}@c.us`)
+    .concat(groupId && groupId.trim() ? [groupId.trim()] : []);
 
-  await Promise.allSettled(phones.map((phone) => sendToPhone(instanceId, token, phone, message)));
+  if (!instanceId || !token || targets.length === 0) return;
+
+  await Promise.allSettled(targets.map((chatId) => sendToPhone(instanceId, token, chatId, message)));
 }
