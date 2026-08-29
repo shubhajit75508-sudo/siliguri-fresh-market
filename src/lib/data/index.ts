@@ -22,16 +22,18 @@ function mergeWithAdmin(products: Product[]): Product[] {
 }
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
-  let products: Product[];
   if (isSupabaseConfigured()) {
-    try { products = await db.fetchProductsByCategory(category); } catch { products = mock.getProductsByCategory(category); }
-  } else {
-    products = mock.getProductsByCategory(category);
+    try {
+      return await db.fetchProductsByCategory(category);
+    } catch {
+      // fall through to mock when DB unavailable
+    }
   }
+  const mockProducts = mock.getProductsByCategory(category);
   const admin = getAdminProducts().filter((p) => p.category === category);
-  if (!admin.length) return products;
-  const productIds = new Set(products.map((p) => p.id));
-  return [...products, ...admin.filter((p) => !productIds.has(p.id))];
+  if (!admin.length) return mockProducts;
+  const productIds = new Set(mockProducts.map((p) => p.id));
+  return [...mockProducts, ...admin.filter((p) => !productIds.has(p.id))];
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -64,6 +66,9 @@ export async function getFlashDeals(): Promise<Product[]> {
     }
   }
 
+  // Only merge local admin flash deals when the DB returned none (offline/fallback).
+  if (isSupabaseConfigured() && products.length > 0) return products;
+
   const admin = getAdminProducts().filter((p) => p.isFlashDeal);
   if (admin.length) {
     const productIds = new Set(products.map((p) => p.id));
@@ -74,16 +79,18 @@ export async function getFlashDeals(): Promise<Product[]> {
 }
 
 export async function getTrendingProducts(): Promise<Product[]> {
-  let products: Product[];
   if (isSupabaseConfigured()) {
-    try { products = await db.fetchTrendingProducts(); } catch { products = mock.getTrendingProducts(); }
-  } else {
-    products = mock.getTrendingProducts();
+    try {
+      return await db.fetchTrendingProducts();
+    } catch {
+      // fall through to mock when DB unavailable
+    }
   }
+  const mockProducts = mock.getTrendingProducts();
   const admin = getAdminProducts().filter((p) => p.isTrending);
-  if (!admin.length) return products;
-  const productIds = new Set(products.map((p) => p.id));
-  return [...products, ...admin.filter((p) => !productIds.has(p.id))];
+  if (!admin.length) return mockProducts;
+  const productIds = new Set(mockProducts.map((p) => p.id));
+  return [...mockProducts, ...admin.filter((p) => !productIds.has(p.id))];
 }
 
 function matchesQuery(p: Product, query: string): boolean {
@@ -101,11 +108,13 @@ function matchesQuery(p: Product, query: string): boolean {
 export async function searchProducts(query: string): Promise<Product[]> {
   if (isSupabaseConfigured()) {
     try {
-      const dbResults = await db.searchProductsByQuery(query);
-      const admin = getAdminProducts().filter((p) => matchesQuery(p, query));
-      const productIds = new Set(dbResults.map((p) => p.id));
-      return [...dbResults, ...admin.filter((p) => !productIds.has(p.id))];
-    } catch {}
+      // DB is the source of truth — admin-added products are persisted to the
+      // products table too, so do NOT merge the local (localStorage) admin store.
+      // Merging it here is what re-surfaced stale/deleted products as "random" results.
+      return await db.searchProductsByQuery(query);
+    } catch {
+      // fall through to mock + admin store only when DB is unavailable
+    }
   }
   const mockResults = mock.searchProducts(query);
   const admin = getAdminProducts().filter((p) => matchesQuery(p, query));
@@ -114,13 +123,14 @@ export async function searchProducts(query: string): Promise<Product[]> {
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  let products: Product[];
   if (isSupabaseConfigured()) {
-    try { products = await db.fetchAllProducts(); } catch { products = mock.products; }
-  } else {
-    products = mock.products;
+    try {
+      // DB is the single source of truth when online; do not merge the
+      // localStorage admin store (stale copies cause undeletable products).
+      return await db.fetchAllProducts();
+    } catch {}
   }
-  return mergeWithAdmin(products);
+  return mergeWithAdmin(mock.products);
 }
 
 export async function getCategories(): Promise<CategoryInfo[]> {
