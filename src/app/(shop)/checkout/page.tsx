@@ -43,7 +43,20 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(2);
   const [couponCode, setCouponCode] = useState("");
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
-  const [contactForm, setContactForm] = useState({ name: currentUser?.name || "", phone: (currentUser?.phone || "").replace(/\D/g, ""), email: currentUser?.email || "" });
+  // Contact info is remembered on this device so a returning customer doesn't
+  // have to retype it. Order of precedence: logged-in user profile > saved prefs.
+  const [contactForm, setContactForm] = useState(() => {
+    let saved: { name?: string; phone?: string; email?: string } = {};
+    try {
+      const raw = window.localStorage.getItem("sfm-checkout-contact");
+      if (raw) saved = JSON.parse(raw) as { name?: string; phone?: string; email?: string };
+    } catch { saved = {}; }
+    return {
+      name: currentUser?.name || saved.name || "",
+      phone: (currentUser?.phone || saved.phone || "").replace(/\D/g, ""),
+      email: currentUser?.email || saved.email || "",
+    };
+  });
   const addressRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
 
@@ -94,6 +107,21 @@ export default function CheckoutPage() {
       setDistance(pinnedDistance);
     }
   }, [pinnedDistance, setDistance]);
+
+  // Remember the phone/email/name typed on this device so it's prefilled next
+  // time — it stays until the customer changes it themselves.
+  useEffect(() => {
+    const name = contactForm.name.trim();
+    const phone = contactForm.phone.replace(/\D/g, "");
+    const email = contactForm.email.trim();
+    if (!name && !phone && !email) {
+      try { window.localStorage.removeItem("sfm-checkout-contact"); } catch {}
+      return;
+    }
+    try {
+      window.localStorage.setItem("sfm-checkout-contact", JSON.stringify({ name, phone, email }));
+    } catch {}
+  }, [contactForm.name, contactForm.phone, contactForm.email]);
 
   // Auto-select saved address on mount and pre-populate form
   useEffect(() => {

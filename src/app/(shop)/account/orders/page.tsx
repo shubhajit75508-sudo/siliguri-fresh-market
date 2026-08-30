@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
 import { ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
@@ -33,15 +34,57 @@ interface OrderSummary {
 export default function OrdersPage() {
   const { orders: allOrders, loaded, loadUserOrders, cancelOrder } = useOrderStore();
   const { clearCart, addItem } = useCartStore();
+  const currentUser = useAuthStore((s) => s.currentUser);
   const [returnOrderId, setReturnOrderId] = useState<string | null>(null);
   const [returnDeliveredAt, setReturnDeliveredAt] = useState<string | undefined>();
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [reordering, setReordering] = useState<string | null>(null);
+  const [guestPhone, setGuestPhone] = useState("");
+  const [guestLoading, setGuestLoading] = useState(false);
+  const [guestOrders, setGuestOrders] = useState<OrderSummary[] | null>(null);
+  const [guestError, setGuestError] = useState<string | null>(null);
   const toast = useToast();
   const router = useRouter();
 
-  useEffect(() => { loadUserOrders(); }, [loadUserOrders]);
+  const isGuest = !currentUser;
+
+  useEffect(() => {
+    if (!isGuest) loadUserOrders();
+  }, [loadUserOrders, isGuest]);
+
+  const findGuestOrders = async () => {
+    const phone = guestPhone.replace(/\D/g, "");
+    if (!/^\d{10}$/.test(phone)) {
+      setGuestError("Enter a valid 10-digit mobile number");
+      setGuestOrders(null);
+      return;
+    }
+    setGuestLoading(true);
+    setGuestError(null);
+    try {
+      const res = await fetch(`/api/orders?phone=${encodeURIComponent(phone)}`);
+      if (!res.ok) throw new Error("Failed to load orders");
+      const json = await res.json();
+      const list: Record<string, unknown>[] = json.orders ?? [];
+      if (list.length === 0) {
+        setGuestOrders([]);
+        return;
+      }
+      setGuestOrders(list.map((r) => ({
+        id: r.id as string,
+        date: new Date((r.created_at as string) || Date.now()).toLocaleDateString(),
+        total: Number(r.total) || 0,
+        items: (Array.isArray(r.items) ? r.items : []).length,
+        status: String(r.status ?? "received").replace(/_/g, " "),
+        deliveredAt: r.status === "delivered" ? (r.created_at as string) : undefined,
+      })));
+    } catch {
+      setGuestError("Couldn't load orders. Please try again.");
+    } finally {
+      setGuestLoading(false);
+    }
+  };
 
   const orders: OrderSummary[] = allOrders
     .map((o) => ({
@@ -90,7 +133,7 @@ export default function OrdersPage() {
     }
   };
 
-  if (!loaded) {
+  if (!isGuest && !loaded) {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-6 w-6 animate-spin text-muted-light" />
@@ -98,13 +141,92 @@ export default function OrdersPage() {
     );
   }
 
+  const itemsForGuest: OrderSummary[] = guestOrders ?? [];
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold">Your Orders</h2>
         <PushToggle />
       </div>
-      {orders.length === 0 ? (
+      {isGuest ? (
+        <div>
+          <div className="rounded-2xl border border-border/40 bg-white/5 p-4">
+            <p className="text-sm text-muted">
+              You&apos;re not signed in. Enter the mobile number you used at checkout to view your orders.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <div className="flex flex-1 rounded-xl border border-border bg-white text-sm text-foreground outline-none focus-within:border-[#2D7D3A]/50">
+                <span className="flex items-center rounded-l-xl bg-[#2D7D3A]/5 px-3 text-xs font-bold text-[#2D7D3A]">+91</span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  value={guestPhone}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, "");
+                    setGuestPhone(digits.slice(0, 10));
+                    setGuestOrders(null);
+                    setGuestError(null);
+                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") findGuestOrders(); }}
+                  placeholder="98765 43210"
+                  className="flex-1 rounded-r-xl bg-transparent px-3.5 py-2.5 outline-none"
+                />
+              </div>
+              <Button
+                variant="fresh"
+                onClick={findGuestOrders}
+                disabled={guestLoading}
+                className="px-4 text-sm"
+              >
+                {guestLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Find"}
+              </Button>
+            </div>
+            {guestError && <p className="mt-2 text-xs text-brand-red">{guestError}</p>}
+          </div>
+
+          {guestOrders !== null && guestOrders.length === 0 && (
+            <div className="flex flex-col items-center py-10 text-center">
+              <ShoppingBag className="mb-3 h-10 w-10 text-muted" />
+              <p className="text-sm text-muted">No orders found for this number</p>
+              <Link href="/">
+                <Button variant="fresh" className="mt-4">Start Shopping</Button>
+              </Link>
+            </div>
+          )}
+
+          {itemsForGuest.length > 0 && (
+            <div className="mt-3 space-y-3">
+              {itemsForGuest.map((order) => (
+                <div
+                  key={order.id}
+                  className="glass-card rounded-2xl p-4 transition-all hover:shadow-lg"
+                >
+                  <Link href={`/track/${order.id}`} className="flex items-center gap-4">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${order.status === "cancelled" ? "bg-brand-red/10" : "bg-brand-fresh/10"}`}>
+                      {order.status === "cancelled" ? (
+                        <XCircle className="h-5 w-5 text-brand-red" />
+                      ) : (
+                        <Package className="h-5 w-5 text-brand-fresh" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold">{order.id}</p>
+                      <p className="text-xs text-muted">{order.date} · {order.items} items</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold">{formatPrice(order.total)}</p>
+                      <Badge variant={statusBadge[order.status] ?? "default"} className="mt-1">
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : orders.length === 0 ? (
         <div className="flex flex-col items-center py-12 text-center">
           <ShoppingBag className="mb-3 h-10 w-10 text-muted" />
           <p className="text-sm text-muted">No orders yet</p>

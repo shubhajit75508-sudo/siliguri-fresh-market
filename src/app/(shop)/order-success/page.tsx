@@ -102,6 +102,15 @@ function OrderSuccessContent() {
               7029908278
             </a>
           </p>
+
+          {orderId && (
+            <Link
+              href="/account/orders"
+              className="mt-2 text-xs text-muted underline-offset-2 hover:underline"
+            >
+              View your orders later with your phone number
+            </Link>
+          )}
         </div>
       </FadeIn>
     </div>

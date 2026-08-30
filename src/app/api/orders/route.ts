@@ -278,17 +278,43 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const supabaseAdmin = getAdmin();
+  if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
+
   // Verify session — return empty if not authenticated (no PII leak)
   const payload = await getSession(req);
   if (!payload) {
-    return NextResponse.json({ orders: [] });
+    // Guest lookup: allow a customer to find their own orders by the mobile
+    // number they entered at checkout (no account/session required).
+    const phoneParam = new URL(req.url).searchParams.get("phone") ?? "";
+    const phone = phoneParam.replace(/\D/g, "");
+    if (!/^\d{10}$/.test(phone)) {
+      return NextResponse.json({ orders: [] });
+    }
+    const { data: phoneOrders, error } = await supabaseAdmin
+      .from("orders")
+      .select("*")
+      .eq("customer_phone", phone)
+      .order("created_at", { ascending: false });
+    if (error) return NextResponse.json({ error: "Failed to load orders" }, { status: 500 });
+
+    // Redact PII + the delivery code — a phone-only lookup shouldn't expose the
+    // delivery verification code, name, or address.
+    const redacted = (phoneOrders ?? []).map((o) => {
+      const r: Record<string, unknown> = { ...o };
+      delete r.user_id;
+      delete r.customer_name;
+      delete r.customer_phone;
+      delete r.customer_email;
+      delete r.address_snapshot;
+      delete r.delivery_code;
+      return r;
+    });
+    return NextResponse.json({ orders: redacted });
   }
 
   const userId = getUserId(payload);
   if (!userId) return NextResponse.json({ orders: [] });
-
-  const supabaseAdmin = getAdmin();
-  if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 500 });
 
   let email: string | null = null;
 
