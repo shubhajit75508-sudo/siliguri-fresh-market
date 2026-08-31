@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
-import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock, Sparkles } from "lucide-react";
+import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock, Sparkles, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
 import { formatPrice, getWeightMultiplier } from "@/lib/utils";
@@ -34,6 +34,7 @@ export function CartDrawer() {
   const minOrderShortfall = minOrder > 0 && subtotal < minOrder ? minOrder - subtotal : 0;
 
   const [storeStatus, setStoreStatus] = useState(getStoreStatus);
+  const [weightNoticeDismissed, setWeightNoticeDismissed] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => setStoreStatus(getStoreStatus()), 60_000);
@@ -162,6 +163,24 @@ export function CartDrawer() {
                         </p>
                       </div>
                     </motion.div>
+                  )}
+                  {!weightNoticeDismissed && (
+                    <div className="flex items-start gap-2 rounded-xl border border-amber-300/60 bg-amber-50 px-3 py-2.5">
+                      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
+                      <p className="flex-1 text-[11px] leading-snug text-amber-800">
+                        Fresh items are priced by live/whole weight — final weight after cleaning/trimming is 5–15% less.
+                        <Link href="/policies/weight-pricing" onClick={closeCart} className="font-bold text-amber-700 underline-offset-2 hover:underline">
+                          &nbsp;Weight &amp; Pricing Policy
+                        </Link>
+                      </p>
+                      <button
+                        onClick={() => setWeightNoticeDismissed(true)}
+                        aria-label="Dismiss notice"
+                        className="shrink-0 rounded-full p-0.5 text-amber-400 transition-colors hover:text-amber-700"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   )}
                   {items.map((item) => {
                     const lineKey = cartLineKey(item);
