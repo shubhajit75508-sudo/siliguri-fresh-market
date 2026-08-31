@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { Search } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
+import { CategoriesSection } from "@/components/home/categories-section";
 import { FadeIn } from "@/components/animations/motion-wrapper";
 import { useSearchProducts, useTrendingProducts, useProducts } from "@/lib/hooks/use-products";
 import { fbq } from "@/components/analytics/meta-pixel";
@@ -48,6 +49,12 @@ function SearchResults() {
           </p>
         )}
       </FadeIn>
+
+      {!query && (
+        <div className="mt-2">
+          <CategoriesSection />
+        </div>
+      )}
 
       {browseProducts.length > 0 ? (
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
