@@ -3,6 +3,15 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Cancellation Policy",
   description: "How and when you can cancel an order placed on Siliguri Fresh Mart.",
+  alternates: { canonical: "https://www.siligurifreshmart.com/policies/cancellation" },
+  openGraph: {
+    title: "Cancellation Policy | Siliguri Fresh Mart",
+    description: "How and when you can cancel an order placed on Siliguri Fresh Mart.",
+    url: "https://www.siligurifreshmart.com/policies/cancellation",
+    siteName: "Siliguri Fresh Mart",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 const lastUpdated = "June 30, 2026";

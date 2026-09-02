@@ -3,6 +3,15 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms & Conditions",
   description: "Terms and conditions governing the use of Siliguri Fresh Mart services.",
+  alternates: { canonical: "https://www.siligurifreshmart.com/policies/terms" },
+  openGraph: {
+    title: "Terms & Conditions | Siliguri Fresh Mart",
+    description: "Terms and conditions governing the use of Siliguri Fresh Mart services.",
+    url: "https://www.siligurifreshmart.com/policies/terms",
+    siteName: "Siliguri Fresh Mart",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 const lastUpdated = "June 30, 2026";

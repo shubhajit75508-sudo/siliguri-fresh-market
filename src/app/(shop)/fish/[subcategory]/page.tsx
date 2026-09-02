@@ -85,56 +85,6 @@ export default async function FishSubcategoryPage({ params }: Props) {
         }}
       />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "GroceryStore",
-            "@id": "https://www.siligurifreshmart.com#localbusiness",
-            name: "Siliguri Fresh Mart",
-            description: `Order ${seo.heroHeading.split("—")[0].trim()} online in Siliguri. Fresh, cleaned, and delivered to your doorstep.`,
-            image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
-            telephone: "+91 7029908278",
-            email: "siligurifreshmart@gmail.com",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "Laketown, Gate Bazar",
-              addressLocality: "Siliguri",
-              addressRegion: "West Bengal",
-              postalCode: "734001",
-              addressCountry: "IN",
-            },
-            geo: {
-              "@type": "GeoCoordinates",
-              latitude: 26.692472,
-              longitude: 88.422583,
-            },
-            url: "https://www.siligurifreshmart.com",
-            areaServed: [
-              {
-                "@type": "City",
-                name: "Siliguri",
-                containedInPlace: {
-                  "@type": "State",
-                  name: "West Bengal",
-                },
-              },
-            ],
-            priceRange: "₹50-₹500",
-            paymentAccepted: "Cash, UPI (Google Pay, PhonePe, Paytm)",
-            openingHoursSpecification: [
-              {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-                opens: "07:00",
-                closes: "15:00",
-              },
-            ],
-          }),
-        }}
-      />
-
       <FishSubcatClient slug={slug} />
     </>
   );

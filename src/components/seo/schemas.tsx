@@ -94,18 +94,6 @@ export function LocalBusinessSchema() {
             { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.692472, longitude: 88.422583 } },
           ],
           hasMenu: "https://www.siligurifreshmart.com/category/fish",
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: 4.8,
-            reviewCount: 247,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          review: [
-            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Priya S." }, reviewBody: "Khubsurat freshness, darun quality!" },
-            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Rahul M." }, reviewBody: "Fatafati packing, on time. Valo!" },
-            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Vikram C." }, reviewBody: "Ekdom fresh. Best in Siliguri!" },
-          ],
           sameAs: [],
         }),
       }}
@@ -150,16 +138,16 @@ export function ProductSchema({ product }: { product: { name: string; descriptio
               returnMethod: "https://schema.org/ReturnByMail",
             },
           },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: product.rating,
-            reviewCount: product.reviewCount,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          review: [
-            { "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: 5 }, author: { "@type": "Person", name: "Verified Customer" }, reviewBody: `Fresh ${product.name}, delivered on time. Great quality!`, datePublished: "2026-07-15" },
-          ],
+          aggregateRating:
+            product.rating > 0 && product.reviewCount > 0
+              ? {
+                  "@type": "AggregateRating",
+                  ratingValue: product.rating,
+                  reviewCount: product.reviewCount,
+                  bestRating: 5,
+                  worstRating: 1,
+                }
+              : undefined,
         }),
       }}
     />

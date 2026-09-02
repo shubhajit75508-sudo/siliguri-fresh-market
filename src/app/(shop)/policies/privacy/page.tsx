@@ -3,6 +3,15 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Learn how Siliguri Fresh Mart collects, uses, and protects your personal information.",
+  alternates: { canonical: "https://www.siligurifreshmart.com/policies/privacy" },
+  openGraph: {
+    title: "Privacy Policy | Siliguri Fresh Mart",
+    description: "Learn how Siliguri Fresh Mart collects, uses, and protects your personal information.",
+    url: "https://www.siligurifreshmart.com/policies/privacy",
+    siteName: "Siliguri Fresh Mart",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 const lastUpdated = "June 30, 2026";

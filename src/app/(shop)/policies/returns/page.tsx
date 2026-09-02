@@ -3,6 +3,15 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Return & Replacement Policy",
   description: "Siliguri Fresh Mart return policy — 2:59 hour replacement window for damaged, spoiled, or missing items.",
+  alternates: { canonical: "https://www.siligurifreshmart.com/policies/returns" },
+  openGraph: {
+    title: "Return & Replacement Policy | Siliguri Fresh Mart",
+    description: "Siliguri Fresh Mart return policy — 2:59 hour replacement window for damaged, spoiled, or missing items.",
+    url: "https://www.siligurifreshmart.com/policies/returns",
+    siteName: "Siliguri Fresh Mart",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 const lastUpdated = "June 30, 2026";

@@ -24,7 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: "https://www.siligurifreshmart.com/category/" + slug,
     },
-    openGraph: { title, description, url: "https://www.siligurifreshmart.com/category/" + slug },
+    openGraph: {
+      title, description, url: "https://www.siligurifreshmart.com/category/" + slug,
+      siteName: "Siliguri Fresh Mart",
+      type: "website",
+      locale: "en_IN",
+    },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

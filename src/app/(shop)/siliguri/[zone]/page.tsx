@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DELIVERY_ZONES, getZoneBySlug } from "@/lib/zones";
-import { LocalBusinessSchema, BreadcrumbSchema } from "@/components/seo/schemas";
+import { BreadcrumbSchema } from "@/components/seo/schemas";
 import { ZonePageClient } from "./client";
 
 interface Props {
@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
       locale: "en_IN",
     },
+    twitter: { card: "summary_large_image", title: zone.metaTitle, description: zone.metaDescription },
   };
 }
 
@@ -39,7 +40,6 @@ export default async function ZonePage({ params }: Props) {
 
   return (
     <>
-      <LocalBusinessSchema />
       <BreadcrumbSchema
         items={[
           { name: "Home", url: "/" },

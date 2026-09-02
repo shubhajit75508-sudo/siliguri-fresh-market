@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     title: "Shipping & Delivery Policy | Siliguri Fresh Mart",
     description:
       "Learn how Siliguri Fresh Mart delivers across 20 km from NJP Gate Bazar: two daily delivery slots, distance-based fees, and mandatory GPS location.",
-    url: "https://siliguri-freshmart.com/policies/shipping",
+    url: "https://www.siligurifreshmart.com/policies/shipping",
     siteName: "Siliguri Fresh Mart",
   },
-  alternates: { canonical: "https://siliguri-freshmart.com/policies/shipping" },
+  alternates: { canonical: "https://www.siligurifreshmart.com/policies/shipping" },
 };
 
 const faqSchema = {

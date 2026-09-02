@@ -3,6 +3,15 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Reviews & Ratings",
   description: "How Siliguri Fresh Mart collects and verifies customer reviews and ratings at delivery.",
+  alternates: { canonical: "https://www.siligurifreshmart.com/policies/reviews" },
+  openGraph: {
+    title: "Reviews & Ratings | Siliguri Fresh Mart",
+    description: "How Siliguri Fresh Mart collects and verifies customer reviews and ratings at delivery.",
+    url: "https://www.siligurifreshmart.com/policies/reviews",
+    siteName: "Siliguri Fresh Mart",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 const lastUpdated = "June 30, 2026";

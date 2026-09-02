@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Siliguri Fresh Mart — Fresh Fish, Chicken, Mutton Delivered",
     description: "Premium fresh fish, chicken, mutton, vegetables & groceries delivered in Siliguri.",
-    url: "https://www.siligurifreshmart.com/landingpage",
+    url: "https://www.siligurifreshmart.com",
     type: "website",
   },
-  alternates: { canonical: "https://www.siligurifreshmart.com/landingpage" },
+  alternates: { canonical: "https://www.siligurifreshmart.com" },
 };
 
 export default function LandingPage() {
