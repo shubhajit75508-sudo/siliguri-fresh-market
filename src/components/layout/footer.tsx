@@ -49,7 +49,7 @@ export function Footer() {
               <p>⏰ Open daily 7:00 AM – 3:00 PM</p>
             </div>
             <div className="mt-3 text-[11px] text-muted leading-relaxed">
-              <p>🚚 Within 1 km: 10–20 min · Within 4 km: 20–30 min · Within 8 km: 45–60 min</p>
+              <p>🚚 Within 4 km: 45–60 min · 4–8 km: 1–1.5 hrs · 8–15 km: 2–3 hrs</p>
               <p>🚚 8–15 km: 1.5–2 hrs · 15–20 km: 2–3 hrs</p>
             </div>
             <div className="mt-4 flex flex-wrap gap-1.5">

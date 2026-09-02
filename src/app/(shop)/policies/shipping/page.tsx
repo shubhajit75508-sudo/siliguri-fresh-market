@@ -165,11 +165,10 @@ export default function ShippingPolicyPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    <tr><td className="px-5 py-3 text-sm font-medium">Within 1 km</td><td className="px-5 py-3 text-sm">10–20 min</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">1–4 km</td><td className="px-5 py-3 text-sm">20–30 min</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">4–8 km</td><td className="px-5 py-3 text-sm">45–60 min</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free (see notes)</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">8–15 km</td><td className="px-5 py-3 text-sm">1.5–2 hrs</td><td className="px-5 py-3 text-sm">₹1,499</td><td className="px-5 py-3 text-sm">₹79 (free at ₹1,499+)</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">15–20 km</td><td className="px-5 py-3 text-sm">2–3 hrs</td><td className="px-5 py-3 text-sm">₹1,999</td><td className="px-5 py-3 text-sm">₹99 (free at ₹1,999+)</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">Within 4 km</td><td className="px-5 py-3 text-sm">45–60 min</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">4–8 km</td><td className="px-5 py-3 text-sm">1–1.5 hrs</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">8–15 km</td><td className="px-5 py-3 text-sm">2–3 hrs</td><td className="px-5 py-3 text-sm">₹1,499</td><td className="px-5 py-3 text-sm">₹79 (free at ₹1,499+)</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">15–20 km</td><td className="px-5 py-3 text-sm">3–4 hrs</td><td className="px-5 py-3 text-sm">₹1,999</td><td className="px-5 py-3 text-sm">₹99 (free at ₹1,999+)</td></tr>
                   </tbody>
                 </table>
               </div>

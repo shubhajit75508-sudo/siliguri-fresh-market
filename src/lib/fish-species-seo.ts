@@ -24,7 +24,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     subcategory: "river",
     title: "Buy Fresh Rohu Fish Online in Siliguri | Price & Home Delivery",
     description:
-      "Order fresh Rohu fish online in Siliguri. Farm-fresh from Teesta & Mahananda rivers. Cut & cleaned to order. Free delivery in 30 min. Rs.320/kg.",
+      "Order fresh Rohu fish online in Siliguri. Farm-fresh from Teesta & Mahananda rivers. Cut & cleaned to order. Free delivery. Rs.320/kg.",
     keywords: [
       "rohu fish Siliguri",
       "buy rohu fish online",
@@ -36,7 +36,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
       "river rohu fresh",
     ],
     heroHeading: "Fresh Rohu Fish — Teesta & Mahananda River Catch",
-    heroSub: "Firm, mild-flavoured river rohu — cleaned, cut into steaks or fillets, and delivered to your Siliguri home in 30 minutes.",
+    heroSub: "Firm, mild-flavoured river rohu — cleaned, cut into steaks or fillets, and delivered fresh to your Siliguri home.",
     content:
       "Rohu (Labeo rohita) is the most popular freshwater fish in Bengal, known for its firm, white flesh and mild sweet flavour. Our Rohu is sourced daily from the Teesta and Mahananda rivers near Siliguri — it was swimming just hours before delivery. Perfect for Bengali-style jhol (light curry), fried steaks, or macher jhal. Each fish is inspected for freshness: clear eyes, bright red gills, and firm flesh. We clean, gut, and cut it exactly as you prefer.",
     nutrition: [
@@ -59,7 +59,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     subcategory: "river",
     title: "Buy Fresh Katla Fish Online in Siliguri | Premium River Fish Delivery",
     description:
-      "Order fresh Katla fish online in Siliguri. Premium river fish from Mahananda river. Cut to order. Free delivery in 30 min. Rs.450/kg.",
+      "Order fresh Katla fish online in Siliguri. Premium river fish from Mahananda river. Cut to order. Free delivery. Rs.450/kg.",
     keywords: [
       "katla fish Siliguri",
       "buy katla fish online",
@@ -93,7 +93,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     subcategory: "hilsa",
     title: "Buy Fresh Hilsa (Ilish) Fish Online in Siliguri | Authentic Bengali Hilsa",
     description:
-      "Order fresh Hilsa (Ilish) fish online in Siliguri. Authentic Bangladeshi & Bengali Hilsa. Limited stock. Cleaned & delivered in 30 min. Rs.1,200/kg.",
+      "Order fresh Hilsa (Ilish) fish online in Siliguri. Authentic Bangladeshi & Bengali Hilsa. Limited stock. Cleaned & delivered to your doorstep. Rs.1,200/kg.",
     keywords: [
       "hilsa fish Siliguri",
       "ilish fish online",
@@ -128,7 +128,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     subcategory: "river",
     title: "Buy Fresh Bhetki (Barramundi) Fish Online in Siliguri | Home Delivery",
     description:
-      "Order fresh Bhetki (Barramundi) fish online in Siliguri. Firm white-fleshed fish, perfect for frying. Free delivery in 30 min.",
+      "Order fresh Bhetki (Barramundi) fish online in Siliguri. Firm white-fleshed fish, perfect for frying. Free delivery.",
     keywords: [
       "bhetki fish Siliguri",
       "barramundi fish online",
@@ -150,7 +150,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Bengali Fish Fry", "Fish Fingers", "Grilled Fillets", "Light Curry"],
     faq: [
-      { question: "What is bhetki fish and where to buy in Siliguri?", answer: "Bhetki is Barramundi — a firm, white-fleshed fish popular in Bengali cuisine. You can order fresh Bhetki at Siliguri Fresh Mart. We deliver cleaned, filleted, or whole bhetki across Siliguri within 30 minutes." },
+      { question: "What is bhetki fish and where to buy in Siliguri?", answer: "Bhetki is Barramundi — a firm, white-fleshed fish popular in Bengali cuisine. You can order fresh Bhetki at Siliguri Fresh Mart. We deliver cleaned, filleted, or whole bhetki across Siliguri to your doorstep." },
       { question: "Is bhetki good for fish fry?", answer: "Bhetki is THE best fish for Bengali-style fish fry. Its firm, boneless fillets hold their shape during frying and develop a beautiful golden crust. Marinate in ginger-garlic paste, coat in breadcrumbs, and deep fry for the classic taste." },
     ],
   },
@@ -194,7 +194,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     subcategory: "prawns",
     title: "Buy Fresh Tiger Prawns Online in Siliguri | Premium Prawns Delivery",
     description:
-      "Order fresh Tiger Prawns online in Siliguri. Large, sweet, and clean. Deveined to order. Free delivery in 30 min. Rs.450/kg.",
+      "Order fresh Tiger Prawns online in Siliguri. Large, sweet, and clean. Deveined to order. Free delivery. Rs.450/kg.",
     keywords: [
       "tiger prawns Siliguri",
       "prawns online order",
@@ -260,7 +260,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     subcategory: "river",
     title: "Buy Fresh Pabda (Butterfish) Online in Siliguri | Delicate River Fish",
     description:
-      "Order fresh Pabda (Butterfish) online in Siliguri. Delicate, boneless-friendly river fish. Limited stock. Free delivery in 30 min.",
+      "Order fresh Pabda (Butterfish) online in Siliguri. Delicate, boneless-friendly river fish. Limited stock. Free delivery.",
     keywords: [
       "pabda fish Siliguri",
       "butterfish online",

@@ -68,7 +68,7 @@ export default function AboutPage() {
         <p className="mt-4 text-[15px] text-muted leading-relaxed">
           Siliguri Fresh Mart is a direct-to-consumer fresh delivery service in Siliguri, West Bengal.
           Unlike marketplace listings or aggregator apps, we source fish, chicken and mutton ourselves from
-          Siliguri&apos;s morning markets every day and deliver directly to your doorstep within 30 minutes —
+          Siliguri&apos;s morning markets every day and deliver directly to your doorstep —
           no middlemen, no warehouses, no frozen storage.
         </p>
       </div>
@@ -102,7 +102,7 @@ export default function AboutPage() {
           Together, Shubhajit and Rahul built Siliguri Fresh Mart because we saw families struggling
           with inconsistent quality and the hassle of daily market runs. We wanted to build something
           different — a hyperlocal delivery service that sources directly from the same morning markets
-          we grew up visiting, delivering within 30 minutes because this is home, and our neighbours deserve the best.
+          we grew up visiting, delivering fresh to your doorstep because this is home, and our neighbours deserve the best.
         </p>
       </section>
 
@@ -137,7 +137,7 @@ export default function AboutPage() {
           {[
             { value: "5,000+", label: "Orders Delivered" },
             { value: "4.8", label: "Average Rating" },
-            { value: "30 min", label: "Average Delivery" },
+            { value: "45 min", label: "Avg. Delivery (within 4 km)" },
             { value: "8+", label: "Areas Served" },
           ].map((stat) => (
             <div key={stat.label} className="rounded-2xl border border-border bg-surface p-4 text-center">

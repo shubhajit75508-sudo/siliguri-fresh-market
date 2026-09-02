@@ -8,7 +8,7 @@ import { useAdminStore } from "@/store/admin-store";
 const timeline = [
   { label: "Harvested", time: "Today, 5:12 AM", done: true },
   { label: "Packed", time: "Today, 7:40 AM", done: true },
-  { label: "Arriving", time: "~30 min", active: true },
+  { label: "Arriving", time: "~45 min", active: true },
 ];
 
 export function HeroSection() {
@@ -16,7 +16,7 @@ export function HeroSection() {
   const raw = settings?.hero;
   const hero = {
     image: raw?.image || "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782317544/file_0000000086c471fd894712adc4d3fa68_vadejf.png",
-    title: raw?.title || "Fresh Fish, Chicken,\ndelivered in minutes.",
+    title: raw?.title || "Fresh Fish, Chicken,\ndelivered fresh to your door.",
     subtitle: raw?.subtitle || "From the morning market to your kitchen.",
   };
 

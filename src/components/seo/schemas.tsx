@@ -8,7 +8,7 @@ export function WebSiteSchema() {
           "@type": "WebSite",
           name: "Siliguri Fresh Mart",
           url: "https://www.siligurifreshmart.com",
-          description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri in 10-30 minutes.",
+          description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri.",
           potentialAction: {
             "@type": "SearchAction",
             target: {

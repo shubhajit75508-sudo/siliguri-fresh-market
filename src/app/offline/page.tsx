@@ -21,7 +21,7 @@ export default function OfflinePage() {
         >
           Try Again
         </Link>
-        <p className="mt-8 text-[12px] text-muted-light">Siliguri Fresh Mart — Fresh market delivered in minutes</p>
+        <p className="mt-8 text-[12px] text-muted-light">Siliguri Fresh Mart — Fresh market delivered to your doorstep</p>
       </div>
     </div>
   );

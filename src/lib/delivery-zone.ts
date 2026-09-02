@@ -16,11 +16,10 @@ export interface DeliveryTier {
 }
 
 export const DELIVERY_TIERS: DeliveryTier[] = [
-  { maxKm: 1, eta: "10-20 min", minOrder: 0, deliveryFee: 0, label: "Within 1 km" },
-  { maxKm: 4, eta: "20-30 min", minOrder: 0, deliveryFee: 0, label: "Within 4 km" },
-  { maxKm: 8, eta: "45-60 min", minOrder: 0, deliveryFee: 0, label: "Within 8 km" },
-  { maxKm: 15, eta: "1.5-2 hrs", minOrder: 1499, deliveryFee: 79, label: "8-15 km" },
-  { maxKm: 20, eta: "2-3 hrs", minOrder: 1999, deliveryFee: 99, label: "15-20 km" },
+  { maxKm: 4, eta: "45-60 min", minOrder: 0, deliveryFee: 0, label: "Within 4 km" },
+  { maxKm: 8, eta: "1-1.5 hrs", minOrder: 0, deliveryFee: 0, label: "4-8 km" },
+  { maxKm: 15, eta: "2-3 hrs", minOrder: 1499, deliveryFee: 79, label: "8-15 km" },
+  { maxKm: 20, eta: "3-4 hrs", minOrder: 1999, deliveryFee: 99, label: "15-20 km" },
 ];
 
 export interface DeliverySlot {

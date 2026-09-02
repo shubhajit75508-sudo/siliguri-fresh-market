@@ -217,7 +217,7 @@ export const useOrderStore = create<OrderState>()(
         createOrder: async (data) => {
           const id = data.id ?? "SFM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
           const createdAt = new Date().toISOString();
-          const eta = 30 + Math.floor(Math.random() * 31);
+          const eta = 60 + Math.floor(Math.random() * 31);
           // The delivery code is generated server-side only — the client sends none.
 
           if (isSupabaseConfigured()) {

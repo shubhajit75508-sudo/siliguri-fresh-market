@@ -22,7 +22,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "river",
     title: "Buy Fresh River Fish Online in Siliguri | Rohu, Katla, Mrigel | Home Delivery",
     description:
-      "Order fresh river fish online in Siliguri. Rohu, Katla, Mrigel, Bhetki from Teesta & Mahananda rivers. Cut & cleaned to order. Free delivery in 30 minutes. Siliguri Fresh Mart.",
+      "Order fresh river fish online in Siliguri. Rohu, Katla, Mrigel, Bhetki from Teesta & Mahananda rivers. Cut & cleaned to order. Free deliveryutes. Siliguri Fresh Mart.",
     keywords: [
       "fresh river fish Siliguri",
       "rohu fish delivery Siliguri",
@@ -40,11 +40,11 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     contentHeading: "Why Order River Fish from Siliguri Fresh Mart?",
     content:
       "Siliguri sits at the confluence of the Teesta and Mahananda rivers — two of North Bengal's most productive freshwater fisheries. Every morning, our team picks up the day's catch directly from riverbank markets in Jalpaiguri and Siliguri. No middlemen, no cold storage, no freezing. The fish you receive was swimming just hours ago. We clean, gut, and cut each fish exactly the way you want — into steaks, fillets, or curry pieces.",
-    deliveryInfo: "Same-day delivery across Siliguri. Fish arrives within 30 minutes of your order. Cut & cleaning instructions noted at checkout.",
+    deliveryInfo: "Same-day delivery across Siliguri. Fish arrives withfresh to your doorstep. Cut & cleaning instructions noted at checkout.",
     relatedFish: ["Bhetki (Barramundi)", "Pabda (Butterfish)", "Aair (Catfish)", "Chingri (Prawns)"],
     faq: [
       { question: "What is the price of rohu fish in Siliguri?", answer: "Rohu fish at Siliguri Fresh Mart starts from Rs.320 per kg. Prices may vary based on daily market rates and freshness. We source directly from Teesta and Mahananda river markets, so you get the freshest catch at wholesale prices." },
-      { question: "Is river fish fresh or frozen at Siliguri Fresh Mart?", answer: "All our river fish is 100% fresh — never frozen. We pick up the day's catch every morning from local riverbank markets and deliver within 30 minutes of your order. The fish was swimming just hours before it reaches your kitchen." },
+      { question: "Is river fish fresh or frozen at Siliguri Fresh Mart?", answer: "All our river fish is 100% fresh — never frozen. We pick up the day's catch every morning from local riverbank markets and deliver withfresh to your doorstep. The fish was swimming just hours before it reaches your kitchen." },
       { question: "How to order katla fish online in Siliguri?", answer: "Simply visit siligurifreshmart.com, go to the Fish section, select Katla, choose your preferred weight (500g, 1kg, or 1.5kg), select cut and cleaning preferences, and place your order. We accept COD and UPI payments." },
       { question: "Which river fish is best for curry in Siliguri?", answer: "Rohu and Katla are the most popular river fish for Bengali-style curries in Siliguri. Rohu has a mild, sweet flavour that absorbs curry spices well. Katla has a richer, oilier flesh that holds up beautifully in slow-cooked jhol. Both are available fresh daily at Siliguri Fresh Mart." },
       { question: "Do you deliver river fish to Bagdogra and Matigara?", answer: "Yes, we deliver fresh river fish across all of Siliguri including Bagdogra, Matigara, Hakimpara, Pradhan Nagar, Shantipara, Bhaktinagar, Champasari, and Sukna. Delivery is free on orders above Rs.299." },
@@ -54,7 +54,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "sea",
     title: "Buy Fresh Sea Fish Online in Siliguri | Pomfret, Bombay Duck, Sole | Delivery",
     description:
-      "Order fresh sea fish online in Siliguri. Pomfret, Bombay Duck, Sole, Surmai & more. Sourced from Digha & Mandarbani markets. Free delivery in 30 min.",
+      "Order fresh sea fish online in Siliguri. Pomfret, Bombay Duck, Sole, Surmai & more. Sourced from Digha & Mandarbani markets. Free delivery.",
     keywords: [
       "sea fish delivery Siliguri",
       "pomfret fish online Siliguri",
@@ -84,7 +84,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "hilsa",
     title: "Buy Fresh Hilsa Fish Online in Siliguri | Ilish | Home Delivery",
     description:
-      "Order fresh Hilsa (Ilish) fish online in Siliguri. Authentic Bangladeshi & Bengali Hilsa. Cleaned & delivered in 30 min. Limited stock daily.",
+      "Order fresh Hilsa (Ilish) fish online in Siliguri. Authentic Bangladeshi & Bengali Hilsa. Cleaned & delivered to your doorstep. Limited stock daily.",
     keywords: [
       "hilsa fish Siliguri",
       "ilish fish delivery",
@@ -114,7 +114,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "prawns",
     title: "Buy Fresh Prawns Online in Siliguri | Tiger Prawns, Golda, Chingri | Delivery",
     description:
-      "Order fresh prawns online in Siliguri. Tiger prawns, Golda chingri, small prawns & more. Deveined & cleaned. Free delivery in 30 min.",
+      "Order fresh prawns online in Siliguri. Tiger prawns, Golda chingri, small prawns & more. Deveined & cleaned. Free delivery.",
     keywords: [
       "prawns delivery Siliguri",
       "tiger prawns online Siliguri",
@@ -143,7 +143,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "small",
     title: "Buy Fresh Small Fish Online in Siliguri | Boroli, Puthi, Kachki | Delivery",
     description:
-      "Order fresh small fish online in Siliguri. Boroli, Puthi, Kachki, Tangra & more. Whole or cleaned. Free delivery in 30 min.",
+      "Order fresh small fish online in Siliguri. Boroli, Puthi, Kachki, Tangra & more. Whole or cleaned. Free delivery.",
     keywords: [
       "small fish delivery Siliguri",
       "boroli fish online",
@@ -171,7 +171,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "exotic",
     title: "Buy Exotic Fish Online in Siliguri | Salmon, Trout, Basa | Home Delivery",
     description:
-      "Order exotic and premium fish online in Siliguri. Salmon, Trout, Basa, Swordfish & more. Delivered fresh in 30 min.",
+      "Order exotic and premium fish online in Siliguri. Salmon, Trout, Basa, Swordfish & more. Delivered fresh to your door.",
     keywords: [
       "exotic fish Siliguri",
       "salmon fish online Siliguri",
@@ -199,7 +199,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     value: "other",
     title: "Buy Fresh Fish Online in Siliguri | Mixed Variety | Home Delivery",
     description:
-      "Order fresh mixed variety fish online in Siliguri. Seasonal catches, local specials & more. Cleaned & delivered in 30 min.",
+      "Order fresh mixed variety fish online in Siliguri. Seasonal catches, local specials & more. Cleaned & delivered to your doorstep.",
     keywords: [
       "fish delivery Siliguri",
       "fresh fish online",

@@ -49,7 +49,7 @@ export function AuthShell({ title, subtitle, icon, children }: AuthShellProps) {
                 Fresh from the morning market to your kitchen.
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-white/75">
-                Fish, chicken, mutton, vegetables and daily essentials — hand-picked every morning and delivered in minutes.
+                Fish, chicken, mutton, vegetables and daily essentials — hand-picked every morning and delivered fresh to your door.
               </p>
 
               <div className="mt-8 space-y-3">

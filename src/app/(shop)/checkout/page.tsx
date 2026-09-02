@@ -319,7 +319,7 @@ export default function CheckoutPage() {
       total,
       createdAt: new Date().toISOString(),
       address: effectiveAddress!,
-      eta: 30,
+      eta: 60,
       customerName: contactForm.name.trim() || currentUser?.name || "Guest",
       customerPhone: contactForm.phone.replace(/\D/g, "") || currentUser?.phone || "",
       customerEmail: contactForm.email.trim() || currentUser?.email || "",

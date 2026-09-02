@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 const siteTitle = "Siliguri Fresh Mart \u2014 Fresh Market Delivered in Minutes";
-const siteDesc = "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri in 10-30 minutes. Free delivery on all orders.";
+const siteDesc = "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri. Free delivery on all orders.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://www.siligurifreshmart.com"),

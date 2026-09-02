@@ -1,4 +1,4 @@
-﻿export type Lang = "en" | "bn" | "hi";
+export type Lang = "en" | "bn" | "hi";
 
 export interface LandingTranslations {
   lang: Lang;
@@ -114,7 +114,7 @@ const en: LandingTranslations = {
     badge: "SILIGURI'S #1 FRESH DELIVERY",
     heading1: "Tired of Stale Fish?",
     heading2: "Get Today's Catch at Your Door",
-    subtitle: "Premium fish, chicken, mutton & groceries — sourced fresh every morning and delivered in 10-30 minutes. No cold storage. No middlemen. Just today's catch.",
+    subtitle: "Premium fish, chicken, mutton & groceries — sourced fresh every morning and delivered to your doorstep. No cold storage. No middlemen. Just today's catch.",
     downloadBtn: "Download the App",
     orderNow: "Order Now",
     bulkOrders: "Bulk Orders",
@@ -168,7 +168,7 @@ const en: LandingTranslations = {
     eyebrow: "Why Choose Us",
     heading: "The Fresh Mart Difference",
     items: [
-      { title: "10-30 Min Delivery", desc: "From market to your door — blazing fast within 4 km. We deliver up to 20 km from our NJP Gate Bazar hub." },
+      { title: "Fresh Delivery", desc: "From market to your door — within 4 km, typically 45-60 minutes. We deliver up to 20 km from our NJP Gate Bazar hub." },
       { title: "Quality Guaranteed", desc: "Every item checked before dispatch. Not satisfied? We replace it — no questions asked." },
       { title: "Distance-Based Pricing", desc: "Within 8 km: free delivery. 8-20 km: small fee with minimum order. No hidden charges, no surge pricing." },
       { title: "Same-Day Fresh", desc: "Nothing stored overnight. What you get was sourced that very morning." },
@@ -226,9 +226,9 @@ const en: LandingTranslations = {
     headerEta: "Est. Time",
     headerMinOrder: "Min Order",
     headerFee: "Delivery Fee",
-    row1Dist: "Within 1 km", row1Eta: "10-20 min", row1Min: "No minimum", row1Fee: "Free",
-    row2Dist: "1 - 4 km", row2Eta: "20-30 min", row2Min: "No minimum", row2Fee: "Free",
-    row3Dist: "4 - 8 km", row3Eta: "45-60 min", row3Min: "No minimum", row3FeeFree: "Free", row3FeeSmall: "₹59 if < ₹99, ₹40 if < ₹299",
+    row1Dist: "Within 4 km", row1Eta: "45-60 min", row1Min: "No minimum", row1Fee: "Free",
+    row2Dist: "4 - 8 km", row2Eta: "1-1.5 hrs", row2Min: "No minimum", row2Fee: "Free",
+    row3Dist: "8 - 15 km", row3Eta: "2-3 hrs", row3Min: "No minimum", row3FeeFree: "Free", row3FeeSmall: "₹59 if < ₹99, ₹40 if < ₹299",
     row4Dist: "8 - 15 km", row4Eta: "1.5 - 2 hrs", row4Min: "₹1,499", row4Fee: "₹79", row4FeeFree: "Free if ₹1,499+",
     row5Dist: "15 - 20 km", row5Eta: "2 - 3 hrs", row5Min: "₹1,999", row5Fee: "₹99", row5FeeFree: "Free if ₹1,999+",
     note: "GPS location is mandatory at checkout — your order cannot proceed without it. This allows us to calculate the exact distance, time, and fees for your address. If your phone cannot detect GPS, order via WhatsApp or call us and we will help you place your order.",
@@ -246,7 +246,7 @@ const en: LandingTranslations = {
     { label: "Quality Checked", sub: "Every single order" },
     { label: "Replacement Policy", sub: "Within 2:59 hours" },
     { label: "Free Delivery", sub: "On orders over ₹299" },
-    { label: "10-30 Min", sub: "Doorstep delivery" },
+    { label: "45-60 Min", sub: "Doorstep delivery (within 4 km)" },
   ],
   footer: { phone: "+91 7029908278", copyright: "© 2026 All rights reserved" },
   langPicker: {
@@ -416,7 +416,7 @@ const hi: LandingTranslations = {
     badge: "शिलिगुड़ी की #1 फ्रेश डिलीवरी",
     heading1: "बासी मछली से परेशान?",
     heading2: "आज की ताज़ी मछली घर पर मंगवाएं",
-    subtitle: "प्रीमियम मछली, मुर्गी, मटन और किराना — हर सुबह ताज़ा सोर्स करके 10-30 मिनट में डिलीवर। ना कोई कोल्ड स्टोरेज, ना कोई बिचौलिया।",
+    subtitle: "प्रीमियम मछली, मुर्गी, मटन और किराना — हर सुबह ताज़ा सोर्स करके आपके दरवाज़े तक डिलीवर। ना कोई कोल्ड स्टोरेज, ना कोई बिचौलिया।",
     downloadBtn: "ऐप डाउनलोड करें",
     orderNow: "अभी ऑर्डर करें",
     bulkOrders: "बल्क ऑर्डर",
@@ -470,7 +470,7 @@ const hi: LandingTranslations = {
     eyebrow: "क्यों चुनें हमें",
     heading: "फ्रेश मार्ट का फ़र्क",
     items: [
-      { title: "10-30 मिनट में डिलीवरी", desc: "बाज़ार से आपके दरवाज़े तक — 4 किमी के अंदर तेज़ डिलीवरी। हम NJP गेट बाज़ार हब से 20 किमी तक डिलीवरी करते हैं।" },
+      { title: "ताज़ा डिलीवरी", desc: "बाज़ार से आपके दरवाज़े तक — 4 किमी के अंदर, आम तौर पर 45-60 मिनट। हम NJP गेट बाज़ार हब से 20 किमी तक डिलीवरी करते हैं।" },
       { title: "क्वालिटी गारंटीड", desc: "हर चीज़ भेजने से पहले चेक। संतुष्ट नहीं? बदल देंगे — कोई सवाल नहीं।" },
       { title: "दूरी आधारित प्राइसिंग", desc: "8 किमी तक फ्री डिलीवरी। 8-20 किमी में न्यूनतम ऑर्डर के साथ छोटा शुल्क। कोई छुपी हुई फीस नहीं।" },
       { title: "आज का ताज़ा", desc: "रात भर स्टोर कुछ नहीं। जो मिलेगा वो सुबह का सोर्स किया हुआ।" },
@@ -528,9 +528,9 @@ const hi: LandingTranslations = {
     headerEta: "अनुमानित समय",
     headerMinOrder: "न्यूनतम ऑर्डर",
     headerFee: "डिलीवरी शुल्क",
-    row1Dist: "1 किमी के अंदर", row1Eta: "10-20 मिनट", row1Min: "कोई न्यूनतम नहीं", row1Fee: "मुफ्त",
-    row2Dist: "1 - 4 किमी", row2Eta: "20-30 मिनट", row2Min: "कोई न्यूनतम नहीं", row2Fee: "मुफ्त",
-    row3Dist: "4 - 8 किमी", row3Eta: "45-60 मिनट", row3Min: "कोई न्यूनतम नहीं", row3FeeFree: "मुफ्त", row3FeeSmall: "₹99 से कम पर ₹59, ₹299 से कम पर ₹40",
+    row1Dist: "4 किमी के अंदर", row1Eta: "45-60 मिनट", row1Min: "कोई न्यूनतम नहीं", row1Fee: "मुफ्त",
+    row2Dist: "4 - 8 किमी", row2Eta: "1-1.5 घंटे", row2Min: "कोई न्यूनतम नहीं", row2Fee: "मुफ्त",
+    row3Dist: "8 - 15 किमी", row3Eta: "2-3 घंटे", row3Min: "कोई न्यूनतम नहीं", row3FeeFree: "मुफ्त", row3FeeSmall: "₹99 से कम पर ₹59, ₹299 से कम पर ₹40",
     row4Dist: "8 - 15 किमी", row4Eta: "1.5 - 2 घंटे", row4Min: "₹1,499", row4Fee: "₹79", row4FeeFree: "₹1,499+ पर मुफ्त",
     row5Dist: "15 - 20 किमी", row5Eta: "2 - 3 घंटे", row5Min: "₹1,999", row5Fee: "₹99", row5FeeFree: "₹1,999+ पर मुफ्त",
     note: "चेकआउट पर GPS लोकेशन अनिवार्य है — इसके बिना ऑर्डर आगे नहीं बढ़ सकता। यह आपके पते की सही दूरी, समय और शुल्क कैलकुलेट करने में मदद करता है। अगर आपका फोन GPS डिटेक्ट नहीं कर पा रहा, तो WhatsApp पर ऑर्डर करें या हमें कॉल करें।",
@@ -548,7 +548,7 @@ const hi: LandingTranslations = {
     { label: "क्वालिटी चेक्ड", sub: "हर ऑर्डर" },
     { label: "बदलने की पॉलिसी", sub: "2:59 घंटे में" },
     { label: "फ्री डिलीवरी", sub: "₹299+ ऑर्डर पर" },
-    { label: "10-30 मिनट", sub: "दरवाज़े पर डिलीवरी" },
+    { label: "45-60 मिनट", sub: "दरवाज़े पर डिलीवरी (4 किमी के अंदर)" },
   ],
   footer: { phone: "+91 7029908278", copyright: "© 2026 सर्वाधिकार सुरक्षित" },
   langPicker: {

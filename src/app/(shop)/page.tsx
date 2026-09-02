@@ -140,7 +140,7 @@ export default function HomePage() {
       <Testimonials />
       <ReviewsSection />
       <p className="mb-4 text-center text-[13px] text-muted leading-relaxed max-w-2xl mx-auto">
-        Unlike marketplace listings or aggregator apps, Siliguri Fresh Mart sources fish, chicken and mutton directly from Siliguri&apos;s morning markets and delivers within 30 minutes — no middlemen, no warehouses, no frozen storage.
+        Unlike marketplace listings or aggregator apps, Siliguri Fresh Mart sources fish, chicken and mutton directly from Siliguri&apos;s morning markets and delivers fresh to your doorstep — no middlemen, no warehouses, no frozen storage.
       </p>
       <div id="faq">
         <FAQSection />

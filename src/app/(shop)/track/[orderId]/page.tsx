@@ -306,7 +306,7 @@ export default function TrackOrderPage({
           </div>
         )}
         {!isOutForDelivery && !isDelivered && (
-          <p className="mt-1 text-sm text-muted">Estimated delivery: 30 min — 1 hour</p>
+          <p className="mt-1 text-sm text-muted">Estimated delivery: 45 min — 2 hrs</p>
         )}
       </div>
 

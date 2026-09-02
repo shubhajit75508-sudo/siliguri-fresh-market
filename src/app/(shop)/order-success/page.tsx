@@ -68,7 +68,7 @@ function OrderSuccessContent() {
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">On the Way</p>
-                <p className="text-xs text-muted">Delivered within 30 minutes</p>
+                <p className="text-xs text-muted">Delivered within 45 min – 2 hrs (depending on distance)</p>
               </div>
             </div>
           </div>

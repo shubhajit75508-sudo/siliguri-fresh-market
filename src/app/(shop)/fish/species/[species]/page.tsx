@@ -92,7 +92,7 @@ export default async function FishSpeciesPage({ params }: Props) {
             "@type": "GroceryStore",
             "@id": "https://www.siligurifreshmart.com#localbusiness",
             name: "Siliguri Fresh Mart",
-            description: `Order ${seo.name} fish online in Siliguri. Fresh, cleaned, and delivered in 30 minutes.`,
+            description: `Order ${seo.name} fish online in Siliguri. Fresh, cleaned, and delivered to your doorstep.`,
             image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
             telephone: "+91 7029908278",
             email: "siligurifreshmart@gmail.com",

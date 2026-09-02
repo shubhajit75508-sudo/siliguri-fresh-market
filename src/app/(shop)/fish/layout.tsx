@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Buy Fresh Fish Online in Siliguri | Rohu, Katla, Hilsa, Prawns | Home Delivery",
   description:
-    "Order fresh fish online in Siliguri. Rohu, Katla, Hilsa, Pomfret, Prawns & more. Free delivery on all orders. Cut & clean to order. Delivered in 30 min from local rivers.",
+    "Order fresh fish online in Siliguri. Rohu, Katla, Hilsa, Pomfret, Prawns & more. Free delivery on all orders. Cut & clean to order. Fresh from local rivers to your doorstep.",
   keywords: [
     "fresh fish delivery Siliguri",
     "rohu fish online Siliguri",

@@ -6,19 +6,19 @@ import { ChevronDown } from "lucide-react";
 const faqs = [
   {
     q: "What is the best way to buy fresh fish online in Siliguri?",
-    a: "Siliguri Fresh Mart is an online fresh fish and meat delivery service based in Siliguri, West Bengal. You can order Rohu, Hilsa, Prawns, Chicken, Mutton and more from our website or by calling +91 7029908278. Orders are sourced from Siliguri's morning markets and delivered to your doorstep within 30 minutes.",
+    a: "Siliguri Fresh Mart is an online fresh fish and meat delivery service based in Siliguri, West Bengal. You can order Rohu, Hilsa, Prawns, Chicken, Mutton and more from our website or by calling +91 7029908278. Orders are sourced from Siliguri's morning markets and delivered to your doorstep.",
   },
   {
     q: "Does Siliguri Fresh Mart deliver same-day?",
-    a: "Yes! We deliver via two daily slots: Morning Slot (order before 10 AM, delivered 11 AM–12 PM) and Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Delivery time also depends on your distance from our hub at NJP Gate Bazar — within 1 km takes 10–20 min, within 4 km takes 20–30 min, within 8 km takes 45–60 min, 8–15 km takes 1.5–2 hrs, and 15–20 km takes 2–3 hrs.",
+    a: "Yes! We deliver via two daily slots: Morning Slot (order before 10 AM, delivered 11 AM–12 PM) and Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Delivery time also depends on your distance from our hub at NJP Gate Bazar — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
   },
   {
     q: "How do the delivery slots work?",
-    a: "Your slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you get the Morning Slot (order before 10 AM, delivered 11 AM–12 PM). If you are 15–20 km away, you get the Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Within 8 km, no slot is needed — delivery arrives directly within 10–60 minutes.",
+    a: "Your slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you get the Morning Slot (order before 10 AM, delivered 11 AM–12 PM). If you are 15–20 km away, you get the Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Within 8 km, no slot is needed — delivery arrives directly within 45 minutes to 1.5 hours.",
   },
   {
     q: "What areas does Siliguri Fresh Mart cover?",
-    a: "Siliguri Fresh Mart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 20 km radius of our hub at NJP Gate Bazar, Siliguri. Delivery times vary by distance — within 1 km takes 10–20 min, within 4 km takes 20–30 min, within 8 km takes 45–60 min, 8–15 km takes 1.5–2 hrs, and 15–20 km takes 2–3 hrs.",
+    a: "Siliguri Fresh Mart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 20 km radius of our hub at NJP Gate Bazar, Siliguri. Delivery times vary by distance — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
   },
   {
     q: "What is the minimum order and delivery fee?",
@@ -46,7 +46,7 @@ const faqs = [
   },
   {
     q: "Is Siliguri Fresh Mart a marketplace or does it deliver directly?",
-    a: "Unlike marketplace listings or aggregator apps, Siliguri Fresh Mart is a direct-to-consumer fresh delivery service. We source fish, chicken and mutton ourselves from Siliguri's morning markets, pack them in insulated bags, and deliver directly within 30 minutes. There are no middlemen or third-party sellers involved.",
+    a: "Unlike marketplace listings or aggregator apps, Siliguri Fresh Mart is a direct-to-consumer fresh delivery service. We source fish, chicken and mutton ourselves from Siliguri's morning markets, pack them in insulated bags, and deliver directly to your doorstep. There are no middlemen or third-party sellers involved.",
   },
 ];
 
