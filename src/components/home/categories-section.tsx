@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 
@@ -22,7 +23,7 @@ function Tile({ cat, delay }: { cat: { name: string; href: string; img: string }
     <div className={`animate-in animate-in-d${Math.min(delay, 10)}`}>
       <Link href={cat.href} className="block">
         <div className="category-tile relative aspect-square">
-          <img src={cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover" />
+          <Image src={cat.img} alt={cat.name} fill sizes="(max-width: 640px) 33vw, 16vw" style={{ objectFit: "cover" }} loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
           <div className="absolute bottom-2 left-2 right-2">
             <div className="glass-label rounded-2xl px-2 py-2 text-center">

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   motion,
   useScroll,
@@ -247,7 +248,7 @@ export default function LandingClient() {
             className="mb-8"
           >
             <div className="mx-auto w-24 h-24 rounded-3xl overflow-hidden ring-4 ring-[#2D7D3A]/30 shadow-2xl shadow-[#2D7D3A]/20">
-              <img src={LOGO} alt="Siliguri Fresh Mart" className="w-full h-full object-cover" />
+              <Image src={LOGO} alt="Siliguri Fresh Mart" width={96} height={96} priority className="w-full h-full object-cover" />
             </div>
           </motion.div>
 
@@ -548,7 +549,7 @@ export default function LandingClient() {
                   <Link href={catHrefs[i]}>
                     <GlowCard>
                       <div className="relative rounded-3xl overflow-hidden bg-white border border-border shadow-sm h-64 sm:h-72 group cursor-pointer">
-                        <img src={catImgs[i]} alt={cat.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <Image src={catImgs[i]} alt={cat.name} fill sizes="(max-width: 640px) 50vw, 33vw" style={{ objectFit: "cover" }} className="group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-5">
                           <div className="flex items-center gap-2 mb-1">
@@ -1069,7 +1070,7 @@ export default function LandingClient() {
       <div className="border-t border-border py-8 bg-[#fafcfa]">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src={LOGO} alt="SFM" className="h-8 w-8 rounded-lg" />
+            <Image src={LOGO} alt="SFM" width={32} height={32} className="h-8 w-8 rounded-lg" loading="lazy" />
             <span className="text-sm font-bold">Siliguri Fresh Mart</span>
           </div>
           <div className="flex items-center gap-4 text-xs text-muted">

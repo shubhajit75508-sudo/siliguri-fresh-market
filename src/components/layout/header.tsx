@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag, Menu, X, UserPlus, Truck } from "lucide-react";
@@ -22,7 +23,7 @@ export function Header() {
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-fresh/20">            <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-10 w-10 object-contain rounded-xl" /></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-fresh/20">            <Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={40} height={40} className="h-10 w-10 object-contain rounded-xl" /></div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold text-foreground leading-tight">Siliguri</span>
               <span className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider leading-tight">Fresh Mart</span>
@@ -93,7 +94,7 @@ export function Header() {
         {/* Mobile */}
         <div className="flex h-14 items-center gap-3 lg:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-fresh/20"><img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" className="h-9 w-9 object-contain rounded-lg" /></div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-fresh/20"><Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={36} height={36} className="h-9 w-9 object-contain rounded-lg" /></div>
             <div className="leading-none">
               <div className="text-sm font-bold text-foreground">Siliguri</div>
               <div className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider">Fresh Mart</div>

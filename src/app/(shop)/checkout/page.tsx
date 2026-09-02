@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   X, Loader2,
@@ -399,7 +400,7 @@ export default function CheckoutPage() {
                     <div key={cartLineId(lineKey)} className="group flex items-center gap-3 px-5 py-3 hover:bg-surface-2 transition-colors relative">
                       <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
                         {item.product.image ? (
-                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover rounded-xl" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        <Image src={item.product.image} alt={item.product.name} width={48} height={48} className="w-full h-full object-cover rounded-xl" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                       ) : (
                         <Package className="h-6 w-6 text-muted" />
                       )}

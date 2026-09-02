@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
 import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock, Sparkles, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -194,9 +195,12 @@ export function CartDrawer() {
                         className="group relative flex gap-3 rounded-2xl border border-border bg-surface-2 p-3"
                       >
                         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-surface-2">
-                          <img src={item.product.image}
+                          <Image src={item.product.image}
                             alt={item.product.name}
-                            className="object-cover brightness-90"
+                            fill
+                            sizes="80px"
+                            style={{ objectFit: "cover" }}
+                            className="brightness-90"
                           />
                         </div>
                         <div className="flex flex-1 flex-col justify-between">
@@ -266,7 +270,7 @@ export function CartDrawer() {
                         className="relative flex-shrink-0 w-[140px] rounded-xl border border-border bg-white p-2.5 shadow-sm"
                       >
                         <div className="relative h-16 w-full overflow-hidden rounded-lg bg-surface-2 mb-2">
-                          <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
+                          <Image src={p.image} alt={p.name} fill sizes="140px" style={{ objectFit: "cover" }} className="rounded-lg" loading="lazy" />
                         </div>
                         <h4 className="text-[11px] font-semibold text-foreground truncate">{p.name}</h4>
                         <p className="text-[10px] text-muted mt-0.5">{p.unit}</p>

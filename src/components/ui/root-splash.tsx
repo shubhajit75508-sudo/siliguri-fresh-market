@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export function RootSplash() {
   const [visible, setVisible] = useState(true);
@@ -25,9 +26,11 @@ export function RootSplash() {
       `}</style>
 
       <div className="relative">
-        <img
+        <Image
           src="https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg"
           alt="Fresh Mart"
+          width={80}
+          height={80}
           className="h-20 w-20 rounded-2xl object-cover shadow-2xl shadow-brand-fresh/20"
         />
         <div className="absolute -inset-3 rounded-2xl border-2 border-brand-fresh/40 [clip-path:inset(0_0_50%_0)]" style={{ animation: "splash-spin 2s linear infinite" }} />

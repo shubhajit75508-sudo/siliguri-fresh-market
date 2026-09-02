@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/product/product-card";
 import { useProductsByCategory } from "@/lib/hooks/use-products";
@@ -109,9 +110,14 @@ export default function FishPage() {
       {/* Hero Banner */}
       <div className="relative mb-10 overflow-hidden rounded-[32px] shadow-xl">
         <div className="relative min-h-[280px] sm:min-h-[320px]">
-          <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg"
+          <Image
+            src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg"
             alt="Fresh fish"
-            className="absolute inset-0 w-full h-full object-cover hero-zoom"
+            fill
+            priority
+            sizes="(max-width: 640px) 100vw, 100vw"
+            style={{ objectFit: "cover" }}
+            className="hero-zoom"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/30" />
         </div>
@@ -188,11 +194,14 @@ export default function FishPage() {
               >
                 {img ? (
                   <div className="relative h-14 w-14 overflow-hidden rounded-xl shadow-sm">
-                    <img
+                    <Image
                       src={img}
                       alt={sub.label}
+                      fill
+                      sizes="56px"
+                      style={{ objectFit: "cover" }}
                       className={cn(
-                        "subcard-active-img h-full w-full object-cover transition-all duration-300",
+                        "subcat-active-img transition-all duration-300",
                         subcat === sub.value ? "brightness-110 saturate-110" : "group-hover:brightness-105"
                       )}
                     />

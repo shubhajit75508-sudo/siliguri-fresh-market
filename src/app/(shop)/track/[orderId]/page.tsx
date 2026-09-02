@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
@@ -502,7 +503,7 @@ export default function TrackOrderPage({
             <div key={i} className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-surface-2 flex items-center justify-center text-xs overflow-hidden">
                 {item.product.image ? (
-                  <img src={item.product.image} alt="" className="h-full w-full object-cover" />
+                  <Image src={item.product.image} alt="" width={36} height={36} className="h-full w-full object-cover" />
                 ) : (
                   <Package className="h-4 w-4 text-muted" />
                 )}

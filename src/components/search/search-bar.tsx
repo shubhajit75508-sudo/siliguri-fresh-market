@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Mic, TrendingUp, Clock } from "lucide-react";
@@ -77,7 +78,7 @@ export function SearchBar() {
                     className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left text-foreground hover:bg-surface-2"
                   >
                     <div className="relative h-10 w-10 overflow-hidden rounded-lg">
-                      <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-cover product-img" />
+                      <Image src={p.image} alt={p.name} fill sizes="40px" style={{ objectFit: "cover" }} className="product-img" loading="lazy" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-semibold">{p.name}</p>

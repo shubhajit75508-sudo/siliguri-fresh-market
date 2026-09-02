@@ -1,6 +1,7 @@
 "use client";
 
 import { Star, Leaf } from "lucide-react";
+import Image from "next/image";
 
 type Testimonial = {
   productImage: string;
@@ -82,11 +83,14 @@ export function Testimonials() {
             key={t.name}
             className="relative flex-shrink-0 w-[58vw] max-w-[200px] sm:w-auto sm:max-w-none rounded-2xl overflow-hidden aspect-[3/4] group"
           >
-            <img
+            <Image
               src={t.productImage}
               alt={t.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              fill
               loading="lazy"
+              sizes="(max-width: 640px) 58vw, 200px"
+              style={{ objectFit: "cover" }}
+              className="transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
             <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-center text-center gap-1">

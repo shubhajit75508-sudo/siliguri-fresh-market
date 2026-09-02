@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Navigation, Share2, BadgeCheck } from "lucide-react";
 import type { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
@@ -90,12 +91,14 @@ export function ProductClient({ product }: { product: Product }) {
         {/* Image + Gallery */}
         <div>
           <div className="relative aspect-square overflow-hidden rounded-[24px] bg-white/5">
-            <img src={allImages[selectedImage]}
+            <Image
+              src={allImages[selectedImage]}
               alt={product.name}
-              width={800}
-              height={800}
-              className="absolute inset-0 w-full h-full object-cover product-img"
-              fetchPriority="high"
+              fill
+              priority
+              sizes="(max-width: 640px) 100vw, 50vw"
+              style={{ objectFit: "cover" }}
+              className="product-img"
             />
             {isFlashDeal && (
               <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-red px-3 py-1.5 text-[11px] font-bold text-white shadow-lg">
@@ -118,7 +121,7 @@ export function ProductClient({ product }: { product: Product }) {
                     selectedImage === i ? "border-[#2D7D3A] ring-1 ring-[#2D7D3A]/30" : "border-border opacity-60 hover:opacity-90"
                   }`}
                 >
-                  <img src={img} alt={product.name + " - Image " + (i + 1)} width={64} height={64} loading="lazy" className="w-full h-full object-cover" />
+                  <Image src={img} alt={product.name + " - Image " + (i + 1)} width={64} height={64} loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

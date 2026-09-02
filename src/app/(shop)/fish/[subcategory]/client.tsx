@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight, ChevronDown, Truck, Clock, Star, MapPin, Phone, ArrowLeft } from "lucide-react";
@@ -52,10 +53,13 @@ export function FishSubcatClient({ slug }: { slug: string }) {
       {/* Hero */}
       <div className="relative mb-8 overflow-hidden rounded-[28px] shadow-xl">
         <div className="relative min-h-[260px] sm:min-h-[300px]">
-          <img
+          <Image
             src={SUBCAT_IMAGES[slug] || SUBCAT_IMAGES.river}
             alt={seo.heroHeading}
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            priority
+            sizes="(max-width: 640px) 100vw, 100vw"
+            style={{ objectFit: "cover" }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         </div>

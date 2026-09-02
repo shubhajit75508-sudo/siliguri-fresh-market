@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Clock, ShieldCheck, Truck } from "lucide-react";
 import { useAdminStore } from "@/store/admin-store";
@@ -24,10 +25,14 @@ export function HeroSection() {
     <section className="pt-2 pb-2 sm:pt-4">
       <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] shadow-xl">
         <div className="relative aspect-[1/1] sm:min-h-[400px] lg:min-h-[460px]">
-          <img
+          <Image
             src={hero.image}
-            alt="Siliguri Fresh Mart"
-            className="absolute inset-0 w-full h-full object-cover sm:scale-105"
+            alt="Siliguri Fresh Mart — fresh fish, chicken, mutton & vegetables delivery in Siliguri"
+            fill
+            priority
+            sizes="(max-width: 640px) 100vw, 100vw"
+            style={{ objectFit: "cover" }}
+            className="object-cover sm:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/15" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -44,7 +49,7 @@ export function HeroSection() {
               <div className="mb-4 sm:mb-5 inline-flex items-center gap-2.5 rounded-full bg-white/15 px-4 py-2">
                 <span className="live-dot h-2 w-2 rounded-full bg-[#2D7D3A] shadow-[0_0_8px_#2D7D3A]" />
                 <span className="text-[13px] sm:text-[12px] font-semibold tracking-wide text-white">
-                  Live — Delivering in 30–60 min
+                  Live — Delivering in 45–60 min
                 </span>
               </div>
 

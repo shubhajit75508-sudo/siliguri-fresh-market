@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   CheckCircle, X, Loader2, Shield, Smartphone,
   ArrowLeft, Clock, CreditCard, AlertTriangle,
@@ -695,7 +696,7 @@ export default function PaymentScreen({
                 </p>
                 {qrDataUrl ? (
                   <div className="inline-block rounded-xl border border-border p-3 bg-white">
-                    <img src={qrDataUrl} alt="UPI QR Code" className="w-52 h-52" />
+                    <Image src={qrDataUrl} alt="UPI QR Code" width={208} height={208} className="w-52 h-52" />
                   </div>
                 ) : (
                   <div className="w-52 h-52 mx-auto flex items-center justify-center bg-surface-2 rounded-xl">
