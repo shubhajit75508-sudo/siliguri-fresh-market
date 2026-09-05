@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Clock, Plus, Minus, Star, TrendingDown } from "lucide-react";
+import { Plus, Minus, Star } from "lucide-react";
 import { cartLineKey, useCartStore } from "@/store/cart-store";
-import { useUserStore } from "@/store/user-store";
 import { useToast } from "@/components/ui/toaster";
 import { RestockNotifyButton } from "@/components/product/restock-notify-button";
 import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight, cn } from "@/lib/utils";
@@ -19,13 +18,6 @@ interface ProductCardProps {
   badge?: string;
 }
 
-const catBadge = (cat: string): { label: string; cls: string } | null => {
-  if (["fish", "chicken", "mutton", "pork", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
-  if (["fruits", "vegetables"].includes(cat)) return { label: "ORGANIC", cls: "organic" };
-  if (["dairy", "eggs"].includes(cat)) return { label: "FARM", cls: "farm" };
-  return null;
-};
-
 export function ProductCard({ product, variant = "default", badge }: ProductCardProps) {
   const { addItem, items, updateQuantity, getProductQuantity } = useCartStore();
   const toast = useToast();
@@ -36,21 +28,8 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const displayPrice = getPriceForWeight(product.price, selectedWeight, product.weightPrices);
   const displayOriginal = getOriginalPriceForWeight(product.price, product.originalPrice, selectedWeight, product.weightPrices);
 
-  const b = catBadge(product.category);
   const stockQty = product.stock == null ? 0 : product.stock;
   const available = product.inStock && stockQty > 0;
-
-  const { watchedPrices, updateWatchedPrice } = useUserStore();
-  const priceDropped = useRef(false);
-  useEffect(() => {
-    const lastPrice = watchedPrices[product.id];
-    if (lastPrice !== undefined && displayPrice < lastPrice) {
-      priceDropped.current = true;
-    }
-    updateWatchedPrice(product.id, displayPrice);
-    const timer = setTimeout(() => { priceDropped.current = false; }, 5000);
-    return () => clearTimeout(timer);
-  }, [product.id, displayPrice]);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -112,10 +91,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <Link href={`/product/${product.slug}`} className="block min-w-0">
-            <div className="flex items-center gap-1.5">
-              <p className="line-clamp-1 text-[13px] font-bold text-foreground">{product.name}</p>
-              {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
-            </div>
+            <p className="line-clamp-1 text-[13px] font-bold text-foreground">{product.name}</p>
             <p className="text-[11px] text-muted">{product.weight?.[0] || `1 ${product.unit}`}</p>
           </Link>
           {available ? (
@@ -151,48 +127,34 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           />
 
           {tag && (
-            <span className="absolute right-2 top-2 rounded-md bg-white/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#23682E] shadow-sm backdrop-blur-sm">
+            <span className="absolute left-2 top-2 rounded-lg bg-[#2D7D3A] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
               {tag}
             </span>
           )}
-          {priceDropped.current && (
-            <span className="absolute left-2 top-2 flex items-center gap-0.5 rounded-md bg-brand-fresh px-2 py-0.5 text-[9px] font-bold text-white shadow-md shadow-brand-fresh/30">
-              <TrendingDown className="h-2.5 w-2.5" /> Price Dropped
-            </span>
-          )}
-          {discountPct > 0 && !priceDropped.current && (
-            <span className="absolute right-2 bottom-2 rounded-md bg-[#E53935] px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm">
+          {discountPct > 0 && (
+            <span className="absolute right-2 top-2 rounded-lg bg-[#E53935] px-2 py-1 text-[10px] font-bold text-white shadow-sm">
               {discountPct}% OFF
-            </span>
-          )}
-          {b && (
-            <span className="absolute left-2 bottom-2 rounded-md bg-white/85 px-2 py-0.5 text-[9px] font-bold text-[#23682E] shadow-sm backdrop-blur-sm">
-              {b.label}
             </span>
           )}
         </div>
 
-        <div className="flex flex-1 flex-col p-2.5 sm:p-3">
-          <div className="mb-1 flex items-center gap-1 text-[10px] text-muted">
-            <Clock className="h-2.5 w-2.5" />
-            <span>{product.deliveryEta} min</span>
-            <span className="ml-auto flex items-center gap-0.5 text-[10px]">
-              <Star className="h-3 w-3 text-[#F5A623] fill-[#F5A623]" />
-              <span className="font-semibold text-foreground">{product.rating?.toFixed(1) || "4.5"}</span>
-              <span className="text-muted-light">({product.reviewCount || "120"})</span>
-            </span>
+        <div className="flex flex-1 flex-col p-3 sm:p-3.5">
+          <div className="flex items-center gap-1 text-[12px]">
+            <Star className="h-3.5 w-3.5 fill-[#F5A623] text-[#F5A623]" />
+            <span className="font-bold text-foreground">{product.rating?.toFixed(1) || "4.5"}</span>
+            <span className="text-muted-light">({product.reviewCount || 120})</span>
           </div>
 
-          <h3 className="line-clamp-2 leading-snug text-[13px] font-semibold text-foreground">{product.name}</h3>
+          <h3 className="mt-1.5 line-clamp-2 leading-snug text-[14px] font-semibold text-foreground">{product.name}</h3>
 
           {weights.length > 1 ? (
-            <div className="mt-1.5 flex flex-wrap gap-1">
+            <div className="mt-2 flex flex-wrap gap-1">
               {weights.map((w) => (
                 <button
                   key={w}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedWeight(w); }}
                   className={cn(
-                    "rounded-full border px-1.5 py-0.5 text-[9px] font-semibold transition-all",
+                    "rounded-full border px-2 py-0.5 text-[10px] font-semibold transition-all",
                     selectedWeight === w
                       ? "border-[#2D7D3A] bg-[#2D7D3A]/10 text-[#23682E]"
                       : "border-border bg-surface-2 text-muted hover:border-muted"
@@ -203,29 +165,29 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
               ))}
             </div>
           ) : (
-            <p className="mt-0.5 text-[11px] text-muted">
+            <p className="mt-1 text-[12px] text-muted">
               {product.weight?.[0] || `1 ${product.unit}`}
             </p>
           )}
 
-          <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-            <span className="text-[15px] font-extrabold text-[#2D7D3A]">{formatPrice(displayPrice)}</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className="text-[17px] font-extrabold text-[#2D7D3A]">{formatPrice(displayPrice)}</span>
             {displayOriginal && displayOriginal > displayPrice && (
-              <span className="text-[11px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
+              <span className="text-[12px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
             )}
           </div>
 
-          {available && stockQty > 0 && stockQty <= 5 && (
-            <p className="mt-1 flex items-center gap-1 text-[10px] font-bold text-[#D32F2F]">
-              <span className="live-dot h-1.5 w-1.5 rounded-full bg-[#D32F2F]" />
-              Only {stockQty} left — order soon
+          {available && stockQty <= 5 && (
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-bold text-[#D32F2F]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#D32F2F]" />
+              Only {stockQty} left
             </p>
           )}
 
-          <div className="mt-auto pt-2">
+          <div className="mt-auto pt-2.5">
             {cartQuantity > 0 ? (
               <div
-                className="flex h-9 items-center justify-between rounded-lg bg-gradient-to-r from-[#2D7D3A] to-[#23682E] px-1 shadow-md shadow-brand-fresh/20"
+                className="flex h-9 items-center justify-between rounded-lg bg-[#2D7D3A] px-1 shadow-sm"
                 onClick={(e) => e.preventDefault()}
               >
                 <button
