@@ -3,6 +3,7 @@
 import { useAdminStore } from "@/store/admin-store";
 import { useProductsByCategory, useCategories } from "@/lib/hooks/use-products";
 import { HeroSection } from "@/components/home/hero-section";
+import { RandomPicksSection } from "@/components/home/random-picks";
 import { CategoriesSection } from "@/components/home/categories-section";
 import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
@@ -84,6 +85,7 @@ export function HomeClient() {
   return (
     <>
       <HeroSection />
+      <RandomPicksSection />
       <div className="mt-4 mb-6">
         <TrustBar />
       </div>
