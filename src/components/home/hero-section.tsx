@@ -2,9 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { Fragment } from "react";
 import { motion } from "framer-motion";
-import { Clock, ShieldCheck, Truck, ArrowRight, User } from "lucide-react";
+import { Clock, Star, ShieldCheck, Package, ArrowRight, User } from "lucide-react";
 import { useAdminStore } from "@/store/admin-store";
+
+const trustStats = [
+  { icon: Package, value: "5K+", label: "Orders", accent: "text-white" },
+  { icon: Star, value: "4.8", label: "Rating", accent: "text-[#FFD98A]" },
+  { icon: Clock, value: "45m", label: "Delivery", accent: "text-[#A5E0A8]" },
+  { icon: ShieldCheck, value: "100%", label: "Secure", accent: "text-white" },
+];
 
 export function HeroSection() {
   const { settings } = useAdminStore();
@@ -18,7 +26,7 @@ export function HeroSection() {
   const lines = hero.title.split("\n");
 
   return (
-    <section className="pt-2 pb-1 sm:pt-4">
+    <section className="pt-2 pb-0 sm:pt-4">
       <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#18521E] via-[#2D7D3A] to-[#3E9B4E] shadow-[0_12px_32px_rgba(27,94,32,0.28)] sm:rounded-[30px]">
         <div className="absolute inset-0">
           <Image
@@ -30,14 +38,14 @@ export function HeroSection() {
             className="object-cover opacity-25"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#173F1D]/85 via-[#1B5E20]/55 to-[#2D7D3A]/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#10300F]/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F2E0E]/85 via-transparent to-transparent" />
         </div>
 
         {/* soft glow accents */}
         <div className="pointer-events-none absolute -right-14 -top-14 h-40 w-40 rounded-full bg-[#F5A623]/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-10 bottom-0 h-28 w-28 rounded-full bg-emerald-300/20 blur-2xl" />
 
-        <div className="relative flex min-h-[230px] flex-col justify-between gap-3 p-4 sm:min-h-[262px] sm:p-7 lg:min-h-[292px] lg:p-8">
+        <div className="relative flex min-h-[230px] flex-col justify-between gap-3 p-4 pb-3 sm:min-h-[262px] sm:p-7 lg:min-h-[292px] lg:p-8">
           <div className="flex items-start justify-between gap-2">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
@@ -96,25 +104,35 @@ export function HeroSection() {
             </div>
           </motion.div>
 
+          {/* Integrated trust strip */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.28, duration: 0.4 }}
-            className="flex flex-wrap gap-1.5 sm:gap-2"
+            transition={{ delay: 0.26, duration: 0.4 }}
+            className="rounded-2xl border border-white/10 bg-black/25 px-2 py-2.5 backdrop-blur-md sm:px-4 sm:py-3"
           >
-            {[
-              { icon: Clock, text: "45–60 min ETA" },
-              { icon: ShieldCheck, text: "Freshness 100%" },
-              { icon: Truck, text: "Free above ₹299" },
-            ].map((item) => (
-              <div
-                key={item.text}
-                className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2"
-              >
-                <item.icon className="h-3 w-3 text-[#A5E0A8] sm:h-3.5 sm:w-3.5" strokeWidth={2.5} />
-                <span className="whitespace-nowrap text-[9.5px] font-semibold text-white/95 sm:text-[12px]">{item.text}</span>
-              </div>
-            ))}
+            <div className="flex items-center">
+              {trustStats.map((stat, i) => {
+                const Icon = stat.icon;
+                return (
+                  <Fragment key={stat.label}>
+                    <div className="flex flex-1 flex-col items-center gap-0.5">
+                      <Icon className={`h-4 w-4 ${stat.accent}`} strokeWidth={2.2} />
+                      <span className="text-[13px] font-extrabold leading-tight text-white sm:text-base">
+                        {stat.value}
+                      </span>
+                      <span className="text-[8.5px] font-bold uppercase tracking-wider text-white/55 sm:text-[9.5px]">
+                        {stat.label}
+                      </span>
+                    </div>
+                    {i < trustStats.length - 1 && <span className="h-9 w-px bg-white/15" />}
+                  </Fragment>
+                );
+              })}
+            </div>
+            <p className="mt-2 border-t border-white/10 pt-1.5 text-center text-[9.5px] font-semibold text-white/70 sm:mt-2.5 sm:text-[11px]">
+              Free delivery above ₹299 · Sourced from this morning&apos;s market
+            </p>
           </motion.div>
         </div>
       </div>

@@ -215,6 +215,13 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             )}
           </div>
 
+          {available && stockQty > 0 && stockQty <= 5 && (
+            <p className="mt-1 flex items-center gap-1 text-[10px] font-bold text-[#D32F2F]">
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-[#D32F2F]" />
+              Only {stockQty} left — order soon
+            </p>
+          )}
+
           <div className="mt-auto pt-2">
             {cartQuantity > 0 ? (
               <div

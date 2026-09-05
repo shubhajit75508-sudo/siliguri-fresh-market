@@ -35,7 +35,7 @@ export function CategoriesSection() {
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <section className="pb-1 pt-4 sm:pt-6">
+    <section className="-mx-4 mb-1 bg-gradient-to-b from-[#EBF4ED] to-transparent px-4 pb-2 pt-3 sm:mx-0 sm:bg-none sm:px-0 sm:pb-3 sm:pt-4">
       <div className="mb-3 flex items-end justify-between gap-4 animate-in">
         <div className="flex items-center gap-2.5">
           <span className="section-header-accent h-6" />
