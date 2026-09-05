@@ -83,10 +83,8 @@ export function HomeClient() {
 
   return (
     <>
-      <div className="bg-[#F8FBF9] px-4 pb-5 pt-1 sm:bg-none sm:px-0 sm:pb-0">
-        <CategoriesSection />
-        <HeroSection />
-      </div>
+      <CategoriesSection />
+      <HeroSection />
       <RandomPicksSection />
       <Link
         href="/bulk"
