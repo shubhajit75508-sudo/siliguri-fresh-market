@@ -9,7 +9,8 @@ import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
 import { FAQSection } from "@/components/home/faq-section";
 import { ReviewsSection } from "@/components/home/reviews-section";
-import { FreshnessBanner, Testimonials } from "@/components/home/testimonials";
+import { Testimonials } from "@/components/home/testimonials";
+import { FreshnessBanner } from "@/components/home/freshness-banner";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import Link from "next/link";
 import { Package } from "lucide-react";
@@ -85,6 +86,7 @@ export function HomeClient() {
     <>
       <CategoriesSection />
       <HeroSection />
+      <FreshnessBanner />
       <RandomPicksSection />
       <Link
         href="/bulk"
@@ -105,7 +107,6 @@ export function HomeClient() {
           Order Now
         </span>
       </Link>
-      <FreshnessBanner />
       <FlashDealsSection />
 
       {enabledSections.map((sec) => {
