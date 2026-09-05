@@ -51,8 +51,8 @@ export function DeliveryStrip() {
   const cityLabel = deliveryPincode === "734001" ? "Siliguri" : `Pincode`;
 
   return (
-    <div className="border-b border-border bg-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
+    <div className="border-b border-[#DFEEE2] bg-[#F2FAF2]">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 text-xs">
         <div className="relative" ref={ref}>
           <button
             onClick={() => setOpen(!open)}
@@ -60,7 +60,7 @@ export function DeliveryStrip() {
           >
             <MapPin className="h-3.5 w-3.5 text-brand-fresh-dim" />
             <span className="text-muted">Deliver to</span>
-            <span className="font-semibold">
+            <span className="font-semibold text-[#23682E]">
               {cityLabel}, {deliveryPincode}
             </span>
             <ChevronDown className="h-3 w-3 text-muted" />
@@ -128,10 +128,10 @@ export function DeliveryStrip() {
           )}
         </div>
 
-        <div className="hidden items-center gap-1.5 font-medium text-muted sm:flex">
-          <Clock className="h-3.5 w-3.5 text-brand-fresh-dim" />
+        <div className="hidden items-center gap-1.5 rounded-full border border-[#CFE6D4] bg-white px-3 py-1.5 font-medium text-muted sm:flex">
+          <Clock className="h-3.5 w-3.5 text-brand-fresh" />
           <span>
-            Arriving in <span className="font-semibold text-foreground">45–60 min</span>
+            Arriving in <span className="font-semibold text-[#23682E]">45–60 min</span>
           </span>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { Star, Truck, Shield, Package } from "lucide-react";
 const stats = [
   { icon: Package, value: "5K+", label: "Orders" },
   { icon: Star, value: "4.8", label: "Rating" },
-  { icon: Truck, value: "30m", label: "Delivery" },
+  { icon: Truck, value: "45m", label: "Delivery" },
   { icon: Shield, value: "100%", label: "Secure" },
 ];
 

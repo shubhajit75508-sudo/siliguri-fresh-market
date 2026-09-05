@@ -281,7 +281,7 @@ export default function FishPage() {
 
       {/* Product Grid */}
       {processed.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {processed.map((p, i) => (
             <div key={p.id} className={`animate-in animate-in-d${Math.min(i + 1, 10)}`}>
               <ProductCard product={p} badge="Fresh Catch" />

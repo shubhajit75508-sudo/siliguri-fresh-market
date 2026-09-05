@@ -76,7 +76,7 @@ export function FishSubcatClient({ slug }: { slug: string }) {
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
-                <Clock className="h-3.5 w-3.5" /> 30-min delivery
+                <Clock className="h-3.5 w-3.5" /> 45–60 min delivery
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
                 <Truck className="h-3.5 w-3.5" /> Free above ₹299
@@ -133,7 +133,7 @@ export function FishSubcatClient({ slug }: { slug: string }) {
           </div>
         </div>
         {products.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} badge="Fresh Catch" />
             ))}

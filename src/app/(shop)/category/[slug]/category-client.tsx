@@ -29,11 +29,15 @@ export function CategoryClient({ slug, category, products }: { slug: string; cat
   }
 
   return (
-    <div className="py-6">
-      <div className="mb-8">
-        <span className="text-3xl">{category.icon}</span>
-        <h1 className="mt-2 text-2xl font-extrabold">{category.name}</h1>
-        <p className="mt-1 text-sm text-muted">{category.description}</p>
+    <div className="py-3 sm:py-5">
+      <div className="storefront-panel mb-4 flex items-center gap-3.5 p-4 sm:p-5">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2D7D3A]/12 to-[#F5A623]/12 text-3xl">
+          {category.icon}
+        </div>
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-extrabold tracking-tight sm:text-2xl">{category.name}</h1>
+          <p className="mt-0.5 line-clamp-2 text-xs text-muted sm:text-sm">{category.description}</p>
+        </div>
       </div>
 
       <ProductFilterBar
@@ -44,7 +48,7 @@ export function CategoryClient({ slug, category, products }: { slug: string; cat
       />
 
       {processed.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-3 grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {processed.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

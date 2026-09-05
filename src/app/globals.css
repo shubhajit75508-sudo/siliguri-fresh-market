@@ -203,6 +203,46 @@ body {
   .section-title { font-size: 1.625rem; }
 }
 
+/* ===== STOREFRONT MARKETPLACE LAYOUT ===== */
+.storefront-panel {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FBFDFB 100%);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(16, 45, 20, 0.05);
+}
+
+.section-header-accent {
+  flex-shrink: 0;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #2D7D3A, #66BB6A);
+  align-self: stretch;
+}
+
+.view-all-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #CFE6D4;
+  background: #F2FAF2;
+  color: #2D7D3A;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.view-all-pill:hover {
+  background: #E8F5E9;
+  border-color: #A5D6A7;
+}
+
+/* Marketplace app-bar search (green header) */
+.appbar-search .rounded-full {
+  border-radius: 12px;
+}
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }

@@ -9,7 +9,7 @@ import { cartLineKey, useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { useToast } from "@/components/ui/toaster";
 import { RestockNotifyButton } from "@/components/product/restock-notify-button";
-import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
+import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight, cn } from "@/lib/utils";
 import { fbq } from "@/components/analytics/meta-pixel";
 import type { Product } from "@/types";
 
@@ -94,10 +94,15 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
   const tag =
     badge ||
     (product.isFlashDeal
-      ? "Fresh Catch"
+      ? "Flash Deal"
       : product.isTrending
         ? "Today's Pick"
         : null);
+
+  const discountPct =
+    displayOriginal && displayOriginal > displayPrice
+      ? Math.round((1 - displayPrice / displayOriginal) * 100)
+      : 0;
 
   if (variant === "horizontal") {
     return (
@@ -116,12 +121,12 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
           {available ? (
             <button
               onClick={handleAdd}
-              className="mt-2 flex h-9 w-full items-center justify-center gap-1 rounded-full btn-primary text-[12px] font-semibold"
+              className="mt-2 flex h-8 w-full items-center justify-center gap-1 rounded-lg border border-[#2D7D3A]/30 bg-[#F2FAF2] text-[12px] font-bold text-[#23682E] transition-all hover:bg-[#E8F5E9] active:scale-[0.98]"
             >
-              <Plus className="h-3.5 w-3.5" /> Add to cart
+              <Plus className="h-3.5 w-3.5" /> Add
             </button>
           ) : (
-            <RestockNotifyButton productId={product.id} productName={product.name} variant="icon" className="mt-2 h-9 w-full rounded-full" />
+            <RestockNotifyButton productId={product.id} productName={product.name} variant="icon" className="mt-2 h-8 w-full rounded-lg" />
           )}
         </div>
       </div>
@@ -134,41 +139,51 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
         whileHover={{ y: -3 }}
         whileTap={{ scale: 0.97 }}
         transition={{ type: "spring", stiffness: 380, damping: 26 }}
-        className="product-card flex h-full flex-col"
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#E7EFE9] bg-white shadow-[0_1px_3px_rgba(16,45,20,0.06)] transition-all duration-200 hover:border-[#A5D6A7] hover:shadow-[0_6px_20px_rgba(16,45,20,0.12)]"
       >
-        <div className="relative aspect-[5/4] overflow-hidden bg-white/5">
+        <div className="relative aspect-square w-full overflow-hidden bg-[#F7FAF8]">
           <Image
             src={product.image}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
-            className="object-cover product-img transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover product-img"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
           {tag && (
-            <span className="absolute right-3 top-3 rounded-full bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold text-white">
+            <span className="absolute right-2 top-2 rounded-md bg-white/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#23682E] shadow-sm backdrop-blur-sm">
               {tag}
             </span>
           )}
           {priceDropped.current && (
-            <span className="absolute left-3 top-3 rounded-full bg-brand-fresh px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg shadow-brand-fresh/30">
-              <TrendingDown className="mr-0.5 inline h-3 w-3" /> Price Dropped
+            <span className="absolute left-2 top-2 flex items-center gap-0.5 rounded-md bg-brand-fresh px-2 py-0.5 text-[9px] font-bold text-white shadow-md shadow-brand-fresh/30">
+              <TrendingDown className="h-2.5 w-2.5" /> Price Dropped
             </span>
           )}
-
-          <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            {b && <span className={`product-badge ${b.cls}`}>{b.label}</span>}
-          </div>
+          {discountPct > 0 && !priceDropped.current && (
+            <span className="absolute right-2 bottom-2 rounded-md bg-[#E53935] px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm">
+              {discountPct}% OFF
+            </span>
+          )}
+          {b && (
+            <span className="absolute left-2 bottom-2 rounded-md bg-white/85 px-2 py-0.5 text-[9px] font-bold text-[#23682E] shadow-sm backdrop-blur-sm">
+              {b.label}
+            </span>
+          )}
         </div>
 
-        <div className="flex flex-1 flex-col p-4">
-          <div className="mb-1.5 flex items-center gap-1 text-[11px] text-muted">
-            <Clock className="h-3 w-3" />
-            {product.deliveryEta} min
+        <div className="flex flex-1 flex-col p-2.5 sm:p-3">
+          <div className="mb-1 flex items-center gap-1 text-[10px] text-muted">
+            <Clock className="h-2.5 w-2.5" />
+            <span>{product.deliveryEta} min</span>
+            <span className="ml-auto flex items-center gap-0.5 text-[10px]">
+              <Star className="h-3 w-3 text-[#F5A623] fill-[#F5A623]" />
+              <span className="font-semibold text-foreground">{product.rating?.toFixed(1) || "4.5"}</span>
+              <span className="text-muted-light">({product.reviewCount || "120"})</span>
+            </span>
           </div>
 
-          <h3 className="line-clamp-2 leading-snug text-[15px] font-bold text-foreground">{product.name}</h3>
+          <h3 className="line-clamp-2 leading-snug text-[13px] font-semibold text-foreground">{product.name}</h3>
 
           {weights.length > 1 ? (
             <div className="mt-1.5 flex flex-wrap gap-1">
@@ -176,51 +191,48 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
                 <button
                   key={w}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedWeight(w); }}
-                  className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                  className={cn(
+                    "rounded-full border px-1.5 py-0.5 text-[9px] font-semibold transition-all",
                     selectedWeight === w
-                      ? "border-[#2D7D3A] bg-[#2D7D3A]/10 text-[#2D7D3A]"
+                      ? "border-[#2D7D3A] bg-[#2D7D3A]/10 text-[#23682E]"
                       : "border-border bg-surface-2 text-muted hover:border-muted"
-                  }`}
+                  )}
                 >
                   {w}
                 </button>
               ))}
             </div>
           ) : (
-            <p className="mt-0.5 text-[12px] text-muted">
+            <p className="mt-0.5 text-[11px] text-muted">
               {product.weight?.[0] || `1 ${product.unit}`}
             </p>
           )}
 
-          <div className="mt-1 flex items-center gap-1.5">
-            <span className="text-sm font-bold text-brand-fresh">{formatPrice(displayPrice)}</span>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+            <span className="text-[15px] font-extrabold text-[#2D7D3A]">{formatPrice(displayPrice)}</span>
             {displayOriginal && displayOriginal > displayPrice && (
               <span className="text-[11px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
             )}
-            <span className="text-[11px] text-muted ml-auto">
-              <Star className="h-3 w-3 inline text-brand-gold mr-0.5" />
-              {product.rating?.toFixed(1) || "4.5"} ({product.reviewCount || "120"})
-            </span>
           </div>
 
-          <div className="mt-auto pt-3">
+          <div className="mt-auto pt-2">
             {cartQuantity > 0 ? (
               <div
-                className="flex h-11 items-center justify-between rounded-full bg-brand-fresh px-1.5 shadow-md shadow-brand-fresh/20"
+                className="flex h-9 items-center justify-between rounded-lg bg-gradient-to-r from-[#2D7D3A] to-[#23682E] px-1 shadow-md shadow-brand-fresh/20"
                 onClick={(e) => e.preventDefault()}
               >
                 <button
                   onClick={handleDecrement}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-black/10"
+                  aria-label="Decrease quantity"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-white hover:bg-black/10"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="text-[13px] font-semibold text-white">
-                  {cartQuantity}
-                </span>
+                <span className="text-[13px] font-bold text-white tabular-nums">{cartQuantity}</span>
                 <button
                   onClick={handleIncrement}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-black/10"
+                  aria-label="Increase quantity"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-white hover:bg-black/10"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -228,7 +240,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             ) : available ? (
               <button
                 onClick={handleAdd}
-                className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border text-[13px] font-semibold text-foreground transition-all hover:border-[#2D7D3A]/40 hover:bg-[#2D7D3A]/5 active:scale-[0.98]"
+                className="flex h-9 w-full items-center justify-center gap-1 rounded-lg border border-[#2D7D3A]/30 bg-[#F2FAF2] text-[12px] font-bold text-[#23682E] transition-all hover:bg-[#E8F5E9] hover:border-[#2D7D3A] active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} />
                 Add

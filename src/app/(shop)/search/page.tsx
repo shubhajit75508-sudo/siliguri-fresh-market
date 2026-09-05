@@ -26,38 +26,35 @@ function SearchResults() {
   return (
     <div className="py-6">
       <FadeIn>
-        <h1 className="text-xl font-extrabold sm:text-2xl">
+        <div className="mb-1 flex items-center gap-2.5">
+          <span className="section-header-accent h-[26px]" />
+          <h1 className="text-lg font-extrabold tracking-tight sm:text-2xl">
+            {query ? (
+              <>
+                Results for &ldquo;{query}&rdquo;
+              </>
+            ) : (
+              <>Browse Products</>
+            )}
+          </h1>
+        </div>
+        <p className="text-sm text-muted">
           {query ? (
-            <>
-              Results for &ldquo;{query}&rdquo;
-              <span className="ml-2 text-base font-normal text-muted">
-                ({results.length} items)
-              </span>
-            </>
+            <span className="font-semibold text-[#23682E]">{results.length} item{results.length === 1 ? "" : "s"} found</span>
           ) : (
-            <>
-              Browse Products
-              <span className="ml-2 text-base font-normal text-muted">
-                ({browseProducts.length} items)
-              </span>
-            </>
+            trending.length > 0 ? "Trending picks — or search for something specific" : "All products — or search for something specific"
           )}
-        </h1>
-        {!query && (
-          <p className="mt-1 text-sm text-muted">
-            {trending.length > 0 ? "Trending picks — or search for something specific" : "All products — or search for something specific"}
-          </p>
-        )}
+        </p>
       </FadeIn>
 
       {!query && (
-        <div className="mt-2">
+        <div className="mt-1">
           <CategoriesSection />
         </div>
       )}
 
       {browseProducts.length > 0 ? (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {browseProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

@@ -18,7 +18,7 @@ export function Header() {
   const itemCount = hydrated ? getItemCount() : 0;
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
@@ -78,7 +78,7 @@ export function Header() {
 
             <button
               onClick={openCart}
-              className="flex h-10 items-center gap-2 rounded-full btn-primary px-5 text-[13px] font-semibold"
+              className="flex h-10 items-center gap-2 rounded-xl btn-primary px-5 text-[13px] font-semibold"
             >
               <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
               Cart
@@ -91,61 +91,68 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile */}
-        <div className="flex h-14 items-center gap-3 lg:hidden">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-fresh/20"><Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={36} height={36} className="h-9 w-9 object-contain rounded-lg" /></div>
-            <div className="leading-none">
-              <div className="text-sm font-bold text-foreground">Siliguri</div>
-              <div className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider">Fresh Mart</div>
-            </div>
-          </Link>
-          <div className="ml-auto flex items-center gap-1.5">
-            {currentUser ? (
-              <Link
-                href={currentUser.role === "admin" ? "/admin" : currentUser.role === "delivery" ? "/delivery" : "/account"}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-dark text-[10px] font-bold text-white"
-              >
-                {currentUser.name.charAt(0)}
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/auth/signup"
-                  className="flex h-8 items-center rounded-full btn-secondary px-2.5 text-[10px] font-medium"
-                >
-                  Sign Up
-                </Link>
-                <Link
-                  href="/auth/login"
-                  className="flex h-8 items-center rounded-full border border-brand-fresh/30 bg-brand-fresh/5 px-3 text-[11px] font-semibold text-brand-fresh-dim"
-                >
-                  Log In
-                </Link>
-              </>
-            )}
-            <button
-              onClick={openCart}
-              className="relative flex h-8 w-8 items-center justify-center rounded-full btn-primary"
-            >
-              <ShoppingBag className="h-3.5 w-3.5" />
-              {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#F5A623] text-[8px] font-bold text-white">
-                  {itemCount}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground"
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
-          </div>
-        </div>
+        {/* Mobile — marketplace app bar */}
+        <div className="-mx-4 bg-gradient-to-r from-[#1F6230] to-[#2D7D3A] px-4 pt-2 pb-2.5 sm:-mx-6 sm:px-6 lg:hidden">
+          <div className="flex h-12 items-center gap-2.5">
+            <Link href="/" className="flex min-w-0 items-center gap-2.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/15 ring-1 ring-white/25">
+                <Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={40} height={40} className="h-9 w-9 object-contain" />
+              </div>
+              <div className="min-w-0 leading-none">
+                <div className="truncate text-[15px] font-extrabold text-white tracking-tight">Siliguri</div>
+                <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-[#FFD98A]">Fresh Mart</div>
+              </div>
+            </Link>
 
-        <div className="pb-3 lg:hidden">
-          <SearchBar />
+            <div className="ml-auto flex shrink-0 items-center gap-1.5">
+              {currentUser ? (
+                <Link
+                  href={currentUser.role === "admin" ? "/admin" : currentUser.role === "delivery" ? "/delivery" : "/account"}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25 text-[11px] font-bold text-white"
+                >
+                  {currentUser.name.charAt(0)}
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="flex h-9 items-center rounded-xl bg-white px-3.5 text-[12px] font-bold text-[#23682E] shadow-sm"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="flex h-9 items-center rounded-xl border border-white/40 px-3.5 text-[12px] font-semibold text-white"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+              <button
+                onClick={openCart}
+                aria-label="Open cart"
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25 text-white"
+              >
+                <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={2.5} />
+                {itemCount > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F5A623] px-1 text-[10px] font-bold text-white shadow-md ring-2 ring-[#F5A623]/40">
+                    {itemCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Menu"
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25 text-white"
+              >
+                {mobileMenuOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="pb-0.5 pt-1.5">
+            <SearchBar />
+          </div>
         </div>
       </div>
 

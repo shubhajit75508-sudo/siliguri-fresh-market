@@ -101,16 +101,17 @@ export function CartDrawer() {
             className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-white shadow-2xl border-l border-border"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="flex items-center justify-between bg-gradient-to-r from-[#23682E] to-[#2D7D3A] px-5 py-4">
               <div>
-                <h2 className="text-lg font-extrabold text-foreground"><ShoppingCart className="h-5 w-5 inline mr-1.5" />Your Cart</h2>
-                <p className="text-xs text-muted mt-0.5">{getItemCount()} items</p>
+                <h2 className="text-lg font-extrabold text-white"><ShoppingCart className="h-5 w-5 inline mr-1.5" />Your Cart</h2>
+                <p className="text-xs text-white/80 mt-0.5">{getItemCount()} items</p>
               </div>
               <button
                 onClick={closeCart}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border hover:bg-surface-2 transition-all"
+                aria-label="Close cart"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25"
               >
-                <X className="h-5 w-5 text-muted" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
