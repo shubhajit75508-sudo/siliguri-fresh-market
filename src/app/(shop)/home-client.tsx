@@ -84,12 +84,12 @@ export function HomeClient() {
 
   return (
     <>
+      <CategoriesSection />
       <HeroSection />
-      <RandomPicksSection />
-      <div className="mt-4 mb-6">
+      <div className="mb-1 mt-4">
         <TrustBar />
       </div>
-      <CategoriesSection />
+      <RandomPicksSection />
       <Link
         href="/bulk"
         className="my-4 flex items-center gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 transition-all hover:border-emerald-300 hover:shadow-md sm:px-6 sm:py-4"
