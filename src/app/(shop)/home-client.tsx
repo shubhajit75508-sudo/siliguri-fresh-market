@@ -3,7 +3,6 @@
 import { useAdminStore } from "@/store/admin-store";
 import { useProductsByCategory, useCategories } from "@/lib/hooks/use-products";
 import { HeroSection } from "@/components/home/hero-section";
-import { RandomPicksSection } from "@/components/home/random-picks";
 import { CategoriesSection } from "@/components/home/categories-section";
 import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
@@ -87,7 +86,6 @@ export function HomeClient() {
       <CategoriesSection />
       <HeroSection />
       <FreshnessBanner />
-      <RandomPicksSection />
       <Link
         href="/bulk"
         className="my-4 flex items-center gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 transition-all hover:border-emerald-300 hover:shadow-md sm:px-6 sm:py-4"
