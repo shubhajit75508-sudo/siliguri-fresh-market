@@ -3,14 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Package } from "lucide-react";
-import { useCategories } from "@/lib/hooks/use-products";
+import { cats, moreCats } from "@/components/home/categories-section";
 
 export function CategoriesGrid() {
-  const { data: categories = [] } = useCategories();
-
-  if (!categories.length) return null;
-
-  const tiles = categories.slice(0, 9);
+  const tiles = [...cats, ...moreCats];
 
   return (
     <section className="pt-3 pb-1 sm:pt-4">
@@ -29,19 +25,19 @@ export function CategoriesGrid() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-5 lg:grid-cols-5">
+      <div className="grid grid-cols-3 gap-3 sm:gap-5">
         {tiles.map((cat) => (
           <Link
-            key={cat.slug}
-            href={`/category/${cat.slug}`}
+            key={cat.name}
+            href={cat.href}
             className="group relative aspect-square overflow-hidden rounded-2xl border border-[#E7EFE9] bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:rounded-3xl"
           >
-            {cat.image ? (
+            {cat.img ? (
               <Image
-                src={cat.image}
+                src={cat.img}
                 alt={cat.name}
                 fill
-                sizes="(max-width: 640px) 30vw, 18vw"
+                sizes="(max-width: 640px) 30vw, 26vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
@@ -56,6 +52,17 @@ export function CategoriesGrid() {
             </span>
           </Link>
         ))}
+
+        <Link
+          href="/search"
+          className="group relative aspect-square overflow-hidden rounded-2xl border border-[#E7EFE9] bg-gradient-to-br from-[#2D7D3A] to-[#3E9B4E] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:rounded-3xl"
+        >
+          <div className="absolute inset-0 bg-white/10 transition-colors group-hover:bg-white/20" />
+          <span className="absolute inset-x-2.5 bottom-2 truncate text-left text-[12px] font-extrabold text-white drop-shadow sm:bottom-2.5 sm:text-sm">
+            Shop All
+          </span>
+          <Package className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 text-white/85" />
+        </Link>
       </div>
     </section>
   );
