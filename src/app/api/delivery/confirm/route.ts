@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (!payload) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   const role = getRole(payload);
   const userId = getUserId(payload);
-  if (!userId || (role !== "delivery" && role !== "admin")) {
+  if (!userId || (role !== "delivery" && role !== "admin" && role !== "manager")) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 

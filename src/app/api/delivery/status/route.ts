@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
 
   const payload = await getSession(req);
   if (!payload) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  if (getRole(payload) !== "delivery") return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+  const role = getRole(payload);
+  if (role !== "delivery" && role !== "manager") return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   const userId = getUserId(payload);
   if (!userId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
@@ -30,7 +31,8 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (fetchError || !order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  if (order.delivery_boy_id !== userId) return NextResponse.json({ error: "Order not assigned to you" }, { status: 403 });
+  // Delivery boys can only update their own assignments; managers act on any order.
+  if (role === "delivery" && order.delivery_boy_id !== userId) return NextResponse.json({ error: "Order not assigned to you" }, { status: 403 });
 
   const dbUpdates: Record<string, unknown> = { delivery_status: deliveryStatus };
   if (status) dbUpdates.status = status;

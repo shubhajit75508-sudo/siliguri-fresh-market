@@ -107,8 +107,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (fetchError || !order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
   if (order.status === "cancelled") return NextResponse.json({ error: "Order already cancelled" }, { status: 400 });
 
-  const isAdmin = Boolean(admin);
-  if (!isAdmin) {
+  // Managers can cancel orders like admins (core day-to-day ops).
+  const isAdmin = Boolean(admin) || (payload ? getRole(payload) === "manager" : false);  if (!isAdmin) {
     if (order.status === "delivered" || order.delivery_status === "delivered") {
       return NextResponse.json({ error: "Cannot cancel a delivered order" }, { status: 400 });
     }

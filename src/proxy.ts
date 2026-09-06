@@ -102,9 +102,24 @@ export async function proxy(req: NextRequest) {
   if (pathname.startsWith("/admin")) {
     if (req.method === "OPTIONS") return NextResponse.next();
     const payload = await getSessionPayload(req);
-    if (!payload || !payload.endsWith("|admin")) {
+    if (!payload) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
+    const role = payload.split("|").pop();
+    if (role === "admin") return NextResponse.next();
+    if (role === "manager") {
+      // Managers are restricted to the orders + delivery board only.
+      if (
+        pathname === "/admin/login" ||
+        pathname === "/admin" ||
+        pathname === "/admin/orders" ||
+        pathname === "/admin/delivery"
+      ) {
+        return NextResponse.next();
+      }
+      return NextResponse.redirect(new URL("/admin/orders", req.url));
+    }
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
   // Guard /delivery page routes
@@ -162,6 +177,9 @@ export async function proxy(req: NextRequest) {
     // User creation during signup — allow unauthenticated
     if (pathname === "/api/admin/users" && req.method === "POST") return NextResponse.next();
 
+    // Staff login — validates credentials itself (no session required)
+    if (pathname === "/api/admin/login" && req.method === "POST") return NextResponse.next();
+
     // Product management — allow authenticated admins only
     if (pathname === "/api/admin/products" && (req.method === "POST" || req.method === "PUT" || req.method === "DELETE")) {
       const payload = await getSessionPayload(req);
@@ -177,10 +195,14 @@ export async function proxy(req: NextRequest) {
     if (!payload) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    if (!payload.endsWith("|admin")) {
+    const role = payload.split("|").pop();
+    if (role === "admin") return applyCors(req, NextResponse.next());
+    if (role === "manager") {
+      // Managers can read + update orders and their assignments, nothing else.
+      if (pathname === "/api/admin/orders") return applyCors(req, NextResponse.next());
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    return applyCors(req, NextResponse.next());
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   return applyCors(req, NextResponse.next());
