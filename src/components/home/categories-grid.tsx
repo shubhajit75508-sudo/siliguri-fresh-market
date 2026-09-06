@@ -33,7 +33,7 @@ export function CategoriesGrid() {
           <Reveal key={cat.name} delay={(i % 3) * 0.06} y={18}>
             <Link
               href={cat.href}
-              className="group relative aspect-square overflow-hidden rounded-2xl border border-[#E7EFE9] bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:rounded-3xl"
+              className="group relative flex aspect-square overflow-hidden rounded-2xl border border-[#E7EFE9] bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:rounded-3xl"
             >
               {cat.img ? (
                 <Image
