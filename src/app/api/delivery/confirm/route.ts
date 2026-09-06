@@ -25,15 +25,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 
-  const { orderId, code } = await req.json();
+  const { orderId } = await req.json();
 
-  if (!orderId || !code) {
-    return NextResponse.json({ error: "Missing orderId or code" }, { status: 400 });
+  if (!orderId) {
+    return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
   }
 
   const { data: order, error: fetchError } = await supabaseAdmin
     .from("orders")
-    .select("delivery_code, payment_status, payment_method, delivery_boy_id, user_id, customer_name, total, id, address_snapshot")
+    .select("payment_status, payment_method, delivery_boy_id, user_id, customer_name, total, id")
     .eq("id", orderId)
     .single();
 
@@ -41,18 +41,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
 
-  // delivery_code may live in the top-level column OR inside address_snapshot
-  const orderDeliveryCode = order.delivery_code
-    || ((order.address_snapshot as Record<string, unknown>)?.delivery_code as string)
-    || "";
-
-  // Only the assigned delivery boy (or an admin) can confirm delivery
+  // Only the assigned delivery boy (or an admin/manager) can confirm delivery
   if (role === "delivery" && order.delivery_boy_id !== userId) {
     return NextResponse.json({ error: "Order not assigned to you" }, { status: 403 });
-  }
-
-  if (orderDeliveryCode !== code) {
-    return NextResponse.json({ error: "Invalid delivery code" }, { status: 403 });
   }
 
   const updates: Record<string, unknown> = {

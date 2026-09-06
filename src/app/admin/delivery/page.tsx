@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { Truck, MapPin, Clock, Package, Navigation } from "lucide-react";
+import { Truck, MapPin, Clock, Package, Navigation, CheckCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
@@ -20,9 +21,10 @@ interface BoyLocation {
 }
 
 export default function DeliveryPage() {
-  const { orders, loaded, loadOrders } = useOrderStore();
+  const { orders, loaded, loadOrders, confirmDelivery } = useOrderStore();
   const { assignments, deliveryBoys } = useDeliveryStore();
   const [boyLocations, setBoyLocations] = useState<BoyLocation[]>([]);
+  const [markingDelivered, setMarkingDelivered] = useState<string | null>(null);
 
   useEffect(() => { loadOrders(); }, [loadOrders]);
   useEffect(() => {
@@ -89,6 +91,18 @@ export default function DeliveryPage() {
     const interval = setInterval(fetchLocations, 15000);
     return () => clearInterval(interval);
   }, [activeDeliveries.length, deliveryBoys]);
+
+  const handleMarkDelivered = async (orderId: string) => {
+    setMarkingDelivered(orderId);
+    try {
+      await confirmDelivery(orderId);
+      await loadOrders();
+    } catch (e) {
+      console.error("Mark delivered failed:", e);
+    } finally {
+      setMarkingDelivered(null);
+    }
+  };
 
   const mapMarkers = boyLocations.map((b) => ({
     position: [b.lat, b.lng] as [number, number],
@@ -258,10 +272,24 @@ export default function DeliveryPage() {
                 {assignment && (
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted">
                     <Package className="h-3 w-3" />
-                    {assignment.items.length} items
+                    {assignment.items.length} item{assignment.items.length > 1 ? "s" : ""} · {o.items.length} product{o.items.length > 1 ? "s" : ""}
                     <span className="mx-1">·</span>
                     <Clock className="h-3 w-3" />
                     {timeSinceUpdate || "No GPS"}
+                  </div>
+                )}
+                {o.deliveryStatus === "picked_up" && (
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      variant="fresh"
+                      size="sm"
+                      disabled={markingDelivered === o.id}
+                      onClick={() => handleMarkDelivered(o.id)}
+                      className="bg-brand-fresh hover:bg-brand-fresh/90"
+                    >
+                      {markingDelivered === o.id ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <CheckCircle className="mr-1 h-3.5 w-3.5" />}
+                      Mark Delivered
+                    </Button>
                   </div>
                 )}
               </div>

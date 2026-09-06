@@ -9,7 +9,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import LiveMap from "@/components/maps/LiveMap";
 import type { DeliveryAssignment, Order } from "@/types";
 import {
-  Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, KeyRound, LocateFixed,
+  Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, LocateFixed,
   XCircle, Clock, AlertTriangle, ImageIcon,
 } from "lucide-react";
 
@@ -189,20 +189,14 @@ function AvailableCard({
 // ── Delivery Card (existing) ─────────────────────────
 
 function DeliveryCard({
-  a, deliveryCodes, setDeliveryCodes, codeError, setCodeError,
-  currentPosition, customerLocations,
-  onAccept, onPickUp, onConfirm,
+  a, currentPosition, customerLocations,
+  onAccept, onPickUp,
 }: {
   a: DeliveryAssignment;
-  deliveryCodes: Record<string, string>;
-  setDeliveryCodes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-  codeError: string | null;
-  setCodeError: React.Dispatch<React.SetStateAction<string | null>>;
   currentPosition: [number, number] | null;
   customerLocations: Record<string, [number, number]>;
   onAccept: (orderId: string) => void;
   onPickUp: (orderId: string) => void;
-  onConfirm: (orderId: string, code: string) => Promise<void>;
 }) {
   return (
     <div className="mb-3 rounded-2xl border border-white/5 bg-surface p-4 shadow-sm">
@@ -329,37 +323,13 @@ function DeliveryCard({
             </Button>
           )}
           {a.status === "picked_up" && (
-            <div className="w-full space-y-2">
-              <div className="flex items-center gap-2">
-                <KeyRound className="h-3.5 w-3.5 text-muted" />
-                <input
-                  type="tel"
-                  maxLength={4}
-                  placeholder="Enter 4-digit code"
-                  value={deliveryCodes[a.orderId] || ""}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, "").slice(0, 4);
-                    setDeliveryCodes((prev) => ({ ...prev, [a.orderId]: val }));
-                    setCodeError(null);
-                  }}
-                  className="flex-1 rounded-xl border border-border bg-surface px-4 py-3 text-base text-center tracking-[0.3em] font-bold text-foreground placeholder:text-muted/50 outline-none focus:border-brand-fresh/50 focus:ring-2 focus:ring-brand-fresh/20"
-                />
-              </div>
-              {codeError && <p className="text-xs text-brand-red">{codeError}</p>}
-              <Button
-                variant="fresh"
-                size="sm"
-                className="w-full"
-                disabled={(deliveryCodes[a.orderId] || "").length < 4}
-                onClick={async () => {
-                  const enteredCode = deliveryCodes[a.orderId];
-                  if (!enteredCode || enteredCode.length < 4) return;
-                  try { await onConfirm(a.orderId, enteredCode); }
-                  catch { setCodeError("Invalid code. Try again."); }
-                }}
-              >
-                <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivery
-              </Button>
+            <div className="w-full rounded-xl border border-dashed border-brand-fresh/30 bg-brand-fresh/5 p-3 text-center">
+              <p className="text-xs font-medium text-brand-fresh flex items-center justify-center gap-1.5">
+                <CheckCircle className="h-3.5 w-3.5" /> Delivered on-site
+              </p>
+              <p className="mt-1 text-[11px] text-muted">
+                Awaiting confirmation by admin to close this delivery
+              </p>
             </div>
           )}
         </div>
@@ -389,15 +359,14 @@ function mapDbOrder(r: Record<string, unknown>): Order {
     deliveryBoyName: r.delivery_boy_name as string | undefined,
     returnRequested: Boolean(r.return_requested),
     returnApproved: Boolean(r.return_approved),
-    deliveryCode: (r.delivery_code as string) ?? "",
   };
 }
 
 // ── Main Dashboard ───────────────────────────────────
 
 export default function DeliveryDashboard() {
-  const { boy, assignments, confirmDelivery: deliveryConfirm } = useDeliveryStore();
-  const { acceptDelivery, pickUpDelivery, confirmDelivery } = useOrderStore();
+  const { boy, assignments } = useDeliveryStore();
+  const { acceptDelivery, pickUpDelivery } = useOrderStore();
 
   // Available orders state
   const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
@@ -409,8 +378,6 @@ export default function DeliveryDashboard() {
   const [tracking, setTracking] = useState(false);
   const [gpsError, setGpsError] = useState("");
   const watchIdRef = useRef<number | null>(null);
-  const [deliveryCodes, setDeliveryCodes] = useState<Record<string, string>>({});
-  const [codeError, setCodeError] = useState<string | null>(null);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
   const [customerLocations, setCustomerLocations] = useState<Record<string, [number, number]>>({});
@@ -575,19 +542,6 @@ export default function DeliveryDashboard() {
     );
   };
 
-  const handleConfirm = async (orderId: string, code: string) => {
-    const prevOrders = useOrderStore.getState().orders;
-    try {
-      await confirmDelivery(orderId, code);
-      deliveryConfirm(assignments.find((x) => x.orderId === orderId)?.id || "");
-      setDeliveryCodes((prev) => ({ ...prev, [orderId]: "" }));
-      setCodeError(null);
-    } catch (e) {
-      useOrderStore.setState({ orders: prevOrders });
-      setCodeError(e instanceof Error ? e.message : "Invalid code. Try again.");
-    }
-  };
-
   const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
   const outForDelivery = active.filter((a) => a.status === "picked_up");
 
@@ -701,7 +655,7 @@ export default function DeliveryDashboard() {
               <div>
                 <h3 className="mb-2 text-sm font-semibold text-muted uppercase tracking-wide">Pickup</h3>
                 {pickupStatuses.map((a) => (
-                  <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} onConfirm={handleConfirm} />
+                  <DeliveryCard key={a.id} a={a} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} />
                 ))}
               </div>
             )}
@@ -713,7 +667,7 @@ export default function DeliveryDashboard() {
                   <Truck className="h-4 w-4" /> Out for Delivery
                 </h3>
                 {outForDelivery.map((a) => (
-                  <DeliveryCard key={a.id} a={a} deliveryCodes={deliveryCodes} setDeliveryCodes={setDeliveryCodes} codeError={codeError} setCodeError={setCodeError} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} onConfirm={handleConfirm} />
+                  <DeliveryCard key={a.id} a={a} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} />
                 ))}
               </div>
             )}

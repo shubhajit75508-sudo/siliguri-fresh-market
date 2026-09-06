@@ -377,22 +377,24 @@ export const useOrderStore = create<OrderState>()(
           if (!ok) set({ orders: prev });
         },
 
-        confirmDelivery: async (orderId, code) => {
+        confirmDelivery: async (orderId, _code) => {
           const prev = get().orders;
           try {
-            const res = await fetch("/api/delivery/confirm", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ orderId, code }),
-            });
-            if (!res.ok) {
-              const err = await res.json();
-              throw new Error(err.error || "Verification failed");
+            if (isSupabaseConfigured()) {
+              const res = await fetch("/api/delivery/confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId }),
+              });
+              if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Confirmation failed");
+              }
             }
             set((state) => ({
               orders: state.orders.map((o) =>
                 o.id === orderId
-                  ? { ...o, deliveryStatus: "delivered" as DeliveryStatus, status: "delivered" as Order["status"], paymentStatus: o.paymentMethod === "cod" ? "paid" as const : o.paymentStatus }
+                  ? { ...o, deliveryStatus: "delivered" as DeliveryStatus, status: "delivered" as Order["status"], paymentStatus: o.paymentMethod === "cod" ? "paid" as const : o.paymentStatus, deliveredAt: new Date().toISOString() }
                   : o
               ),
             }));

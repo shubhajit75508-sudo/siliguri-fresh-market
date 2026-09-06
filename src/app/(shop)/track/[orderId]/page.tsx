@@ -1,10 +1,10 @@
 "use client";
 
-import { use, useState, useEffect, useCallback, useRef } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  Clock, XCircle, AlertTriangle, Copy, KeyRound, Ban, Loader2,
+  Clock, XCircle, AlertTriangle, Ban, Loader2,
   Package, ShoppingBag, Truck, CheckCircle, MapPin, Shield, Leaf, Navigation, FileText,
 } from "lucide-react";
 import type { Order, DeliveryStatus } from "@/types";
@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getRemainingTime } from "@/components/ui/return-policy";
 import { useOrderStore } from "@/store/order-store";
-import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import { getItemLineTotal } from "@/lib/utils";
 import dynamic from "next/dynamic";
@@ -45,7 +44,6 @@ export default function TrackOrderPage({
   const [lastUpdated, setLastUpdated] = useState("");
   const [showCancel, setShowCancel] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const codeRetryRef = useRef(false);
   const toast = useToast();
   const { cancelOrder } = useOrderStore();
 
@@ -93,16 +91,9 @@ export default function TrackOrderPage({
           deliveryBoyId: (raw.delivery_boy_id as string) ?? undefined,
           deliveryBoyName: (raw.delivery_boy_name as string) ?? undefined,
           deliveryStatus: (raw.delivery_status as Order["deliveryStatus"]) ?? undefined,
-          deliveryCode: (raw.delivery_code as string) ?? "",
           returnRequested: raw.return_requested as boolean | undefined,
           returnApproved: raw.return_approved as boolean | undefined,
         });
-        // The signed session cookie may still be settling after page load — if a
-        // logged-in customer got a redacted order (no code), refetch once.
-        if (!raw.delivery_code && !codeRetryRef.current && useAuthStore.getState().currentUser) {
-          codeRetryRef.current = true;
-          setTimeout(() => fetchOrder(), 900);
-        }
       })
       .catch(() => setOrder(null))
       .finally(() => setLoading(false));
@@ -137,13 +128,11 @@ export default function TrackOrderPage({
             if (!prev) return prev;
           const newStatus = raw.status as Order["status"];
           const newDeliveryStatus = (raw.delivery_status as string) ?? undefined;
-          const newCode = (raw.delivery_code as string) ?? prev.deliveryCode;
-          if (newStatus === prev.status && newDeliveryStatus === prev.deliveryStatus && newCode === prev.deliveryCode) return prev;
+          if (newStatus === prev.status && newDeliveryStatus === prev.deliveryStatus) return prev;
           return {
             ...prev,
             status: newStatus,
             deliveryStatus: newDeliveryStatus as DeliveryStatus | undefined,
-            deliveryCode: newCode,
               deliveryBoyId: (raw.delivery_boy_id as string) ?? prev.deliveryBoyId,
               deliveryBoyName: (raw.delivery_boy_name as string) ?? prev.deliveryBoyName,
             };
@@ -361,30 +350,6 @@ export default function TrackOrderPage({
           </div>
         )}
       </div>
-
-      {/* Delivery Code */}
-      {order.deliveryCode && (
-        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2D7D3A]/30 bg-[#2D7D3A]/5 p-5 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <KeyRound className="h-4 w-4 text-[#2D7D3A]" />
-            <p className="text-xs font-semibold text-muted">
-              {isDelivered ? "Delivery code used" : isOutForDelivery ? "Share this code with delivery partner" : "Show this code to your delivery partner when they arrive"}
-            </p>
-          </div>
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-3xl sm:text-4xl font-extrabold tracking-[0.15em] text-foreground select-all">
-              {order.deliveryCode}
-            </span>
-            <button
-              onClick={() => { navigator.clipboard.writeText(order.deliveryCode!); }}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-2 hover:bg-surface transition-all"
-              title="Copy code"
-            >
-              <Copy className="h-4 w-4 text-muted" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Return / replacement */}
       {isDelivered && (

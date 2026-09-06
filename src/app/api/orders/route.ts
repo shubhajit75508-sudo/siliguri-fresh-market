@@ -152,9 +152,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // The delivery code is ALWAYS generated server-side — never trusted from the client.
-  const deliveryCode = Math.floor(1000 + Math.random() * 9000).toString();
-
   // Payment status is always set by the server — never trusted from the client.
   // Admins mark orders paid only after manually verifying the UPI transaction.
   //
@@ -171,7 +168,6 @@ export async function POST(req: NextRequest) {
     subtotal,
     delivery_fee: deliveryFee,
     discount: couponDiscount,
-    delivery_code: deliveryCode,
     delivery_slot: body.delivery_slot ?? null,
     delivery_window: body.delivery_window ?? null,
     payment_id: paymentMethod === "upi" && upiReference ? upiReference : null,
@@ -195,7 +191,6 @@ export async function POST(req: NextRequest) {
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",
     delivery_boy_id: body.delivery_boy_id ?? null,
-    delivery_code: deliveryCode,
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
     created_at: body.created_at ?? new Date().toISOString(),
