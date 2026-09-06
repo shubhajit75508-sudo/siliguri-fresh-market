@@ -6,16 +6,19 @@ import { signSessionToken } from "@/lib/session";
 
 type StaffRole = "admin" | "manager";
 
+// Passwords are keyed by email so removing/reordering emails in the creds lists
+// never shifts which stored hash an admin is validated against.
+const ADMIN_PASSWORD_ENVS: Record<string, string> = {
+  "shubhajit75508@gmail.com": "ADMIN_PASSWORD_1",
+  "vaikaradigiital@gmail.com": "ADMIN_PASSWORD_3",
+};
+
 function getStaffPasswordHash(email: string, role: StaffRole): string | null {
   if (role === "manager") {
     return process.env.MANAGER_PASSWORD ?? null;
   }
-  for (let i = 0; i < ADMIN_EMAILS.length; i++) {
-    if (ADMIN_EMAILS[i] === email) {
-      return process.env[`ADMIN_PASSWORD_${i + 1}`] ?? null;
-    }
-  }
-  return null;
+  const envName = ADMIN_PASSWORD_ENVS[email] ?? null;
+  return envName ? (process.env[envName] ?? null) : null;
 }
 
 export async function POST(req: NextRequest) {
