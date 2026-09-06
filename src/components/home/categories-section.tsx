@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronRight, Package } from "lucide-react";
+import { ChevronDown, Package } from "lucide-react";
 
 const cats = [
   { name: "Fish", href: "/fish", img: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_1_m5fhyp.jpg" },
@@ -35,20 +35,7 @@ export function CategoriesSection() {
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <section className="-mx-4 mb-1 bg-gradient-to-b from-[#EBF4ED] to-transparent px-4 pb-2 pt-3 sm:mx-0 sm:bg-none sm:px-0 sm:pb-3 sm:pt-4">
-      <div className="mb-3 flex items-end justify-between gap-4 animate-in">
-        <div className="flex items-center gap-2.5">
-          <span className="section-header-accent h-6" />
-          <div>
-            <h2 className="text-[17px] sm:text-[22px] font-extrabold tracking-tight text-foreground leading-tight">Shop by category</h2>
-            <p className="mt-0.5 text-[12px] text-muted">Hand-picked fresh, every morning.</p>
-          </div>
-        </div>
-        <Link href="/search" className="view-all-pill shrink-0">
-          View All <ChevronRight className="h-3.5 w-3.5" />
-        </Link>
-      </div>
-
+    <section className="pb-1 pt-2 sm:pb-2 sm:pt-3">
       <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 py-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:py-2 sm:gap-4">
         {cats.map((cat, i) => (
           <RailTile key={cat.name} cat={cat} delay={i + 1} />

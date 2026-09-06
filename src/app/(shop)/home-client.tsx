@@ -4,6 +4,7 @@ import { useAdminStore } from "@/store/admin-store";
 import { useProductsByCategory, useCategories } from "@/lib/hooks/use-products";
 import { HeroSection } from "@/components/home/hero-section";
 import { CategoriesSection } from "@/components/home/categories-section";
+import { CategoriesGrid } from "@/components/home/categories-grid";
 import { ProductSection } from "@/components/home/product-section";
 import { FlashDealsSection } from "@/components/home/flash-deals";
 import { FAQSection } from "@/components/home/faq-section";
@@ -86,6 +87,7 @@ export function HomeClient() {
       <CategoriesSection />
       <HeroSection />
       <FreshnessBanner />
+      <CategoriesGrid />
       <Link
         href="/bulk"
         className="my-4 flex items-center gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 transition-all hover:border-emerald-300 hover:shadow-md sm:px-6 sm:py-4"
