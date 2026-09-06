@@ -43,7 +43,7 @@ export default function LoginPage() {
     if (result.success && result.user) {
       toast.add(`Welcome, ${result.user.name}!`);
 
-      if (result.user.role === "admin") {
+      if (result.user.role === "admin" || result.user.role === "manager") {
         adminStore.loginDirect(result.user);
         setTimeout(() => router.push("/admin"), 100);
       } else if (result.user.role === "delivery") {

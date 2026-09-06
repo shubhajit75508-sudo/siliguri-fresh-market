@@ -39,12 +39,13 @@ export function getAvailableWeights(_price: number, category: string, customWeig
 }
 
 /** Get the price for a specific weight from weightPrices, or fall back to base price * multiplier */
-export function getPriceForWeight(basePrice: number, weight: string, weightPrices?: { weight: string; price: number }[]): number {
+export function getPriceForWeight(basePrice: number, weight: string | undefined, weightPrices?: { weight: string; price: number }[]): number {
+  const norm = weight?.trim().toLowerCase() ?? "";
   if (weightPrices) {
-    const match = weightPrices.find(w => w.weight.toLowerCase() === weight.toLowerCase());
+    const match = weightPrices.find(w => w.weight.toLowerCase() === norm);
     if (match) return match.price;
   }
-  return basePrice * getWeightMultiplier(weight);
+  return basePrice * getWeightMultiplier(norm);
 }
 
 /** Get the original (pre-discount) price for a weight, scaled proportionally */
@@ -52,4 +53,32 @@ export function getOriginalPriceForWeight(basePrice: number, originalPrice: numb
   if (!originalPrice || originalPrice <= basePrice) return undefined;
   const ratio = originalPrice / basePrice;
   return Math.round(getPriceForWeight(basePrice, weight, weightPrices) * ratio);
+}
+
+interface WeightPriceInput {
+  price: number;
+  weightPrices?: { weight: string; price: number }[];
+}
+
+/** Per-unit price of an order line item, honoring the server-computed unitPrice,
+ *  then weightPrices, and finally the linear weight multiplier. */
+export function getItemUnitPrice(item: {
+  unitPrice?: number;
+  product?: WeightPriceInput;
+  selectedWeight?: string;
+}): number {
+  if (typeof item.unitPrice === "number" && Number.isFinite(item.unitPrice) && item.unitPrice > 0) {
+    return item.unitPrice;
+  }
+  return getPriceForWeight(item.product?.price ?? 0, item.selectedWeight, item.product?.weightPrices);
+}
+
+/** Line total (unit price × quantity) for an order line item. */
+export function getItemLineTotal(item: {
+  unitPrice?: number;
+  product?: WeightPriceInput;
+  selectedWeight?: string;
+  quantity?: number;
+}): number {
+  return getItemUnitPrice(item) * (item.quantity ?? 1);
 }

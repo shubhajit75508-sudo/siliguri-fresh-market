@@ -158,7 +158,7 @@ export interface DeliveryAssignment {
   customerPhone: string;
   paymentStatus?: "paid" | "unpaid" | "refunded";
   address: Address;
-  items: { product: { id: string; name: string; image?: string; price: number }; quantity: number; selectedWeight?: string; selectedCut?: string; selectedCleaning?: string }[];
+  items: { product: { id: string; name: string; image?: string; price: number; weightPrices?: { weight: string; price: number }[] }; quantity: number; selectedWeight?: string; selectedCut?: string; selectedCleaning?: string; unitPrice?: number }[];
   total: number;
   status: "assigned" | "accepted" | "picked_up" | "delivered";
   assignedAt: string;

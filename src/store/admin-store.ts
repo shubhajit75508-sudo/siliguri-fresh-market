@@ -75,7 +75,7 @@ export const useAdminStore = create<AdminState>()(
         login: () => false,
 
         loginDirect: (currentUser) => {
-          if (currentUser?.role === "admin") {
+          if (currentUser?.role === "admin" || currentUser?.role === "manager") {
             set({ isLoggedIn: true });
           }
         },

@@ -3,6 +3,7 @@ import { devtools } from "zustand/middleware";
 import type { Order, CartItem, Address, DeliveryStatus, DeliveryAssignment } from "@/types";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/auth-store";
+import { getPriceForWeight } from "@/lib/utils";
 
 const API = "/api/admin/orders";
 
@@ -227,7 +228,7 @@ export const useOrderStore = create<OrderState>()(
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   id,
-                  items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image }, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning })),
+                  items: data.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, price: i.product.price, image: i.product.image, weightPrices: i.product.weightPrices }, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning })),
                   total: data.total,
                   subtotal: data.subtotal ?? data.total,
                   delivery_fee: data.deliveryFee ?? 0,
@@ -344,7 +345,7 @@ export const useOrderStore = create<OrderState>()(
                 lng: order.address.lng,
                 isDefault: false,
               },
-              items: order.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, image: i.product.image, price: i.product.price }, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning })),
+              items: order.items.map((i) => ({ product: { id: i.product.id, name: i.product.name, image: i.product.image, price: i.product.price, weightPrices: i.product.weightPrices }, quantity: i.quantity, selectedWeight: i.selectedWeight, selectedCut: i.selectedCut, selectedCleaning: i.selectedCleaning, unitPrice: getPriceForWeight(i.product.price, i.selectedWeight, i.product.weightPrices) })),
               total: order.total,
               status: "assigned" as const,
               assignedAt: new Date().toISOString(),

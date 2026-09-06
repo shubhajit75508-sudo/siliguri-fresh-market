@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { sendOrderConfirmation, sendDeliveryUpdate } from "@/lib/email";
 import { requireAuth } from "@/lib/api-auth";
 import { sendPushToUser } from "@/lib/push";
+import { getPriceForWeight } from "@/lib/utils";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -172,11 +173,16 @@ export async function POST(req: NextRequest) {
       name: body.customer_name ?? "",
       orderId: body.id,
       total: body.total ?? 0,
-      items: (body.items ?? []).map((i: { product?: { name: string; price: number }; quantity: number }) => ({
-        name: i.product?.name ?? "Item",
-        quantity: i.quantity,
-        price: i.product?.price ?? 0,
-      })),
+      items: (body.items ?? []).map((i: { product?: { name: string; price: number; weightPrices?: { weight: string; price: number }[] }; quantity: number; selectedWeight?: string; unitPrice?: number }) => {
+        const unitPrice = (typeof i.unitPrice === "number" && i.unitPrice > 0)
+          ? i.unitPrice
+          : getPriceForWeight(i.product?.price ?? 0, i.selectedWeight, i.product?.weightPrices);
+        return {
+          name: i.product?.name ?? "Item",
+          quantity: i.quantity,
+          price: unitPrice,
+        };
+      }),
       deliveryAddress: typeof body.address_snapshot === "object" ? (body.address_snapshot as Record<string, string>)?.line1 ?? "" : "",
       eta: body.eta ?? 30,
     });

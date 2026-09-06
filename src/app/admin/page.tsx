@@ -19,7 +19,7 @@ import { StatCard } from "@/components/admin/stat-card";
 import { RevenueChart } from "@/components/admin/revenue-chart";
 import { useOrderStore } from "@/store/order-store";
 import { useAuthStore } from "@/store/auth-store";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getItemLineTotal } from "@/lib/utils";
 
 export default function AdminDashboard() {
   const { getStats, orders, loaded, loadOrders } = useOrderStore();
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
         const key = i.product.id;
         if (!acc[key]) acc[key] = { name: i.product.name, qty: 0, revenue: 0 };
         acc[key].qty += i.quantity;
-        acc[key].revenue += i.product.price * i.quantity;
+        acc[key].revenue += getItemLineTotal(i);
       });
     });
     return Object.values(acc).sort((a, b) => b.qty - a.qty).slice(0, 5);

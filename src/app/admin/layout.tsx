@@ -38,6 +38,14 @@ const adminLinks = [
   { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
+// Manager portal is limited to day-to-day ops: orders + delivery board only.
+// It deliberately excludes analytics/earnings (profit/cost), products/inventory
+// (buying prices), and the rest of the shop admin console.
+const MANAGER_ACCESS = new Set([
+  "/admin/orders",
+  "/admin/delivery",
+]);
+
 export default function AdminLayout({
   children,
 }: {
@@ -49,6 +57,16 @@ export default function AdminLayout({
   const { isLoggedIn, logout } = useAdminStore();
   const { currentUser, logout: authLogout } = useAuthStore();
   const checked = useRef(false);
+
+  const role = currentUser?.role;
+  const isStaff = role === "admin" || role === "manager";
+  const links = role === "manager"
+    ? adminLinks.filter((l) => MANAGER_ACCESS.has(l.href))
+    : adminLinks;
+
+  // Manager is denied access to the dashboard and any page outside their scope.
+  const managerBanned =
+    role === "manager" && (pathname === "/admin" || !MANAGER_ACCESS.has(pathname));
 
   // Wait for persisted stores to rehydrate before checking auth,
   // otherwise the layout redirects to login before state loads.
@@ -77,18 +95,24 @@ export default function AdminLayout({
   useEffect(() => {
     if (!storesReady) return;
     if (checked.current) return;
-    if (!isLoggedIn || currentUser?.role !== "admin") {
+    if (!isLoggedIn || !isStaff) {
       router.push("/auth/login");
+    } else if (managerBanned) {
+      router.push("/admin/orders");
     }
     checked.current = true;
-  }, [isLoggedIn, currentUser, pathname, router, storesReady]);
+  }, [isLoggedIn, currentUser, pathname, router, storesReady, isStaff, managerBanned]);
 
   if (!storesReady) {
     return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Loading...</p></div>;
   }
 
-  if (!isLoggedIn || currentUser?.role !== "admin") {
+  if (!isLoggedIn || !isStaff) {
     if (pathname === "/admin/login") return <>{children}</>;
+    return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Redirecting...</p></div>;
+  }
+
+  if (managerBanned) {
     return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Redirecting...</p></div>;
   }
 
@@ -105,7 +129,7 @@ export default function AdminLayout({
           <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={32} height={32} className="rounded-lg" />
           <div>
             <p className="text-sm font-extrabold text-foreground">SFM Admin</p>
-            <p className="text-[10px] text-muted">Dashboard</p>
+            <p className="text-[10px] text-muted">{role === "manager" ? "Manager" : "Dashboard"}</p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -115,7 +139,7 @@ export default function AdminLayout({
           </button>
         </div>
         <nav className="space-y-1 p-4">
-          {adminLinks.map((link) => {
+          {links.map((link) => {
             const Icon = link.icon;
             const isActive =
               link.href === "/admin"

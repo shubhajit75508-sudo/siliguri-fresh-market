@@ -1,4 +1,5 @@
 import type { Order } from "@/types";
+import { getItemUnitPrice, getItemLineTotal } from "@/lib/utils";
 
 const gstin = process.env.NEXT_PUBLIC_GSTIN ?? "";
 
@@ -56,8 +57,8 @@ export async function downloadInvoice(order: Order): Promise<void> {
             <td style="padding: 8px 12px; font-size: 13px;">${item.product.name}</td>
             <td style="padding: 8px 12px; text-align: center; font-size: 13px;">${item.quantity}</td>
             <td style="padding: 8px 12px; text-align: center; font-size: 13px; color: #6b7280;">${item.selectedWeight || "-"}</td>
-            <td style="padding: 8px 12px; text-align: right; font-size: 13px;">\u20B9${item.product.price}</td>
-            <td style="padding: 8px 12px; text-align: right; font-size: 13px; font-weight: 600;">\u20B9${(item.product.price * item.quantity).toFixed(0)}</td>
+            <td style="padding: 8px 12px; text-align: right; font-size: 13px;">\u20B9${getItemUnitPrice(item)}</td>
+            <td style="padding: 8px 12px; text-align: right; font-size: 13px; font-weight: 600;">\u20B9${getItemLineTotal(item).toFixed(0)}</td>
           </tr>
         `).join("")}
       </tbody>

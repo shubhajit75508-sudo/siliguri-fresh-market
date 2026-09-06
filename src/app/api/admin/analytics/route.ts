@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/api-auth";
+import { getPriceForWeight } from "@/lib/utils";
 
 type OrderItem = {
-  product?: { name: string; price: number } | null;
+  product?: { name: string; price: number; weightPrices?: { weight: string; price: number }[] } | null;
   quantity?: number;
+  selectedWeight?: string;
+  unitPrice?: number;
 };
 
 type OrderRow = {
@@ -98,10 +101,12 @@ export async function GET(req: NextRequest) {
     for (const item of o.items ?? []) {
       const name = item.product?.name ?? "Item";
       const qty = Number(item.quantity ?? 1);
-      const price = Number(item.product?.price ?? 0);
+      const unitPrice = (typeof item.unitPrice === "number" && item.unitPrice > 0)
+        ? item.unitPrice
+        : getPriceForWeight(item.product?.price ?? 0, item.selectedWeight, item.product?.weightPrices);
       productAgg[name] = productAgg[name] ?? { name, quantity: 0, revenue: 0 };
       productAgg[name].quantity += qty;
-      productAgg[name].revenue += qty * price;
+      productAgg[name].revenue += qty * unitPrice;
     }
   }
   const topProducts = Object.values(productAgg)

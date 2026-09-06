@@ -107,11 +107,12 @@ export async function POST(req: NextRequest) {
       : price * getWeightMultiplier(weight);
     subtotal += unitPrice * quantity;
     serverItems.push({
-      product: { id: productId, name: item?.product?.name ?? "", price, image: item?.product?.image ?? "" },
+      product: { id: productId, name: item?.product?.name ?? "", price, image: item?.product?.image ?? "", weightPrices: known?.weightPrices },
       quantity,
       selectedWeight: weight || undefined,
       selectedCut: item?.selectedCut ?? undefined,
       selectedCleaning: item?.selectedCleaning ?? undefined,
+      unitPrice,
     });
   }
 

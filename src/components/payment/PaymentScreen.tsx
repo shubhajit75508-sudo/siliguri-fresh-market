@@ -8,7 +8,7 @@ import {
   Copy, ExternalLink, Leaf, Truck,
 } from "lucide-react";
 import QRCode from "qrcode";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getItemLineTotal } from "@/lib/utils";
 import { ReviewPrompt } from "@/components/review-prompt";
 import type { CartItem, Address } from "@/types";
 
@@ -639,7 +639,7 @@ export default function PaymentScreen({
                   {item.selectedWeight ? ` (${item.selectedWeight})` : ""}
                 </span>
                 <span className="font-semibold text-foreground whitespace-nowrap">
-                  {formatPrice(item.product.price * item.quantity)}
+                  {formatPrice(getItemLineTotal(item))}
                 </span>
               </div>
             ))}

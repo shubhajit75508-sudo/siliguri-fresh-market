@@ -1,7 +1,7 @@
 "use client";
 
 import { useCartStore } from "@/store/cart-store";
-import { formatPrice, getWeightMultiplier } from "@/lib/utils";
+import { formatPrice, getItemUnitPrice } from "@/lib/utils";
 
 const STORE_PHONE = "917029908278";
 
@@ -13,7 +13,7 @@ function buildOrderMessage(): string {
 
   const lines = items.map((item, idx) => {
     const weight = item.selectedWeight || item.product.unit;
-    const unitPrice = item.product.price * getWeightMultiplier(item.selectedWeight);
+    const unitPrice = getItemUnitPrice(item);
     const lineTotal = unitPrice * item.quantity;
     const extras = [item.selectedCut, item.selectedCleaning].filter(Boolean).join(", ");
     return `${idx + 1}. ${item.product.name} (${weight}) x ${item.quantity} - ${formatPrice(lineTotal)}${extras ? ` [${extras}]` : ""}`;

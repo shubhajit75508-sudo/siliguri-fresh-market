@@ -14,6 +14,7 @@ import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getR
 import { useOrderStore } from "@/store/order-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
+import { getItemLineTotal } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { downloadInvoice } from "@/lib/invoice";
 import { PushToggle } from "@/components/push/push-toggle";
@@ -71,8 +72,13 @@ export default function TrackOrderPage({
               reviewCount: i.product?.reviewCount ?? i.product?.review_count ?? 0,
               freshnessScore: i.product?.freshnessScore ?? i.product?.freshness_score ?? 4,
               deliveryEta: i.product?.deliveryEta ?? i.product?.delivery_eta ?? 60,
+              weightPrices: i.product?.weightPrices ?? i.product?.weight_prices ?? undefined,
             },
             quantity: i.quantity ?? 1,
+            selectedWeight: i.selectedWeight ?? undefined,
+            selectedCut: i.selectedCut ?? undefined,
+            selectedCleaning: i.selectedCleaning ?? undefined,
+            unitPrice: i.unitPrice !== undefined && i.unitPrice !== null ? Number(i.unitPrice) : undefined,
           })) ?? [],
           status: raw.status as Order["status"],
           total: raw.total as number,
@@ -512,7 +518,7 @@ export default function TrackOrderPage({
                 <p className="text-xs font-semibold text-foreground truncate">{item.product.name}</p>
                 <p className="text-[10px] text-muted">Qty: {item.quantity}</p>
               </div>
-              <p className="text-xs font-bold text-foreground">{'\u20B9'}{(item.product.price * item.quantity).toFixed(0)}</p>
+              <p className="text-xs font-bold text-foreground">{'\u20B9'}{getItemLineTotal(item).toFixed(0)}</p>
             </div>
           ))}
         </div>

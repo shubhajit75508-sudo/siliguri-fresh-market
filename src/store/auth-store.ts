@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
-import { ADMIN_EMAILS } from "@/lib/admin-creds";
+import { ADMIN_EMAILS, MANAGER_EMAILS } from "@/lib/admin-creds";
 /** Set session cookie via server-side API (secret never touches browser) */
 async function setSessionCookie(userId: string, role: string): Promise<void> {
   try {
@@ -24,7 +24,7 @@ function setSignedCookie(token: string): void {
   document.cookie = `sfm-auth-session=${token}; path=/; max-age=604800; Secure; SameSite=Strict`;
 }
 
-export type UserRole = "admin" | "delivery" | "customer";
+export type UserRole = "admin" | "manager" | "delivery" | "customer";
 
 export interface AuthUser {
   id: string;
@@ -146,8 +146,10 @@ export const useAuthStore = create<AuthState>()(
 
         login: async (email, password) => {
           const isAdmin = ADMIN_EMAILS.includes(email);
+          const isManager = MANAGER_EMAILS.includes(email);
 
-          if (isAdmin) {
+          if (isAdmin || isManager) {
+            const staffRole: UserRole = isAdmin ? "admin" : "manager";
             let authUser: import("@supabase/supabase-js").User | null = null;
 
             if (isSupabaseConfigured() && supabase) {
@@ -174,7 +176,7 @@ export const useAuthStore = create<AuthState>()(
                     name: email.split("@")[0],
                     phone: "",
                     address: "",
-                    role: "admin" as const,
+                    role: staffRole,
                     location: null,
                     createdAt: new Date().toISOString(),
                   };
@@ -203,16 +205,16 @@ export const useAuthStore = create<AuthState>()(
                 name: email.split("@")[0],
                 phone: "",
                 address: "",
-                role: "admin",
+                role: staffRole,
                 location: null,
                 createdAt: new Date().toISOString(),
               };
               set({ users: [...users, user] });
             }
-            const adminUser = { ...user, role: "admin" as const, id: userId };
-            set({ currentUser: adminUser });
-            await setSessionCookie(adminUser.id, "admin");
-            return { success: true, user: adminUser };
+            const staffUser = { ...user, role: staffRole, id: userId };
+            set({ currentUser: staffUser });
+            await setSessionCookie(staffUser.id, staffRole);
+            return { success: true, user: staffUser };
           }
 
           if (isSupabaseConfigured() && supabase) {

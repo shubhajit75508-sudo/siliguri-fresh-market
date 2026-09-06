@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { ADMIN_EMAILS } from "@/lib/admin-creds";
+import { ADMIN_EMAILS, MANAGER_EMAILS } from "@/lib/admin-creds";
 import bcrypt from "bcryptjs";
 import { signSessionToken } from "@/lib/session";
 
-function getAdminPasswordHash(email: string): string | null {
+type StaffRole = "admin" | "manager";
+
+function getStaffPasswordHash(email: string, role: StaffRole): string | null {
+  if (role === "manager") {
+    return process.env.MANAGER_PASSWORD ?? null;
+  }
   for (let i = 0; i < ADMIN_EMAILS.length; i++) {
     if (ADMIN_EMAILS[i] === email) {
       return process.env[`ADMIN_PASSWORD_${i + 1}`] ?? null;
@@ -21,12 +26,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email and password required" }, { status: 400 });
     }
 
-    if (!ADMIN_EMAILS.includes(email)) {
-      // Use same generic message to not reveal which emails are admin
+    const role: StaffRole | null = ADMIN_EMAILS.includes(email) ? "admin" : MANAGER_EMAILS.includes(email) ? "manager" : null;
+
+    if (!role) {
+      // Use same generic message to not reveal which emails are staff
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const storedHash = getAdminPasswordHash(email);
+    const storedHash = getStaffPasswordHash(email, role);
     if (!storedHash) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
@@ -45,7 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    let userId = "admin-" + crypto.randomUUID();
+    let userId = (role === "manager" ? "manager-" : "admin-") + crypto.randomUUID();
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -57,7 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Issue the signed session here — this endpoint already validated credentials.
-    const token = await signSessionToken(`${userId}|admin`);
+    const token = await signSessionToken(`${userId}|${role}`);
 
     return NextResponse.json({
       success: true,
@@ -66,7 +73,7 @@ export async function POST(req: NextRequest) {
         id: userId,
         email,
         name: email.split("@")[0],
-        role: "admin",
+        role,
       },
     });
   } catch (err) {

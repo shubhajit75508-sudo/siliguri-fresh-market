@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getItemUnitPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { getAllProducts } from "@/lib/data";
@@ -636,7 +636,7 @@ export default function AdminOrdersPage() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-2">
                             <span className="font-medium text-foreground truncate">{item.product.name}</span>
-                            <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(item.product.price)}</span>
+                            <span className="shrink-0 font-semibold">{item.quantity} × {formatPrice(getItemUnitPrice(item))}</span>
                           </div>
                           <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
                             {item.selectedWeight && (

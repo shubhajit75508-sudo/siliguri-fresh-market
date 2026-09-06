@@ -7,7 +7,7 @@ import { useEffect, useState, useMemo } from "react";
 import { X, Plus, Minus, ArrowRight, Truck, Shield, ShoppingCart, Leaf, AlertTriangle, Clock, Sparkles, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cartLineId, cartLineKey, useCartStore } from "@/store/cart-store";
-import { formatPrice, getWeightMultiplier } from "@/lib/utils";
+import { formatPrice, getItemLineTotal } from "@/lib/utils";
 import { getStoreStatus } from "@/lib/store-hours";
 import { useProducts } from "@/lib/hooks/use-products";
 import { getMinOrderForDistance } from "@/lib/delivery-zone";
@@ -220,7 +220,7 @@ export function CartDrawer() {
                           </div>
                           <div className="flex items-center justify-between">
                             <p className="text-sm font-bold text-brand-fresh">
-                              {formatPrice(item.product.price * getWeightMultiplier(item.selectedWeight) * item.quantity)}
+                              {formatPrice(getItemLineTotal(item))}
                             </p>
                             <button
                               onClick={() => removeItem(lineKey)}
