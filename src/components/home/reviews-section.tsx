@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Reveal } from "@/components/ui/reveal";
 
 interface Review {
   name: string;
@@ -50,6 +51,7 @@ export function ReviewsSection() {
 
   return (
     <section className="py-6">
+      <Reveal y={16}>
       <div className="flex items-center justify-between mb-5">
         <div>
           <h2 className="section-title mb-1">Customer Reviews</h2>
@@ -118,6 +120,7 @@ export function ReviewsSection() {
           <span className="text-[10px]">&#8599;</span>
         </a>
       </div>
+      </Reveal>
     </section>
   );
 }
