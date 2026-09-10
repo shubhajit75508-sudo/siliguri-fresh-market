@@ -49,11 +49,7 @@ export const useDeliveryStore = create<DeliveryState>()(
               area: b.area as string,
               maxActiveOrders: (b as { max_active_orders?: number }).max_active_orders ?? 5,
             }));
-            set((state) => {
-              const merged = new Map(state.deliveryBoys.map((boy) => [boy.id, boy]));
-              boys.forEach((boy) => merged.set(boy.id, boy));
-              return { deliveryBoys: [...merged.values()] };
-            });
+            set({ deliveryBoys: boys });
           } catch {}
         },
 

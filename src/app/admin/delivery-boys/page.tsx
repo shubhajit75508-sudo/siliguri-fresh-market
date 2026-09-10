@@ -8,8 +8,7 @@ import { useToast } from "@/components/ui/toaster";
 import type { DeliveryBoy } from "@/types";
 
 export default function AdminDeliveryBoysPage() {
-  const { deliveryBoys, addBoy, removeBoy } = useDeliveryStore();
-  const [boys, setBoys] = useState<DeliveryBoy[]>([]);
+  const { deliveryBoys, addBoy, removeBoy, loadBoys } = useDeliveryStore();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -19,29 +18,8 @@ export default function AdminDeliveryBoysPage() {
   const toast = useToast();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/admin/delivery-boys");
-        if (res.ok) {
-          const json = await res.json();
-          const apiBoys: DeliveryBoy[] = (json.boys ?? []).map((b: Record<string, unknown>) => ({
-            id: b.id as string,
-            name: b.name as string,
-            phone: b.phone as string,
-            email: (b as any).email ?? "",
-            code: b.code as string,
-            isActive: b.is_active as boolean,
-            area: b.area as string,
-            maxActiveOrders: (b as any).max_active_orders ?? 5,
-          }));
-          setBoys(apiBoys);
-          apiBoys.forEach((b) => addBoy(b));
-        }
-      } catch { /* use local fallback */ }
-      if (boys.length === 0) setBoys(deliveryBoys);
-      setLoading(false);
-    })();
-  }, []);
+    loadBoys().finally(() => setLoading(false));
+  }, [loadBoys]);
 
   const addBoyFn = async () => {
     if (!form.name || !form.phone) {
@@ -78,7 +56,6 @@ export default function AdminDeliveryBoysPage() {
       };
 
       addBoy(newBoy);
-      setBoys((prev) => [newBoy, ...prev]);
       setForm({ name: "", phone: "", email: "", password: "", area: "", maxActiveOrders: "5" });
       setAdding(false);
       toast.add(`Delivery boy ${form.name} added`);
@@ -93,7 +70,6 @@ export default function AdminDeliveryBoysPage() {
       await fetch(`/api/admin/delivery-boys?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     } catch { /* best-effort */ }
     removeBoy(id);
-    setBoys((prev) => prev.filter((b) => b.id !== id));
   };
 
   const editBoyFn = (boy: DeliveryBoy) => {
@@ -121,7 +97,6 @@ export default function AdminDeliveryBoysPage() {
       }
       const updated: DeliveryBoy = { ...editing, ...editForm, maxActiveOrders: Number(editForm.maxActiveOrders) || 5 };
       addBoy(updated);
-      setBoys((prev) => prev.map((b) => (b.id === editing.id ? updated : b)));
       setEditing(null);
       toast.add("Delivery boy updated");
     } catch {
@@ -139,7 +114,7 @@ export default function AdminDeliveryBoysPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Delivery Boys</h2>
-          <p className="text-sm text-muted">{boys.length} registered</p>
+          <p className="text-sm text-muted">{deliveryBoys.length} registered</p>
         </div>
         <button onClick={() => setAdding(true)}
           className="inline-flex items-center gap-2 rounded-2xl bg-brand-fresh px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-fresh/25 hover:bg-brand-fresh-dim">
@@ -183,10 +158,10 @@ export default function AdminDeliveryBoysPage() {
             </tr>
           </thead>
           <tbody>
-            {boys.length === 0 ? (
+            {deliveryBoys.length === 0 ? (
               <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-muted-light">No delivery boys registered.</td></tr>
             ) : (
-              [...boys].reverse().map((b) => (
+              [...deliveryBoys].reverse().map((b) => (
                 <tr key={b.id} className="border-b last:border-0 hover:bg-surface/50">
                   <td className="px-4 py-3 font-medium">{b.name}</td>
                   <td className="px-4 py-3 text-muted">{b.phone}</td>

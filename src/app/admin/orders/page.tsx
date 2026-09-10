@@ -749,6 +749,10 @@ function AssignModal({ order, onAssign, onClose }: {
     const deliveryBoys = useDeliveryStore((s) => s.deliveryBoys);
     const boys = deliveryBoys.map((b) => ({ id: b.id, name: b.name, phone: b.phone ?? "", area: b.area || "", isActive: true, email: b.email }));
 
+  useEffect(() => {
+    useDeliveryStore.getState().loadBoys();
+  }, []);
+
   const allBoys = boys.filter((b) => b.isActive !== false);
 
   return (
