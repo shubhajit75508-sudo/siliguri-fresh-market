@@ -200,6 +200,7 @@ export async function proxy(req: NextRequest) {
     if (role === "manager") {
       // Managers can read + update orders and their assignments, nothing else.
       if (pathname === "/api/admin/orders") return applyCors(req, NextResponse.next());
+      if (pathname === "/api/admin/delivery-boys" && req.method === "GET") return applyCors(req, NextResponse.next());
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
