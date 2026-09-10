@@ -217,6 +217,8 @@ function DeliveryCard({
 
 // ── Main Dashboard ───────────────────────────────────
 
+const STALE_MS = 48 * 60 * 60 * 1000;
+
 export default function DeliveryDashboard() {
   const { boy, assignments } = useDeliveryStore();
   const { acceptDelivery, pickUpDelivery } = useOrderStore();
@@ -228,7 +230,15 @@ export default function DeliveryDashboard() {
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
   const [customerLocations, setCustomerLocations] = useState<Record<string, [number, number]>>({});
 
-  const active = useMemo(() => assignments.filter((a) => a.deliveryBoyId === boy?.id && a.status !== "delivered"), [assignments, boy?.id]);
+  const active = useMemo(() => {
+    const now = Date.now();
+    return assignments.filter((a) => {
+      if (a.deliveryBoyId !== boy?.id || a.status === "delivered") return false;
+      const ts = new Date(a.assignedAt).getTime();
+      const age = Number.isFinite(ts) ? now - ts : 0;
+      return age < STALE_MS;
+    });
+  }, [assignments, boy?.id]);
   const activeOrderIds = useMemo(() => active.map((a) => a.orderId), [active]);
 
   // ── Load assigned deliveries + poll for new assignments ──
