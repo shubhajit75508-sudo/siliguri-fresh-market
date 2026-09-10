@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { Truck, MapPin, Clock, Package, Navigation, CheckCircle, Loader2 } from "lucide-react";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { Truck, MapPin, Clock, Package, Navigation, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
@@ -22,7 +22,7 @@ interface BoyLocation {
 
 export default function DeliveryPage() {
   const { orders, loaded, loadOrders, confirmDelivery } = useOrderStore();
-  const { assignments, deliveryBoys } = useDeliveryStore();
+  const { assignments, deliveryBoys, loadBoys } = useDeliveryStore();
   const [boyLocations, setBoyLocations] = useState<BoyLocation[]>([]);
   const [markingDelivered, setMarkingDelivered] = useState<string | null>(null);
 
@@ -32,6 +32,10 @@ export default function DeliveryPage() {
     const interval = setInterval(loadOrders, 30000);
     return () => clearInterval(interval);
   }, [loaded, loadOrders]);
+
+  useEffect(() => {
+    loadBoys();
+  }, [loadBoys]);
 
   const activeDeliveries = orders.filter(
     (o) => o.deliveryStatus && o.deliveryStatus !== "delivered" && o.deliveryStatus !== "pending"
@@ -52,6 +56,45 @@ export default function DeliveryPage() {
     }, 0);
     return Math.round(totalMinutes / delivered.length);
   }, [assignments]);
+
+  const boyNameFor = useCallback(
+    (boyId?: string | null) => {
+      if (!boyId) return "Unassigned";
+      return deliveryBoys.find((b) => b.id === boyId)?.name ?? "Partner";
+    },
+    [deliveryBoys]
+  );
+
+  const boyStats = useMemo(() => {
+    return deliveryBoys
+      .map((boy) => {
+        const boyOrders = orders.filter((o) => o.deliveryBoyId === boy.id);
+        const delivered = boyOrders.filter((o) => o.status === "delivered");
+        const cancelled = boyOrders.filter((o) => o.status === "cancelled");
+        const codCollected = delivered
+          .filter((o) => o.paymentMethod === "cod")
+          .reduce((sum, o) => sum + o.total, 0);
+        return {
+          boy,
+          assigned: boyOrders.length,
+          delivered: delivered.length,
+          cancelled: cancelled.length,
+          collected: codCollected,
+        };
+      })
+      .filter((s) => s.assigned > 0)
+      .sort((a, b) => b.delivered - a.delivered);
+  }, [deliveryBoys, orders]);
+
+  const totalStats = boyStats.reduce(
+    (acc, s) => ({
+      assigned: acc.assigned + s.assigned,
+      delivered: acc.delivered + s.delivered,
+      cancelled: acc.cancelled + s.cancelled,
+      collected: acc.collected + s.collected,
+    }),
+    { assigned: 0, delivered: 0, cancelled: 0, collected: 0 }
+  );
 
   useEffect(() => {
     if (activeDeliveries.length === 0) return;
@@ -168,6 +211,60 @@ export default function DeliveryPage() {
         </div>
       </div>
 
+      {/* Partners Performance */}
+      <div className="mt-6">
+        <h3 className="mb-3 font-bold">Partners Performance</h3>
+        {boyStats.length === 0 ? (
+          <div className="rounded-xl border bg-surface p-8 text-center shadow-sm">
+            <Truck className="mx-auto h-8 w-8 text-gray-300" />
+            <p className="mt-2 text-sm text-muted-light">No deliveries assigned to any partner yet.</p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-xl border bg-surface shadow-sm">
+            <div className="grid grid-cols-[1fr_auto] items-center gap-2 border-b border-border/60 bg-white/40 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted sm:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+              <span>Partner</span>
+              <span className="text-right">Assigned</span>
+              <span className="text-right">Delivered</span>
+              <span className="text-right">Cancelled</span>
+              <span className="text-right">Collected</span>
+            </div>
+            {boyStats.map((s) => (
+              <div key={s.boy.id} className="grid grid-cols-[1fr_auto] items-center gap-2 border-b border-border/40 px-4 py-3 last:border-0 sm:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-fresh/10 text-xs font-bold text-brand-fresh">
+                    {(s.boy.name || "?").split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{s.boy.name}</p>
+                    <p className="text-[10px] text-muted">{s.boy.area || "Siliguri"}</p>
+                  </div>
+                </div>
+                <p className="text-right text-sm font-semibold tabular-nums">{s.assigned}</p>
+                <p className="text-right text-sm font-semibold tabular-nums text-brand-fresh">
+                  <CheckCircle className="mr-1 inline h-3.5 w-3.5" />
+                  {s.delivered}
+                </p>
+                <p className="text-right text-sm font-semibold tabular-nums text-brand-red">
+                  <XCircle className="mr-1 inline h-3.5 w-3.5" />
+                  {s.cancelled}
+                </p>
+                <p className="text-right text-sm font-bold tabular-nums">{formatPrice(s.collected)}</p>
+              </div>
+            ))}
+            <div className="grid grid-cols-[1fr_auto] items-center gap-2 bg-brand-fresh/5 px-4 py-3 sm:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+              <p className="text-sm font-bold">Total</p>
+              <p className="text-right text-sm font-bold tabular-nums">{totalStats.assigned}</p>
+              <p className="text-right text-sm font-bold tabular-nums text-brand-fresh">{totalStats.delivered}</p>
+              <p className="text-right text-sm font-bold tabular-nums text-brand-red">{totalStats.cancelled}</p>
+              <p className="text-right text-sm font-bold tabular-nums">{formatPrice(totalStats.collected)}</p>
+            </div>
+          </div>
+        )}
+        <p className="mt-2 text-[10px] text-muted">
+          Delivered &amp; cancelled counts reflect only orders closed by admin/manager confirmation.
+        </p>
+      </div>
+
       {/* Partner Locations List */}
       {boyLocations.length > 0 && (
         <div className="mt-6">
@@ -252,6 +349,9 @@ export default function DeliveryPage() {
                       )}
                     </div>
                     <p className="mt-1 text-sm text-muted">{o.customerName} · {o.customerPhone}</p>
+                    <p className="mt-1 text-xs text-brand-blue flex items-center gap-1">
+                      <Truck className="h-3 w-3" /> Assigned: {boyNameFor(o.deliveryBoyId)}
+                    </p>
                     {location && (
                       <p className="mt-1 text-xs text-brand-fresh flex items-center gap-1">
                         <MapPin className="h-3 w-3" /> {location.boyName} — {location.lat.toFixed(4)}, {location.lng.toFixed(4)}

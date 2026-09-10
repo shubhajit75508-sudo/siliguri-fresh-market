@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (!payload) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   const role = getRole(payload);
   const userId = getUserId(payload);
-  if (!userId || (role !== "delivery" && role !== "admin" && role !== "manager")) {
+  if (!userId || (role !== "admin" && role !== "manager")) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 
@@ -39,11 +39,6 @@ export async function POST(req: NextRequest) {
 
   if (fetchError || !order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  }
-
-  // Only the assigned delivery boy (or an admin/manager) can confirm delivery
-  if (role === "delivery" && order.delivery_boy_id !== userId) {
-    return NextResponse.json({ error: "Order not assigned to you" }, { status: 403 });
   }
 
   const updates: Record<string, unknown> = {

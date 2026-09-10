@@ -67,6 +67,10 @@ export default function AdminOrdersPage() {
 
   const productMap = new Map(allProducts?.map((p) => [p.id, p]) ?? []);
 
+  const deliveryBoys = useDeliveryStore((s) => s.deliveryBoys);
+  const boyNameFor = (boyId?: string | null) =>
+    boyId ? deliveryBoys.find((b) => b.id === boyId)?.name ?? "Partner" : "Unassigned";
+
   useEffect(() => { loadOrders(); }, [loadOrders]);
   useEffect(() => { useDeliveryStore.getState().loadBoys(); }, []);
   useEffect(() => {
@@ -461,9 +465,9 @@ export default function AdminOrdersPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    {order.deliveryBoyName ? (
+                    {order.deliveryBoyId ? (
                       <div className="text-xs">
-                        <p className="text-brand-fresh font-medium"><Truck className="mr-1 inline h-3 w-3" />{order.deliveryBoyName}</p>
+                        <p className="text-brand-fresh font-medium"><Truck className="mr-1 inline h-3 w-3" />{boyNameFor(order.deliveryBoyId)}</p>
                         <p className="text-muted">{order.deliveryStatus?.replace(/_/g, " ")}</p>
                       </div>
                     ) : (
@@ -595,10 +599,10 @@ export default function AdminOrdersPage() {
                   {(isOutForDelivery(selectedOrder) ? "out_for_delivery" : selectedOrder.status).replace(/_/g, " ")}
                 </Badge>
               </div>
-              {selectedOrder.deliveryBoyName && (
+              {selectedOrder.deliveryBoyId && (
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4 text-muted" />
-                  <span>{selectedOrder.deliveryBoyName}</span>
+                  <span>{boyNameFor(selectedOrder.deliveryBoyId)}</span>
                   <span className="text-xs text-muted">({selectedOrder.deliveryStatus?.replace(/_/g, " ")})</span>
                 </div>
               )}
