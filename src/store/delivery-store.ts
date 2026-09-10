@@ -8,6 +8,7 @@ interface DeliveryState {
   deliveryBoys: DeliveryBoy[];
   addBoy: (boy: DeliveryBoy) => void;
   removeBoy: (id: string) => void;
+  loadBoys: () => Promise<void>;
   loginAsBoy: (user: { id: string; name: string; phone: string } | null, name: string, phone: string) => boolean;
   logout: () => void;
   confirmDelivery: (assignmentId: string) => void;
@@ -32,6 +33,29 @@ export const useDeliveryStore = create<DeliveryState>()(
           set((state) => ({
             deliveryBoys: state.deliveryBoys.filter((b) => b.id !== id),
           })),
+
+        loadBoys: async () => {
+          try {
+            const res = await fetch("/api/admin/delivery-boys");
+            if (!res.ok) return;
+            const json = await res.json();
+            const boys: DeliveryBoy[] = (json.boys ?? []).map((b: Record<string, unknown>) => ({
+              id: b.id as string,
+              name: b.name as string,
+              phone: b.phone as string,
+              email: (b as { email?: string }).email ?? "",
+              code: b.code as string,
+              isActive: b.is_active as boolean,
+              area: b.area as string,
+              maxActiveOrders: (b as { max_active_orders?: number }).max_active_orders ?? 5,
+            }));
+            set((state) => {
+              const merged = new Map(state.deliveryBoys.map((boy) => [boy.id, boy]));
+              boys.forEach((boy) => merged.set(boy.id, boy));
+              return { deliveryBoys: [...merged.values()] };
+            });
+          } catch {}
+        },
 
         loginAsBoy: (user, name, phone) => {
           if (!user) return false;

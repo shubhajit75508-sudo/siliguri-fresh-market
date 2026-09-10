@@ -68,6 +68,7 @@ export default function AdminOrdersPage() {
   const productMap = new Map(allProducts?.map((p) => [p.id, p]) ?? []);
 
   useEffect(() => { loadOrders(); }, [loadOrders]);
+  useEffect(() => { useDeliveryStore.getState().loadBoys(); }, []);
   useEffect(() => {
     if (!loaded) return;
     const interval = setInterval(loadOrders, 30000);

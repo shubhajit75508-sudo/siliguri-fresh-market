@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import { useUserStore } from "@/store/user-store";
 import { AuthShell } from "@/components/auth/auth-shell";
-import { Loader2, UserPlus, ShoppingBag, Eye, EyeOff, Check, X } from "lucide-react";
+import { Loader2, UserPlus, ShoppingBag, Eye, EyeOff, Check, X, LogIn, KeyRound } from "lucide-react";
 
 function SignupForm() {
   const router = useRouter();
@@ -26,6 +26,7 @@ function SignupForm() {
     role: "customer" as "admin" | "delivery" | "customer",
   });
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -33,6 +34,7 @@ function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setErrorCode("");
 
     if (!form.name.trim()) { setError("Name is required"); return; }
     if (!form.email.trim()) { setError("Email is required"); return; }
@@ -72,6 +74,7 @@ function SignupForm() {
       }
     } else {
       setError(result.error ?? "Signup failed");
+      setErrorCode(result.code ?? "");
     }
     setSubmitting(false);
   };
@@ -82,7 +85,30 @@ function SignupForm() {
       subtitle="Sign up to start ordering"
       icon={<UserPlus className="h-7 w-7 text-white" />}
     >
-      {error && (
+      {error && errorCode === "EMAIL_EXISTS" && form.email && (
+        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+          <p className="font-bold text-amber-900">Account already exists</p>
+          <p className="mt-1 text-amber-700 leading-relaxed">
+            It looks like an account with <strong>{form.email}</strong> is already registered. You can sign in or reset your password.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <Link
+              href={`/auth/login?email=${encodeURIComponent(form.email)}`}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-dark px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-dark/90"
+            >
+              <LogIn className="h-3.5 w-3.5" /> Sign In
+            </Link>
+            <Link
+              href={`/auth/forgot-password?email=${encodeURIComponent(form.email)}`}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100"
+            >
+              <KeyRound className="h-3.5 w-3.5" /> Forgot Password
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {error && errorCode !== "EMAIL_EXISTS" && (
         <div className="mb-5 rounded-xl bg-brand-red/10 p-3 text-sm text-brand-red">{error}</div>
       )}
 

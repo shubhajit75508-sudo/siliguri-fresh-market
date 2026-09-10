@@ -50,7 +50,7 @@ export interface SignupData {
 interface AuthState {
   users: AuthUser[];
   currentUser: AuthUser | null;
-  signup: (data: SignupData) => Promise<{ success: boolean; error?: string }>;
+  signup: (data: SignupData) => Promise<{ success: boolean; error?: string; code?: string }>;
   resetPassword: (email: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: AuthUser }>;
   logout: () => Promise<void>;
@@ -84,7 +84,7 @@ export const useAuthStore = create<AuthState>()(
           }
 
           if (users.find((u) => u.email === data.email)) {
-            return { success: false, error: "Email already registered" };
+            return { success: false, code: "EMAIL_EXISTS", error: "An account already exists with this email." };
           }
 
           let supabaseUserId: string | undefined;
@@ -102,7 +102,13 @@ export const useAuthStore = create<AuthState>()(
                 },
               },
             });
-            if (error) return { success: false, error: error.message };
+            if (error) {
+              const msg = (error.message ?? "").toLowerCase();
+              if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("already exists")) {
+                return { success: false, code: "EMAIL_EXISTS", error: "An account already exists with this email." };
+              }
+              return { success: false, error: error.message };
+            }
             if (authData?.user) supabaseUserId = authData.user.id;
           }
 
