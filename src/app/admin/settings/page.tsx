@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-4 border-b border-white/10 pb-4">
+      <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-white/10 pb-4">
         <button
           onClick={() => setTab("general")}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${

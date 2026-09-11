@@ -30,7 +30,7 @@ export default function AdminNotificationsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-2xl font-bold">Notifications</h2>
         <Button variant="default" size="sm" onClick={() => setShowForm((v) => !v)}>
           <Plus className="h-4 w-4" /> Send Notification
@@ -41,7 +41,7 @@ export default function AdminNotificationsPage() {
         <form onSubmit={handleSend} className="mt-4 max-w-md rounded-xl border bg-surface p-5 shadow-sm space-y-3">
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Notification title" className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark" />
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} placeholder="Body text" rows={2} className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as typeof form.type })} className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark">
               <option value="promotional">Promotional</option>
               <option value="order">Order</option>

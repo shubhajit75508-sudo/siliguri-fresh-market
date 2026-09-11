@@ -396,7 +396,7 @@ export default function AnalyticsPage() {
             <div className="mt-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={catData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={(e: any) => e.name}>
+                  <Pie data={catData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={false}>
                     {catData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                   </Pie>
                   <Tooltip formatter={(v) => "₹" + Number(v).toLocaleString("en-IN")} />
@@ -547,7 +547,7 @@ export default function AnalyticsPage() {
               );
             })}
           </div>
-          <div className="flex items-end gap-2">
+          <div className="flex flex-wrap items-end gap-2">
             <div>
               <label className="mb-1 block text-[10px] font-semibold text-muted">From</label>
               <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs outline-none focus:border-brand-fresh/40" />

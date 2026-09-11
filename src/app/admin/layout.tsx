@@ -184,19 +184,19 @@ export default function AdminLayout({
 
       {/* Main */}
       <div className="flex-1">
-        <header className="flex h-16 items-center gap-4 border-b bg-surface px-6">
+        <header className="flex h-16 items-center gap-3 border-b bg-surface px-4 sm:px-6">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-lg font-bold text-foreground">Admin Panel</h1>
+          <h1 className="truncate text-lg font-bold text-foreground">Admin Panel</h1>
           <Link
             href="/"
-            className="ml-auto text-sm text-brand-blue hover:underline"
+            className="ml-auto shrink-0 text-sm text-brand-blue hover:underline"
           >
             ← Back to Store
           </Link>
         </header>
-        <main className="p-6">{children}</main>
+        <main className="p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

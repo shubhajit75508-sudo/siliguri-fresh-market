@@ -309,7 +309,7 @@ export default function AdminOrdersPage() {
       )}
 
       {selectedIds.size > 0 && (
-        <div className="mt-3 flex items-center gap-3 rounded-xl border border-brand-fresh/30 bg-brand-fresh/5 px-4 py-2.5">
+        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-brand-fresh/30 bg-brand-fresh/5 px-4 py-2.5">
           <span className="text-sm font-medium">{selectedIds.size} selected</span>
           <select
             value={bulkAction}
@@ -714,7 +714,7 @@ export default function AdminOrdersPage() {
 
       {returnModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setReturnModal(null)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-4 max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">Return Request</h3>
               <button onClick={() => setReturnModal(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
@@ -757,7 +757,7 @@ function AssignModal({ order, onAssign, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="mx-4 max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold">Assign Delivery</h3>
           <button onClick={onClose} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
@@ -766,7 +766,7 @@ function AssignModal({ order, onAssign, onClose }: {
         {allBoys.length === 0 ? (
           <p className="mt-4 text-sm text-muted">No delivery boys available. Add one in Delivery Boys section.</p>
         ) : (
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 max-h-[55vh] space-y-2 overflow-y-auto pr-1">
             {allBoys.map((boy) => (
               <button key={boy.id} onClick={() => setSelected(boy.id)}
                 className={`w-full rounded-xl border p-3 text-left text-sm transition-all ${selected === boy.id ? "border-brand-dark bg-brand-dark/5" : "border-border hover:border-gray-300"}`}>

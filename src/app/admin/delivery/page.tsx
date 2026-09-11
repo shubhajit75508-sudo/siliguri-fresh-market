@@ -237,7 +237,7 @@ export default function DeliveryPage() {
         ) : (
           <>
             {/* Period totals */}
-            <div className="mb-3 grid grid-cols-3 gap-3">
+            <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="rounded-xl border bg-surface p-3 shadow-sm">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Collected Today</p>
                 <p className="text-lg font-extrabold tabular-nums text-brand-fresh">{formatPrice(totalStats.todayCollected)}</p>

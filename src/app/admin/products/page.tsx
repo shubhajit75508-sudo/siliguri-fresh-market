@@ -171,7 +171,7 @@ export default function AdminProductsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold">Products</h2>
           <p className="text-sm text-muted">{filterCategory ? `${filteredProducts.length} ${filterCategory === "flash" ? "flash" : filterCategory}` : `${products.length} total`}</p>

@@ -45,7 +45,7 @@ export default function CouponsPage() {
       {showForm && (
         <form onSubmit={handleAdd} className="mt-4 max-w-md rounded-xl border bg-surface p-5 shadow-sm space-y-3">
           <input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="COUPON CODE" className="w-full rounded-lg border px-3 py-2 text-sm uppercase outline-none focus:border-brand-dark" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input type="number" value={form.discount || ""} onChange={(e) => setForm({ ...form, discount: Number(e.target.value) })} placeholder="Discount" className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark" />
             <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as "flat" | "percentage" })} className="rounded-lg border px-3 py-2 text-sm outline-none focus:border-brand-dark">
               <option value="flat">Flat (₹)</option>
@@ -63,7 +63,7 @@ export default function CouponsPage() {
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {[...coupons].reverse().map((c) => (
           <div key={c.code} className="rounded-xl border bg-surface p-5 shadow-sm">
-            <div className="flex items-center justify-between">
+<div className="flex flex-wrap items-center justify-between gap-2">
               <code className="text-lg font-bold text-foreground">{c.code}</code>
               <div className="flex items-center gap-2">
                 <Badge variant="fresh">Active</Badge>
