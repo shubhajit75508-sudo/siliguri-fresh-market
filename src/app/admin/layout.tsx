@@ -44,6 +44,7 @@ const adminLinks = [
 const MANAGER_ACCESS = new Set([
   "/admin/orders",
   "/admin/delivery",
+  "/admin/delivery-boys",
 ]);
 
 export default function AdminLayout({

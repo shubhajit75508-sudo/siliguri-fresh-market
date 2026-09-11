@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Loader2, Pencil } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
 import type { DeliveryBoy } from "@/types";
 
 export default function AdminDeliveryBoysPage() {
   const { deliveryBoys, addBoy, removeBoy, loadBoys } = useDeliveryStore();
+  const isAdmin = useAuthStore((s) => s.currentUser?.role) === "admin";
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -114,12 +116,14 @@ export default function AdminDeliveryBoysPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Delivery Boys</h2>
-          <p className="text-sm text-muted">{deliveryBoys.length} registered</p>
+          <p className="text-sm text-muted">{deliveryBoys.length} registered{!isAdmin && " · read-only"}</p>
         </div>
+        {isAdmin && (
         <button onClick={() => setAdding(true)}
           className="inline-flex items-center gap-2 rounded-2xl bg-brand-fresh px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-fresh/25 hover:bg-brand-fresh-dim">
           <Plus className="h-4 w-4" /> Add Delivery Boy
         </button>
+        )}
       </div>
 
       {adding && (
@@ -154,7 +158,7 @@ export default function AdminDeliveryBoysPage() {
               <th className="px-4 py-3">Area</th>
               <th className="px-4 py-3">Max</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              {isAdmin && <th className="px-4 py-3 text-right">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -174,12 +178,16 @@ export default function AdminDeliveryBoysPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => editBoyFn(b)} className="rounded-lg p-2 text-muted hover:bg-white/8">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => removeBoyFn(b.id)} className="rounded-lg p-2 text-brand-red hover:bg-brand-red/10">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {isAdmin && (
+                        <>
+                          <button onClick={() => editBoyFn(b)} className="rounded-lg p-2 text-muted hover:bg-white/8">
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => removeBoyFn(b.id)} className="rounded-lg p-2 text-brand-red hover:bg-brand-red/10">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
