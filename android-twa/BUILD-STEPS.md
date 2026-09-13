@@ -39,17 +39,15 @@ If you already have Android Studio, skip to Part 2.
 
 The signing files are already in place and gitignored:
 
-- `android-twa\android\signing.keystore` — your registered upload key (I verified its
-  fingerprint matches the previously published app, so Play Console will accept it)
-- `android-twa\android\key.properties` — contains:
-  ```
-  storeFile=signing.keystore
-  storePassword=H3Z8V64SNb7f
-  keyAlias=my-key-alias
-  keyPassword=H3Z8V64SNb7f
-  ```
+- `android-twa\android\signing.keystore` — the upload key used to sign this build
+- `android-twa\android\key.properties` — the authoritative store-file / alias /
+  passwords (`storePassword`, `keyPassword`). **Read values from this file whenever a
+  password/alias is asked** — do not rely on values printed anywhere in this doc.
 
 > ⚠️ These two files are **local only** — never commit them to Git or share them.
+> If Play Console ever says "**signed with the wrong key**", follow the
+> **Upload-key reset** section in PART 5 below — your cert to upload is
+> `android-twa\android\upload-key-cert.pem`.
 
 ---
 
@@ -59,9 +57,8 @@ The signing files are already in place and gitignored:
 2. Choose **Android App Bundle**. Click **Next**.
 3. **Key store path**: click **Choose existing…** and select
    `D:\Freshmart\prototype no.1 - Copy\siliguri-fresh-market\android-twa\android\signing.keystore`
-   - **Key store password:** `H3Z8V64SNb7f`
-   - **Key alias:** select `my-key-alias` from the dropdown
-   - **Key password:** `H3Z8V64SNb7f`
+   - **Key store password / Key alias / Key password**: type the values from
+     `android-twa\android\key.properties`
    - Click **Next**.
 4. Select the **release** variant. Click **Finish**.
 5. When the build completes, a notification appears. Click **"locate"** in the popup.
@@ -88,6 +85,24 @@ The signing files are already in place and gitignored:
    - App is a fresh-produce delivery app for Siliguri, West Bengal.
    ```
 7. Click **Next → Review release → Start rollout to Production**.
+
+### If Play says: "Your App Bundle is signed with the wrong key"
+This means the upload key you signed with is not the one registered in Play Console
+(the console shows the expected cert fingerprint, e.g. `SHA1: AF:1D:…`, but your
+keystore has a different one, e.g. `SHA1: B6:93:…`). Usually the original keystore is lost.
+Fix it with a **Play Console upload-key reset** — no rebuild needed:
+
+1. The cert of the local keystore is already exported for you at:
+   `android-twa\android\upload-key-cert.pem`
+   (re-export any time with:
+   `keytool -exportcert -keystore android\signing.keystore -alias <keyAlias from key.properties> -storepass <storePassword from key.properties> -rfc -file android\upload-key-cert.pem`)
+2. Play Console → your app → **Setup → App integrity → App signing**.
+3. Under **Upload key certificate**, click **Request upload key reset**.
+4. Upload `upload-key-cert.pem` and follow the prompts (this only changes the upload
+   key — Google keeps the app-signing key, so users/installs are unaffected).
+5. Once accepted (takes a few minutes), upload the **existing**
+   `android-twa\android\app\build\outputs\bundle\release\app-release.aab` — it is
+   already signed with exactly that key.
 
 ### If you get "version code X must be higher than N"
 Tell me the number `N` (or just bump it yourself):
