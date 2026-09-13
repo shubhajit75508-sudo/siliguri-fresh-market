@@ -88,7 +88,7 @@ export interface Address {
 
 export type OrderStatus = "received" | "out_for_delivery" | "delivered" | "cancelled";
 
-export type DeliveryStatus = "pending" | "assigned" | "accepted" | "picked_up" | "delivered";
+export type DeliveryStatus = "pending" | "assigned" | "accepted" | "picked_up" | "delivered" | "cancelled";
 
 export interface Order {
   id: string;
@@ -112,6 +112,8 @@ export interface Order {
   returnApproved?: boolean;
   deliveryCode?: string;
   deliveredAt?: string;
+  collectedAmount?: number;
+  collectedMethod?: "cash" | "upi";
 }
 
 export interface User {
@@ -160,7 +162,7 @@ export interface DeliveryAssignment {
   address: Address;
   items: { product: { id: string; name: string; image?: string; price: number; weightPrices?: { weight: string; price: number }[] }; quantity: number; selectedWeight?: string; selectedCut?: string; selectedCleaning?: string; unitPrice?: number }[];
   total: number;
-  status: "assigned" | "accepted" | "picked_up" | "delivered";
+  status: "assigned" | "accepted" | "picked_up" | "delivered" | "cancelled";
   assignedAt: string;
   deliveredAt?: string;
   deliveryCode?: string;

@@ -43,11 +43,40 @@ export async function GET(req: NextRequest) {
   const total = all.reduce((sum, e) => sum + Number(e.amount ?? 0), 0);
   const weekTotal = week.reduce((sum, e) => sum + Number(e.amount ?? 0), 0);
 
+  // How much money the delivery partner actually collected from customers
+  // (cash + UPI at the door) on their delivered orders.
+  const { data: ordersData } = await supabaseAdmin
+    .from("orders")
+    .select("total, payment_method, address_snapshot, delivered_at")
+    .eq("delivery_boy_id", userId)
+    .eq("status", "delivered");
+
+  const orders = Array.isArray(ordersData) ? ordersData : [];
+  const collectedOf = (o: Record<string, unknown>) => {
+    const pc = (o.address_snapshot as Record<string, unknown> | null)?.payment_collected as { amount?: number } | undefined;
+    if (pc && typeof pc.amount === "number") return pc.amount;
+    return o.payment_method === "cod" ? Number(o.total ?? 0) : 0;
+  };
+  const methodOf = (o: Record<string, unknown>) => {
+    const pc = (o.address_snapshot as Record<string, unknown> | null)?.payment_collected as { method?: string } | undefined;
+    return pc?.method ?? (o.payment_method === "cod" ? "cash" : "upi");
+  };
+  const collectedTotal = orders.reduce((sum, o) => sum + collectedOf(o), 0);
+  const cashCollected = orders
+    .filter((o) => methodOf(o) === "cash")
+    .reduce((sum, o) => sum + collectedOf(o), 0);
+  const upiCollected = orders
+    .filter((o) => methodOf(o) === "upi")
+    .reduce((sum, o) => sum + collectedOf(o), 0);
+
   return NextResponse.json({
     total,
     deliveries: all.length,
     weekTotal,
     weekDeliveries: week.length,
     recent: all.slice(0, 20),
+    collectedTotal,
+    cashCollected,
+    upiCollected,
   });
 }

@@ -69,6 +69,8 @@ interface OrderState {
   assignDeliveryBoy: (orderId: string, boyId: string, boyName: string, boyEmail?: string) => Promise<{ assignment: DeliveryAssignment } | void>;
   acceptDelivery: (orderId: string) => Promise<void>;
   pickUpDelivery: (orderId: string) => Promise<void>;
+  completeDelivery: (orderId: string, method: "cash" | "upi", amount: number, ref?: string) => Promise<void>;
+  cancelDelivery: (orderId: string, reason?: string) => Promise<void>;
   confirmDelivery: (orderId: string, code?: string) => Promise<void>;
   requestReturn: (orderId: string) => Promise<void>;
   approveReturn: (orderId: string) => Promise<void>;
@@ -119,6 +121,8 @@ export const useOrderStore = create<OrderState>()(
               returnRequested: Boolean(r.return_requested),
               returnApproved: Boolean(r.return_approved),
               deliveryCode: (r.delivery_code as string) || ((r.address_snapshot as Record<string, unknown>)?.delivery_code as string) || "",
+              collectedAmount: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { amount?: number })?.amount ?? undefined,
+              collectedMethod: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { method?: "cash" | "upi" })?.method ?? undefined,
             }));
             set((state) => {
               const local = state.orders;
@@ -178,6 +182,8 @@ export const useOrderStore = create<OrderState>()(
               returnRequested: Boolean(r.return_requested),
               returnApproved: Boolean(r.return_approved),
               deliveryCode: (r.delivery_code as string) || ((r.address_snapshot as Record<string, unknown>)?.delivery_code as string) || "",
+              collectedAmount: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { amount?: number })?.amount ?? undefined,
+              collectedMethod: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { method?: "cash" | "upi" })?.method ?? undefined,
             }));
             set((state) => {
               const local = state.orders;
@@ -375,6 +381,56 @@ export const useOrderStore = create<OrderState>()(
           }));
           const ok = await apiDeliveryUpdate({ orderId, deliveryStatus: "picked_up", status: "out_for_delivery", customerEmail: order?.customerEmail || "" });
           if (!ok) set({ orders: prev });
+        },
+
+        completeDelivery: async (orderId, method, amount, ref) => {
+          const prev = get().orders;
+          set((state) => ({
+            orders: state.orders.map((o) =>
+              o.id === orderId
+                ? { ...o, deliveryStatus: "delivered" as DeliveryStatus, status: "delivered" as Order["status"], paymentStatus: "paid" as const, deliveredAt: new Date().toISOString() }
+                : o
+            ),
+          }));
+          try {
+            const res = await fetch("/api/delivery/complete", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId, method, amount, ref: ref ?? null }),
+            });
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error || "Completion failed");
+            }
+          } catch (e) {
+            set({ orders: prev });
+            throw e;
+          }
+        },
+
+        cancelDelivery: async (orderId, reason) => {
+          const prev = get().orders;
+          set((state) => ({
+            orders: state.orders.map((o) =>
+              o.id === orderId
+                ? { ...o, status: "cancelled" as Order["status"], deliveryStatus: "cancelled" as DeliveryStatus, paymentStatus: o.paymentStatus === "paid" ? "refunded" as const : o.paymentStatus }
+                : o
+            ),
+          }));
+          try {
+            const res = await fetch("/api/delivery/cancel", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId, reason: reason ?? null }),
+            });
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error || "Cancellation failed");
+            }
+          } catch (e) {
+            set({ orders: prev });
+            throw e;
+          }
         },
 
         confirmDelivery: async (orderId, _code) => {

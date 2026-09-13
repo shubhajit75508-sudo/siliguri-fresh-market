@@ -24,6 +24,12 @@ export async function POST(req: NextRequest) {
   const { orderId, deliveryStatus, status, customerEmail } = body;
   if (!orderId || !deliveryStatus) return NextResponse.json({ error: "Missing orderId or deliveryStatus" }, { status: 400 });
 
+  // Delivery boys must close the delivery through /api/delivery/complete so
+  // payment collection (cash/UPI) is recorded. "delivered" is reserved for that path.
+  if (role === "delivery" && deliveryStatus === "delivered") {
+    return NextResponse.json({ error: "Use /api/delivery/complete to collect payment and close the delivery" }, { status: 400 });
+  }
+
   const { data: order, error: fetchError } = await supabaseAdmin
     .from("orders")
     .select("delivery_boy_id")

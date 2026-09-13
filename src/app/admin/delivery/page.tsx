@@ -38,7 +38,7 @@ export default function DeliveryPage() {
   }, [loadBoys]);
 
   const activeDeliveries = orders.filter(
-    (o) => o.deliveryStatus && o.deliveryStatus !== "delivered" && o.deliveryStatus !== "pending"
+    (o) => o.deliveryStatus && o.deliveryStatus !== "delivered" && o.deliveryStatus !== "cancelled" && o.deliveryStatus !== "pending"
   );
 
   const activePartners = useMemo(() => {
@@ -77,18 +77,29 @@ export default function DeliveryPage() {
         const boyOrders = orders.filter((o) => o.deliveryBoyId === boy.id);
         const delivered = boyOrders.filter((o) => o.status === "delivered");
         const cancelled = boyOrders.filter((o) => o.status === "cancelled");
-        const codDelivered = delivered.filter((o) => o.paymentMethod === "cod");
-        const collected = codDelivered.reduce((sum, o) => sum + o.total, 0);
+        const collectedOf = (o: typeof orders[number]) =>
+          typeof o.collectedAmount === "number" ? o.collectedAmount : o.paymentMethod === "cod" ? o.total : 0;
+        const methodOf = (o: typeof orders[number]) =>
+          o.collectedMethod ?? (o.paymentMethod === "cod" ? "cash" : "upi");
+        const collected = delivered.reduce((sum, o) => sum + collectedOf(o), 0);
+        const cashCollected = delivered
+          .filter((o) => methodOf(o) === "cash")
+          .reduce((sum, o) => sum + collectedOf(o), 0);
+        const upiCollected = delivered
+          .filter((o) => methodOf(o) === "upi")
+          .reduce((sum, o) => sum + collectedOf(o), 0);
         const inPeriod = (start: number) =>
-          codDelivered
+          delivered
             .filter((o) => Number.isFinite(new Date(o.createdAt).getTime()) && new Date(o.createdAt).getTime() >= start)
-            .reduce((sum, o) => sum + o.total, 0);
+            .reduce((sum, o) => sum + collectedOf(o), 0);
         return {
           boy,
           assigned: boyOrders.length,
           delivered: delivered.length,
           cancelled: cancelled.length,
           collected,
+          cashCollected,
+          upiCollected,
           todayCollected: inPeriod(startOfToday),
           weekCollected: inPeriod(startOfWeek),
           monthCollected: inPeriod(startOfMonth),
@@ -104,11 +115,13 @@ export default function DeliveryPage() {
       delivered: acc.delivered + s.delivered,
       cancelled: acc.cancelled + s.cancelled,
       collected: acc.collected + s.collected,
+      cashCollected: acc.cashCollected + s.cashCollected,
+      upiCollected: acc.upiCollected + s.upiCollected,
       todayCollected: acc.todayCollected + s.todayCollected,
       weekCollected: acc.weekCollected + s.weekCollected,
       monthCollected: acc.monthCollected + s.monthCollected,
     }),
-    { assigned: 0, delivered: 0, cancelled: 0, collected: 0, todayCollected: 0, weekCollected: 0, monthCollected: 0 }
+    { assigned: 0, delivered: 0, cancelled: 0, collected: 0, cashCollected: 0, upiCollected: 0, todayCollected: 0, weekCollected: 0, monthCollected: 0 }
   );
 
   useEffect(() => {
@@ -286,12 +299,21 @@ export default function DeliveryPage() {
                       <p className="text-sm font-bold tabular-nums">{formatPrice(s.monthCollected)}</p>
                     </div>
                   </div>
-                  <p className="mt-2 text-right text-[10px] text-muted">All-time collected: {formatPrice(s.collected)}</p>
+                  <div className="mt-2 flex items-center justify-between rounded-xl bg-brand-fresh/5 px-3 py-2.5">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">All-time collected</p>
+                      <p className="text-sm font-extrabold tabular-nums text-brand-fresh">{formatPrice(s.collected)}</p>
+                    </div>
+                    <div className="text-right text-xs tabular-nums text-muted">
+                      <p>💰 Cash {formatPrice(s.cashCollected)}</p>
+                      <p className="mt-0.5">📲 UPI {formatPrice(s.upiCollected)}</p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
             <p className="mt-2 text-[10px] text-muted">
-              Collected amounts are COD order values on delivered orders. Counts reflect only orders closed by admin/manager confirmation.
+              Collected amounts are what delivery partners record at the door — cash or UPI — on delivered orders, with older orders falling back to the COD value.
             </p>
           </>
         )}

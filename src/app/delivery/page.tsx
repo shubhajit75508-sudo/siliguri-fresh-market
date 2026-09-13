@@ -7,11 +7,16 @@ import { Button } from "@/components/ui/button";
 import { formatPrice, getItemUnitPrice } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import LiveMap from "@/components/maps/LiveMap";
+import { useToast } from "@/components/ui/toaster";
 import type { DeliveryAssignment } from "@/types";
 import {
   Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, LocateFixed,
-  ImageIcon, ClipboardList, Wallet,
+  ImageIcon, ClipboardList, Wallet, Banknote, QrCode, X, IndianRupee, XCircle,
 } from "lucide-react";
+
+// UPI QR shown to the customer so they can scan & pay at the door.
+const SHOP_UPI_QR =
+  "https://res.cloudinary.com/uwn6uqmj/image/upload/v1789301757/WhatsApp_Image_2026-09-13_at_12.14.05_PM.jpg";
 
 // ── Helpers ──────────────────────────────────────────
 
@@ -30,7 +35,7 @@ const statusColors: Record<string, "blue" | "orange" | "fresh" | "default"> = {
 };
 
 function EarningsCard() {
-  const [earnings, setEarnings] = useState<{ total: number; weekTotal: number; deliveries: number; weekDeliveries: number } | null>(null);
+  const [earnings, setEarnings] = useState<{ total: number; weekTotal: number; deliveries: number; weekDeliveries: number; collectedTotal?: number; cashCollected?: number; upiCollected?: number } | null>(null);
 
   useEffect(() => {
     fetch("/api/delivery/earnings")
@@ -59,6 +64,18 @@ function EarningsCard() {
           <p className="text-xs text-muted mt-0.5">{earnings.weekDeliveries} deliveries</p>
         </div>
       </div>
+      {typeof earnings.collectedTotal === "number" && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white/5 px-3 py-2.5">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Money Collected from Customers</p>
+            <p className="text-base font-extrabold tabular-nums text-foreground">{formatPrice(earnings.collectedTotal)}</p>
+          </div>
+          <div className="text-right text-xs tabular-nums text-muted">
+            <p>💰 Cash {formatPrice(earnings.cashCollected ?? 0)}</p>
+            <p className="mt-0.5">📲 UPI {formatPrice(earnings.upiCollected ?? 0)}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -67,13 +84,15 @@ function EarningsCard() {
 
 function DeliveryCard({
   a, currentPosition, customerLocations,
-  onAccept, onPickUp,
+  onAccept, onPickUp, onComplete, onCancel,
 }: {
   a: DeliveryAssignment;
   currentPosition: [number, number] | null;
   customerLocations: Record<string, [number, number]>;
   onAccept: (orderId: string) => void;
   onPickUp: (orderId: string) => void;
+  onComplete: (a: DeliveryAssignment, mode: "cash" | "upi") => void;
+  onCancel: (a: DeliveryAssignment) => void;
 }) {
   return (
     <div className="mb-3 rounded-2xl border border-white/5 bg-surface p-4 shadow-sm">
@@ -188,28 +207,165 @@ function DeliveryCard({
           <Phone className="h-3.5 w-3.5" /> Call
         </a>
 
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex flex-col items-end gap-2">
           {a.status === "assigned" && (
-            <Button variant="default" size="sm" onClick={() => onAccept(a.orderId)}>
-              <CheckCircle className="mr-1 h-4 w-4" /> Accept
-            </Button>
-          )}
-          {a.status === "accepted" && (
-            <Button variant="default" size="sm" onClick={() => onPickUp(a.orderId)}>
-              <Truck className="mr-1 h-4 w-4" /> Mark Picked Up
-            </Button>
-          )}
-          {a.status === "picked_up" && (
-            <div className="w-full rounded-xl border border-dashed border-brand-fresh/30 bg-brand-fresh/5 p-3 text-center">
-              <p className="text-xs font-medium text-brand-fresh flex items-center justify-center gap-1.5">
-                <CheckCircle className="h-3.5 w-3.5" /> Delivered on-site
-              </p>
-              <p className="mt-1 text-[11px] text-muted">
-                Awaiting confirmation by admin to close this delivery
-              </p>
+            <div className="flex items-center gap-2">
+              <Button variant="destructive" size="sm" onClick={() => onCancel(a)}>
+                <XCircle className="mr-1 h-4 w-4" /> Cancel
+              </Button>
+              <Button variant="default" size="sm" onClick={() => onAccept(a.orderId)}>
+                <CheckCircle className="mr-1 h-4 w-4" /> Accept
+              </Button>
             </div>
           )}
+          {a.status === "accepted" && (
+            <>
+              <Button variant="default" size="sm" onClick={() => onPickUp(a.orderId)}>
+                <Truck className="mr-1 h-4 w-4" /> Mark Picked Up
+              </Button>
+              <button
+                onClick={() => onCancel(a)}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
+              >
+                <XCircle className="h-3.5 w-3.5" /> Cancel delivery
+              </button>
+            </>
+          )}
+          {a.status === "picked_up" && (
+            a.paymentStatus === "paid" ? (
+              <>
+                <Button variant="fresh" size="sm" onClick={() => onComplete(a, "upi")}>
+                  <CheckCircle className="mr-1 h-4 w-4" /> Confirm Delivered
+                </Button>
+                <button
+                  onClick={() => onCancel(a)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
+                >
+                  <XCircle className="h-3.5 w-3.5" /> Cancel delivery
+                </button>
+              </>
+            ) : (
+              <div className="flex w-full flex-col gap-2 rounded-xl border border-dashed border-brand-fresh/30 bg-brand-fresh/5 p-3">
+                <p className="text-center text-[10px] font-semibold uppercase tracking-wide text-muted">
+                  Collect payment from customer
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => onComplete(a, "cash")}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-fresh/30 bg-brand-fresh/10 px-3 py-2.5 text-xs font-bold text-brand-fresh transition-colors hover:bg-brand-fresh/20"
+                  >
+                    <Banknote className="h-4 w-4" /> Cash Collected
+                  </button>
+                  <button
+                    onClick={() => onComplete(a, "upi")}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-blue/30 bg-brand-blue/10 px-3 py-2.5 text-xs font-bold text-brand-blue transition-colors hover:bg-brand-blue/20"
+                  >
+                    <QrCode className="h-4 w-4" /> UPI / Online
+                  </button>
+                </div>
+                <button
+                  onClick={() => onCancel(a)}
+                  className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
+                >
+                  <XCircle className="h-3.5 w-3.5" /> Cancel delivery
+                </button>
+              </div>
+            )
+          )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Payment Collection Modal ─────────────────────────
+
+function DeliveryPaymentModal({
+  a, mode, amount, setAmount, submitting, onClose, onConfirm,
+}: {
+  a: DeliveryAssignment;
+  mode: "cash" | "upi";
+  amount: string;
+  setAmount: (v: string) => void;
+  submitting: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const numeric = Number(amount);
+  const invalid = !Number.isFinite(numeric) || numeric <= 0 || numeric > a.total;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 sm:items-center sm:p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md rounded-t-3xl border border-white/10 bg-surface p-5 shadow-2xl sm:rounded-3xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${mode === "cash" ? "bg-brand-fresh/15" : "bg-brand-blue/15"}`}>
+              {mode === "cash" ? (
+                <Banknote className={`h-5 w-5 ${mode === "cash" ? "text-brand-fresh" : "text-brand-blue"}`} />
+              ) : (
+                <QrCode className="h-5 w-5 text-brand-blue" />
+              )}
+            </div>
+            <div>
+              <p className="text-sm font-bold text-foreground">{mode === "cash" ? "Cash Collection" : "UPI / Online Payment"}</p>
+              <p className="text-[11px] text-muted">{a.orderId}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-muted transition-colors hover:bg-white/5 hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {mode === "upi" && (
+          <div className="mt-4 rounded-2xl border border-border bg-white p-4">
+            <img src={SHOP_UPI_QR} alt="UPI QR code" className="mx-auto h-60 w-60 object-contain" />
+            <p className="mt-2 text-center text-[11px] text-muted">Ask the customer to scan this QR and pay</p>
+          </div>
+        )}
+
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+          <span className="text-xs font-medium text-muted">Order Total</span>
+          <span className="text-base font-extrabold text-foreground">{formatPrice(a.total)}</span>
+        </div>
+
+        <div className="mt-3">
+          <label className="text-xs font-medium text-muted">
+            {mode === "cash" ? "Cash received" : "Amount paid via UPI"}
+          </label>
+          <div className="mt-1 flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3">
+            <IndianRupee className="h-4 w-4 text-muted" />
+            <input
+              type="number"
+              inputMode="decimal"
+              min={1}
+              max={a.total}
+              placeholder="0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full bg-transparent text-lg font-bold text-foreground outline-none placeholder:text-muted/50"
+              autoFocus
+            />
+          </div>
+          {amount && invalid && (
+            <p className="mt-1 text-[10px] text-brand-red">Enter an amount between ₹1 and {formatPrice(a.total)}</p>
+          )}
+        </div>
+
+        <button
+          onClick={onConfirm}
+          disabled={invalid || submitting}
+          className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-extrabold shadow-md transition-all duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 ${
+            mode === "cash"
+              ? "bg-[#2D7D3A] text-white shadow-black/20 hover:bg-[#23682E]"
+              : "bg-[#4FA8D8] text-white shadow-black/20 hover:bg-[#3D96C6]"
+          }`}
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+          {mode === "cash" ? "Confirm Cash Collected" : "Payment Received — Complete Delivery"}
+        </button>
       </div>
     </div>
   );
@@ -221,7 +377,8 @@ const STALE_MS = 48 * 60 * 60 * 1000;
 
 export default function DeliveryDashboard() {
   const { boy, assignments } = useDeliveryStore();
-  const { acceptDelivery, pickUpDelivery } = useOrderStore();
+  const { acceptDelivery, pickUpDelivery, completeDelivery, cancelDelivery } = useOrderStore();
+  const toast = useToast();
 
   const [tracking, setTracking] = useState(false);
   const [gpsError, setGpsError] = useState("");
@@ -229,11 +386,17 @@ export default function DeliveryDashboard() {
   const [loadingAssignments, setLoadingAssignments] = useState(true);
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
   const [customerLocations, setCustomerLocations] = useState<Record<string, [number, number]>>({});
+  const [payModal, setPayModal] = useState<{ a: DeliveryAssignment; mode: "cash" | "upi" } | null>(null);
+  const [payAmount, setPayAmount] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [cancelFor, setCancelFor] = useState<DeliveryAssignment | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
 
   const active = useMemo(() => {
     const now = Date.now();
     return assignments.filter((a) => {
-      if (a.deliveryBoyId !== boy?.id || a.status === "delivered") return false;
+      if (a.deliveryBoyId !== boy?.id || a.status === "delivered" || a.status === "cancelled") return false;
       const ts = new Date(a.assignedAt).getTime();
       const age = Number.isFinite(ts) ? now - ts : 0;
       return age < STALE_MS;
@@ -327,6 +490,70 @@ export default function DeliveryDashboard() {
         x.orderId === orderId ? { ...x, status: "picked_up" as const } : x
       )
     );
+  };
+
+  const markAssignmentDelivered = (orderId: string, paymentStatus: "paid" | "unpaid" | "refunded" | undefined) => {
+    useDeliveryStore.getState().setAssignments(
+      useDeliveryStore.getState().assignments.map((x) =>
+        x.orderId === orderId
+          ? { ...x, status: "delivered" as const, deliveredAt: new Date().toISOString(), paymentStatus: paymentStatus || x.paymentStatus }
+          : x
+      )
+    );
+  };
+
+  const handleComplete = (a: DeliveryAssignment, mode: "cash" | "upi") => {
+    if (a.paymentStatus === "paid") {
+      setSubmitting(true);
+      completeDelivery(a.orderId, "upi", a.total, "prepaid")
+        .then(() => {
+          markAssignmentDelivered(a.orderId, "paid");
+          toast.add("Delivery marked as delivered");
+        })
+        .catch((e) => toast.add((e instanceof Error ? e.message : "Something went wrong") + " — try again"))
+        .finally(() => setSubmitting(false));
+      return;
+    }
+    setPayAmount(String(a.total));
+    setPayModal({ a, mode });
+  };
+
+  const handleModalConfirm = async () => {
+    if (!payModal) return;
+    const amount = Number(payAmount);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > payModal.a.total) return;
+    const { a, mode } = payModal;
+    setSubmitting(true);
+    try {
+      await completeDelivery(a.orderId, mode, Math.round(amount * 100) / 100);
+      markAssignmentDelivered(a.orderId, "paid");
+      toast.add(mode === "cash" ? `Cash ${formatPrice(amount)} collected — delivery completed` : `${formatPrice(amount)} received — delivery completed`);
+      setPayModal(null);
+    } catch (e) {
+      toast.add((e instanceof Error ? e.message : "Something went wrong") + " — try again");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCancelConfirm = async () => {
+    if (!cancelFor) return;
+    const a = cancelFor;
+    setCancelling(true);
+    try {
+      await cancelDelivery(a.orderId, cancelReason.trim() || undefined);
+      useDeliveryStore.getState().setAssignments(
+        useDeliveryStore.getState().assignments.map((x) =>
+          x.orderId === a.orderId ? { ...x, status: "cancelled" as const } : x
+        )
+      );
+      toast.add("Delivery cancelled — reflected in admin");
+      setCancelFor(null);
+    } catch (e) {
+      toast.add((e instanceof Error ? e.message : "Something went wrong") + " — try again");
+    } finally {
+      setCancelling(false);
+    }
   };
 
   const pickupStatuses = active.filter((a) => a.status === "assigned" || a.status === "accepted");
@@ -437,7 +664,7 @@ export default function DeliveryDashboard() {
                 <Package className="h-4 w-4" /> Pickup ({pickupStatuses.length})
               </h3>
               {pickupStatuses.map((a) => (
-                <DeliveryCard key={a.id} a={a} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} />
+                <DeliveryCard key={a.id} a={a} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} onComplete={handleComplete} onCancel={setCancelFor} />
               ))}
             </div>
           )}
@@ -448,11 +675,74 @@ export default function DeliveryDashboard() {
                 <Truck className="h-4 w-4" /> Out for Delivery ({outForDelivery.length})
               </h3>
               {outForDelivery.map((a) => (
-                <DeliveryCard key={a.id} a={a} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} />
+                <DeliveryCard key={a.id} a={a} currentPosition={currentPosition} customerLocations={customerLocations} onAccept={handleAcceptDelivery} onPickUp={handlePickUp} onComplete={handleComplete} onCancel={setCancelFor} />
               ))}
             </div>
           )}
         </>
+      )}
+
+      {payModal && (
+        <DeliveryPaymentModal
+          a={payModal.a}
+          mode={payModal.mode}
+          amount={payAmount}
+          setAmount={setPayAmount}
+          submitting={submitting}
+          onClose={() => setPayModal(null)}
+          onConfirm={handleModalConfirm}
+        />
+      )}
+
+      {cancelFor && (
+        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 sm:items-center sm:p-4" onClick={() => setCancelFor(null)}>
+          <div
+            className="w-full max-w-md rounded-t-3xl border border-white/10 bg-surface p-5 shadow-2xl sm:rounded-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-red/15">
+                  <XCircle className="h-5 w-5 text-brand-red" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Cancel Delivery</p>
+                  <p className="text-[11px] text-muted">{cancelFor.orderId}</p>
+                </div>
+              </div>
+              <button onClick={() => setCancelFor(null)} className="rounded-lg p-1.5 text-muted transition-colors hover:bg-white/5 hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <p className="mt-3 text-xs text-muted">
+              The order will be marked <span className="font-semibold text-brand-red">cancelled</span> in admin, the customer will be
+              notified, and stock will be restored. This cannot be undone.
+            </p>
+
+            <label className="mt-4 block text-xs font-medium text-muted">
+              Reason (optional)
+            </label>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              maxLength={300}
+              rows={2}
+              placeholder="e.g. customer not reachable, wrong address, refused order..."
+              className="mt-1 w-full resize-none rounded-xl border border-border bg-surface px-4 py-3 text-xs text-foreground outline-none placeholder:text-muted/50 focus:border-brand-red/40"
+            />
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Button variant="outline" onClick={() => setCancelFor(null)} disabled={cancelling}>
+                Keep Delivery
+              </Button>
+              <Button variant="destructive" onClick={handleCancelConfirm} disabled={cancelling}>
+                {cancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                Cancel Order
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
