@@ -24,6 +24,9 @@ export async function GET(req: NextRequest) {
   const day = (weekStart.getDay() + 6) % 7; // Monday = 0
   weekStart.setDate(weekStart.getDate() - day);
 
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
   const [allRes, weekRes] = await Promise.all([
     supabaseAdmin
       .from("delivery_earnings")
@@ -43,7 +46,7 @@ export async function GET(req: NextRequest) {
   const total = all.reduce((sum, e) => sum + Number(e.amount ?? 0), 0);
   const weekTotal = week.reduce((sum, e) => sum + Number(e.amount ?? 0), 0);
 
-  // How much money the delivery partner actually collected from customers
+  // How much money the delivery partner collected from customers today
   // (cash + UPI at the door) on their delivered orders.
   const { data: ordersData } = await supabaseAdmin
     .from("orders")
@@ -51,7 +54,11 @@ export async function GET(req: NextRequest) {
     .eq("delivery_boy_id", userId)
     .eq("status", "delivered");
 
-  const orders = Array.isArray(ordersData) ? ordersData : [];
+  const orders = (Array.isArray(ordersData) ? ordersData : [])
+    .filter(
+      (o: Record<string, unknown>) =>
+        o.delivered_at && new Date(o.delivered_at as string).getTime() >= todayStart.getTime()
+    );
   const collectedOf = (o: Record<string, unknown>) => {
     const pc = (o.address_snapshot as Record<string, unknown> | null)?.payment_collected as { amount?: number } | undefined;
     if (pc && typeof pc.amount === "number") return pc.amount;
@@ -61,11 +68,11 @@ export async function GET(req: NextRequest) {
     const pc = (o.address_snapshot as Record<string, unknown> | null)?.payment_collected as { method?: string } | undefined;
     return pc?.method ?? (o.payment_method === "cod" ? "cash" : "upi");
   };
-  const collectedTotal = orders.reduce((sum, o) => sum + collectedOf(o), 0);
-  const cashCollected = orders
+  const todayCollected = orders.reduce((sum, o) => sum + collectedOf(o), 0);
+  const cashToday = orders
     .filter((o) => methodOf(o) === "cash")
     .reduce((sum, o) => sum + collectedOf(o), 0);
-  const upiCollected = orders
+  const upiToday = orders
     .filter((o) => methodOf(o) === "upi")
     .reduce((sum, o) => sum + collectedOf(o), 0);
 
@@ -75,8 +82,8 @@ export async function GET(req: NextRequest) {
     weekTotal,
     weekDeliveries: week.length,
     recent: all.slice(0, 20),
-    collectedTotal,
-    cashCollected,
-    upiCollected,
+    todayCollected,
+    cashToday,
+    upiToday,
   });
 }

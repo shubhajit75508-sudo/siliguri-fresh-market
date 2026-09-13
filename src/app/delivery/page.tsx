@@ -35,7 +35,7 @@ const statusColors: Record<string, "blue" | "orange" | "fresh" | "default"> = {
 };
 
 function EarningsCard() {
-  const [earnings, setEarnings] = useState<{ total: number; weekTotal: number; deliveries: number; weekDeliveries: number; collectedTotal?: number; cashCollected?: number; upiCollected?: number } | null>(null);
+  const [earnings, setEarnings] = useState<{ total: number; weekTotal: number; deliveries: number; weekDeliveries: number; todayCollected?: number; cashToday?: number; upiToday?: number } | null>(null);
 
   useEffect(() => {
     fetch("/api/delivery/earnings")
@@ -64,15 +64,15 @@ function EarningsCard() {
           <p className="text-xs text-muted mt-0.5">{earnings.weekDeliveries} deliveries</p>
         </div>
       </div>
-      {typeof earnings.collectedTotal === "number" && (
+      {typeof earnings.todayCollected === "number" && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white/5 px-3 py-2.5">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Money Collected from Customers</p>
-            <p className="text-base font-extrabold tabular-nums text-foreground">{formatPrice(earnings.collectedTotal)}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Today&apos;s Collection</p>
+            <p className="text-base font-extrabold tabular-nums text-foreground">{formatPrice(earnings.todayCollected)}</p>
           </div>
           <div className="text-right text-xs tabular-nums text-muted">
-            <p>💰 Cash {formatPrice(earnings.cashCollected ?? 0)}</p>
-            <p className="mt-0.5">📲 UPI {formatPrice(earnings.upiCollected ?? 0)}</p>
+            <p>💰 Cash {formatPrice(earnings.cashToday ?? 0)}</p>
+            <p className="mt-0.5">📲 UPI {formatPrice(earnings.upiToday ?? 0)}</p>
           </div>
         </div>
       )}
