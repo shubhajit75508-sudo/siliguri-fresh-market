@@ -94,12 +94,12 @@ function DeliveryCard({
   onComplete: (a: DeliveryAssignment, mode: "cash" | "upi") => void;
   onCancel: (a: DeliveryAssignment) => void;
 }) {
-  return (
+return (
     <div className="mb-3 rounded-2xl border border-white/5 bg-surface p-4 shadow-sm">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <p className="font-bold text-foreground">{a.customerName}</p>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <p className="truncate font-bold text-foreground">{a.customerName}</p>
             <Badge variant={statusColors[a.status] ?? "blue"}>
               {statusLabels[a.status] ?? a.status}
             </Badge>
@@ -109,10 +109,12 @@ function DeliveryCard({
               <Badge variant="orange">COD</Badge>
             )}
           </div>
-          <p className="mt-0.5 text-sm text-muted">{a.customerPhone}</p>
-          <p className="text-[10px] font-mono text-muted mt-0.5">Order: {a.orderId}</p>
+          <p className="mt-0.5 truncate text-sm text-muted">{a.customerPhone}</p>
+          <p className="mt-0.5 truncate text-[10px] font-mono text-muted">Order: {a.orderId}</p>
         </div>
-        <p className="text-sm font-bold text-foreground">{formatPrice(a.total)}</p>
+        <div className="shrink-0 text-right">
+          <p className="text-sm font-extrabold tabular-nums">{formatPrice(a.total)}</p>
+        </div>
       </div>
 
       <div className="mt-3 rounded-xl bg-white/5 p-3 text-sm">
@@ -199,17 +201,17 @@ function DeliveryCard({
         </ul>
       </details>
 
-      <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3">
+      <div className="mt-4 flex flex-col gap-3 border-t border-white/5 pt-3 sm:flex-row sm:items-center sm:gap-3">
         <a
           href={`tel:${a.customerPhone}`}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-muted hover:bg-white/5"
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-muted hover:bg-white/5 sm:w-auto"
         >
           <Phone className="h-3.5 w-3.5" /> Call
         </a>
 
-        <div className="ml-auto flex flex-col items-end gap-2">
+        <div className="flex flex-col items-stretch gap-2 sm:ml-auto sm:items-end">
           {a.status === "assigned" && (
-            <div className="flex items-center gap-2">
+            <div className="flex w-full items-center justify-center gap-2 sm:w-auto sm:justify-end">
               <Button variant="destructive" size="sm" onClick={() => onCancel(a)}>
                 <XCircle className="mr-1 h-4 w-4" /> Cancel
               </Button>
@@ -225,7 +227,7 @@ function DeliveryCard({
               </Button>
               <button
                 onClick={() => onCancel(a)}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
+                className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
               >
                 <XCircle className="h-3.5 w-3.5" /> Cancel delivery
               </button>
@@ -239,7 +241,7 @@ function DeliveryCard({
                 </Button>
                 <button
                   onClick={() => onCancel(a)}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
+                  className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
                 >
                   <XCircle className="h-3.5 w-3.5" /> Cancel delivery
                 </button>
@@ -263,7 +265,7 @@ function DeliveryCard({
                     <QrCode className="h-4 w-4" /> UPI / Online
                   </button>
                 </div>
-                <button
+<button
                   onClick={() => onCancel(a)}
                   className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-brand-red hover:text-red-400"
                 >
@@ -295,9 +297,9 @@ function DeliveryPaymentModal({
   const invalid = !Number.isFinite(numeric) || numeric <= 0 || numeric > a.total;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 sm:items-center sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[1200] flex items-end justify-center bg-black/60 sm:items-center sm:p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-t-3xl border border-white/10 bg-surface p-5 shadow-2xl sm:rounded-3xl"
+        className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-white/10 bg-surface p-5 shadow-2xl sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -320,8 +322,8 @@ function DeliveryPaymentModal({
         </div>
 
         {mode === "upi" && (
-          <div className="mt-4 rounded-2xl border border-border bg-white p-4">
-            <img src={SHOP_UPI_QR} alt="UPI QR code" className="mx-auto h-60 w-60 object-contain" />
+          <div className="mt-4 rounded-2xl border border-border bg-white p-3 sm:p-4">
+            <img src={SHOP_UPI_QR} alt="UPI QR code" className="mx-auto h-48 w-48 object-contain sm:h-60 sm:w-60" />
             <p className="mt-2 text-center text-[11px] text-muted">Ask the customer to scan this QR and pay</p>
           </div>
         )}
@@ -695,9 +697,9 @@ export default function DeliveryDashboard() {
       )}
 
       {cancelFor && (
-        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 sm:items-center sm:p-4" onClick={() => setCancelFor(null)}>
+        <div className="fixed inset-0 z-[1210] flex items-end justify-center bg-black/60 sm:items-center sm:p-4" onClick={() => setCancelFor(null)}>
           <div
-            className="w-full max-w-md rounded-t-3xl border border-white/10 bg-surface p-5 shadow-2xl sm:rounded-3xl"
+            className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-white/10 bg-surface p-5 shadow-2xl sm:rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">

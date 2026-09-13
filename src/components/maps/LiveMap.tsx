@@ -77,5 +77,7 @@ export default function LiveMap({ center, zoom = 14, markers = [], className = "
     });
   }, [markers]);
 
-  return <div ref={containerRef} className={className} />;
+  // isolation + relative contain Leaflet's high internal z-indexes (up to 1000)
+  // so they never paint above app modals/drawers — fix for the QR-overlay bug.
+  return <div ref={containerRef} className={`relative isolate overflow-hidden ${className}`} />;
 }

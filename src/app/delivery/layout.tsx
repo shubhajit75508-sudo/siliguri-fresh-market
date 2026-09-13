@@ -168,13 +168,13 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="flex min-h-screen flex-col bg-white/5">
-      <header className="flex h-14 items-center gap-3 border-b bg-surface px-4 shadow-sm">
-        <Truck className="h-5 w-5 text-brand-fresh-dim" />
-        <div className="leading-none">
-          <p className="text-sm font-bold">{boy.name}</p>
-          <p className="text-[11px] text-muted">{boy.area}</p>
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-surface px-3 shadow-sm backdrop-blur sm:gap-3 sm:px-4">
+        <Truck className="h-5 w-5 shrink-0 text-brand-fresh-dim" />
+        <div className="min-w-0 leading-none">
+          <p className="truncate text-sm font-bold">{boy.name}</p>
+          <p className="truncate text-[11px] text-muted">{boy.area}</p>
         </div>
-        <nav className="ml-auto flex items-center gap-1">
+        <nav className="ml-auto flex min-w-0 items-center gap-0.5 sm:gap-1">
           {navLinks.map((l) => {
             const Icon = l.icon;
             const isActive = pathname === l.href;
@@ -183,24 +183,25 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
                 key={l.href}
                 href={l.href}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
+                  "flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors sm:px-3",
                   isActive ? "bg-brand-fresh/10 text-brand-fresh-dim" : "text-muted hover:bg-surface"
                 )}
               >
-                <Icon className="h-3.5 w-3.5" />
-                {l.label}
+                <Icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{l.label}</span>
               </Link>
             );
           })}
           <button
             onClick={() => { logout(); authLogout(); document.cookie = "sfm-auth-session=; path=/; max-age=0"; router.push("/auth/login"); }}
-            className="ml-2 flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium text-brand-red hover:bg-brand-red/10"
+            className="ml-1 flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-brand-red hover:bg-brand-red/10 sm:ml-2 sm:px-3"
           >
-            <LogOut className="h-3.5 w-3.5" /> Logout
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </nav>
       </header>
-      <main className="flex-1 p-4">{children}</main>
+      <main className="mx-auto w-full max-w-3xl flex-1 p-3 sm:p-4">{children}</main>
     </div>
   );
 }
