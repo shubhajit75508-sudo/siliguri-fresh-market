@@ -65,7 +65,6 @@ export async function POST(req: NextRequest) {
   const updates: Record<string, unknown> = {
     status: "cancelled",
     delivery_status: "cancelled",
-    cancelled_at: new Date().toISOString(),
     address_snapshot: {
       ...snapshot,
       cancelled_by: role === "delivery" ? "delivery_partner" : role,
