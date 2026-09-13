@@ -99,6 +99,22 @@ export async function GET(req: NextRequest) {
   if (delivErr) return NextResponse.json({ error: "Profit query failed" }, { status: 500 });
   const delivered = (rawDelivered ?? []) as unknown as OrderRow[];
 
+  // --- Delivery partner payouts (commissions) in the same period ---
+  // These are the shop's cost of delivery — delivery boy earnings are a FIXED
+  // commission per order, NEVER the customer's delivery fee (which is shop profit).
+  let partnerPayouts = 0;
+  try {
+    let earningsQuery = supabaseAdmin
+      .from("delivery_earnings")
+      .select("id, amount, created_at");
+    if (from) earningsQuery = earningsQuery.gte("created_at", `${from}T00:00:00`);
+    if (to) earningsQuery = earningsQuery.lte("created_at", `${to}T23:59:59.999`);
+    const { data: rawEarnings } = await earningsQuery;
+    partnerPayouts = (rawEarnings ?? []).reduce((s, e) => s + Number((e as { amount?: number }).amount ?? 0), 0);
+  } catch (e) {
+    console.error("[growth] earnings lookup failed:", e);
+  }
+
   // --- Fetch ALL orders in created_at range (for customer / funnel / AOV trends) ---
   let allQuery = supabaseAdmin
     .from("orders")
@@ -134,7 +150,7 @@ export async function GET(req: NextRequest) {
   }
 
   // ================= PROFIT / CATEGORY / ZONE aggregation (delivered only) =================
-  const summary = { revenue: 0, cost: 0, profit: 0, deliveryFees: 0, orderCount: 0 };
+  const summary = { revenue: 0, cost: 0, profit: 0, deliveryFees: 0, orderCount: 0, partnerPayouts: 0, netProfit: 0 };
   let missingCostItems = 0;
   const dailyMap = new Map<string, { date: string; revenue: number; cost: number; profit: number; orderCount: number }>();
   const categoryAgg = new Map<string, { category: string; orders: number; revenue: number; cost: number; profit: number; qty: number }>();
@@ -260,7 +276,13 @@ export async function GET(req: NextRequest) {
     .sort((a, b) => b.profit - a.profit)
     .slice(0, 20);
 
+  // Partner payouts are a fixed commission per delivery (NOT the delivery fee,
+  // which is shop profit). Subtract from gross profit to get true net profit.
+  summary.partnerPayouts = partnerPayouts;
+  summary.netProfit = summary.profit - partnerPayouts;
+
   const margin = summary.revenue > 0 ? (summary.profit / summary.revenue) * 100 : 0;
+  const netMargin = summary.revenue > 0 ? (summary.netProfit / summary.revenue) * 100 : 0;
 
   // ================= CUSTOMER aggregation (by email or phone) =================
   // Use all orders (created_at range). Count per customer, ordered history.
@@ -413,6 +435,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     summary,
     margin,
+    netMargin,
     missingCostItems,
     daily: [...dailyMap.values()].sort((a, b) => a.date.localeCompare(b.date)),
     categories,

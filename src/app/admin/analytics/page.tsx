@@ -12,8 +12,9 @@ import {
 interface WeightPrice { weight: string; price: number }
 
 interface GrowthData {
-  summary: { revenue: number; cost: number; profit: number; deliveryFees: number; orderCount: number };
+  summary: { revenue: number; cost: number; profit: number; deliveryFees: number; orderCount: number; partnerPayouts?: number; netProfit?: number };
   margin: number;
+  netMargin?: number;
   missingCostItems: number;
   daily: { date: string; revenue: number; cost: number; profit: number; orderCount: number }[];
   categories: { category: string; orders: number; revenue: number; cost: number; profit: number; qty: number; margin: number }[];
@@ -169,7 +170,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard label="Total Revenue" value={fmt(s.revenue)} icon={IndianRupee} color="text-green-600 bg-green-100" sub={`${o.delivered} delivered orders`} />
-          <KpiCard label="Net Profit" value={fmt(s.profit)} icon={TrendingUp} color={s.profit >= 0 ? "text-emerald-600 bg-emerald-100" : "text-red-600 bg-red-100"} sub={`${data!.margin.toFixed(1)}% margin`} />
+          <KpiCard label="Net Profit" value={fmt(s.netProfit ?? s.profit)} icon={TrendingUp} color={(s.netProfit ?? s.profit) >= 0 ? "text-emerald-600 bg-emerald-100" : "text-red-600 bg-red-100"} sub={`${(data!.netMargin ?? data!.margin).toFixed(1)}% margin`} />
           <KpiCard label="Avg Order Value" value={fmt(o.aov)} icon={ShoppingBag} color="text-blue-600 bg-blue-100" sub={`${fmt(o.avgOrderValueAll)} overall`} />
           <KpiCard label="Customers" value={data!.customers.totalCustomers} icon={Users} color="text-pink-600 bg-pink-100" sub={`${data!.customers.repeatRate.toFixed(0)}% repeating`} />
           <KpiCard label="New Customers" value={data!.customers.newCustomers} icon={UserPlus} color="text-purple-600 bg-purple-100" />
@@ -259,9 +260,10 @@ export default function AnalyticsPage() {
     const profitCards = [
       { label: "Gross Revenue", value: fmt(s.revenue), icon: IndianRupee, color: "text-green-600 bg-green-100" },
       { label: "Cost of Goods", value: fmt(s.cost), icon: PackageOpen, color: "text-orange-600 bg-orange-100" },
-      { label: "Net Profit", value: fmt(s.profit), icon: TrendingUp, color: s.profit >= 0 ? "text-emerald-600 bg-emerald-100" : "text-red-600 bg-red-100" },
-      { label: "Profit Margin", value: data!.margin.toFixed(1) + "%", icon: Percent, color: "text-blue-600 bg-blue-100" },
-      { label: "Delivery Fees", value: fmt(s.deliveryFees), icon: Truck, color: "text-cyan-600 bg-cyan-100" },
+      { label: "Net Profit", value: fmt(s.netProfit ?? s.profit), icon: TrendingUp, color: (s.netProfit ?? s.profit) >= 0 ? "text-emerald-600 bg-emerald-100" : "text-red-600 bg-red-100" },
+      { label: "Profit Margin", value: (data!.netMargin ?? data!.margin).toFixed(1) + "%", icon: Percent, color: "text-blue-600 bg-blue-100" },
+      { label: "Delivery Fees (shop profit)", value: fmt(s.deliveryFees), icon: Truck, color: "text-cyan-600 bg-cyan-100" },
+      { label: "Partner Payouts (cost)", value: "−" + fmt(s.partnerPayouts ?? 0), icon: Truck, color: "text-red-600 bg-red-100" },
       { label: "Delivered Orders", value: s.orderCount, icon: CheckCircle2, color: "text-purple-600 bg-purple-100" },
     ];
     return (
@@ -271,6 +273,12 @@ export default function AnalyticsPage() {
             <KpiCard key={c.label} label={c.label} value={c.value} icon={c.icon} color={c.color} />
           ))}
         </div>
+
+        <p className="rounded-xl bg-white/5 px-4 py-3 text-xs text-muted">
+          The delivery fee charged to the customer is <b className="text-foreground">shop profit</b> (shown above).
+          Delivery boys earn a fixed per-delivery <b className="text-foreground">commission</b>, which is a business cost and is
+          already deducted before Net Profit: <span className="font-semibold text-foreground">Net Profit = (product margin + delivery fees) − partner payouts</span>.
+        </p>
 
         <SalesTrendPanel />
 

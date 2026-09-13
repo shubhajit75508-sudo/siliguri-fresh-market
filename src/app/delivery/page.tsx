@@ -69,6 +69,7 @@ function EarningsCard() {
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Today&apos;s Collection</p>
             <p className="text-base font-extrabold tabular-nums text-foreground">{formatPrice(earnings.todayCollected)}</p>
+            <p className="mt-0.5 text-[10px] text-muted">Collected for the shop (incl. delivery fee) — separate from your pay</p>
           </div>
           <div className="text-right text-xs tabular-nums text-muted">
             <p>💰 Cash {formatPrice(earnings.cashToday ?? 0)}</p>

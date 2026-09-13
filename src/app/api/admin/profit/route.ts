@@ -112,6 +112,21 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Partner payouts (delivery-boy commissions) in the same period — a shop cost,
+  // and NOT the customer's delivery fee (which counts as shop profit below).
+  let partnerPayouts = 0;
+  try {
+    let earningsQuery = supabaseAdmin
+      .from("delivery_earnings")
+      .select("id, amount, created_at");
+    if (from) earningsQuery = earningsQuery.gte("created_at", `${from}T00:00:00`);
+    if (to) earningsQuery = earningsQuery.lte("created_at", `${to}T23:59:59.999`);
+    const { data: rawEarnings } = await earningsQuery;
+    partnerPayouts = (rawEarnings ?? []).reduce((s, e) => s + Number((e as { amount?: number }).amount ?? 0), 0);
+  } catch (e) {
+    console.error("[profit] earnings lookup failed:", e);
+  }
+
   // Per-order + per-day aggregation
   const summary = {
     revenue: 0,
@@ -119,6 +134,8 @@ export async function GET(req: NextRequest) {
     profit: 0,
     deliveryFees: 0,
     orderCount: 0,
+    partnerPayouts: 0,
+    netProfit: 0,
   };
   const dailyMap = new Map<string, { date: string; revenue: number; cost: number; profit: number; orderCount: number }>();
   const productAgg = new Map<string, { name: string; quantity: number; revenue: number; cost: number }>();
@@ -191,12 +208,17 @@ export async function GET(req: NextRequest) {
     .sort((a, b) => b.profit - a.profit)
     .slice(0, 20);
 
+  summary.partnerPayouts = partnerPayouts;
+  summary.netProfit = summary.profit - partnerPayouts;
+
   const margin = summary.revenue > 0 ? (summary.profit / summary.revenue) * 100 : 0;
+  const netMargin = summary.revenue > 0 ? (summary.netProfit / summary.revenue) * 100 : 0;
 
   return NextResponse.json({
     summary: {
       ...summary,
       margin,
+      netMargin,
     },
     daily,
     topProducts,
