@@ -39,7 +39,7 @@ and ships the brand launcher icon + "Siliguri Fresh Mart" name.
 ## Upload to Play
 
 1. Play Console → your app → **Production** (or Testing) → **Create new release**.
-2. Upload `app-release.aab`. Current build is **versionCode 10 / versionName 3.0.0**
+2. Upload `app-release.aab`. Current build is **versionCode 6 / versionName 3.3.0**
    (bumped from the old API-35 build). If Play says "version code X must be higher",
    bump `versionCode` in `android/app/build.gradle` above X and rebuild.
 3. Release notes: mention *"Updated to target Android 16 (API 36)."* Submit.

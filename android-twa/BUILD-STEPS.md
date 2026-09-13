@@ -92,7 +92,7 @@ The signing files are already in place and gitignored:
 ### If you get "version code X must be higher than N"
 Tell me the number `N` (or just bump it yourself):
 - Open `android-twa\android\app\build.gradle`
-- Change `versionCode 10` to `N + 1` (e.g., if it says 10, use 11)
+- Change `versionCode 6` to `N + 1` (e.g., if it says 6, use 7)
 - Re-run **Part 4** (Android Studio will rebuild with the new number).
 
 ---
@@ -123,7 +123,7 @@ After the new version is live, on the app's Play Console listing go to
 
 ## Files that matter
 
-- `android-twa\android\app\build.gradle` — targetSdk 36, versionCode 10, versionName 3.0.0
+- `android-twa\android\app\build.gradle` — targetSdk 36, versionCode 6, versionName 3.3.0
 - `android-twa\android\app\src\main\AndroidManifest.xml` — package `com.siligurifreshmart`, launcher URL `https://www.siligurifreshmart.com/`
 - `android-twa\android\signing.keystore` — your upload key (LOCAL, gitignored)
 - `android-twa\android\key.properties` — signing passwords (LOCAL, gitignored)
