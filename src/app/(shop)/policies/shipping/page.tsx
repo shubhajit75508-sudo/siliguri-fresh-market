@@ -25,7 +25,7 @@ const faqSchema = {
       name: "How does the delivery slot system work?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Your delivery slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you are assigned the Morning Slot (order before 10 AM, delivered 11 AM – 12 PM). If you are 15–20 km away, you are assigned the Afternoon Slot (order before 12 PM, delivered 1 PM – 3 PM). If you are within 8 km, no slot is needed — your order is delivered directly within 10–60 minutes.",
+        text: "Your delivery slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you are assigned the Morning Slot (order before 9 AM, delivered 9 AM – 12 PM). If you are 15–20 km away, you are assigned the Afternoon Slot (order before 12 PM, delivered 12 PM – 4 PM). If you are within 8 km, no slot is needed — your order is delivered directly within 10–60 minutes.",
       },
     },
     {
@@ -57,7 +57,7 @@ const faqSchema = {
       name: "What are the delivery slots?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "We have two daily delivery slots, assigned automatically by distance. Morning Slot (8–15 km): order before 10 AM for delivery between 11 AM and 12 PM. Afternoon Slot (15–20 km): order before 12 PM for delivery between 1 PM and 3 PM. Within 8 km, no slot is needed — delivery arrives within 10–60 minutes directly.",
+        text: "We have two daily delivery slots, assigned automatically by distance. Morning Slot (8–15 km): order before 9 AM for delivery between 9 AM and 12 PM. Afternoon Slot (15–20 km): order before 12 PM for delivery between 12 PM and 4 PM. Within 8 km, no slot is needed — delivery arrives within 10–60 minutes directly.",
       },
     },
     {
@@ -81,7 +81,7 @@ const faqSchema = {
       name: "When are delivery slots available?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Both slots run daily, Monday to Sunday. Morning Slot (8–15 km): order before 10 AM, delivered 11 AM–12 PM. Afternoon Slot (15–20 km): order before 12 PM, delivered 1 PM–3 PM. Within 8 km: no slot needed, direct delivery within 10–60 minutes.",
+        text: "Both slots run daily, Monday to Sunday. Morning Slot (8–15 km): order before 9 AM, delivered 9 AM–12 PM. Afternoon Slot (15–20 km): order before 12 PM, delivered 12 PM–4 PM. Within 8 km: no slot needed, direct delivery within 10–60 minutes.",
       },
     },
   ],
@@ -127,13 +127,13 @@ export default function ShippingPolicyPage() {
               <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
                 <p className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">Morning Slot</p>
                 <p className="text-sm font-bold text-foreground">8–15 km from hub</p>
-                <p className="text-sm text-blue-700 mt-1">Order before 10 AM → Delivered <strong>11 AM – 12 PM</strong></p>
+                <p className="text-sm text-blue-700 mt-1">Order before 9 AM → Delivered <strong>9 AM – 12 PM</strong></p>
                 <p className="text-xs text-blue-600 mt-2">₹79 delivery fee if order is under ₹1,499. Free at ₹1,499+.</p>
               </div>
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-2">Afternoon Slot</p>
                 <p className="text-sm font-bold text-foreground">15–20 km from hub</p>
-                <p className="text-sm text-amber-700 mt-1">Order before 12 PM → Delivered <strong>1 PM – 3 PM</strong></p>
+                <p className="text-sm text-amber-700 mt-1">Order before 12 PM → Delivered <strong>12 PM – 4 PM</strong></p>
                 <p className="text-xs text-amber-600 mt-2">₹99 delivery fee if order is under ₹1,999. Free at ₹1,999+.</p>
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function ShippingPolicyPage() {
               {[
                 { step: 1, title: "Browse & Add to Cart", text: "Add fresh fish, chicken, or groceries to your cart." },
                 { step: 2, title: "Pin Your Location", text: "Tap 'Detect Location' on the checkout page. Your GPS is used to calculate delivery distance, time, and fees." },
-                { step: 3, title: "Choose Delivery Slot", text: "Pick Morning (11 AM–12 PM) or Afternoon (1 PM–3 PM) delivery window." },
+                { step: 3, title: "Choose Delivery Slot", text: "Pick Morning (9 AM–12 PM) or Afternoon (12 PM–4 PM) delivery window." },
                 { step: 4, title: "Choose Payment", text: "Pay via UPI or Cash on Delivery. No hidden charges — what you see is what you pay." },
                 { step: 5, title: "Fresh Delivery", text: "Your order is hand-packed and delivered to your door within your chosen time slot." },
               ].map(({ step, title, text }) => (
@@ -241,8 +241,8 @@ export default function ShippingPolicyPage() {
           <section className="mb-8">
             <h2 className="mb-3 text-xl font-bold text-foreground">Delivery Hours</h2>
             <p className="text-sm text-muted leading-relaxed">
-              We deliver daily from <strong>7:00 AM to 3:00 PM</strong>. Two delivery slots run every day:
-              Morning (11 AM–12 PM) and Afternoon (1 PM–3 PM). Order cutoff times are 10 AM and 12 PM respectively.
+              We deliver daily from <strong>9:00 AM to 4:00 PM</strong>. Two delivery slots run every day:
+              Morning (9 AM–12 PM) and Afternoon (12 PM–4 PM). Order cutoff times are 9 AM and 12 PM respectively.
             </p>
           </section>
         </div>

@@ -55,9 +55,8 @@ const CATEGORY_FILTERS = [
 ] as const;
 
 const TIME_SLOTS = [
-  "Morning (7 AM \u2013 10 AM)",
-  "Midday (10 AM \u2013 1 PM)",
-  "Afternoon (1 PM \u2013 4 PM)",
+  "Morning (9 AM \u2013 12 PM)",
+  "Afternoon (12 PM \u2013 4 PM)",
 ];
 
 function getMinDate(): string {

@@ -1,5 +1,5 @@
-export const STORE_OPEN_HOUR = 7;
-export const STORE_CLOSE_HOUR = 15;
+export const STORE_OPEN_HOUR = 9;
+export const STORE_CLOSE_HOUR = 16;
 
 export type StoreStatus = {
   isOpen: boolean;
@@ -12,20 +12,20 @@ export function getStoreStatus(now: Date = new Date()): StoreStatus {
   if (h >= STORE_OPEN_HOUR && h < STORE_CLOSE_HOUR) {
     return {
       isOpen: true,
-      headline: "We're open — order before 3 PM for same-day delivery",
+      headline: "We're open — order before 4 PM for same-day delivery",
       subtext: `Open daily ${STORE_OPEN_HOUR}:00 AM – ${STORE_CLOSE_HOUR}:00 PM`,
     };
   }
   if (h < STORE_OPEN_HOUR) {
     return {
       isOpen: false,
-      headline: "We're closed — orders placed now will be delivered today from 7 AM",
+      headline: "We're closed — orders placed now will be delivered today from 9 AM",
       subtext: `Open daily ${STORE_OPEN_HOUR}:00 AM – ${STORE_CLOSE_HOUR}:00 PM`,
     };
   }
   return {
     isOpen: false,
-    headline: "We're closed — orders placed now will be delivered tomorrow from 7 AM",
+    headline: "We're closed — orders placed now will be delivered tomorrow from 9 AM",
     subtext: `Open daily ${STORE_OPEN_HOUR}:00 AM – ${STORE_CLOSE_HOUR}:00 PM`,
   };
 }

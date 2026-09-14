@@ -16,7 +16,7 @@ export const DELIVERY_ZONES: DeliveryZone[] = [
     name: "Shantipara",
     label: "Shantipara, Siliguri",
     eta: "45-60 min",
-    description: "Fresh fish, chicken, mutton & vegetables delivered to your doorstep in Shantipara, Siliguri. Order before 3 PM for same-day delivery from our NJP Gate Bazar hub. Free delivery, no minimum order within 4 km.",
+    description: "Fresh fish, chicken, mutton & vegetables delivered to your doorstep in Shantipara, Siliguri. Order before 4 PM for same-day delivery (9 AM – 4 PM) from our NJP Gate Bazar hub. Free delivery, no minimum order within 4 km.",
     metaTitle: "Fresh Fish & Meat Delivery in Shantipara, Siliguri | Siliguri Fresh Mart",
     metaDescription: "Order fresh fish, chicken, mutton, prawns & vegetables online in Shantipara, Siliguri. Free delivery in 45-60 minutes. Daily fresh catch from Teesta and Mahananda.",
     lat: 26.7200,

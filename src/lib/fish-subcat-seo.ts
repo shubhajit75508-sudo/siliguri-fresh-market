@@ -71,10 +71,10 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     contentHeading: "Ocean-Fresh Sea Fish in Siliguri",
     content:
       "Though Siliguri is inland, we bring the coast to you. Our sea fish arrives daily from Digha, Mandarbani, and Haldia fish markets via refrigerated transport. We source only the freshest batches — Pomfret with firm flesh, Bombay Duck still moist, and Sole with clean white fillets. Each piece is inspected before dispatch. You get genuine coastal quality without travelling to the coast.",
-    deliveryInfo: "Sea fish delivered same-day across Siliguri. Place your order before 1 PM for guaranteed availability.",
+    deliveryInfo: "Sea fish delivered same-day across Siliguri between 9 AM – 4 PM. Place your order before 4 PM for guaranteed availability.",
     relatedFish: ["Pomfret (Rupchanda)", "Bombay Duck (Bombil)", "Sole (Sole Fish)", "Surmai (Kingfish)"],
     faq: [
-      { question: "Is pomfret fish available in Siliguri?", answer: "Yes, Silver Pomfret (Rupchanda) is available fresh at Siliguri Fresh Mart. We source it from Digha and Mandarbani coastal markets. Prices start from Rs.680 per kg. Order before 1 PM for same-day delivery." },
+      { question: "Is pomfret fish available in Siliguri?", answer: "Yes, Silver Pomfret (Rupchanda) is available fresh at Siliguri Fresh Mart. We source it from Digha and Mandarbani coastal markets. Prices start from Rs.680 per kg. Order before 4 PM for same-day delivery." },
       { question: "How do you keep sea fish fresh in Siliguri?", answer: "Our sea fish is transported in refrigerated vehicles from coastal markets (Digha, Haldia) directly to our Siliguri store. It never enters cold storage or gets frozen. The entire journey from coast to your door takes under 6 hours." },
       { question: "What sea fish do you deliver in Siliguri?", answer: "We deliver Pomfret (Rupchanda), Bombay Duck (Bombil), Sole, Surmai (Kingfish), and seasonal catches. Availability varies by day — check our fish section or call us at 7029908278 for today's stock." },
       { question: "Can I get bombay duck fish in Siliguri?", answer: "Yes, Bombay Duck (Bombil) is available at Siliguri Fresh Mart. It arrives fresh from Bengal's coast. Bombay Duck is perfect for frying — coat with turmeric and salt, shallow fry until crispy. Order online at siligurifreshmart.com." },
@@ -101,11 +101,11 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     contentHeading: "Hilsa — Bengali Pride, Delivered Fresh",
     content:
       "Hilsa (Ilish) is more than a fish in Bengal — it's a cultural icon. We source authentic Hilsa from riverine fisheries in Bangladesh and West Bengal, delivered to Siliguri while the flesh is still firm and the fat content is high. Each Hilsa is inspected for quality — bright eyes, silver scales, and that distinctive sweet aroma. We clean and cut it exactly as you prefer: steaks, longitudinal slices, or whole. Hilsa is best enjoyed fresh, and that's how we deliver it.",
-    deliveryInfo: "Hilsa is a limited-stock item. Order before 10 AM for same-day delivery. Available while stock lasts.",
+    deliveryInfo: "Hilsa is a limited-stock item. Order before 4 PM for same-day delivery. Available while stock lasts.",
     relatedFish: ["Pabda (Butterfish)", "Chingri (Prawns)", "Bhetki (Barramundi)", "Rohu"],
     faq: [
       { question: "What is hilsa fish price in Siliguri today?", answer: "Hilsa prices at Siliguri Fresh Mart start from Rs.1,200 per kg, depending on size and origin. Hilsa prices fluctuate daily based on the catch from Bangladesh and West Bengal rivers. Check our website or call 7029908278 for today's price." },
-      { question: "Is Bangladeshi hilsa available in Siliguri?", answer: "Yes, we source authentic Bangladeshi Hilsa from cross-border riverine fisheries. Bangladeshi Hilsa is known for its higher fat content and richer flavour. Stock is limited — order before 10 AM for guaranteed availability." },
+      { question: "Is Bangladeshi hilsa available in Siliguri?", answer: "Yes, we source authentic Bangladeshi Hilsa from cross-border riverine fisheries. Bangladeshi Hilsa is known for its higher fat content and richer flavour. Stock is limited — order before 4 PM for guaranteed availability." },
       { question: "When is hilsa season in Bengal?", answer: "Hilsa season peaks during monsoon (June to September) and again during the festive season (October-November). However, we try to keep Hilsa available year-round from various sources. The best quality Hilsa comes during Ilish season when the fish is at its fattest." },
       { question: "How to clean and cut hilsa fish at home?", answer: "When you order from Siliguri Fresh Mart, we clean and cut the Hilsa exactly as you prefer — whole, steaks, or longitudinal slices. If you prefer to clean it yourself, scale the fish, make a slit along the belly, remove the guts, and wash thoroughly. Hilsa steaks are the most popular cut for traditional Bengali preparations." },
     ],
@@ -159,7 +159,7 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
     contentHeading: "Small Fish, Big Flavour — From North Bengal's Rivers",
     content:
       "Small fish are a North Bengal specialty. Boroli (an endangered species of river fish found only in Himalayan foothills) is prized for its delicate flavour. Puthi, Kachki, and Tangra are staples in Bengali households — often fried whole with a dusting of turmeric and salt. We source these from Teesta and Mahananda river markets, where fishermen bring their catch fresh each morning. Each batch is sorted by size and quality before dispatch.",
-    deliveryInfo: "Small fish are often limited batches. Order before 10 AM for same-day availability.",
+    deliveryInfo: "Small fish are often limited batches. Order before 4 PM for same-day availability.",
     relatedFish: ["Boroli", "Puthi", "Kachki", "Tangra"],
     faq: [
       { question: "What is boroli fish and is it available in Siliguri?", answer: "Boroli is a small, delicate freshwater fish found in the Himalayan foothills of North Bengal. It's prized for its sweet, tender flesh and is considered a delicacy. Siliguri Fresh Mart sources Boroli from Teesta river markets when available — stock is seasonal and limited." },

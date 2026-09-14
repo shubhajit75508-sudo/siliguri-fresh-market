@@ -5,11 +5,11 @@ export const homeFaqs = [
   },
   {
     q: "Does Siliguri Fresh Mart deliver same-day?",
-    a: "Yes! We deliver via two daily slots: Morning Slot (order before 10 AM, delivered 11 AM–12 PM) and Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Delivery time also depends on your distance from our hub at NJP Gate Bazar — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
+    a: "Yes! We deliver same-day during our daily 9 AM–4 PM delivery window. Two slots: Morning Slot (order before 9 AM, delivered 9 AM–12 PM) and Afternoon Slot (order before 12 PM, delivered 12 PM–4 PM). Delivery time also depends on your distance from our hub at NJP Gate Bazar — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
   },
   {
     q: "How do the delivery slots work?",
-    a: "Your slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you get the Morning Slot (order before 10 AM, delivered 11 AM–12 PM). If you are 15–20 km away, you get the Afternoon Slot (order before 12 PM, delivered 1 PM–3 PM). Within 8 km, no slot is needed — delivery arrives directly within 45 minutes to 1.5 hours.",
+    a: "Your slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you get the Morning Slot (order before 9 AM, delivered 9 AM–12 PM). If you are 15–20 km away, you get the Afternoon Slot (order before 12 PM, delivered 12 PM–4 PM). Within 8 km, no slot is needed — delivery arrives directly within 45 minutes to 1.5 hours.",
   },
   {
     q: "What areas does Siliguri Fresh Mart cover?",

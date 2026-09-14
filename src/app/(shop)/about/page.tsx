@@ -112,7 +112,7 @@ export default function AboutPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {[
             { icon: Leaf, title: "100% Fresh", desc: "Sourced every morning from Siliguri's local markets. Never frozen, never stored." },
-            { icon: Truck, title: "30-Minute Delivery", desc: "Order before 3 PM and get it delivered the same day, fresh to your door." },
+            { icon: Truck, title: "30-Minute Delivery", desc: "Order before 4 PM and get it delivered the same day (9 AM – 4 PM), fresh to your door." },
             { icon: Shield, title: "Freshness Guarantee", desc: "Not satisfied? Free replacement within 3 hours. No questions asked." },
             { icon: Users, title: "Community First", desc: "We hire locally, source locally, and deliver to our own neighbours." },
           ].map((item) => {
@@ -174,7 +174,7 @@ export default function AboutPage() {
             <div className="space-y-3">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Business Hours</p>
-                <p className="font-semibold text-foreground">Open daily 7:00 AM - 3:00 PM</p>
+                <p className="font-semibold text-foreground">Open daily 9:00 AM - 4:00 PM</p>
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Categories</p>

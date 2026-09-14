@@ -148,7 +148,7 @@ const en: LandingTranslations = {
     steps: [
       { title: "Browse & Pick", desc: "Choose from 200+ fresh items — fish, chicken, mutton, vegetables, fruits & more." },
       { title: "We Source & Check", desc: "We personally source, clean, and quality-check every item before packing." },
-      { title: "Delivered Fresh", desc: "Your order arrives at your doorstep in your chosen time slot (11 AM–12 PM or 1 PM–3 PM), fresh and ready." },
+      { title: "Delivered Fresh", desc: "Your order arrives at your doorstep in your chosen time slot (9 AM–12 PM or 12 PM–4 PM), fresh and ready." },
     ],
   },
   categories: {
@@ -236,11 +236,11 @@ const en: LandingTranslations = {
     slotTitle: "Delivery Slots",
     slotSubtitle: "Your slot is automatically assigned based on your distance from NJP Gate Bazar hub. No selection needed.",
     slotMorningLabel: "Morning Slot (8-15 km)",
-    slotMorningDesc: "Order before 10 AM",
-    slotMorningTime: "Delivered 11 AM – 12 PM",
+    slotMorningDesc: "Order before 9 AM",
+    slotMorningTime: "Delivered 9 AM – 12 PM",
     slotAfternoonLabel: "Afternoon Slot (15-20 km)",
     slotAfternoonDesc: "Order before 12 PM",
-    slotAfternoonTime: "Delivered 1 PM – 3 PM",
+    slotAfternoonTime: "Delivered 12 PM – 4 PM",
   },
   guarantees: [
     { label: "Quality Checked", sub: "Every single order" },
@@ -299,7 +299,7 @@ const bn: LandingTranslations = {
     steps: [
       { title: "ব্রাউজ ও বাছাই", desc: "২০০+ তাজা পণ্য থেকে বেছে নিন — মাছ, মুরগি, খসুর মাংস, সবজি, ফল ও আরও।" },
       { title: "আমরা সংগ্রহ ও চেক করি", desc: "প্যাকিংয়ের আগে আমরা নিজেরা প্রতিটি পণ্য সংগ্রহ, পরিষ্কার ও মান পরীক্ষা করি।" },
-      { title: "তাজা ডেলিভারি", desc: "আপনার অর্ডার আপনার নির্বাচিত সময়ের স্লটে (১১ AM – ১২ PM বা ১ PM – ৩ PM) দোরগোড়ায় পৌঁছায়, তাজা ও প্রস্তুত।" },
+      { title: "তাজা ডেলিভারি", desc: "আপনার অর্ডার আপনার নির্বাচিত সময়ের স্লটে (৯ AM – ১২ PM বা ১২ PM – ৪ PM) দোরগোড়ায় পৌঁছায়, তাজা ও প্রস্তুত।" },
     ],
   },
   categories: {
@@ -387,11 +387,11 @@ const bn: LandingTranslations = {
     slotTitle: "ডেলিভারি স্লট",
     slotSubtitle: "আপনার স্লট NJP গেট বাজার হাব থেকে আপনার দূরত্বের উপর ভিত্তি করে স্বয়ংক্রিয়ভাবে নির্ধারিত হয়। কোনো বাছাই প্রয়োজন নেই।",
     slotMorningLabel: "সকালের স্লট (৮-১৫ কিমি)",
-    slotMorningDesc: "১০ টার আগে অর্ডার করুন",
-    slotMorningTime: "১১ AM – ১২ PM ডেলিভারি",
+    slotMorningDesc: "৯ টার আগে অর্ডার করুন",
+    slotMorningTime: "৯ AM – ১২ PM ডেলিভারি",
     slotAfternoonLabel: "দুপুরের স্লট (১৫-২০ কিমি)",
     slotAfternoonDesc: "১২ টার আগে অর্ডার করুন",
-    slotAfternoonTime: "১ PM – ৩ PM ডেলিভারি",
+    slotAfternoonTime: "১২ PM – ৪ PM ডেলিভারি",
   },
   guarantees: [
     { label: "কোয়ালিটি চেকড", sub: "প্রতিটি অর্ডার" },
@@ -450,7 +450,7 @@ const hi: LandingTranslations = {
     steps: [
       { title: "ब्राउज़ करें", desc: "200+ ताज़े प्रोडक्ट्स में से चुनें — मछली, मुर्गी, मटन, सब्ज़ियाँ, फल और बहुत कुछ।" },
       { title: "हम सोर्स और चेक करते हैं", desc: "पैक करने से पहले हम खुद हर चीज़ सोर्स, साफ़ और क्वालिटी चेक करते हैं।" },
-      { title: "ताज़ा डिलीवरी", desc: "आपका ऑर्डर आपके चुने हुए स्लॉट (11 AM – 12 PM या 1 PM – 3 PM) में दरवाज़े पर पहुँच जाता है, ताज़ा और रेडी।" },
+      { title: "ताज़ा डिलीवरी", desc: "आपका ऑर्डर आपके चुने हुए स्लॉट (9 AM – 12 PM या 12 PM – 4 PM) में दरवाज़े पर पहुँच जाता है, ताज़ा और रेडी।" },
     ],
   },
   categories: {
@@ -538,11 +538,11 @@ const hi: LandingTranslations = {
     slotTitle: "डिलीवरी स्लॉट",
     slotSubtitle: "आपका स्लॉट NJP गेट बाज़ार हब से आपकी दूरी के आधार पर अपने आप निर्धारित होता है। कोई चयन की ज़रूरत नहीं।",
     slotMorningLabel: "मॉर्निंग स्लॉट (8-15 किमी)",
-    slotMorningDesc: "10 बजे से पहले ऑर्डर करें",
-    slotMorningTime: "11 AM – 12 PM डिलीवरी",
+    slotMorningDesc: "9 बजे से पहले ऑर्डर करें",
+    slotMorningTime: "9 AM – 12 PM डिलीवरी",
     slotAfternoonLabel: "आफ्टरनून स्लॉट (15-20 किमी)",
     slotAfternoonDesc: "12 बजे से पहले ऑर्डर करें",
-    slotAfternoonTime: "1 PM – 3 PM डिलीवरी",
+    slotAfternoonTime: "12 PM – 4 PM डिलीवरी",
   },
   guarantees: [
     { label: "क्वालिटी चेक्ड", sub: "हर ऑर्डर" },

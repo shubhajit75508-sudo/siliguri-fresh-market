@@ -98,8 +98,8 @@ export default function CheckoutPage() {
   // Slot auto-assigned by distance: 8-15km → Morning, 15-20km → Afternoon, ≤8km → none
   const deliverySlot: DeliverySlot | null = pinnedDistance !== null && pinnedDistance > 8
     ? pinnedDistance <= 15
-      ? DELIVERY_SLOTS[0] // Morning: 11 AM–12 PM
-      : DELIVERY_SLOTS[1] // Afternoon: 1 PM–3 PM
+      ? DELIVERY_SLOTS[0] // Morning: 9 AM–12 PM
+      : DELIVERY_SLOTS[1] // Afternoon: 12 PM–4 PM
     : null;
 
   // Sync distance to cart store for delivery fee calculation

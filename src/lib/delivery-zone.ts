@@ -34,16 +34,16 @@ export const DELIVERY_SLOTS: DeliverySlot[] = [
   {
     id: "morning",
     label: "Morning Slot",
-    description: "Order before 10 AM",
-    orderBefore: "10:00 AM",
-    deliveryWindow: "11:00 AM - 12:00 PM",
+    description: "Order before 9 AM",
+    orderBefore: "9:00 AM",
+    deliveryWindow: "9:00 AM - 12:00 PM",
   },
   {
     id: "afternoon",
     label: "Afternoon Slot",
     description: "Order before 12 PM",
     orderBefore: "12:00 PM",
-    deliveryWindow: "1:00 PM - 3:00 PM",
+    deliveryWindow: "12:00 PM - 4:00 PM",
   },
 ];
 

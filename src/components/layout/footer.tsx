@@ -47,7 +47,7 @@ export function Footer() {
               <p>📍 NJP Gate Bazar, Siliguri, West Bengal 734001</p>
               <p>📞 +91 7029908278 · +91 9832966112</p>
               <p>📧 siligurifreshmart@gmail.com</p>
-              <p>⏰ Open daily 7:00 AM – 3:00 PM</p>
+              <p>⏰ Open daily 9:00 AM – 4:00 PM</p>
             </div>
             <div className="mt-3 text-[11px] text-muted leading-relaxed">
               <p>🚚 Within 4 km: 45–60 min · 4–8 km: 1–1.5 hrs · 8–15 km: 2–3 hrs</p>
