@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useCartStore } from "@/store/cart-store";
 import { formatPrice, getItemUnitPrice } from "@/lib/utils";
 
@@ -32,6 +33,10 @@ function buildOrderMessage(): string {
 }
 
 export function WhatsAppFab() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/product")) return null;
+
   const handleClick = () => {
     const msg = buildOrderMessage();
     window.open(`https://wa.me/${STORE_PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
