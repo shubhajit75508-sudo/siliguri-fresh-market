@@ -21,7 +21,7 @@ export const homeFaqs = [
   },
   {
     q: "Why do you need my GPS location?",
-    a: "GPS location is mandatory to calculate your exact delivery distance from our hub at NJP Gate Bazar, determine the correct delivery time, and check whether your address falls within our 20 km delivery area. If your phone struggles with GPS, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278 or +91 9832966112.",
+    a: "GPS location is mandatory to calculate your exact delivery distance from our hub at NJP Gate Bazar, determine the correct delivery time, and check whether your address falls within our 20 km delivery area. If your phone struggles with GPS, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278, +91 96354 80453, or +91 62959 53287.",
   },
   {
     q: "How is freshness guaranteed?",

@@ -737,8 +737,11 @@ export default function CheckoutPage() {
                             <a href="tel:+917029908278" className="flex items-center gap-2 font-bold text-foreground hover:text-[#2D7D3A]">
                               <PhoneIcon className="h-3.5 w-3.5" /> Call: +91 7029908278
                             </a>
-                            <a href="tel:+919832966112" className="flex items-center gap-2 font-bold text-foreground hover:text-[#2D7D3A]">
-                              <PhoneIcon className="h-3.5 w-3.5" /> Call: +91 9832966112
+                            <a href="tel:+919635480453" className="flex items-center gap-2 font-bold text-foreground hover:text-[#2D7D3A]">
+                              <PhoneIcon className="h-3.5 w-3.5" /> Call: +91 96354 80453
+                            </a>
+                            <a href="tel:+916295953287" className="flex items-center gap-2 font-bold text-foreground hover:text-[#2D7D3A]">
+                              <PhoneIcon className="h-3.5 w-3.5" /> Call: +91 62959 53287
                             </a>
                           </div>
                         </div>

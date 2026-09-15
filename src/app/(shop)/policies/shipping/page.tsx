@@ -65,7 +65,7 @@ const faqSchema = {
       name: "Why do you need my GPS location?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "GPS location is mandatory to calculate your exact delivery distance, time estimate, and applicable fees. Without it, we cannot verify that your address falls within our 20 km delivery area. If you are struggling to share location, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278 or +91 9832966112.",
+        text: "GPS location is mandatory to calculate your exact delivery distance, time estimate, and applicable fees. Without it, we cannot verify that your address falls within our 20 km delivery area. If you are struggling to share location, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278, +91 96354 80453, or +91 62959 53287.",
       },
     },
     {
@@ -73,7 +73,7 @@ const faqSchema = {
       name: "What if I cannot share my location?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "If your phone cannot detect GPS, you can place your order via WhatsApp or phone call. Our team will help you confirm your address manually. WhatsApp: +91 7029908278. Call: +91 7029908278 or +91 9832966112.",
+        text: "If your phone cannot detect GPS, you can place your order via WhatsApp or phone call. Our team will help you confirm your address manually. WhatsApp: +91 7029908278. Call: +91 7029908278, +91 96354 80453, or +91 62959 53287.",
       },
     },
     {
@@ -200,7 +200,8 @@ export default function ShippingPolicyPage() {
               <p className="font-bold mb-2">Need help? Contact us:</p>
               <p className="flex items-center gap-2">WhatsApp: <a href="https://wa.me/917029908278" className="font-bold text-[#25D366] hover:underline">+91 7029908278</a></p>
               <p className="flex items-center gap-2 mt-1">Call: <a href="tel:+917029908278" className="font-bold text-foreground hover:text-[#2D7D3A]">+91 7029908278</a></p>
-              <p className="flex items-center gap-2 mt-1">Call: <a href="tel:+919832966112" className="font-bold text-foreground hover:text-[#2D7D3A]">+91 9832966112</a></p>
+              <p className="flex items-center gap-2 mt-1">Call: <a href="tel:+919635480453" className="font-bold text-foreground hover:text-[#2D7D3A]">+91 96354 80453</a></p>
+              <p className="flex items-center gap-2 mt-1">Call: <a href="tel:+916295953287" className="font-bold text-foreground hover:text-[#2D7D3A]">+91 62959 53287</a></p>
             </div>
           </section>
 

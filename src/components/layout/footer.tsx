@@ -45,7 +45,7 @@ export function Footer() {
             </p>
             <div className="mt-4 space-y-1 text-[12px] text-muted">
               <p>📍 NJP Gate Bazar, Siliguri, West Bengal 734001</p>
-              <p>📞 +91 7029908278 · +91 9832966112</p>
+              <p>📞 +91 7029908278 · +91 96354 80453 · +91 62959 53287</p>
               <p>📧 siligurifreshmart@gmail.com</p>
               <p>⏰ Open daily 9:00 AM – 4:00 PM</p>
             </div>

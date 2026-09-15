@@ -30,7 +30,8 @@ import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
 const STORE_PHONE = "917029908278";
-const STORE_PHONE_2 = "919832966112";
+const STORE_PHONE_2 = "919635480453";
+const STORE_PHONE_3 = "916295953287";
 
 const OCCASIONS = [
   { value: "hotel", label: "Hotel", icon: Building2 },
@@ -195,6 +196,9 @@ export function BulkOrderClient() {
     setTimeout(() => {
       window.open(`https://wa.me/${STORE_PHONE_2}?text=${encoded}`, "_blank");
     }, 1500);
+    setTimeout(() => {
+      window.open(`https://wa.me/${STORE_PHONE_3}?text=${encoded}`, "_blank");
+    }, 3000);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 4000);
   };
