@@ -1,4 +1,4 @@
--- Siliguri Fresh Mart — feature tables (push, waitlist, earnings)
+﻿-- Siliguri Freshmart — feature tables (push, waitlist, earnings)
 -- Run in Supabase Dashboard → SQL Editor.
 
 -- 1. Web Push subscriptions (VAPID)

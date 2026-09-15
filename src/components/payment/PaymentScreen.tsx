@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -34,7 +34,7 @@ export interface PaymentScreenProps {
 }
 
 const UPI_VPA = "im.201031144318@indus";
-const MERCHANT_NAME = "Siliguri Fresh Mart";
+const MERCHANT_NAME = "Siliguri Freshmart";
 
 /** Persist the in-progress UPI payment so returning from the UPI app (even after a
  *  page reload) restores the "did you pay? enter reference" screen. */
@@ -581,7 +581,7 @@ export default function PaymentScreen({
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#2D7D3A]/10 mb-3">
             <Leaf className="h-7 w-7 text-[#2D7D3A]" />
           </div>
-          <h1 className="text-xl font-extrabold text-foreground">Siliguri Fresh Mart</h1>
+          <h1 className="text-xl font-extrabold text-foreground">Siliguri Freshmart</h1>
           <p className="text-xs text-muted mt-0.5">Freshness delivered to your door</p>
         </div>
 

@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { useAdminStore } from "@/store/admin-store";
 
 const defaults = {
-  title: "Siliguri Fresh Mart \u2014 Fresh Market Delivered in Minutes",
+  title: "Siliguri Freshmart \u2014 Fresh Market Delivered in Minutes",
   description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri. Free delivery on all orders.",
-  keywords: "Siliguri,fresh fish delivery Siliguri,chicken delivery Siliguri,fish home delivery,chicken home delivery,online grocery Siliguri,fresh meat delivery,mutton delivery Siliguri,vegetables home delivery,quick commerce Siliguri,fresh mart,buy fish online,buy chicken online",
+  keywords: "Siliguri,fresh fish delivery Siliguri,chicken delivery Siliguri,fish home delivery,chicken home delivery,online grocery Siliguri,fresh meat delivery,mutton delivery Siliguri,vegetables home delivery,quick commerce Siliguri,freshmart,buy fish online,buy chicken online",
 };
 
 export function DynamicMeta() {

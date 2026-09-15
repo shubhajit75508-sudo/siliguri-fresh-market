@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     openGraph: {
       title, description, url: "https://www.siligurifreshmart.com/category/" + slug,
-      siteName: "Siliguri Fresh Mart",
+      siteName: "Siliguri Freshmart",
       type: "website",
       locale: "en_IN",
     },

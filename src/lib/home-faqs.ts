@@ -1,10 +1,10 @@
-export const homeFaqs = [
+﻿export const homeFaqs = [
   {
     q: "What is the best way to buy fresh fish online in Siliguri?",
-    a: "Siliguri Fresh Mart is an online fresh fish and meat delivery service based in Siliguri, West Bengal. You can order Rohu, Hilsa, Prawns, Chicken, Mutton and more from our website or by calling +91 7029908278. Orders are sourced from Siliguri's morning markets and delivered to your doorstep.",
+    a: "Siliguri Freshmart is an online fresh fish and meat delivery service based in Siliguri, West Bengal. You can order Rohu, Hilsa, Prawns, Chicken, Mutton and more from our website or by calling +91 7029908278. Orders are sourced from Siliguri's morning markets and delivered to your doorstep.",
   },
   {
-    q: "Does Siliguri Fresh Mart deliver same-day?",
+    q: "Does Siliguri Freshmart deliver same-day?",
     a: "Yes! We deliver same-day during our daily 9 AM–4 PM delivery window. Two slots: Morning Slot (order before 9 AM, delivered 9 AM–12 PM) and Afternoon Slot (order before 12 PM, delivered 12 PM–4 PM). Delivery time also depends on your distance from our hub at NJP Gate Bazar — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
   },
   {
@@ -12,8 +12,8 @@ export const homeFaqs = [
     a: "Your slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you get the Morning Slot (order before 9 AM, delivered 9 AM–12 PM). If you are 15–20 km away, you get the Afternoon Slot (order before 12 PM, delivered 12 PM–4 PM). Within 8 km, no slot is needed — delivery arrives directly within 45 minutes to 1.5 hours.",
   },
   {
-    q: "What areas does Siliguri Fresh Mart cover?",
-    a: "Siliguri Fresh Mart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 20 km radius of our hub at NJP Gate Bazar, Siliguri. Delivery times vary by distance — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
+    q: "What areas does Siliguri Freshmart cover?",
+    a: "Siliguri Freshmart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 20 km radius of our hub at NJP Gate Bazar, Siliguri. Delivery times vary by distance — within 4 km takes 45–60 min, 4–8 km takes 1–1.5 hrs, 8–15 km takes 2–3 hrs, and 15–20 km takes 3–4 hrs.",
   },
   {
     q: "What is the minimum order and delivery fee?",
@@ -25,22 +25,22 @@ export const homeFaqs = [
   },
   {
     q: "How is freshness guaranteed?",
-    a: "Every product on Siliguri Fresh Mart is sourced fresh each morning from Siliguri's local fish and meat markets. If you are not satisfied with the freshness of any item, Siliguri Fresh Mart offers a free replacement within 3 hours of delivery with no questions asked.",
+    a: "Every product on Siliguri Freshmart is sourced fresh each morning from Siliguri's local fish and meat markets. If you are not satisfied with the freshness of any item, Siliguri Freshmart offers a free replacement within 3 hours of delivery with no questions asked.",
   },
   {
-    q: "What products does Siliguri Fresh Mart sell?",
-    a: "Siliguri Fresh Mart sells fresh fish (Rohu, Hilsa, Prawns, Catfish, Small Fish), chicken (broiler and farm-fresh), mutton, pork, seafood, vegetables, fruits, eggs, dairy products and daily groceries. All items are priced at market rates with no hidden charges.",
+    q: "What products does Siliguri Freshmart sell?",
+    a: "Siliguri Freshmart sells fresh fish (Rohu, Hilsa, Prawns, Catfish, Small Fish), chicken (broiler and farm-fresh), mutton, pork, seafood, vegetables, fruits, eggs, dairy products and daily groceries. All items are priced at market rates with no hidden charges.",
   },
   {
-    q: "Does Siliguri Fresh Mart accept Cash on Delivery?",
-    a: "Yes. Siliguri Fresh Mart accepts Cash on Delivery (COD), UPI payments via Google Pay, PhonePe and Paytm, as well as debit cards, credit cards and netbanking. UPI payments can be made to the VPA im.201031144318@indus.",
+    q: "Does Siliguri Freshmart accept Cash on Delivery?",
+    a: "Yes. Siliguri Freshmart accepts Cash on Delivery (COD), UPI payments via Google Pay, PhonePe and Paytm, as well as debit cards, credit cards and netbanking. UPI payments can be made to the VPA im.201031144318@indus.",
   },
   {
-    q: "Can I choose fish cuts and cleaning at Siliguri Fresh Mart?",
-    a: "Yes. When ordering fish from Siliguri Fresh Mart, you can select your preferred weight, cut (whole, steaks, curry cut, Bengali cut) and cleaning option (scaled, gutted, head-off). This is similar to choosing at a physical fish market, but from your phone.",
+    q: "Can I choose fish cuts and cleaning at Siliguri Freshmart?",
+    a: "Yes. When ordering fish from Siliguri Freshmart, you can select your preferred weight, cut (whole, steaks, curry cut, Bengali cut) and cleaning option (scaled, gutted, head-off). This is similar to choosing at a physical fish market, but from your phone.",
   },
   {
-    q: "Is Siliguri Fresh Mart a marketplace or does it deliver directly?",
-    a: "Unlike marketplace listings or aggregator apps, Siliguri Fresh Mart is a direct-to-consumer fresh delivery service. We source fish, chicken and mutton ourselves from Siliguri's morning markets, pack them in insulated bags, and deliver directly to your doorstep. There are no middlemen or third-party sellers involved.",
+    q: "Is Siliguri Freshmart a marketplace or does it deliver directly?",
+    a: "Unlike marketplace listings or aggregator apps, Siliguri Freshmart is a direct-to-consumer fresh delivery service. We source fish, chicken and mutton ourselves from Siliguri's morning markets, pack them in insulated bags, and deliver directly to your doorstep. There are no middlemen or third-party sellers involved.",
   },
 ];

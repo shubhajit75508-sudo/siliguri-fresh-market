@@ -1,7 +1,7 @@
-import { Resend } from "resend";
+﻿import { Resend } from "resend";
 
 const resendApiKey = process.env.RESEND_API_KEY;
-const fromEmail = process.env.RESEND_FROM_EMAIL ?? "Siliguri Fresh Mart <noreply@siligurifreshmart.com>";
+const fromEmail = process.env.RESEND_FROM_EMAIL ?? "Siliguri Freshmart <noreply@siligurifreshmart.com>";
 
 function getResend(): Resend | null {
   if (!resendApiKey) return null;

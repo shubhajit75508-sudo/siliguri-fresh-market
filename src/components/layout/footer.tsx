@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 
 const links = {
@@ -36,8 +36,8 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain rounded-xl" loading="lazy" />
               <div>
-                <p className="text-[16px] font-bold">Siliguri Fresh Mart</p>
-                <p className="text-[12px] font-medium text-brand-fresh-dim">Fresh Mart</p>
+                <p className="text-[16px] font-bold">Siliguri Freshmart</p>
+                <p className="text-[12px] font-medium text-brand-fresh-dim">Freshmart</p>
               </div>
             </div>
             <p className="mt-5 max-w-[320px] text-[14px] leading-relaxed text-muted">
@@ -78,7 +78,7 @@ export function Footer() {
 
         <div className="mt-3 border-t border-border/80 pt-2 text-center text-[12px] text-muted">
           <p className="mb-1">💳 We accept: UPI · Cards · Netbanking · Cash on Delivery</p>
-          © 2026 Siliguri Fresh Mart · NJP Gate Bazar, Siliguri, West Bengal 734001
+          © 2026 Siliguri Freshmart · NJP Gate Bazar, Siliguri, West Bengal 734001
         </div>
       </div>
     </footer>

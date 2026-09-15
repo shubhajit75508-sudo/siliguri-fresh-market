@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -35,7 +35,7 @@ export function RootSplash() {
           <div className="relative">
             <Image
               src="https://res.cloudinary.com/dc5fh5afb/image/upload/w_192,h_192,c_fill/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg"
-              alt="Fresh Mart"
+              alt="Freshmart"
               width={80}
               height={80}
               className="h-20 w-20 rounded-2xl object-cover shadow-2xl shadow-brand-fresh/20"
@@ -46,7 +46,7 @@ export function RootSplash() {
 
           <div className="flex flex-col items-center gap-2">
             <p className="text-base font-extrabold text-[#2E1509] tracking-tight">
-              Siliguri Fresh Mart
+              Siliguri Freshmart
             </p>
             <p className="text-[11px] font-medium text-muted tracking-wider uppercase">
               Fresh Market Delivered

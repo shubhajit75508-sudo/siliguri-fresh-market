@@ -8,11 +8,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) {
-    return { title: "Product Not Found | Siliguri Fresh Mart" };
+    return { title: "Product Not Found | Siliguri Freshmart" };
   }
 
   const title = "Buy " + product.name + " Online in Siliguri | Free Home Delivery";
-  const description = product.name + " - Rs." + product.price + "/" + product.unit + ". " + (product.discount ? product.discount + "% off. " : "") + "Fresh daily from local market. Free delivery on all orders. " + (product.cuts?.length ? "Cut to order. " : "") + (product.cleaningOptions?.length ? "Cleaning available. " : "") + "Order now on Siliguri Fresh Mart.";
+  const description = product.name + " - Rs." + product.price + "/" + product.unit + ". " + (product.discount ? product.discount + "% off. " : "") + "Fresh daily from local market. Free delivery on all orders. " + (product.cuts?.length ? "Cut to order. " : "") + (product.cleaningOptions?.length ? "Cleaning available. " : "") + "Order now on Siliguri Freshmart.";
 
   return {
     title,

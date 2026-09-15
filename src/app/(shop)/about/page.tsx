@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { MapPin, Phone, Clock, Truck, Star, Shield, Leaf, Users, Heart } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Us - Siliguri Fresh Mart | Our Story",
-  description: "Meet the founder behind Siliguri Fresh Mart - a solo entrepreneur on a mission to deliver the freshest fish, meat, and vegetables to every doorstep in Siliguri.",
+  title: "About Us - Siliguri Freshmart | Our Story",
+  description: "Meet the founder behind Siliguri Freshmart - a solo entrepreneur on a mission to deliver the freshest fish, meat, and vegetables to every doorstep in Siliguri.",
   alternates: { canonical: "https://www.siligurifreshmart.com/about" },
   openGraph: {
-    title: "About Siliguri Fresh Mart - Fresh Fish & Meat Delivery",
+    title: "About Siliguri Freshmart - Fresh Fish & Meat Delivery",
     description: "A Siliguri-based hyperlocal startup delivering fresh fish, chicken, mutton & vegetables. Founded by a local entrepreneur who grew up at the fish market.",
     url: "https://www.siligurifreshmart.com/about",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
     images: [{ url: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Siliguri Fresh Mart",
+    title: "About Siliguri Freshmart",
     description: "A Siliguri-based hyperlocal startup delivering fresh fish, meat & vegetables. Founded by a local entrepreneur.",
   },
 };
@@ -30,11 +30,11 @@ export default function AboutPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AboutPage",
-            name: "About Siliguri Fresh Mart",
+            name: "About Siliguri Freshmart",
             url: "https://www.siligurifreshmart.com/about",
             mainEntity: {
               "@type": "Organization",
-              name: "Siliguri Fresh Mart",
+              name: "Siliguri Freshmart",
               url: "https://www.siligurifreshmart.com",
               description: "A Siliguri-based hyperlocal startup delivering fresh fish, meat, and vegetables to every doorstep in Siliguri.",
               founder: [
@@ -66,7 +66,7 @@ export default function AboutPage() {
           From the Fish Market<br />to Your Doorstep
         </h1>
         <p className="mt-4 text-[15px] text-muted leading-relaxed">
-          Siliguri Fresh Mart is a direct-to-consumer fresh delivery service in Siliguri, West Bengal.
+          Siliguri Freshmart is a direct-to-consumer fresh delivery service in Siliguri, West Bengal.
           Unlike marketplace listings or aggregator apps, we source fish, chicken and mutton ourselves from
           Siliguri&apos;s morning markets every day and deliver directly to your doorstep —
           no middlemen, no warehouses, no frozen storage.
@@ -92,14 +92,14 @@ export default function AboutPage() {
             <h3 className="mt-3 text-base font-bold text-foreground">Rahul Barman</h3>
             <p className="mt-0.5 text-xs font-semibold text-[#2D7D3A]">Co-Founder &bull; Operations &amp; Sourcing</p>
             <p className="mt-2 text-[13px] text-muted leading-relaxed">
-              The backbone of Siliguri Fresh Mart on the ground. Rahul manages inventory, sources the
+              The backbone of Siliguri Freshmart on the ground. Rahul manages inventory, sources the
               freshest fish, meat and vegetables from Siliguri&apos;s morning markets every day, oversees
               the packing team, and ensures every order meets our freshness guarantee before it leaves the store.
             </p>
           </div>
         </div>
         <p className="mt-4 text-[14px] text-muted leading-relaxed">
-          Together, Shubhajit and Rahul built Siliguri Fresh Mart because we saw families struggling
+          Together, Shubhajit and Rahul built Siliguri Freshmart because we saw families struggling
           with inconsistent quality and the hassle of daily market runs. We wanted to build something
           different — a hyperlocal delivery service that sources directly from the same morning markets
           we grew up visiting, delivering fresh to your doorstep because this is home, and our neighbours deserve the best.
@@ -156,7 +156,7 @@ export default function AboutPage() {
             <div className="space-y-3">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Business Name</p>
-                <p className="font-semibold text-foreground">Siliguri Fresh Mart</p>
+                <p className="font-semibold text-foreground">Siliguri Freshmart</p>
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Address</p>
@@ -193,7 +193,7 @@ export default function AboutPage() {
           <div className="mt-4 border-t border-border pt-4">
             <p className="text-[11px] text-muted">
               <strong>Website:</strong> www.siligurifreshmart.com &nbsp;|&nbsp;
-              <strong>Google Business Profile:</strong> Search &ldquo;Siliguri Fresh Mart&rdquo; on Google Maps
+              <strong>Google Business Profile:</strong> Search &ldquo;Siliguri Freshmart&rdquo; on Google Maps
             </p>
           </div>
         </div>

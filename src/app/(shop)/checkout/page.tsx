@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
         {/* Brand Bar + Step Pill */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Siliguri Fresh Mart</h1>
+            <h1 className="text-lg font-extrabold text-foreground tracking-tight">Siliguri Freshmart</h1>
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#2D7D3A] mt-0.5">From Market to Your Home</p>
           </div>
           <div className="rounded-full bg-[#2D7D3A]/8 border border-[#2D7D3A]/30 px-3.5 py-1.5 text-[11px] font-bold text-[#2D7D3A] tracking-wider">

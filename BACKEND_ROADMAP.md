@@ -1,4 +1,4 @@
-# Backend Roadmap — Siliguri Fresh Mart
+﻿# Backend Roadmap — Siliguri Freshmart
 
 ## Prerequisites
 - Supabase project is set up (URL + anon key already in `.env.local`)

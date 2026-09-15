@@ -1,6 +1,6 @@
-{
+﻿{
 	"appId": "com.siligurifreshmart.app",
-	"appName": "Siliguri Fresh Mart",
+	"appName": "Siliguri Freshmart",
 	"webDir": ".next",
 	"server": {
 		"url": "https://www.siligurifreshmart.com",

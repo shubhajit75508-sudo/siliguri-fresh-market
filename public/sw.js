@@ -1,4 +1,4 @@
-const CACHE_NAME = "sfm-v3";
+﻿const CACHE_NAME = "sfm-v3";
 const STATIC_ASSETS = [
   "/",
   "/offline",
@@ -87,7 +87,7 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data ? event.data.json() : {};
   } catch {}
-  const title = data.title || "Siliguri Fresh Mart";
+  const title = data.title || "Siliguri Freshmart";
   const options = {
     body: data.body || "",
     icon: "/icons/icon-192x192.png",

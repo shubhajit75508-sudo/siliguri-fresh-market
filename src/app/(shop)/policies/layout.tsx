@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { default: "Policies", template: "%s — Siliguri Fresh Mart" },
+  title: { default: "Policies", template: "%s — Siliguri Freshmart" },
   robots: { index: true, follow: true },
 };
 

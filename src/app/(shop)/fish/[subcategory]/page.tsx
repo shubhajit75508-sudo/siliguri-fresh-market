@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FISH_SUBCAT_SEO } from "@/lib/fish-subcat-seo";
 import { BreadcrumbSchema } from "@/components/seo/schemas";
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: seo.title,
       description: seo.description,
       url: `https://www.siligurifreshmart.com/fish/${slug}`,
-      siteName: "Siliguri Fresh Mart",
+      siteName: "Siliguri Freshmart",
       type: "website",
       locale: "en_IN",
       images: [
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg",
           width: 1200,
           height: 630,
-          alt: `${seo.heroHeading} - Siliguri Fresh Mart`,
+          alt: `${seo.heroHeading} - Siliguri Freshmart`,
         },
       ],
     },
@@ -69,7 +69,7 @@ export default async function FishSubcategoryPage({ params }: Props) {
             url: `https://www.siligurifreshmart.com/fish/${slug}`,
             isPartOf: {
               "@type": "WebSite",
-              name: "Siliguri Fresh Mart",
+              name: "Siliguri Freshmart",
               url: "https://www.siligurifreshmart.com",
             },
             about: {

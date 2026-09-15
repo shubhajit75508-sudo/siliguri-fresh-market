@@ -1,4 +1,4 @@
-export function WebSiteSchema() {
+﻿export function WebSiteSchema() {
   return (
     <script
       type="application/ld+json"
@@ -6,7 +6,7 @@ export function WebSiteSchema() {
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "Siliguri Fresh Mart",
+          name: "Siliguri Freshmart",
           url: "https://www.siligurifreshmart.com",
           description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri.",
           potentialAction: {
@@ -31,7 +31,7 @@ export function OrganizationSchema() {
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Siliguri Fresh Mart",
+          name: "Siliguri Freshmart",
           url: "https://www.siligurifreshmart.com",
           logo: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
           description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri.",
@@ -66,7 +66,7 @@ export function LocalBusinessSchema() {
           "@context": "https://schema.org",
           "@type": "GroceryStore",
           "@id": "https://www.siligurifreshmart.com/#localbusiness",
-          name: "Siliguri Fresh Mart",
+          name: "Siliguri Freshmart",
           image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
           telephone: "+91 7029908278",
           email: "siligurifreshmart@gmail.com",
@@ -115,7 +115,7 @@ export function ProductSchema({ product }: { product: { name: string; descriptio
           image: product.image,
           sku: product.slug,
           category: product.category,
-          brand: { "@type": "Brand", name: "Siliguri Fresh Mart" },
+          brand: { "@type": "Brand", name: "Siliguri Freshmart" },
           offers: {
             "@type": "Offer",
             price: product.price,
@@ -123,7 +123,7 @@ export function ProductSchema({ product }: { product: { name: string; descriptio
             availability: product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             url: "https://www.siligurifreshmart.com/product/" + product.slug,
             itemCondition: "https://schema.org/NewCondition",
-            seller: { "@type": "Organization", name: "Siliguri Fresh Mart" },
+            seller: { "@type": "Organization", name: "Siliguri Freshmart" },
             shippingDetails: {
               "@type": "OfferShippingDetails",
               shippingRate: { "@type": "MonetaryAmount", price: "0", priceCurrency: "INR" },

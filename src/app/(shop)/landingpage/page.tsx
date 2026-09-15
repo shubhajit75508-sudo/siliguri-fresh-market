@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Siliguri Fresh Mart — Fresh Fish, Chicken, Mutton Delivered to Your Door",
+  title: "Siliguri Freshmart — Fresh Fish, Chicken, Mutton Delivered to Your Door",
   description:
     "Premium fresh fish, chicken, mutton, vegetables & groceries delivered to your doorstep in Siliguri. Same-day freshness guaranteed.",
   openGraph: {
-    title: "Siliguri Fresh Mart — Fresh Fish, Chicken, Mutton Delivered",
+    title: "Siliguri Freshmart — Fresh Fish, Chicken, Mutton Delivered",
     description: "Premium fresh fish, chicken, mutton, vegetables & groceries delivered in Siliguri.",
     url: "https://www.siligurifreshmart.com",
     type: "website",

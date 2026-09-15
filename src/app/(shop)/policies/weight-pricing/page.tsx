@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbSchema, FAQSchema } from "@/components/seo/schemas";
 
 export const metadata: Metadata = {
-  title: "Product Weight & Pricing Policy — Siliguri Fresh Mart",
+  title: "Product Weight & Pricing Policy — Siliguri Freshmart",
   description:
-    "Why fresh fish, chicken & mutton weight is measured before processing. Siliguri Fresh Mart transparent weight and pricing policy for doorstep delivery in Siliguri.",
+    "Why fresh fish, chicken & mutton weight is measured before processing. Siliguri Freshmart transparent weight and pricing policy for doorstep delivery in Siliguri.",
   keywords: [
-    "Siliguri Fresh Mart weight policy",
+    "Siliguri Freshmart weight policy",
     "fresh fish weight after cleaning",
     "online fish delivery weight loss",
     "fresh meat pricing Siliguri",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "online grocery pricing transparency",
   ],
   openGraph: {
-    title: "Product Weight & Pricing Policy — Siliguri Fresh Mart",
+    title: "Product Weight & Pricing Policy — Siliguri Freshmart",
     description:
       "Why fresh fish, chicken & mutton weight is measured before processing. Transparent weight and pricing policy.",
     url: "https://www.siligurifreshmart.com/policies/weight-pricing",
@@ -42,7 +42,7 @@ const faqs = [
       "For fish, scaling, gutting, and cleaning typically remove 5–10% of the live weight. A 250g fish will yield approximately 210g–240g of cleaned, ready-to-cook fish.",
   },
   {
-    question: "Why are Siliguri Fresh Mart prices higher than local markets?",
+    question: "Why are Siliguri Freshmart prices higher than local markets?",
     answer:
       "Our prices include same-day freshness, doorstep delivery, quality checks on every order, and a replacement guarantee for damaged, spoiled, or missing items. You pay for the product plus the certainty that comes with it.",
   },
@@ -52,7 +52,7 @@ const faqs = [
       "No. We charge based on the exact live/whole weight we source. We never inflate live weight to offset natural processing loss. The weight and price you are charged reflect exactly what we purchased for your order.",
   },
   {
-    question: "Is the weight loss after cleaning unique to Siliguri Fresh Mart?",
+    question: "Is the weight loss after cleaning unique to Siliguri Freshmart?",
     answer:
       "No. Weight reduction after cleaning fresh fish, chicken, or meat is a natural and universal process — it happens at every local market, butcher shop, and quality grocer. We simply tell you upfront so there are no surprises.",
   },
@@ -88,7 +88,7 @@ export default function WeightPricingPolicyPage() {
       <p className="text-xs text-muted mb-8">Last updated: {lastUpdated}</p>
 
       <p className="text-sm text-muted leading-relaxed mb-6">
-        At Siliguri Fresh Mart, we believe in complete transparency about how fresh products are weighed, priced,
+        At Siliguri Freshmart, we believe in complete transparency about how fresh products are weighed, priced,
         and delivered. This policy explains why the weight you receive may differ from what you ordered, and why
         our prices reflect the quality and service you get.
       </p>

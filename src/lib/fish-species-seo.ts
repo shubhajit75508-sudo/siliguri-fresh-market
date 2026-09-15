@@ -1,4 +1,4 @@
-import type { FAQ } from "./fish-subcat-seo";
+﻿import type { FAQ } from "./fish-subcat-seo";
 
 export interface FishSpeciesSEO {
   value: string;
@@ -47,7 +47,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Fish curry (jhol)", "Deep-fried steaks", "Mustard fish (shorshe)", "Grilled"],
     faq: [
-      { question: "What is the price of rohu fish in Siliguri?", answer: "Fresh Rohu at Siliguri Fresh Mart starts from Rs.320 per kg. Prices may vary based on daily market rates. We offer 500g, 1kg, and 2kg weight options with steaks, fillets, or curry cut." },
+      { question: "What is the price of rohu fish in Siliguri?", answer: "Fresh Rohu at Siliguri Freshmart starts from Rs.320 per kg. Prices may vary based on daily market rates. We offer 500g, 1kg, and 2kg weight options with steaks, fillets, or curry cut." },
       { question: "Is rohu fish good for health?", answer: "Yes, Rohu is an excellent source of lean protein and omega-3 fatty acids. It's low in fat and high in nutrients, making it ideal for heart health and muscle building. Bengali households consider it one of the healthiest river fish." },
       { question: "How to order rohu fish online in Siliguri?", answer: "Visit siligurifreshmart.com, search for 'Rohu', select your preferred weight and cut, and place your order. We accept COD and UPI. Delivery is free on orders above Rs.299." },
     ],
@@ -81,7 +81,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Doi Katla (yogurt curry)", "Macher Kalia", "Steaks in gravy", "Special occasions"],
     faq: [
-      { question: "What is the price of katla fish in Siliguri?", answer: "Katla fish at Siliguri Fresh Mart starts from Rs.450 per kg. Being a larger, premium river fish, it costs more than Rohu. Available in 500g, 1kg, and 1.5kg options." },
+      { question: "What is the price of katla fish in Siliguri?", answer: "Katla fish at Siliguri Freshmart starts from Rs.450 per kg. Being a larger, premium river fish, it costs more than Rohu. Available in 500g, 1kg, and 1.5kg options." },
       { question: "Is katla better than rohu?", answer: "Katla has a richer, oilier flesh compared to Rohu's mild, lean profile. Katla is preferred for rich curries (kalia, doi katla) while Rohu is better for light daily curries (jhol). Both are excellent — it depends on your recipe." },
       { question: "Can I get katla fish steaks in Siliguri?", answer: "Yes, we cut Katla into steaks, Bengali cut, or whole as per your preference. Select your cut preference at checkout when ordering from siligurifreshmart.com." },
     ],
@@ -116,7 +116,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Bhapa Ilish (steamed)", "Ilish macher jhal", "Shorshe Ilish (mustard)", "Paturi (banana leaf)"],
     faq: [
-      { question: "What is hilsa fish price in Siliguri?", answer: "Hilsa at Siliguri Fresh Mart starts from Rs.1,200 per kg. Prices fluctuate daily based on catch and season. Monsoon Hilsa (June-September) is the fattest and most flavourful." },
+      { question: "What is hilsa fish price in Siliguri?", answer: "Hilsa at Siliguri Freshmart starts from Rs.1,200 per kg. Prices fluctuate daily based on catch and season. Monsoon Hilsa (June-September) is the fattest and most flavourful." },
       { question: "Is Bangladeshi hilsa better than Indian?", answer: "Both are excellent, but Bangladeshi Hilsa from the Padma river is considered the gold standard due to its higher fat content and sweeter flavour. We source both — clearly labelled on our website." },
       { question: "When is the best time to buy hilsa?", answer: "The monsoon season (June-September) brings the fattest Hilsa. During Puja season (October-November), demand peaks. We try to keep Hilsa available year-round, but quality and price vary by season." },
     ],
@@ -150,7 +150,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Bengali Fish Fry", "Fish Fingers", "Grilled Fillets", "Light Curry"],
     faq: [
-      { question: "What is bhetki fish and where to buy in Siliguri?", answer: "Bhetki is Barramundi — a firm, white-fleshed fish popular in Bengali cuisine. You can order fresh Bhetki at Siliguri Fresh Mart. We deliver cleaned, filleted, or whole bhetki across Siliguri to your doorstep." },
+      { question: "What is bhetki fish and where to buy in Siliguri?", answer: "Bhetki is Barramundi — a firm, white-fleshed fish popular in Bengali cuisine. You can order fresh Bhetki at Siliguri Freshmart. We deliver cleaned, filleted, or whole bhetki across Siliguri to your doorstep." },
       { question: "Is bhetki good for fish fry?", answer: "Bhetki is THE best fish for Bengali-style fish fry. Its firm, boneless fillets hold their shape during frying and develop a beautiful golden crust. Marinate in ginger-garlic paste, coat in breadcrumbs, and deep fry for the classic taste." },
     ],
   },
@@ -183,7 +183,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Whole Grilled", "Mustard Pomfret", "Fried", "Fish Curry"],
     faq: [
-      { question: "What is the price of pomfret fish in Siliguri?", answer: "Silver Pomfret at Siliguri Fresh Mart starts from Rs.680 per kg. Available in 250g, 500g, and 1kg options. Prices may vary based on coastal market rates." },
+      { question: "What is the price of pomfret fish in Siliguri?", answer: "Silver Pomfret at Siliguri Freshmart starts from Rs.680 per kg. Available in 250g, 500g, and 1kg options. Prices may vary based on coastal market rates." },
       { question: "Is pomfret a sea fish or river fish?", answer: "Pomfret (Rupchanda) is a sea fish found in coastal waters of the Bay of Bengal. We source it from Digha and Mandarbani fish markets and transport it to Siliguri within the same day." },
     ],
   },
@@ -216,7 +216,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Garlic Butter Prawns", "Tandoori Prawns", "Malai Curry", "Prawn Biryani"],
     faq: [
-      { question: "What is the price of tiger prawns in Siliguri?", answer: "Tiger Prawns at Siliguri Fresh Mart start from Rs.450 per kg. Golda Chingri (giant freshwater prawns) are priced higher. Check our website for today's exact prices." },
+      { question: "What is the price of tiger prawns in Siliguri?", answer: "Tiger Prawns at Siliguri Freshmart start from Rs.450 per kg. Golda Chingri (giant freshwater prawns) are priced higher. Check our website for today's exact prices." },
       { question: "Are tiger prawns deveined before delivery?", answer: "Yes, we devein and clean prawns as per your preference at checkout. Options include: shell-on deveined, shell-off deveined, or fully cleaned." },
     ],
   },
@@ -249,7 +249,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Sashimi & Sushi", "Grilled Fillets", "Salmon Steaks", "Poke Bowls"],
     faq: [
-      { question: "Is salmon available in Siliguri?", answer: "Yes, Norwegian Salmon is available at Siliguri Fresh Mart on a weekly restock basis. Pre-order online or call us at 7029908278 to reserve your fillet." },
+      { question: "Is salmon available in Siliguri?", answer: "Yes, Norwegian Salmon is available at Siliguri Freshmart on a weekly restock basis. Pre-order online or call us at 7029908278 to reserve your fillet." },
       { question: "Is the salmon sashimi-grade?", answer: "Our salmon is sourced from certified farms and handled with food-grade safety standards. Ask our team for the latest sashimi-grade availability — it depends on the batch." },
     ],
   },
@@ -282,7 +282,7 @@ export const FISH_SPECIES_SEO: Record<string, FishSpeciesSEO> = {
     ],
     bestFor: ["Shorshe Pabda (mustard)", "Steamed", "Light Curry", "Paturi"],
     faq: [
-      { question: "What is pabda fish and why is it expensive?", answer: "Pabda is a small, catfish-like river fish prized for its buttery, boneless flesh. It's expensive because it's wild-caught (not farmed), delicate to handle, and available in limited quantities. At Siliguri Fresh Mart, Pabda is priced based on daily market rates." },
+      { question: "What is pabda fish and why is it expensive?", answer: "Pabda is a small, catfish-like river fish prized for its buttery, boneless flesh. It's expensive because it's wild-caught (not farmed), delicate to handle, and available in limited quantities. At Siliguri Freshmart, Pabda is priced based on daily market rates." },
       { question: "How to cook pabda fish?", answer: "The most popular preparation is Pabda Shorshe — cooked in a mustard paste sauce with green chillies and nigella seeds. Lightly fry the fish, then simmer in the mustard sauce for 2-3 minutes. Don't overcook — Pabda is delicate and cooks quickly." },
     ],
   },

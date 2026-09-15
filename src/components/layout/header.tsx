@@ -26,7 +26,7 @@ export function Header() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-fresh/20">            <Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={40} height={40} className="h-10 w-10 object-contain rounded-xl" /></div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold text-foreground leading-tight">Siliguri</span>
-              <span className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider leading-tight">Fresh Mart</span>
+              <span className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider leading-tight">Freshmart</span>
             </div>
           </Link>
 
@@ -100,7 +100,7 @@ export function Header() {
               </div>
               <div className="min-w-0 leading-none">
                 <div className="truncate text-[15px] font-extrabold text-white tracking-tight">Siliguri</div>
-                <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-[#FFD98A]">Fresh Mart</div>
+                <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-[#FFD98A]">Freshmart</div>
               </div>
             </Link>
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Leaf, Truck, ShieldCheck, Clock } from "lucide-react";
@@ -37,10 +37,10 @@ export function AuthShell({ title, subtitle, icon, children }: AuthShellProps) {
             <div className="relative">
               <Link href="/" className="inline-flex items-center gap-3">
                 <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-lg">
-                  <img src={logo} alt="Siliguri Fresh Mart" className="h-14 w-14 object-contain" />
+                  <img src={logo} alt="Siliguri Freshmart" className="h-14 w-14 object-contain" />
                 </span>
                 <div>
-                  <p className="text-lg font-extrabold leading-tight text-white">Siliguri Fresh Mart</p>
+                  <p className="text-lg font-extrabold leading-tight text-white">Siliguri Freshmart</p>
                   <p className="text-[11px] font-medium text-white/70">Fresh Market, delivered.</p>
                 </div>
               </Link>

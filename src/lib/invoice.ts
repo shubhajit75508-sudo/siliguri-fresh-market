@@ -1,4 +1,4 @@
-import type { Order } from "@/types";
+﻿import type { Order } from "@/types";
 import { getItemUnitPrice, getItemLineTotal } from "@/lib/utils";
 
 const gstin = process.env.NEXT_PUBLIC_GSTIN ?? "";
@@ -22,7 +22,7 @@ export async function downloadInvoice(order: Order): Promise<void> {
   container.style.lineHeight = "1.5";
   container.innerHTML = `
     <div style="border-bottom: 2px solid #2D7D3A; padding-bottom: 16px; margin-bottom: 24px;">
-      <h1 style="font-size: 24px; font-weight: 800; color: #2D7D3A; margin: 0;">Siliguri Fresh Mart</h1>
+      <h1 style="font-size: 24px; font-weight: 800; color: #2D7D3A; margin: 0;">Siliguri Freshmart</h1>
       <p style="margin: 4px 0 0; color: #6b7280;">Fresh Market Delivered in Minutes</p>
     </div>
     <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
@@ -68,7 +68,7 @@ export async function downloadInvoice(order: Order): Promise<void> {
       <p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">Payment: ${order.paymentMethod.toUpperCase()} - ${order.paymentStatus}</p>
     </div>
     <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 11px;">
-      <p style="margin: 0;">Siliguri Fresh Mart | Thank you for your order!</p>
+      <p style="margin: 0;">Siliguri Freshmart | Thank you for your order!</p>
     </div>
   `;
   document.body.appendChild(container);

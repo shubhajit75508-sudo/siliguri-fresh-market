@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -31,7 +31,7 @@ function OrderSuccessContent() {
           </h1>
 
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
-            Thank you for choosing Siliguri Fresh Mart. We&apos;re preparing your order now.
+            Thank you for choosing Siliguri Freshmart. We&apos;re preparing your order now.
           </p>
 
           {orderId && (

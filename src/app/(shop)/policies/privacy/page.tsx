@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Learn how Siliguri Fresh Mart collects, uses, and protects your personal information.",
+  description: "Learn how Siliguri Freshmart collects, uses, and protects your personal information.",
   alternates: { canonical: "https://www.siligurifreshmart.com/policies/privacy" },
   openGraph: {
-    title: "Privacy Policy | Siliguri Fresh Mart",
-    description: "Learn how Siliguri Fresh Mart collects, uses, and protects your personal information.",
+    title: "Privacy Policy | Siliguri Freshmart",
+    description: "Learn how Siliguri Freshmart collects, uses, and protects your personal information.",
     url: "https://www.siligurifreshmart.com/policies/privacy",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
   },
@@ -24,7 +24,7 @@ export default function PrivacyPolicyPage() {
       <p className="text-xs text-muted mb-8">Last updated: {lastUpdated}</p>
 
       <p className="text-sm text-muted leading-relaxed mb-6">
-        Siliguri Fresh Mart (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the website
+        Siliguri Freshmart (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the website
         siligurifreshmart.com. This Privacy Policy explains what information we collect from you,
         how we use it, and the choices you have.
       </p>

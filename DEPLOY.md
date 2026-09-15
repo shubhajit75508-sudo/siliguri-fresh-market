@@ -1,4 +1,4 @@
-# Siliguri Fresh Mart — Production Deployment Guide
+﻿# Siliguri Freshmart — Production Deployment Guide
 
 > **Goal**: Deploy the app to production with full Supabase backend, zero data leaks, and maximum security.
 
@@ -77,7 +77,7 @@ In Supabase Dashboard → **SQL Editor** → **New query** → paste:
 
 ```sql
 -- ============================================================
--- Siliguri Fresh Mart — Production Schema
+-- Siliguri Freshmart — Production Schema
 -- Run once to set up all tables, indexes, RLS, and seed data.
 -- ============================================================
 
@@ -605,7 +605,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...service-role-key
 
 # App
 NEXT_PUBLIC_APP_URL=https://yourdomain.com
-NEXT_PUBLIC_SITE_NAME=Siliguri Fresh Mart
+NEXT_PUBLIC_SITE_NAME=Siliguri Freshmart
 ```
 
 ### 5.2 Where to Set Them

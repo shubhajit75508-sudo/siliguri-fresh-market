@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ProductCard } from "@/components/product/product-card";
 import { useProducts } from "@/lib/hooks/use-products";
@@ -13,7 +13,7 @@ export default function WishlistPage() {
   const shareOnWhatsApp = () => {
     if (wishlistProducts.length === 0) return;
     const text = wishlistProducts.map((p) => p.name).join(", ");
-    const url = `https://wa.me/?text=${encodeURIComponent(`Check out my wishlist on Siliguri Fresh Mart: ${text}`)}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(`Check out my wishlist on Siliguri Freshmart: ${text}`)}`;
     window.open(url, "_blank");
   };
 

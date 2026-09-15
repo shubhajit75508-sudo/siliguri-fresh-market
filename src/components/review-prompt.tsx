@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Star, X, MessageCircle, ExternalLink } from "lucide-react";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const GBP_REVIEW_URL = "https://share.google/LFEJFhqvrXi9Zcyhk";
 
 const WHATSAPP_MSG = encodeURIComponent(
-  "Hi Siliguri Fresh Mart! I just received my order and wanted to share my feedback. Great freshness and fast delivery!"
+  "Hi Siliguri Freshmart! I just received my order and wanted to share my feedback. Great freshness and fast delivery!"
 );
 
 interface ReviewPromptProps {

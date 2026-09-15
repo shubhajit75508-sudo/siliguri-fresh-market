@@ -1,4 +1,4 @@
-# Siliguri Fresh Mart
+﻿# Siliguri Freshmart
 
 Premium quick-commerce platform for fresh fish, chicken, mutton, vegetables, and daily essentials — delivered in 10-30 minutes across Siliguri.
 

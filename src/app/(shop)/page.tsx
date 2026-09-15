@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { HomeClient } from "./home-client";
 import { homeFaqs } from "@/lib/home-faqs";
 
 const url = "https://www.siligurifreshmart.com";
 
 export const metadata: Metadata = {
-  title: "Fresh Fish, Chicken, Mutton & Vegetables Delivery in Siliguri | Siliguri Fresh Mart",
+  title: "Fresh Fish, Chicken, Mutton & Vegetables Delivery in Siliguri | Siliguri Freshmart",
   description:
     "Order fresh fish (rohu, katla, hilsa, prawns), chicken, mutton, vegetables, fruits & daily essentials online in Siliguri. Direct from local market, cut to order, delivered to your doorstep. Free delivery above ₹299.",
   alternates: {
     canonical: url + "/",
   },
   openGraph: {
-    title: "Fresh Fish, Chicken, Mutton & Vegetables Delivery in Siliguri | Siliguri Fresh Mart",
+    title: "Fresh Fish, Chicken, Mutton & Vegetables Delivery in Siliguri | Siliguri Freshmart",
     description:
       "Order fresh fish (rohu, katla, hilsa, prawns), chicken, mutton, vegetables, fruits & daily essentials online in Siliguri. Direct from local market, cut to order, delivered to your doorstep.",
     url: url + "/",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
   },

@@ -1,5 +1,5 @@
--- =============================================================================
--- Siliguri Fresh Mart ??? Supabase Migration
+﻿-- =============================================================================
+-- Siliguri Freshmart ??? Supabase Migration
 -- Run this entire script in Supabase SQL Editor (one shot, safe to re-run)
 -- =============================================================================
 

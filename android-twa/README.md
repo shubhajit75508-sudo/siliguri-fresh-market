@@ -1,14 +1,14 @@
-# Siliguri Fresh Mart — Android TWA (API 36)
+﻿# Siliguri Freshmart — Android TWA (API 36)
 
-Trusted Web Activity wrapper for the Siliguri Fresh Mart PWA. Fixes the Play Console
+Trusted Web Activity wrapper for the Siliguri Freshmart PWA. Fixes the Play Console
 rejection by targeting **Android 16 (API 36)**, keeps the existing package name
 `com.siligurifreshmart` (so this **updates** the live listing — it is not a new app),
-and ships the brand launcher icon + "Siliguri Fresh Mart" name.
+and ships the brand launcher icon + "Siliguri Freshmart" name.
 
 | Setting | Value |
 |---|---|
 | Package / applicationId | `com.siligurifreshmart` |
-| App name | `Siliguri Fresh Mart` |
+| App name | `Siliguri Freshmart` |
 | Launcher URL | `https://www.siligurifreshmart.com/` |
 | compileSdk / targetSdk | **36 / 36** |
 | minSdk | 24 |

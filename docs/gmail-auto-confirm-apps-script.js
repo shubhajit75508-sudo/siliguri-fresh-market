@@ -1,5 +1,5 @@
-/**
- * Siliguri Fresh Mart — Gmail Auto-Confirm UPI Payments
+﻿/**
+ * Siliguri Freshmart — Gmail Auto-Confirm UPI Payments
  * ======================================================
  * Watches Gmail for bank credit emails that mention an order code (SFM-XXXX),
  * extracts the order + amount, and POSTs to our auto-confirm endpoint so the
@@ -42,7 +42,7 @@ function processBankCredits() {
 
       var text = message.getSubject() + "\n" + message.getPlainBody();
       var orderId = extractOrderId(text);
-      if (!orderId) continue; // not a Siliguri Fresh Mart credit
+      if (!orderId) continue; // not a Siliguri Freshmart credit
 
       var payload = { order_id: orderId };
       var amount = extractAmount(text);

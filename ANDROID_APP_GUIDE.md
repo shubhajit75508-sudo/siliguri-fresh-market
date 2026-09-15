@@ -1,4 +1,4 @@
-# Siliguri Fresh Mart — Android App Publishing Guide
+﻿# Siliguri Freshmart — Android App Publishing Guide
 
 ## Method: PWABuilder (Easiest — No Coding Required)
 
@@ -8,7 +8,7 @@
 3. Click **Start** — it will validate your PWA (should score 100+)
 4. Under "Android", click **Package**
 5. Fill in:
-   - **App Name**: Siliguri Fresh Mart
+   - **App Name**: Siliguri Freshmart
    - **Package Name**: com.siliguri.freshmart
    - **App Version**: 1.0.0
    - **Signing Key**: Leave as "Generate new" (creates a keystore for you)
@@ -25,7 +25,7 @@
 
 ### Step 3: Create App Listing
 1. In Play Console, click **Create App**
-2. App name: **Siliguri Fresh Mart**
+2. App name: **Siliguri Freshmart**
 3. Default language: English (India)
 4. Choose "Free" app
 5. Fill in:

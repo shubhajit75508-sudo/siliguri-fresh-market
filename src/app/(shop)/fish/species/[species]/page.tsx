@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FISH_SPECIES_SEO } from "@/lib/fish-species-seo";
 import { FISH_SUBCAT_SEO } from "@/lib/fish-subcat-seo";
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: seo.title,
       description: seo.description,
       url: `https://www.siligurifreshmart.com/fish/species/${slug}`,
-      siteName: "Siliguri Fresh Mart",
+      siteName: "Siliguri Freshmart",
       type: "website",
       locale: "en_IN",
       images: [
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg",
           width: 1200,
           height: 630,
-          alt: `${seo.name} fish delivery in Siliguri - Siliguri Fresh Mart`,
+          alt: `${seo.name} fish delivery in Siliguri - Siliguri Freshmart`,
         },
       ],
     },
@@ -73,7 +73,7 @@ export default async function FishSpeciesPage({ params }: Props) {
             url: `https://www.siligurifreshmart.com/fish/species/${slug}`,
             isPartOf: {
               "@type": "WebSite",
-              name: "Siliguri Fresh Mart",
+              name: "Siliguri Freshmart",
               url: "https://www.siligurifreshmart.com",
             },
             about: {

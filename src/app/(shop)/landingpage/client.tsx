@@ -248,7 +248,7 @@ export default function LandingClient() {
             className="mb-8"
           >
             <div className="mx-auto w-24 h-24 rounded-3xl overflow-hidden ring-4 ring-[#2D7D3A]/30 shadow-2xl shadow-[#2D7D3A]/20">
-              <Image src={LOGO} alt="Siliguri Fresh Mart" width={96} height={96} priority className="w-full h-full object-cover" />
+              <Image src={LOGO} alt="Siliguri Freshmart" width={96} height={96} priority className="w-full h-full object-cover" />
             </div>
           </motion.div>
 
@@ -1071,7 +1071,7 @@ export default function LandingClient() {
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Image src={LOGO} alt="SFM" width={32} height={32} className="h-8 w-8 rounded-lg" loading="lazy" />
-            <span className="text-sm font-bold">Siliguri Fresh Mart</span>
+            <span className="text-sm font-bold">Siliguri Freshmart</span>
           </div>
           <div className="flex items-center gap-4 text-xs text-muted">
             <a href={`tel:${t.footer.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-[#2D7D3A] transition-colors">

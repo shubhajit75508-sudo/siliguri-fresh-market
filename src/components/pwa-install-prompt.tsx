@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { X, Download } from "lucide-react";
@@ -65,7 +65,7 @@ export function PWAInstallPrompt() {
         </div>
         <div className="flex-1">
           <p className="text-sm font-bold text-foreground">Add to Home Screen</p>
-          <p className="mt-0.5 text-xs text-muted">Quick access to Siliguri Fresh Mart</p>
+          <p className="mt-0.5 text-xs text-muted">Quick access to Siliguri Freshmart</p>
           <button
             onClick={handleInstall}
             className="mt-2.5 w-full rounded-lg bg-[#2D7D3A] px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#23682E] active:scale-[0.97]"

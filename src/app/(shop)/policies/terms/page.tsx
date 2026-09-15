@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions",
-  description: "Terms and conditions governing the use of Siliguri Fresh Mart services.",
+  description: "Terms and conditions governing the use of Siliguri Freshmart services.",
   alternates: { canonical: "https://www.siligurifreshmart.com/policies/terms" },
   openGraph: {
-    title: "Terms & Conditions | Siliguri Fresh Mart",
-    description: "Terms and conditions governing the use of Siliguri Fresh Mart services.",
+    title: "Terms & Conditions | Siliguri Freshmart",
+    description: "Terms and conditions governing the use of Siliguri Freshmart services.",
     url: "https://www.siligurifreshmart.com/policies/terms",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
   },
@@ -24,13 +24,13 @@ export default function TermsPage() {
       <p className="text-xs text-muted mb-8">Last updated: {lastUpdated}</p>
 
       <p className="text-sm text-muted leading-relaxed mb-6">
-        Welcome to Siliguri Fresh Mart (siligurifreshmart.com). By accessing or using our website and placing
+        Welcome to Siliguri Freshmart (siligurifreshmart.com). By accessing or using our website and placing
         an order, you agree to be bound by these Terms and Conditions. Please read them carefully before
         using our services.
       </p>
 
       <Section num="1" title="About Us">
-        <p>Siliguri Fresh Mart is an online grocery and fresh produce delivery service operating within Siliguri city. We are currently operating as an individual proprietorship; business registration details will be updated here once formalized.</p>
+        <p>Siliguri Freshmart is an online grocery and fresh produce delivery service operating within Siliguri city. We are currently operating as an individual proprietorship; business registration details will be updated here once formalized.</p>
       </Section>
 
       <Section num="2" title="Eligibility">
@@ -70,7 +70,7 @@ export default function TermsPage() {
       </Section>
 
       <Section num="8" title="Limitation of Liability">
-        <p>To the maximum extent permitted by law, Siliguri Fresh Mart shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products, except in cases of proven negligence on our part.</p>
+        <p>To the maximum extent permitted by law, Siliguri Freshmart shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products, except in cases of proven negligence on our part.</p>
       </Section>
 
       <Section num="9" title="User Conduct">
@@ -78,7 +78,7 @@ export default function TermsPage() {
       </Section>
 
       <Section num="10" title="Intellectual Property">
-        <p>All content on this website, including logos, text, and images, is the property of Siliguri Fresh Mart unless otherwise stated, and may not be used without permission.</p>
+        <p>All content on this website, including logos, text, and images, is the property of Siliguri Freshmart unless otherwise stated, and may not be used without permission.</p>
       </Section>
 
       <Section num="11" title="Governing Law">

@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Reviews & Ratings",
-  description: "How Siliguri Fresh Mart collects and verifies customer reviews and ratings at delivery.",
+  description: "How Siliguri Freshmart collects and verifies customer reviews and ratings at delivery.",
   alternates: { canonical: "https://www.siligurifreshmart.com/policies/reviews" },
   openGraph: {
-    title: "Reviews & Ratings | Siliguri Fresh Mart",
-    description: "How Siliguri Fresh Mart collects and verifies customer reviews and ratings at delivery.",
+    title: "Reviews & Ratings | Siliguri Freshmart",
+    description: "How Siliguri Freshmart collects and verifies customer reviews and ratings at delivery.",
     url: "https://www.siligurifreshmart.com/policies/reviews",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
   },

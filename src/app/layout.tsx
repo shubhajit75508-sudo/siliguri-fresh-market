@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AppProvider } from "@/providers/app-provider";
 import { RootSplash } from "@/components/ui/root-splash";
@@ -14,14 +14,14 @@ const inter = Inter({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const siteTitle = "Siliguri Fresh Mart \u2014 Fresh Market Delivered in Minutes";
+const siteTitle = "Siliguri Freshmart \u2014 Fresh Market Delivered in Minutes";
 const siteDesc = "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri. Free delivery on all orders.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://www.siligurifreshmart.com"),
   title: {
     default: siteTitle,
-    template: "%s | Siliguri Fresh Mart",
+    template: "%s | Siliguri Freshmart",
   },
   description: siteDesc,
   keywords: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     "mutton delivery Siliguri",
     "vegetables home delivery",
     "quick commerce Siliguri",
-    "fresh mart",
+    "freshmart",
     "buy fish online",
     "buy chicken online",
   ],
@@ -55,17 +55,17 @@ export const metadata: Metadata = {
     title: "Siliguri Freshmart",
   },
   openGraph: {
-    title: "Siliguri Fresh Mart",
+    title: "Siliguri Freshmart",
     description: siteDesc,
     url: "https://www.siligurifreshmart.com",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     images: [{ url: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782373060/og-image_uhkk9p.png", width: 1200, height: 630 }],
     locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Siliguri Fresh Mart \u2014 Fresh Market Delivered in Minutes",
+    title: "Siliguri Freshmart \u2014 Fresh Market Delivered in Minutes",
     description: siteDesc,
     images: ["https://res.cloudinary.com/dc5fh5afb/image/upload/v1782373060/og-image_uhkk9p.png"],
   },

@@ -1,9 +1,9 @@
-# Siliguri Fresh Mart
+﻿# Siliguri Freshmart
 
 > Premium fresh fish, chicken, mutton, vegetables and essentials delivered to your doorstep in Siliguri in 30 minutes. Free delivery above ₹299.
 
 ## About
-Siliguri Fresh Mart is a quick-commerce grocery delivery service based in Siliguri, West Bengal, India. We deliver fresh fish, chicken, mutton, pork, seafood, vegetables, fruits, dairy and daily essentials within 30 minutes.
+Siliguri Freshmart is a quick-commerce grocery delivery service based in Siliguri, West Bengal, India. We deliver fresh fish, chicken, mutton, pork, seafood, vegetables, fruits, dairy and daily essentials within 30 minutes.
 
 ## Categories
 - [Fresh Fish](https://www.siligurifreshmart.com/category/fish): Rohu, Katla, Pabda, Bhetki, Tangra and more — daily fresh from local markets

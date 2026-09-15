@@ -1,17 +1,17 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Shipping & Delivery Policy | Siliguri Fresh Mart",
+  title: "Shipping & Delivery Policy | Siliguri Freshmart",
   description:
-    "Siliguri Fresh Mart delivery policy: NJP Gate Bazar hub, 20 km delivery area, delivery slots, distance-based time and fees, mandatory GPS location.",
+    "Siliguri Freshmart delivery policy: NJP Gate Bazar hub, 20 km delivery area, delivery slots, distance-based time and fees, mandatory GPS location.",
   keywords:
-    "Siliguri Fresh Mart shipping, delivery policy, Siliguri home delivery, NJP Gate Bazar delivery, Siliguri grocery delivery rules, delivery slots",
+    "Siliguri Freshmart shipping, delivery policy, Siliguri home delivery, NJP Gate Bazar delivery, Siliguri grocery delivery rules, delivery slots",
   openGraph: {
-    title: "Shipping & Delivery Policy | Siliguri Fresh Mart",
+    title: "Shipping & Delivery Policy | Siliguri Freshmart",
     description:
-      "Learn how Siliguri Fresh Mart delivers across 20 km from NJP Gate Bazar: two daily delivery slots, distance-based fees, and mandatory GPS location.",
+      "Learn how Siliguri Freshmart delivers across 20 km from NJP Gate Bazar: two daily delivery slots, distance-based fees, and mandatory GPS location.",
     url: "https://www.siligurifreshmart.com/policies/shipping",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
   },
   alternates: { canonical: "https://www.siligurifreshmart.com/policies/shipping" },
 };
@@ -30,7 +30,7 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "How far does Siliguri Fresh Mart deliver?",
+      name: "How far does Siliguri Freshmart deliver?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "We deliver within 20 km of our hub at NJP Gate Bazar, Siliguri. This covers most of Siliguri city including Sevoke Road, Matigara, Bagdogra, Pradhan Nagar, and surrounding areas.",

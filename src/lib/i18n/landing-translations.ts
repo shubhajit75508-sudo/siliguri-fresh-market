@@ -1,4 +1,4 @@
-export type Lang = "en" | "bn" | "hi";
+﻿export type Lang = "en" | "bn" | "hi";
 
 export interface LandingTranslations {
   lang: Lang;
@@ -129,7 +129,7 @@ const en: LandingTranslations = {
     desc: "Order from 200+ fresh items. Track live delivery. Pay on delivery or UPI. Available on Android now — iOS coming soon.",
     pills: ["Live Tracking", "UPI & COD", "10 Min Delivery", "Quality Checked"],
     btn: "Download the App",
-    phoneAppName: "Siliguri Fresh Mart",
+    phoneAppName: "Siliguri Freshmart",
     phoneTagline: "Delivering fresh since 2024",
     phoneSearch: "Search fresh fish...",
     phoneCats: ["Fish", "Chicken", "Mutton", "Veg", "Fruits", "Eggs"],
@@ -166,7 +166,7 @@ const en: LandingTranslations = {
   },
   features: {
     eyebrow: "Why Choose Us",
-    heading: "The Fresh Mart Difference",
+    heading: "The Freshmart Difference",
     items: [
       { title: "Fresh Delivery", desc: "From market to your door — within 4 km, typically 45-60 minutes. We deliver up to 20 km from our NJP Gate Bazar hub." },
       { title: "Quality Guaranteed", desc: "Every item checked before dispatch. Not satisfied? We replace it — no questions asked." },
@@ -188,13 +188,13 @@ const en: LandingTranslations = {
   },
   freshness: {
     eyebrow: "Freshness Promise",
-    heading: "Market vs Fresh Mart",
+    heading: "Market vs Freshmart",
     market: {
       label: "❌ Typical Market",
       points: ["Fish caught yesterday or day before", "Stored in ice for hours", "Touched by dozens of people", "You carry it home in plastic bags", "No replacement if quality is bad"],
     },
     us: {
-      label: "✅ Siliguri Fresh Mart",
+      label: "✅ Siliguri Freshmart",
       points: ["Caught and sourced same morning", "Packed within 1 hour of sourcing", "Quality-checked by our team", "Delivered to your door in 10 min", "Full replacement if you're not happy"],
     },
   },

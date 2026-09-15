@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Buy Fresh Fish Online in Siliguri | Rohu, Katla, Hilsa, Prawns | Home Delivery",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "fish online order",
   ],
   openGraph: {
-    title: "Buy Fresh Fish Online in Siliguri | Siliguri Fresh Mart",
+    title: "Buy Fresh Fish Online in Siliguri | Siliguri Freshmart",
     description:
       "Fresh river catch delivered daily. Rohu, Katla, Hilsa, Pomfret, Prawns. Free delivery on all orders.",
   },

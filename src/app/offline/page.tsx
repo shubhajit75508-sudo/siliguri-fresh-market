@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default function OfflinePage() {
         >
           Try Again
         </Link>
-        <p className="mt-8 text-[12px] text-muted-light">Siliguri Fresh Mart — Fresh market delivered to your doorstep</p>
+        <p className="mt-8 text-[12px] text-muted-light">Siliguri Freshmart — Fresh market delivered to your doorstep</p>
       </div>
     </div>
   );

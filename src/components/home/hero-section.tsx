@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -95,7 +95,7 @@ export function HeroSection() {
         href: "/search",
         secondary: { label: "My Account", href: "/account" },
         img: hero.image,
-        alt: "Siliguri Fresh Mart — fresh fish, chicken, mutton & vegetables delivery in Siliguri",
+        alt: "Siliguri Freshmart — fresh fish, chicken, mutton & vegetables delivery in Siliguri",
       },
       {
         kind: "banner",
@@ -106,7 +106,7 @@ export function HeroSection() {
         cta: "Shop Fish",
         href: "/fish",
         img: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_1_m5fhyp.jpg",
-        alt: "Fresh fish from Siliguri Fresh Mart",
+        alt: "Fresh fish from Siliguri Freshmart",
       },
       {
         kind: "banner",
@@ -117,7 +117,7 @@ export function HeroSection() {
         cta: "Shop Chicken",
         href: "/category/chicken",
         img: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.55_PM_dgzy7a.jpg",
-        alt: "Farm fresh chicken from Siliguri Fresh Mart",
+        alt: "Farm fresh chicken from Siliguri Freshmart",
       },
       {
         kind: "banner",
@@ -128,7 +128,7 @@ export function HeroSection() {
         cta: "Shop Mutton",
         href: "/category/mutton",
         img: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.54_PM_2_g2jpax.jpg",
-        alt: "Premium mutton from Siliguri Fresh Mart",
+        alt: "Premium mutton from Siliguri Freshmart",
       },
       {
         kind: "banner",
@@ -139,7 +139,7 @@ export function HeroSection() {
         cta: "Shop Vegetables",
         href: "/category/vegetables",
         img: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.55_PM_1_nd29bh.jpg",
-        alt: "Farm fresh vegetables from Siliguri Fresh Mart",
+        alt: "Farm fresh vegetables from Siliguri Freshmart",
       },
       {
         kind: "banner",
@@ -150,7 +150,7 @@ export function HeroSection() {
         cta: "Shop Fruits",
         href: "/category/fruits",
         img: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.55_PM_2_rva3oy.jpg",
-        alt: "Seasonal fruits from Siliguri Fresh Mart",
+        alt: "Seasonal fruits from Siliguri Freshmart",
       },
       {
         kind: "banner",
@@ -161,7 +161,7 @@ export function HeroSection() {
         cta: "View All Products",
         href: "/search",
         img: hero.image,
-        alt: "Browse all products at Siliguri Fresh Mart",
+        alt: "Browse all products at Siliguri Freshmart",
       },
     ];
 
@@ -198,7 +198,7 @@ export function HeroSection() {
         <div className="absolute inset-0">
           <Image
             src={hero.image}
-            alt="Siliguri Fresh Mart — fresh fish, chicken, mutton & vegetables delivery in Siliguri"
+            alt="Siliguri Freshmart — fresh fish, chicken, mutton & vegetables delivery in Siliguri"
             fill
             priority
             sizes="100vw"

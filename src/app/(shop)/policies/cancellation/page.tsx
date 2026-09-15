@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Cancellation Policy",
-  description: "How and when you can cancel an order placed on Siliguri Fresh Mart.",
+  description: "How and when you can cancel an order placed on Siliguri Freshmart.",
   alternates: { canonical: "https://www.siligurifreshmart.com/policies/cancellation" },
   openGraph: {
-    title: "Cancellation Policy | Siliguri Fresh Mart",
-    description: "How and when you can cancel an order placed on Siliguri Fresh Mart.",
+    title: "Cancellation Policy | Siliguri Freshmart",
+    description: "How and when you can cancel an order placed on Siliguri Freshmart.",
     url: "https://www.siligurifreshmart.com/policies/cancellation",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
   },
@@ -37,7 +37,7 @@ export default function CancellationPage() {
         <p>Once an order has been dispatched for delivery, it generally cannot be cancelled, since fresh and perishable items are prepared and packed specifically for your order. If you no longer want the order after dispatch, please contact us and we will do our best to assist, but cancellation at this stage is not guaranteed.</p>
       </Section>
 
-      <Section num="3" title="Cancellations by Siliguri Fresh Mart">
+      <Section num="3" title="Cancellations by Siliguri Freshmart">
         <p>We reserve the right to cancel an order in situations such as:</p>
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>Item unavailability or stock shortage</li>

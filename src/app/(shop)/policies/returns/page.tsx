@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Return & Replacement Policy",
-  description: "Siliguri Fresh Mart return policy — 2:59 hour replacement window for damaged, spoiled, or missing items.",
+  description: "Siliguri Freshmart return policy — 2:59 hour replacement window for damaged, spoiled, or missing items.",
   alternates: { canonical: "https://www.siligurifreshmart.com/policies/returns" },
   openGraph: {
-    title: "Return & Replacement Policy | Siliguri Fresh Mart",
-    description: "Siliguri Fresh Mart return policy — 2:59 hour replacement window for damaged, spoiled, or missing items.",
+    title: "Return & Replacement Policy | Siliguri Freshmart",
+    description: "Siliguri Freshmart return policy — 2:59 hour replacement window for damaged, spoiled, or missing items.",
     url: "https://www.siligurifreshmart.com/policies/returns",
-    siteName: "Siliguri Fresh Mart",
+    siteName: "Siliguri Freshmart",
     type: "website",
     locale: "en_IN",
   },
@@ -24,7 +24,7 @@ export default function ReturnPolicyPage() {
       <p className="text-xs text-muted mb-8">Last updated: {lastUpdated}</p>
 
       <p className="text-sm text-muted leading-relaxed mb-6">
-        At Siliguri Fresh Mart, we want every order to arrive correct and in good condition. Because we deal
+        At Siliguri Freshmart, we want every order to arrive correct and in good condition. Because we deal
         primarily in groceries and fresh produce, our policy is built around quick replacement rather than
         refunds, given the perishable nature of our products.
       </p>
@@ -40,7 +40,7 @@ export default function ReturnPolicyPage() {
       </Section>
 
       <Section num="2" title="No Standard Refunds">
-        <p>Siliguri Fresh Mart does not offer refunds as a standard remedy. Issues reported within the eligible window are resolved through <strong className="text-foreground">replacement</strong> of the item(s) in question, not a monetary refund.</p>
+        <p>Siliguri Freshmart does not offer refunds as a standard remedy. Issues reported within the eligible window are resolved through <strong className="text-foreground">replacement</strong> of the item(s) in question, not a monetary refund.</p>
       </Section>
 
       <Section num="3" title="Refunds in Extreme Cases">
@@ -48,7 +48,7 @@ export default function ReturnPolicyPage() {
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>You must contact us directly and explain the emergency situation</li>
           <li>Our team will review the case individually</li>
-          <li>Approval of refund requests is at the sole discretion of Siliguri Fresh Mart and is not guaranteed</li>
+          <li>Approval of refund requests is at the sole discretion of Siliguri Freshmart and is not guaranteed</li>
         </ul>
       </Section>
 

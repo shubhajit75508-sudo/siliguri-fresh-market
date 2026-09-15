@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DELIVERY_ZONES, getZoneBySlug } from "@/lib/zones";
 import { BreadcrumbSchema } from "@/components/seo/schemas";
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: zone.metaTitle,
       description: zone.metaDescription,
       url: `https://www.siligurifreshmart.com/siliguri/${zone.slug}`,
-      siteName: "Siliguri Fresh Mart",
+      siteName: "Siliguri Freshmart",
       type: "website",
       locale: "en_IN",
     },
@@ -54,7 +54,7 @@ export default async function ZonePage({ params }: Props) {
             "@context": "https://schema.org",
             "@type": "GroceryStore",
             "@id": `https://www.siligurifreshmart.com/siliguri/${zone.slug}#localbusiness`,
-            name: "Siliguri Fresh Mart",
+            name: "Siliguri Freshmart",
             description: zone.description,
             image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
             telephone: "+91 7029908278",
