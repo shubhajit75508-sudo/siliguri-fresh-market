@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Share2, BadgeCheck, Zap, PackageCheck, ChevronUp, X } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Share2, BadgeCheck, Zap, PackageCheck } from "lucide-react";
 import type { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
@@ -19,7 +19,6 @@ export function ProductClient({ product }: { product: Product }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
-  const [barOpen, setBarOpen] = useState(false);
   const addToCart = useCartStore((s) => s.addItem);
   const { wishlist, toggleWishlist } = useUserStore();
 
@@ -101,7 +100,7 @@ export function ProductClient({ product }: { product: Product }) {
   );
 
   return (
-    <div className="pb-44 lg:pb-0">
+    <div className="pb-[340px] lg:pb-0">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       {/* Breadcrumb + actions */}
@@ -442,40 +441,28 @@ export function ProductClient({ product }: { product: Product }) {
         </div>
       </div>
 
-      {/* ── Sticky Mobile Buy Bar (Flipkart style) ── */}
+      {/* ── Sticky Mobile Buy Panel (always expanded, no dropdown) ── */}
       {available && (
         <div className="fixed inset-x-0 bottom-[76px] z-40 lg:hidden">
           <div className="mx-3 mb-1 overflow-hidden rounded-2xl border border-border bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgba(16,45,20,0.18)]">
-            {/* Collapsed row: thumb + price + quick add */}
-            <div className="flex items-center gap-3 p-2.5">
-              <button
-                onClick={() => setBarOpen(!barOpen)}
-                className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-surface-2 ring-1 ring-border"
-                aria-label="Open product options"
-              >
-                <Image src={allImages[0]} alt={product.name} width={48} height={48} className="h-full w-full object-cover" />
-              </button>
-              <button
-                onClick={() => setBarOpen(!barOpen)}
-                className="min-w-0 flex-1 text-left"
-                aria-label="Open product options"
-              >
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[15px] font-extrabold tabular-nums text-foreground">{formatPrice(displayPrice * qty)}</span>
+            {/* Top row: thumb + price + qty stepper + Add */}
+            <div className="flex items-center gap-2.5 p-2.5">
+              <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-surface-2 ring-1 ring-border">
+                <Image src={allImages[0]} alt={product.name} width={44} height={44} className="h-full w-full object-cover" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-sm font-extrabold tabular-nums text-foreground">{formatPrice(displayPrice * qty)}</span>
                   {displayOriginal && displayOriginal > displayPrice && (
-                    <span className="text-[11px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
+                    <span className="text-[10px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
                   )}
                 </div>
-                <p className="truncate text-[10px] font-semibold text-muted">
-                  {qty > 1 ? `Qty ${qty} · ` : ""}{displayWeight}{selectedCut ? ` · ${selectedCut}` : ""}{selectedClean ? ` · ${selectedClean}` : ""}
+                <p className={`text-[10px] font-bold ${savings > 0 ? "text-brand-fresh" : "text-muted"}`}>
+                  {savings > 0 ? `Save ${formatPrice(savings * qty)}` : "Verified Seller"}
                 </p>
-                <p className={`flex items-center gap-1 text-[10px] font-bold ${savings > 0 ? "text-brand-fresh" : "text-muted"}`}>
-                  {savings > 0 ? <>Save {formatPrice(savings * qty)}</> : "Verified Seller"}
-                  <ChevronUp className={`h-3 w-3 transition-transform duration-300 ${barOpen ? "rotate-180" : ""}`} />
-                </p>
-              </button>
+              </div>
               <div className="flex shrink-0 items-center gap-1.5">
-                <div className="flex h-[46px] shrink-0 items-center rounded-xl border border-border bg-surface-2">
+                <div className="flex h-10 shrink-0 items-center rounded-xl border border-border bg-surface-2">
                   <button onClick={() => setQty(Math.max(1, qty - 1))} className="flex h-full w-8 items-center justify-center text-base font-bold text-muted active:scale-90" aria-label="Decrease quantity">−</button>
                   <span className="w-6 text-center text-[13px] font-bold tabular-nums text-foreground">{qty}</span>
                   <button onClick={() => setQty(qty + 1)} className="flex h-full w-8 items-center justify-center text-base font-bold text-muted active:scale-90" aria-label="Increase quantity">+</button>
@@ -483,7 +470,7 @@ export function ProductClient({ product }: { product: Product }) {
                 <button
                   onClick={handleAdd}
                   aria-label="Add to cart"
-                  className="flex h-[46px] items-center justify-center gap-1 rounded-xl bg-gradient-to-b from-[#2E9B3F] to-[#23682E] px-4 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#2D7D3A]/30 transition-all hover:brightness-105 active:scale-[0.97]"
+                  className="flex h-10 items-center justify-center gap-1 rounded-xl bg-gradient-to-b from-[#2E9B3F] to-[#23682E] px-3.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#2D7D3A]/30 transition-all hover:brightness-105 active:scale-[0.97]"
                 >
                   {justAdded ? <PackageCheck className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
                   {justAdded ? "Added" : "Add"}
@@ -491,98 +478,96 @@ export function ProductClient({ product }: { product: Product }) {
               </div>
             </div>
 
-            {/* Expanded panel: weight, cut, cleaning options */}
-            <div className={`grid transition-all duration-300 ease-in-out ${barOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-              <div className="overflow-hidden">
-                <div className="max-h-[50vh] overflow-y-auto border-t border-border/70 bg-gradient-to-b from-surface/60 to-white p-3 no-scrollbar">
-                  {/* Weight */}
-                  <div>
-                    <p className="mb-1.5 flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-muted">
-                      Select Weight <span className="font-normal normal-case">{displayWeight !== weights[0] ? "" : ""}</span>
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {weights.map((w) => (
-                        <button
-                          key={w}
-                          onClick={() => setSelectedWeight(w)}
-                          className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-all ${
-                            displayWeight === w
-                              ? "border-[#2D7D3A] bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/30"
-                              : "border-border bg-white text-muted hover:border-[#2D7D3A]/50"
-                          }`}
-                        >
-                          {w}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Cut Options */}
-                  {product.cuts && product.cuts.length > 0 && (
-                    <div className="mt-3">
-                      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted">Cut Preference</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {product.cuts.map((c) => (
-                          <button
-                            key={c}
-                            onClick={() => setSelectedCut(c === selectedCut ? "" : c)}
-                            className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-all ${
-                              selectedCut === c
-                                ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
-                                : "border-border bg-white text-muted hover:border-brand-fresh/50"
-                            }`}
-                          >
-                            {c}
-                          </button>
-                        ))}
-                        {selectedCut && (
-                          <button onClick={() => setSelectedCut("")} className="text-[11px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Cleaning Options */}
-                  {product.cleaningOptions && product.cleaningOptions.length > 0 && (
-                    <div className="mt-3">
-                      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted">Cleaning</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {product.cleaningOptions.map((c) => (
-                          <button
-                            key={c}
-                            onClick={() => setSelectedClean(c === selectedClean ? "" : c)}
-                            className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-all ${
-                              selectedClean === c
-                                ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
-                                : "border-border bg-white text-muted hover:border-brand-fresh/50"
-                            }`}
-                          >
-                            {c}
-                          </button>
-                        ))}
-                        {selectedClean && (
-                          <button onClick={() => setSelectedClean("")} className="text-[11px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Price summary + Buy Now */}
-                  <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-border bg-white p-2.5">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Total</p>
-                      <p className="text-[16px] font-extrabold tabular-nums text-foreground">{formatPrice(displayPrice * qty)}</p>
-                      {savings > 0 && <p className="text-[10px] font-bold text-brand-fresh">Save {formatPrice(savings * qty)}</p>}
-                    </div>
+            {/* Options: weight, cut, cleaning — always visible */}
+            <div className="max-h-[30vh] overflow-y-auto border-t border-border/70 bg-gradient-to-b from-surface/60 to-white p-3 pt-2 no-scrollbar">
+              {/* Weight */}
+              <div>
+                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Select Weight</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {weights.map((w) => (
                     <button
-                      onClick={() => { setBarOpen(false); handleBuyNow(); }}
-                      className="flex h-[44px] shrink-0 items-center gap-1.5 rounded-xl border-2 border-[#F5A623] bg-[#FFF6E5] px-5 text-sm font-extrabold uppercase tracking-wide text-[#8A5C06] transition-all hover:bg-[#FFEDC6] active:scale-[0.97]"
+                      key={w}
+                      onClick={() => setSelectedWeight(w)}
+                      className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-all ${
+                        displayWeight === w
+                          ? "border-[#2D7D3A] bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/30"
+                          : "border-border bg-white text-muted hover:border-[#2D7D3A]/50"
+                      }`}
                     >
-                      <ArrowLeft className="h-4 w-4 rotate-180" /> Buy Now
+                      {w}
                     </button>
-                  </div>
+                  ))}
                 </div>
               </div>
+
+              {/* Cut Options */}
+              {product.cuts && product.cuts.length > 0 && (
+                <div className="mt-2.5">
+                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Cut Preference</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {product.cuts.map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => setSelectedCut(c === selectedCut ? "" : c)}
+                        className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-all ${
+                          selectedCut === c
+                            ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
+                            : "border-border bg-white text-muted hover:border-brand-fresh/50"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                    {selectedCut && (
+                      <button onClick={() => setSelectedCut("")} className="text-[10px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Cleaning Options */}
+              {product.cleaningOptions && product.cleaningOptions.length > 0 && (
+                <div className="mt-2.5">
+                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Cleaning</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {product.cleaningOptions.map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => setSelectedClean(c === selectedClean ? "" : c)}
+                        className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-all ${
+                          selectedClean === c
+                            ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
+                            : "border-border bg-white text-muted hover:border-brand-fresh/50"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                    {selectedClean && (
+                      <button onClick={() => setSelectedClean("")} className="text-[10px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bottom row: total + Buy Now */}
+            <div className="flex items-center justify-between gap-3 border-t border-border/70 bg-white p-2.5">
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-wide text-muted">Total ({qty} item{qty > 1 ? "s" : ""})</p>
+                <p className="text-[15px] font-extrabold tabular-nums text-foreground leading-tight">
+                  {formatPrice(displayPrice * qty)}
+                  {displayOriginal && displayOriginal > displayPrice && (
+                    <span className="ml-1.5 text-[10px] font-medium text-muted-light line-through align-middle">{formatPrice(displayOriginal * qty)}</span>
+                  )}
+                </p>
+              </div>
+              <button
+                onClick={handleBuyNow}
+                className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border-2 border-[#F5A623] bg-[#FFF6E5] px-5 text-sm font-extrabold uppercase tracking-wide text-[#8A5C06] transition-all hover:bg-[#FFEDC6] active:scale-[0.97]"
+              >
+                <ArrowLeft className="h-4 w-4 rotate-180" /> Buy Now
+              </button>
             </div>
           </div>
         </div>
