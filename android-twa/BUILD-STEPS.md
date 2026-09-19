@@ -1,4 +1,4 @@
-﻿# Siliguri Freshmart — Build & Upload Guide (API 36 fix)
+# Siliguri Freshmart — Build & Upload Guide (API 36 fix)
 
 This fixes the Play Store rejection: **"App must target Android 16 (API level 36) or higher."**
 The project is already set to target API 36. You just need to build it and upload it.

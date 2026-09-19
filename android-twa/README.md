@@ -1,4 +1,4 @@
-﻿# Siliguri Freshmart — Android TWA (API 36)
+# Siliguri Freshmart — Android TWA (API 36)
 
 Trusted Web Activity wrapper for the Siliguri Freshmart PWA. Fixes the Play Console
 rejection by targeting **Android 16 (API 36)**, keeps the existing package name
