@@ -90,7 +90,6 @@ Make the site production-ready with delivery code verification, premium checkout
 - *(none — all tracking features completed)*
 
 ### Blocked
-- **Custom domain DNS not configured**: `siligurifreshmart.com` added to Vercel but nameservers still at Hostinger parking. Need A record `76.76.21.21` or Vercel nameservers
 - **Resend domain not verified**: DKIM/SPF DNS records not yet applied at Hostinger
 - **Razorpay in test mode**: current keys `rzp_test_T3eebwyzkSd5mE` — wants live keys
 
@@ -103,10 +102,14 @@ Make the site production-ready with delivery code verification, premium checkout
 - GPS location stored per-address via `useGeolocation` — passed into `createOrder` as `lat`/`lng`
 
 ## Next Steps
-1. Point DNS at Hostinger: A record `@` → `76.76.21.21` + CNAME `www` → `cname.vercel-dns.com`
-2. Get live Razorpay keys from user
+1. **Upload AAB to Play Store**: `android-twa/android/app/build/outputs/bundle/release/app-release.aab` (2.88 MB, Sep 2026 build, versionCode 6/3.3.0, signed with upload key). If versionCode 6 conflicts, bump and rebuild.
+2. **IMPORTANT after Play upload**: Play re-signs the app with its own app-signing key. Get that SHA256 from Play Console → Setup → App signing and update `public/.well-known/assetlinks.json` (currently `4270793a…` = upload cert) to match Google's key, then redeploy, or TWA verification fails.
+3. Get live Razorpay keys from user
 
 ## Critical Context
+- **Custom domain is LIVE**: `www.siligurifreshmart.com` serves the site + manifest.json + `.well-known/assetlinks.json` (fingerprint `4270793a…` = current upload cert). TWA sideload builds from before Sep 2026 showed `example.com` because the domain wasn't live then — rebuild the APK/AAB after any brand/domain change
+- `assetlinks.json` must match the cert used to sign the APK the user actually installs: sideload → upload cert; Play distribution → Google Play app-signing key (update after upload!)
+- Gradle files must be saved WITHOUT UTF-8 BOM (PowerShell `Set-Content -Encoding UTF8` adds one and breaks `settings.gradle` — strip BOM if Gradle errors)
 - `notification` table has FK issue on Vercel — needs `user_id` type change or removal from realtime publication
 - `delivery_assignments` table exists but is never written to — all assignment data comes from `orders` table via `delivery_boy_id`
 - 4-digit delivery code generated client-side in `createOrder`, stored in DB during order creation, verified server-side by `/api/delivery/confirm`
