@@ -139,6 +139,35 @@ export const FISH_SUBCAT_SEO: Record<string, FishSubcatSEO> = {
       { question: "Do you devein prawns before delivery?", answer: "Yes, we devein and clean prawns as per your preference at checkout. You can choose: shell-on deveined, shell-off deveined, or completely cleaned. Small prawns come pre-cleaned. Just select your preference when ordering online." },
     ],
   },
+  crabs: {
+    value: "crabs",
+    title: "Buy Fresh Crabs Online in Siliguri | Mud Crab, River Crab | Home Delivery",
+    description:
+      "Order fresh crabs online in Siliguri. Mud crab, river crab & more. Cleaned, dressed & delivered to your doorstep. Free delivery.",
+    keywords: [
+      "crabs delivery Siliguri",
+      "fresh crab online Siliguri",
+      "mud crab Siliguri",
+      "river crab home delivery",
+      "buy crab near me Siliguri",
+      "chicken crab online",
+      "Bengali crab curry Siliguri",
+      "fresh crab home delivery",
+    ],
+    heroHeading: "Fresh Crabs — Mud Crab, River Crab & More",
+    heroSub: "Plump mud crabs and sweet river crabs — sourced fresh, cleaned and dressed to order, delivered to your Siliguri home.",
+    contentHeading: "Premium Fresh Crabs Delivered to Your Kitchen",
+    content:
+      "Crabs are a coastal delicacy that Bengali kitchens turn into unforgettable curries. We source plump Mud Crabs from brackish-water fisheries and sweet River Crabs from Teesta and Mahananda backwaters. Every crab is inspected for weight and liveliness, then cleaned and dressed exactly as you prefer — whole, halved, or curry-cut with claws cracked. The sweet, succulent meat is perfect for Bengali jhaal, coconut-based curries, or a simple garlic butter roast.",
+    deliveryInfo: "Crabs delivered same-day across Siliguri between 9 AM – 4 PM. Order before 4 PM for guaranteed availability.",
+    relatedFish: ["Prawns", "Hilsa (Ilish)", "Bhetki (Barramundi)", "Lobster"],
+    faq: [
+      { question: "Is fresh crab available in Siliguri?", answer: "Yes, fresh Mud Crab and River Crab are available at Siliguri Freshmart. We source them from brackish-water fisheries and Teesta/Mahananda backwaters. Price starts from Rs.550 per kg depending on size and type. Order before 4 PM for same-day delivery." },
+      { question: "How do you clean and dress crabs before delivery?", answer: "We clean and dress crabs exactly as you prefer — whole, halved, or curry-cut with claws cracked for easy cooking. Just select your preference at checkout and our team prepares it fresh before dispatch." },
+      { question: "What is the best way to cook crab at home?", answer: "For Bengali-style crab curry (kakra jhal), sauté mustard and poppy-seed paste with mustard oil, add whole spices, then simmer the dressed crab until the sauce thickens. For a lighter option, try garlic butter roast. Order your crabs from Siliguri Freshmart and we'll dress them ready for any recipe." },
+      { question: "Do you deliver crabs to all parts of Siliguri?", answer: "Yes, we deliver fresh crabs across all of Siliguri including Bagdogra, Matigara, Hakimpara, Pradhan Nagar, Shantipara, Bhaktinagar, Champasari, and Sukna. Delivery is free on orders above Rs.299." },
+    ],
+  },
   small: {
     value: "small",
     title: "Buy Fresh Small Fish Online in Siliguri | Boroli, Puthi, Kachki | Delivery",
