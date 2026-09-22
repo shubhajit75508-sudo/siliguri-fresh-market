@@ -23,6 +23,7 @@ import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useAdminStore } from "@/store/admin-store";
 import { useAuthStore } from "@/store/auth-store";
+import { MANAGER_ACCESS } from "@/lib/manager-access";
 
 const adminLinks = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
@@ -40,15 +41,10 @@ const adminLinks = [
   { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
-// Manager portal is limited to day-to-day ops: orders + delivery board only.
-// It deliberately excludes analytics/earnings (profit/cost), products/inventory
-// (buying prices), and the rest of the shop admin console.
-const MANAGER_ACCESS = new Set([
-  "/admin/orders",
-  "/admin/delivery",
-  "/admin/routes",
-  "/admin/delivery-boys",
-]);
+// Manager portal is limited to day-to-day ops: orders, delivery board, route
+// planning, and now products + inventory management. It deliberately excludes
+// analytics/earnings (profit/cost) and the rest of the shop admin console.
+// The single source of truth for this list lives in `src/lib/manager-access.ts`.
 
 export default function AdminLayout({
   children,

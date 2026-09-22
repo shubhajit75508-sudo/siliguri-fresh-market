@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { MANAGER_PAGES } from "@/lib/manager-access";
 
 // Simple rate limiting — in-memory (resets on cold start, fine for prototype)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -108,12 +109,12 @@ export async function proxy(req: NextRequest) {
     const role = payload.split("|").pop();
     if (role === "admin") return NextResponse.next();
     if (role === "manager") {
-      // Managers are restricted to the orders + delivery board only.
+      // Managers can access the dashboard (client layout redirects to orders)
+      // plus the sections listed in MANAGER_PAGES.
       if (
         pathname === "/admin/login" ||
         pathname === "/admin" ||
-        pathname === "/admin/orders" ||
-        pathname === "/admin/delivery"
+        MANAGER_PAGES.some((p) => pathname === p || pathname.startsWith(p + "/"))
       ) {
         return NextResponse.next();
       }
@@ -180,10 +181,10 @@ export async function proxy(req: NextRequest) {
     // Staff login — validates credentials itself (no session required)
     if (pathname === "/api/admin/login" && req.method === "POST") return NextResponse.next();
 
-    // Product management — allow authenticated admins only
+    // Product management — allow authenticated admins and managers
     if (pathname === "/api/admin/products" && (req.method === "POST" || req.method === "PUT" || req.method === "DELETE")) {
       const payload = await getSessionPayload(req);
-      if (payload && payload.endsWith("|admin")) return NextResponse.next();
+      if (payload && (payload.endsWith("|admin") || payload.endsWith("|manager"))) return NextResponse.next();
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -198,8 +199,10 @@ export async function proxy(req: NextRequest) {
     const role = payload.split("|").pop();
     if (role === "admin") return applyCors(req, NextResponse.next());
     if (role === "manager") {
-      // Managers can read + update orders and their assignments, nothing else.
+      // Managers can read + update orders and their assignments, manage products,
+      // and read the delivery-boys roster. Nothing else (no profit/earnings/analytics).
       if (pathname === "/api/admin/orders") return applyCors(req, NextResponse.next());
+      if (pathname === "/api/admin/products") return applyCors(req, NextResponse.next());
       if (pathname === "/api/admin/delivery-boys" && req.method === "GET") return applyCors(req, NextResponse.next());
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

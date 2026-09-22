@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { signSessionToken } from "@/lib/session";
-import { ADMIN_EMAILS } from "@/lib/admin-creds";
+import { ADMIN_EMAILS, MANAGER_EMAILS } from "@/lib/admin-creds";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Only allow valid roles
-    if (!["admin", "delivery", "customer"].includes(role)) {
+    if (!["admin", "manager", "delivery", "customer"].includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
@@ -55,6 +55,14 @@ export async function POST(req: NextRequest) {
       try {
         const { data } = await supabaseAdmin.auth.admin.getUserById(userId);
         if (data?.user?.email && ADMIN_EMAILS.includes(data.user.email)) allowed = true;
+      } catch {
+        // fall through — not allowed
+      }
+    } else if (role === "manager") {
+      // Manager must be a real Supabase auth user whose email is on the manager list.
+      try {
+        const { data } = await supabaseAdmin.auth.admin.getUserById(userId);
+        if (data?.user?.email && MANAGER_EMAILS.includes(data.user.email)) allowed = true;
       } catch {
         // fall through — not allowed
       }

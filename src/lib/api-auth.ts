@@ -48,3 +48,10 @@ export async function requireAdmin(req: NextRequest): Promise<string | null> {
   if (!auth || auth.role !== "admin") return null;
   return auth.userId;
 }
+
+/** Require staff (admin or manager) — returns userId or null */
+export async function requireStaff(req: NextRequest): Promise<string | null> {
+  const auth = await requireAuth(req);
+  if (!auth || (auth.role !== "admin" && auth.role !== "manager")) return null;
+  return auth.userId;
+}

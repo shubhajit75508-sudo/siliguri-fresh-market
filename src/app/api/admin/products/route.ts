@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { requireAdmin } from "@/lib/api-auth";
+import { requireStaff } from "@/lib/api-auth";
 import { sendBackInStock } from "@/lib/email";
 
 function getSupabaseAdmin() {
@@ -15,8 +15,8 @@ async function checkAuth(req: NextRequest) {
   const apiKey = req.headers.get("x-api-key");
   if (process.env.API_SECRET_KEY && apiKey === process.env.API_SECRET_KEY) return null;
 
-  const admin = await requireAdmin(req);
-  if (admin) return null;
+  const staff = await requireStaff(req);
+  if (staff) return null;
 
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
