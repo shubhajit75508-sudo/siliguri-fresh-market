@@ -5,6 +5,7 @@ import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice, getItemUnitPrice } from "@/lib/utils";
+import { calcDistance, formatDistance } from "@/lib/geo";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import LiveMap from "@/components/maps/LiveMap";
 import { useToast } from "@/components/ui/toaster";
@@ -154,11 +155,8 @@ return (
                 {(() => {
                   const [blat, blng] = currentPosition;
                   const [clat, clng] = customerLocations[a.orderId];
-                  const R = 6371; const dLat = (clat - blat) * Math.PI / 180; const dLng = (clng - blng) * Math.PI / 180;
-                  const calcA = Math.sin(dLat / 2) ** 2 + Math.cos(blat * Math.PI / 180) * Math.cos(clat * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
-                  const dist = R * 2 * Math.atan2(Math.sqrt(calcA), Math.sqrt(1 - calcA));
-                  return dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
-                })()} away
+                  return `${formatDistance(calcDistance(blat, blng, clat, clng))} away`;
+                })()}
               </span>
             </div>
             <LiveMap

@@ -115,6 +115,12 @@ export interface Order {
   deliveredAt?: string;
   collectedAmount?: number;
   collectedMethod?: "cash" | "upi";
+  subtotal?: number;
+  deliveryFee?: number;
+  extraCharges?: number;
+  orderSource?: string;
+  orderNotes?: string;
+  deliverySlot?: string;
 }
 
 export interface User {

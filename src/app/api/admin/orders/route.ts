@@ -145,6 +145,8 @@ export async function POST(req: NextRequest) {
   }
 
   // payment_status is set by the server only — admins confirm payments manually
+  // For manual (WhatsApp/call/offline) orders a delivery code is generated here.
+  const deliveryCode = body.delivery_code || String(Math.floor(1000 + Math.random() * 9000));
   const { error } = await supabaseAdmin.from("orders").upsert({
     id: body.id,
     user_id: body.user_id ?? null,
@@ -159,9 +161,17 @@ export async function POST(req: NextRequest) {
     customer_phone: body.customer_phone ?? "",
     customer_email: body.customer_email ?? "",
     delivery_boy_id: body.delivery_boy_id ?? null,
-    delivery_code: body.delivery_code ?? "",
+    delivery_code: deliveryCode,
     return_requested: body.return_requested ?? false,
     return_approved: body.return_approved ?? false,
+    subtotal: body.subtotal ?? body.total ?? 0,
+    delivery_fee: body.delivery_fee ?? 0,
+    discount: body.coupon_discount ?? body.discount ?? 0,
+    extra_charges: body.extra_charges ?? 0,
+    order_source: body.order_source ?? "site",
+    order_notes: body.order_notes ?? "",
+    delivery_slot: body.delivery_slot ?? null,
+    delivery_window: body.delivery_window ?? null,
     created_at: body.created_at ?? new Date().toISOString(),
     eta: body.eta ?? 30,
   });

@@ -65,15 +65,19 @@ export async function GET(req: NextRequest) {
   }
 
   const orderId = req.nextUrl.searchParams.get("order_id");
-  if (!orderId) {
-    return NextResponse.json({ error: "Missing order_id param" }, { status: 400 });
+  const boyId = req.nextUrl.searchParams.get("boy_id");
+  if (!orderId && !boyId) {
+    return NextResponse.json({ error: "Missing order_id or boy_id param" }, { status: 400 });
   }
 
   try {
-    const { data, error } = await supabaseAdmin
-      .from("delivery_locations")
-      .select("*")
-      .eq("order_id", orderId)
+    let query = supabaseAdmin.from("delivery_locations").select("*");
+    if (orderId) {
+      query = query.eq("order_id", orderId);
+    } else if (boyId) {
+      query = query.eq("delivery_boy_id", boyId);
+    }
+    const { data, error } = await query
       .order("updated_at", { ascending: false })
       .limit(1)
       .maybeSingle();

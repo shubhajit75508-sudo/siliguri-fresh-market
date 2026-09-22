@@ -123,6 +123,12 @@ export const useOrderStore = create<OrderState>()(
               deliveryCode: (r.delivery_code as string) || ((r.address_snapshot as Record<string, unknown>)?.delivery_code as string) || "",
               collectedAmount: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { amount?: number })?.amount ?? undefined,
               collectedMethod: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { method?: "cash" | "upi" })?.method ?? undefined,
+              subtotal: r.subtotal as number | undefined,
+              deliveryFee: r.delivery_fee as number | undefined,
+              extraCharges: r.extra_charges as number | undefined,
+              orderSource: r.order_source as string | undefined,
+              orderNotes: r.order_notes as string | undefined,
+              deliverySlot: r.delivery_slot as string | undefined,
             }));
             set((state) => {
               const local = state.orders;
@@ -184,6 +190,12 @@ export const useOrderStore = create<OrderState>()(
               deliveryCode: (r.delivery_code as string) || ((r.address_snapshot as Record<string, unknown>)?.delivery_code as string) || "",
               collectedAmount: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { amount?: number })?.amount ?? undefined,
               collectedMethod: ((r.address_snapshot as Record<string, unknown>)?.payment_collected as { method?: "cash" | "upi" })?.method ?? undefined,
+              subtotal: r.subtotal as number | undefined,
+              deliveryFee: r.delivery_fee as number | undefined,
+              extraCharges: r.extra_charges as number | undefined,
+              orderSource: r.order_source as string | undefined,
+              orderNotes: r.order_notes as string | undefined,
+              deliverySlot: r.delivery_slot as string | undefined,
             }));
             set((state) => {
               const local = state.orders;

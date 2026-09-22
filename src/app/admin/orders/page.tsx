@@ -11,7 +11,10 @@ import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ManualOrderModal = dynamic(() => import("@/components/admin/manual-order-modal"), { ssr: false });
 
 const statusColors: Record<string, "default" | "blue" | "fresh" | "orange" | "red"> = {
   received: "default",
@@ -46,6 +49,7 @@ export default function AdminOrdersPage() {
   const [returnModal, setReturnModal] = useState<typeof orders[number] | null>(null);
   const [assignModal, setAssignModal] = useState<typeof orders[number] | null>(null);
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
+  const [showManualOrder, setShowManualOrder] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<string>("");
   const [bulkConfirm, setBulkConfirm] = useState(false);
@@ -98,6 +102,9 @@ export default function AdminOrdersPage() {
           <h2 className="text-2xl font-bold">Orders</h2>
           <p className="text-sm text-muted">{orders.length} total · {orders.filter((o) => o.status === "received" && !o.deliveryBoyId).length} pending</p>
         </div>
+        <Button onClick={() => setShowManualOrder(true)} className="bg-brand-fresh hover:bg-brand-fresh/90">
+          <Plus className="mr-1 h-4 w-4" /> New Order
+        </Button>
       </div>
 
       {/* Tabs */}
@@ -735,6 +742,14 @@ export default function AdminOrdersPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showManualOrder && (
+        <ManualOrderModal
+          products={allProducts ?? []}
+          onSaved={() => loadOrders()}
+          onClose={() => setShowManualOrder(false)}
+        />
       )}
     </div>
   );

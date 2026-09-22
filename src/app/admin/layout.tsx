@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   LogOut,
+  Route,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ const adminLinks = [
   { href: "/admin/inventory", icon: Warehouse, label: "Inventory" },
   { href: "/admin/customers", icon: Users, label: "Customers" },
   { href: "/admin/delivery", icon: Truck, label: "Delivery" },
+  { href: "/admin/routes", icon: Route, label: "Route Planner" },
   { href: "/admin/delivery-boys", icon: Users, label: "Delivery Boys" },
   { href: "/admin/earnings", icon: IndianRupee, label: "Earnings" },
   { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
@@ -44,6 +46,7 @@ const adminLinks = [
 const MANAGER_ACCESS = new Set([
   "/admin/orders",
   "/admin/delivery",
+  "/admin/routes",
   "/admin/delivery-boys",
 ]);
 

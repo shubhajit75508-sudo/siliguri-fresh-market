@@ -6,6 +6,7 @@ interface DeliveryState {
   boy: DeliveryBoy | null;
   assignments: DeliveryAssignment[];
   deliveryBoys: DeliveryBoy[];
+  deliveryBoysLoaded: boolean;
   addBoy: (boy: DeliveryBoy) => void;
   removeBoy: (id: string) => void;
   loadBoys: () => Promise<void>;
@@ -23,6 +24,7 @@ export const useDeliveryStore = create<DeliveryState>()(
         boy: null,
         assignments: [],
         deliveryBoys: [],
+        deliveryBoysLoaded: false,
 
         addBoy: (boy) =>
           set((state) => ({
@@ -49,7 +51,7 @@ export const useDeliveryStore = create<DeliveryState>()(
               area: b.area as string,
               maxActiveOrders: (b as { max_active_orders?: number }).max_active_orders ?? 5,
             }));
-            set({ deliveryBoys: boys });
+            set({ deliveryBoys: boys, deliveryBoysLoaded: true });
           } catch {}
         },
 
