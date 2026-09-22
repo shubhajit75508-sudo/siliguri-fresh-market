@@ -1,4 +1,4 @@
-﻿export function WebSiteSchema() {
+export function WebSiteSchema() {
   return (
     <script
       type="application/ld+json"
@@ -80,18 +80,18 @@ export function LocalBusinessSchema() {
           },
           geo: {
             "@type": "GeoCoordinates",
-            latitude: 26.692472,
-            longitude: 88.422583,
+            latitude: 26.692365,
+            longitude: 88.42275,
           },
           url: "https://www.siligurifreshmart.com",
-          priceRange: "₹50-₹500",
+          priceRange: "?50-?500",
           paymentAccepted: "Cash, UPI (Google Pay, PhonePe, Paytm)",
           servesCuisine: ["Fresh Fish", "Chicken", "Mutton", "Pork", "Seafood", "Vegetables", "Fruits", "Dairy", "Groceries"],
           openingHoursSpecification: [
             { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "07:00", closes: "15:00" },
           ],
           areaServed: [
-            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.692472, longitude: 88.422583 } },
+            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.692365, longitude: 88.42275 } },
           ],
           hasMenu: "https://www.siligurifreshmart.com/category/fish",
           sameAs: [],

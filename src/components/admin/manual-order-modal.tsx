@@ -10,7 +10,7 @@ import type { Product, CartItem } from "@/types";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
-const HUB: [number, number] = [26.7319, 88.4256];
+const HUB: [number, number] = [26.692365, 88.42275];
 
 interface ManualOrderModalProps {
   products: Product[];

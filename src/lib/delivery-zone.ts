@@ -1,8 +1,8 @@
 export const DELIVERY_ZONE_LABEL = "NJP Gate Bazar, Siliguri";
 
 export const STORE_LOCATION = {
-  lat: Number(process.env.DELIVERY_STORE_LAT) || 26.692472,
-  lng: Number(process.env.DELIVERY_STORE_LNG) || 88.422583,
+  lat: Number(process.env.DELIVERY_STORE_LAT) || 26.692365,
+  lng: Number(process.env.DELIVERY_STORE_LNG) || 88.42275,
 };
 
 export const DELIVERY_RADIUS_KM = Number(process.env.DELIVERY_RADIUS_KM) || 20;

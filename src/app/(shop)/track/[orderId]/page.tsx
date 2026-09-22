@@ -207,7 +207,7 @@ export default function TrackOrderPage({
 
   const mapCenter: [number, number] = boyLocation
     ? [boyLocation.lat, boyLocation.lng] as unknown as [number, number]
-    : customerLoc ?? [26.7319, 88.4256];
+    : customerLoc ?? [26.692365, 88.42275];
 
   if (loading) {
     return (

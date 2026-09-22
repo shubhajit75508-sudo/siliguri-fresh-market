@@ -22,7 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
-import { calcDistance, formatDistance, formatOrderTime, timeAgo } from "@/lib/geo";
+import { calcDistance, formatDistance, formatOrderTime, timeAgo, HUB_COORDS } from "@/lib/geo";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
 import dynamic from "next/dynamic";
@@ -30,7 +30,7 @@ import type { Order } from "@/types";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
 
-const HUB: [number, number] = [26.7319, 88.4256];
+const HUB: [number, number] = HUB_COORDS;
 const AVG_SPEED_KMPH = 20; // rough city-driving estimate for ETA
 
 type BoyLoc = { lat: number; lng: number; updatedAt: string } | null;

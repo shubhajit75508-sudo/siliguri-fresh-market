@@ -1,3 +1,6 @@
+/** Canonical hub coordinate — the single source of truth for the store location. */
+export const HUB_COORDS: [number, number] = [26.692365, 88.42275];
+
 export function calcDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
