@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
     if (!supabaseAdmin) {
       const payload = `${userId}|${role}`;
       const token = await signSessionToken(payload);
-      const response = NextResponse.json({ success: true });
+      // `token` included in body for native apps (no cookie jar in RN).
+      const response = NextResponse.json({ success: true, token });
       response.cookies.set("sfm-auth-session", token, {
         path: "/",
         maxAge: 60 * 60 * 24 * 7, // 7 days
@@ -116,7 +117,8 @@ export async function POST(req: NextRequest) {
     const payload = `${userId}|${role}`;
     const token = await signSessionToken(payload);
 
-    const response = NextResponse.json({ success: true });
+    // `token` included in body for native apps (no cookie jar in RN).
+    const response = NextResponse.json({ success: true, token });
     response.cookies.set("sfm-auth-session", token, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days

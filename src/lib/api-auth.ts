@@ -1,12 +1,17 @@
 import { NextRequest } from "next/server";
 import { verifySessionToken } from "@/lib/session";
 
-/** Get and verify session from request cookie. Returns payload or null.
- *  Only HMAC-signed tokens are accepted — unsigned cookies are rejected. */
+/** Get and verify a session token. Returns payload or null.
+ *  Only HMAC-signed tokens are accepted — unsigned tokens are rejected. */
 export async function getSession(req: NextRequest): Promise<string | null> {
-  const cookie = req.cookies.get("sfm-auth-session");
-  if (!cookie?.value) return null;
-  return verifySessionToken(cookie.value);
+  // Web: cookie. Native (React Native/Expo) apps have no cookie jar, so they
+  // send the same signed token in an `Authorization: Bearer` header instead.
+  const cookie = req.cookies.get("sfm-auth-session")?.value;
+  const header = req.headers.get("authorization") ?? "";
+  const bearer = header.startsWith("Bearer ") ? header.slice(7).trim() : null;
+  const token = cookie || bearer;
+  if (!token) return null;
+  return verifySessionToken(token);
 }
 
 /** Extract userId from a verified session payload (format: "userId|role") */
