@@ -181,7 +181,7 @@ export async function GET(req: NextRequest) {
     const deliveryFee = Number(snap.delivery_fee ?? 0) || 0;
     const orderProfit = (orderRevenue - orderCost) + deliveryFee;
 
-    summary.revenue += orderRevenue;
+    summary.revenue += orderRevenue + deliveryFee;
     summary.cost += orderCost;
     summary.profit += orderProfit;
     summary.deliveryFees += deliveryFee;
@@ -198,7 +198,7 @@ export async function GET(req: NextRequest) {
     }
 
     const pm = (o.payment_method ?? "cod") === "upi" ? "upi" : "cod";
-    paymentAgg[pm].revenue += orderRevenue;
+    paymentAgg[pm].revenue += orderRevenue + deliveryFee;
     paymentAgg[pm].profit += orderProfit;
   }
 
@@ -208,8 +208,10 @@ export async function GET(req: NextRequest) {
     .sort((a, b) => b.profit - a.profit)
     .slice(0, 20);
 
+  // The customer's delivery fee is pure shop profit. Partner payouts are tracked
+  // for reference only and are NOT deducted from profit.
   summary.partnerPayouts = partnerPayouts;
-  summary.netProfit = summary.profit - partnerPayouts;
+  summary.netProfit = summary.profit;
 
   const margin = summary.revenue > 0 ? (summary.profit / summary.revenue) * 100 : 0;
   const netMargin = summary.revenue > 0 ? (summary.netProfit / summary.revenue) * 100 : 0;

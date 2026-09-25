@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Loader2, ShoppingBag, IndianRupee, Clock, Truck, TrendingUp, Users, Wallet,
+  Loader2, ShoppingBag, IndianRupee, Truck, TrendingUp, Users, Wallet,
   CheckCircle2, Target, Percent, PackageOpen, ArrowUp, ArrowDown, RotateCcw, Repeat, UserPlus, MapPin, Layers, Crown
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, PieChart, Pie, Cell
 } from "recharts";
-
-interface WeightPrice { weight: string; price: number }
 
 interface GrowthData {
   summary: { revenue: number; cost: number; profit: number; deliveryFees: number; orderCount: number; partnerPayouts?: number; netProfit?: number };
@@ -61,7 +60,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const PIE_COLORS = ["#2D7D3A", "#2563eb", "#E2574C", "#F59E0B", "#8B5CF6", "#06B6D4", "#EC4899", "#10B981", "#F97316", "#64748B", "#a855f7", "#84cc16"];
 
-function KpiCard({ label, value, icon, color, sub }: { label: string; value: string | number; icon: any; color: string; sub?: string }) {
+function KpiCard({ label, value, icon, color, sub }: { label: string; value: string | number; icon: LucideIcon; color: string; sub?: string }) {
   const Icon = icon;
   return (
     <div className="rounded-xl border bg-surface p-5 shadow-sm">
@@ -99,7 +98,8 @@ export default function AnalyticsPage() {
   }, []);
 
   useEffect(() => {
-    load(from, to);
+    const t = setTimeout(() => { load(from, to); }, 0);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -258,12 +258,12 @@ export default function AnalyticsPage() {
     const s = data!.summary;
     const pm = data!.paymentMix;
     const profitCards = [
-      { label: "Gross Revenue", value: fmt(s.revenue), icon: IndianRupee, color: "text-green-600 bg-green-100" },
+      { label: "Total Revenue (incl. delivery)", value: fmt(s.revenue), icon: IndianRupee, color: "text-green-600 bg-green-100" },
       { label: "Cost of Goods", value: fmt(s.cost), icon: PackageOpen, color: "text-orange-600 bg-orange-100" },
       { label: "Net Profit", value: fmt(s.netProfit ?? s.profit), icon: TrendingUp, color: (s.netProfit ?? s.profit) >= 0 ? "text-emerald-600 bg-emerald-100" : "text-red-600 bg-red-100" },
       { label: "Profit Margin", value: (data!.netMargin ?? data!.margin).toFixed(1) + "%", icon: Percent, color: "text-blue-600 bg-blue-100" },
       { label: "Delivery Fees (shop profit)", value: fmt(s.deliveryFees), icon: Truck, color: "text-cyan-600 bg-cyan-100" },
-      { label: "Partner Payouts (cost)", value: "−" + fmt(s.partnerPayouts ?? 0), icon: Truck, color: "text-red-600 bg-red-100" },
+      { label: "Delivery Boy Payouts (info)", value: fmt(s.partnerPayouts ?? 0), icon: Truck, color: "text-amber-600 bg-amber-100" },
       { label: "Delivered Orders", value: s.orderCount, icon: CheckCircle2, color: "text-purple-600 bg-purple-100" },
     ];
     return (
@@ -275,9 +275,9 @@ export default function AnalyticsPage() {
         </div>
 
         <p className="rounded-xl bg-white/5 px-4 py-3 text-xs text-muted">
-          The delivery fee charged to the customer is <b className="text-foreground">shop profit</b> (shown above).
-          Delivery boys earn a fixed per-delivery <b className="text-foreground">commission</b>, which is a business cost and is
-          already deducted before Net Profit: <span className="font-semibold text-foreground">Net Profit = (product margin + delivery fees) − partner payouts</span>.
+          The delivery fee charged to the customer is <b className="text-foreground">shop profit</b> and is included in
+          Gross Revenue and Net Profit. <span className="font-semibold text-foreground">Net Profit = product margin + delivery fees</span>.
+          Delivery boy payouts are shown for reference only and are not deducted.
         </p>
 
         <SalesTrendPanel />
@@ -525,7 +525,7 @@ export default function AnalyticsPage() {
     return <div className="py-10 text-center text-sm text-muted-light">Failed to load analytics. <button onClick={() => applyCustom()} className="text-brand-fresh underline">Retry</button></div>;
   }
 
-  const tabs: { id: Tab; label: string; icon: any }[] = [
+  const tabs: { id: Tab; label: string; icon: LucideIcon }[] = [
     { id: "overview", label: "Overview", icon: TrendingUp },
     { id: "profit", label: "Profit", icon: IndianRupee },
     { id: "customers", label: "Customers", icon: Users },
@@ -576,9 +576,9 @@ export default function AnalyticsPage() {
           <div className="text-sm">
             <p className="font-bold text-amber-600">Buying prices missing on some products</p>
             <p className="mt-0.5 text-amber-700/90">
-              {data!.missingCostItems} order item(s) have no buying (cost) price set, so they're counted with ₹0 cost — making profit look equal to sales.
+              {data!.missingCostItems} order item(s) have no buying (cost) price set, so they&apos;re counted with ₹0 cost — making profit look equal to sales.
               Set the <b>Cost price</b> for each product in <b>Admin → Products</b> (Add/Edit) for accurate profit.
-              Also ensure you've run <code className="rounded bg-white/40 px-1">supabase/profit_analytics_migration.sql</code> in Supabase.
+              Also ensure you&apos;ve run <code className="rounded bg-white/40 px-1">supabase/profit_analytics_migration.sql</code> in Supabase.
             </p>
           </div>
         </div>
