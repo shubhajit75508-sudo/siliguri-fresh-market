@@ -343,13 +343,13 @@ export default function AdminOrdersPage() {
       )}
 
       {bulkConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setBulkConfirm(false)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-2 backdrop-blur-sm sm:items-center sm:p-4" onClick={() => setBulkConfirm(false)}>
+          <div className="my-auto w-full max-w-sm rounded-2xl bg-surface p-5 shadow-2xl sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold">Bulk Update</h3>
             <p className="mt-2 text-sm text-muted">
               Mark <span className="font-semibold text-foreground">{selectedIds.size} orders</span> as <span className="font-semibold text-foreground capitalize">{bulkAction}</span>?
             </p>
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <Button variant="default" disabled={bulkProcessing} onClick={async () => {
                 setBulkProcessing(true);
                 let count = 0;
@@ -391,12 +391,12 @@ export default function AdminOrdersPage() {
               </th>
               <th className="px-4 py-3 font-medium text-muted">Order ID</th>
               <th className="px-4 py-3 font-medium text-muted">Customer</th>
-              <th className="px-4 py-3 font-medium text-muted">Items</th>
+              <th className="hidden px-4 py-3 font-medium text-muted md:table-cell">Items</th>
               <th className="px-4 py-3 font-medium text-muted">Total</th>
               <th className="px-4 py-3 font-medium text-muted">Payment</th>
               <th className="px-4 py-3 font-medium text-muted">Status</th>
-              <th className="px-4 py-3 font-medium text-muted">Delivery</th>
-              <th className="px-4 py-3 font-medium text-muted">Action</th>
+              <th className="hidden px-4 py-3 font-medium text-muted lg:table-cell">Delivery</th>
+              <th className="sticky right-0 z-20 bg-[#0f1116] px-4 py-3 font-medium text-muted shadow-[-8px_0_12px_-8px_rgba(0,0,0,0.5)]">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -420,10 +420,10 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-4 py-3 font-mono text-xs font-medium">{order.id}</td>
                   <td className="px-4 py-3">
-                    <p className="font-medium">{order.customerName}</p>
+                    <p className="min-w-0 break-words font-medium">{order.customerName}</p>
                     <p className="text-xs text-muted">{order.customerPhone}</p>
                   </td>
-                  <td className="px-4 py-3">{order.items.reduce((n, i) => n + i.quantity, 0)} items</td>
+                  <td className="hidden px-4 py-3 md:table-cell">{order.items.reduce((n, i) => n + i.quantity, 0)} items</td>
                   <td className="px-4 py-3 font-medium">{formatPrice(order.total)}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-1">
@@ -453,7 +453,7 @@ export default function AdminOrdersPage() {
                               toast.add("Failed to confirm payment", "error");
                             }
                           }}
-                          className="mt-1 rounded-lg bg-[#2D7D3A] px-2.5 py-1 text-[10px] font-bold text-white hover:bg-[#23682E] transition-colors"
+                          className="mt-1 inline-flex min-h-9 items-center rounded-lg bg-[#2D7D3A] px-2.5 py-1.5 text-[11px] font-bold text-white hover:bg-[#23682E] transition-colors"
                         >
                           ✓ Confirm Payment
                         </button>
@@ -471,7 +471,7 @@ export default function AdminOrdersPage() {
                       {order.returnApproved && <Badge variant="fresh">Returned</Badge>}
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="hidden px-4 py-3 lg:table-cell">
                     {order.deliveryBoyId ? (
                       <div className="text-xs">
                         <p className="text-brand-fresh font-medium"><Truck className="mr-1 inline h-3 w-3" />{boyNameFor(order.deliveryBoyId)}</p>
@@ -481,9 +481,9 @@ export default function AdminOrdersPage() {
                       <span className="text-xs text-muted">Unassigned</span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
+                  <td className="sticky right-0 z-10 bg-surface px-4 py-3 shadow-[-8px_0_12px_-8px_rgba(0,0,0,0.5)]">
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setSelectedOrder(order)} aria-label={`View details for order ${order.id}`} className="rounded-lg p-2.5 hover:bg-white/8">
                         <Eye className="h-4 w-4 text-muted" />
                       </button>
                       {!isOutForDelivery(order) && order.status !== "delivered" && order.status !== "cancelled" && (
@@ -527,11 +527,11 @@ export default function AdminOrdersPage() {
 
       {/* Cancel confirm modal */}
       {confirmCancel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmCancel(null)}>
-          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-2 backdrop-blur-sm sm:items-center sm:p-4" onClick={() => setConfirmCancel(null)}>
+          <div className="my-auto w-full max-w-sm rounded-2xl bg-surface p-5 shadow-2xl sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold">Cancel Order</h3>
-            <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono font-semibold text-foreground">{confirmCancel}</span>?</p>
-            <div className="mt-6 flex gap-3">
+            <p className="mt-2 text-sm text-muted">Are you sure you want to cancel order <span className="font-mono break-all font-semibold text-foreground">{confirmCancel}</span>?</p>
+            <div className="mt-6 flex flex-wrap gap-3">
               <Button variant="default" onClick={async () => { try { await cancelOrder(confirmCancel); toast.add("Order cancelled", "success"); } catch (e) { toast.add(e instanceof Error ? e.message : "Cancel failed", "error"); } setConfirmCancel(null); }} className="bg-brand-red hover:bg-brand-red/80">
                 <XCircle className="mr-1 h-4 w-4" /> Yes, Cancel
               </Button>
@@ -543,11 +543,11 @@ export default function AdminOrdersPage() {
 
       {/* Detail modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-lg rounded-2xl bg-surface p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-2 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="my-auto w-full max-w-lg rounded-2xl bg-surface p-5 shadow-2xl sm:p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between gap-3">
               <h3 className="text-lg font-bold">{selectedOrder.id}</h3>
-              <button onClick={() => setSelectedOrder(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
+              <button onClick={() => setSelectedOrder(null)} aria-label="Close order details" className="shrink-0 rounded-lg p-2 hover:bg-white/8"><X className="h-5 w-5" /></button>
             </div>
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex items-center gap-2">
@@ -672,7 +672,7 @@ export default function AdminOrdersPage() {
                 <span className="text-foreground">{formatPrice(selectedOrder.total)}</span>
               </div>
             </div>
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               {!isOutForDelivery(selectedOrder) && selectedOrder.status !== "delivered" && selectedOrder.status !== "cancelled" && (
                 <>
                   <Button variant="default" onClick={() => { setAssignModal(selectedOrder); setSelectedOrder(null); }}>
@@ -724,7 +724,7 @@ export default function AdminOrdersPage() {
           <div className="mx-4 max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">Return Request</h3>
-              <button onClick={() => setReturnModal(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
+              <button onClick={() => setReturnModal(null)} aria-label="Close" className="shrink-0 rounded-lg p-2 hover:bg-white/8"><X className="h-5 w-5" /></button>
             </div>
             <p className="mt-3 text-sm text-muted">Customer <span className="font-semibold text-foreground">{returnModal.customerName}</span> has requested a return for order {returnModal.id}.</p>
             <div className="mt-4 rounded-xl bg-surface p-3 text-sm">
@@ -775,7 +775,7 @@ function AssignModal({ order, onAssign, onClose }: {
       <div className="mx-4 max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold">Assign Delivery</h3>
-          <button onClick={onClose} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} aria-label="Close" className="shrink-0 rounded-lg p-2 hover:bg-white/8"><X className="h-5 w-5" /></button>
         </div>
         <p className="mt-2 text-sm text-muted">Order: {order.id}</p>
         {allBoys.length === 0 ? (
@@ -791,7 +791,7 @@ function AssignModal({ order, onAssign, onClose }: {
             ))}
           </div>
         )}
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Button variant="default" disabled={!selected}
             onClick={() => { const boy = allBoys.find((b) => b.id === selected); if (boy) onAssign(boy.id, boy.name, boy.email); }}>
             Assign

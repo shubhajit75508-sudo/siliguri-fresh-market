@@ -439,13 +439,16 @@ function OrderRow({
             {stopNumber}
           </span>
         ) : (
-          <input
-            type="checkbox"
-            checked={isAssigned || checked}
-            disabled={isAssigned}
-            onChange={onToggle}
-            className="mt-1 h-4 w-4 shrink-0 rounded border-border accent-brand-dark"
-          />
+          <label className="-m-2 flex shrink-0 cursor-pointer items-center p-2">
+            <input
+              type="checkbox"
+              checked={isAssigned || checked}
+              disabled={isAssigned}
+              onChange={onToggle}
+              aria-label={`Select order ${o.id} for this route`}
+              className="h-6 w-6 rounded border-border accent-brand-dark"
+            />
+          </label>
         )}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -453,13 +456,13 @@ function OrderRow({
             <p className="font-mono text-xs font-semibold">{o.id}</p>
             <Badge variant={o.paymentMethod === "cod" ? "orange" : "blue"}>{o.paymentMethod === "cod" ? "COD" : "UPI"}</Badge>
           </div>
-          <p className="mt-1 flex items-center gap-1 text-sm font-medium">
-            <User className="h-3.5 w-3.5 text-muted" /> {o.customerName}
-            <span className="flex items-center gap-1 text-xs text-muted"><Phone className="h-3 w-3" /> {o.customerPhone}</span>
+          <p className="mt-1 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-sm font-medium">
+            <User className="h-3.5 w-3.5 shrink-0 text-muted" /> <span className="min-w-0 break-words">{o.customerName}</span>
+            <span className="flex items-center gap-1 text-xs text-muted"><Phone className="h-3 w-3 shrink-0" /> {o.customerPhone}</span>
           </p>
-          <p className="mt-0.5 flex items-center gap-1 text-xs text-muted">
-            <MapPin className="h-3 w-3" /> {o.address.area || o.address.line1}
-            {o.address.landmark ? ` (near ${o.address.landmark})` : ""} · {o.address.city}
+          <p className="mt-0.5 flex items-start gap-1 text-xs text-muted">
+            <MapPin className="mt-0.5 h-3 w-3 shrink-0" /> <span className="min-w-0 break-words">{o.address.area || o.address.line1}
+            {o.address.landmark ? ` (near ${o.address.landmark})` : ""} · {o.address.city}</span>
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
             <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatOrderTime(o.createdAt)}</span>

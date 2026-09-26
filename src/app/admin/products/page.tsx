@@ -227,7 +227,7 @@ export default function AdminProductsPage() {
               <label className="mb-1.5 block text-xs font-medium text-muted">Additional Images</label>
               {(form.images || []).map((url, i) => (
                 <div key={i} className="mb-1.5 flex items-center gap-1.5">
-                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
+                  <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="min-w-[120px] flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40" placeholder="Image URL" />
                   {url && <img src={url} alt="" className="h-8 w-8 shrink-0 rounded object-cover" />}
                   <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 rounded-lg p-1.5 text-brand-red hover:bg-brand-red/10"><X className="h-4 w-4" /></button>
                 </div>
@@ -307,7 +307,7 @@ export default function AdminProductsPage() {
             </div>
             <div className="space-y-2">
               {(form.weightPrices || []).map((wp, i) => (
-                <div key={i} className="flex items-center gap-2">
+                <div key={i} className="flex flex-wrap items-center gap-2">
                   <input
                     placeholder="Weight (e.g. 50g, 1kg)"
                     value={wp.weight}
@@ -316,9 +316,9 @@ export default function AdminProductsPage() {
                       wps[i] = { ...wps[i], weight: e.target.value };
                       setForm({ ...form, weightPrices: wps, weight: wps.map(w => w.weight).filter(Boolean) });
                     }}
-                    className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40"
+                    className="min-w-[120px] flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40"
                   />
-                  <span className="text-muted text-sm">â‚¹</span>
+                  <span className="text-muted text-sm">₹</span>
                   <input
                     placeholder="Price"
                     type="number"
@@ -328,7 +328,7 @@ export default function AdminProductsPage() {
                       wps[i] = { ...wps[i], price: +e.target.value };
                       setForm({ ...form, weightPrices: wps, price: wps[0]?.price || form.price || 0 });
                     }}
-                    className="w-24 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40"
+                    className="w-20 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40 sm:w-24"
                   />
                   <button
                     type="button"
@@ -336,7 +336,7 @@ export default function AdminProductsPage() {
                       const wps = (form.weightPrices || []).filter((_, j) => j !== i);
                       setForm({ ...form, weightPrices: wps, price: wps[0]?.price || 0, weight: wps.map(w => w.weight).filter(Boolean) });
                     }}
-                    className="text-brand-red hover:bg-brand-red/10 rounded-lg p-1.5"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-brand-red hover:bg-brand-red/10"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -388,7 +388,7 @@ export default function AdminProductsPage() {
             </div>
             <div className="space-y-2">
               {(form.buyingPrices || []).map((bp, i) => (
-                <div key={i} className="flex items-center gap-2">
+                <div key={i} className="flex flex-wrap items-center gap-2">
                   <input
                     placeholder="Weight (match selling tier)"
                     value={bp.weight}
@@ -399,7 +399,7 @@ export default function AdminProductsPage() {
                     }}
                     className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-orange-500/40"
                   />
-                  <span className="text-muted text-sm">â‚¹</span>
+                  <span className="text-muted text-sm">₹</span>
                   <input
                     placeholder="Cost"
                     type="number"
@@ -417,7 +417,7 @@ export default function AdminProductsPage() {
                       const bps = (form.buyingPrices || []).filter((_, j) => j !== i);
                       setForm({ ...form, buyingPrices: bps });
                     }}
-                    className="text-brand-red hover:bg-brand-red/10 rounded-lg p-1.5"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-brand-red hover:bg-brand-red/10"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -483,7 +483,7 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3" colSpan={filterCategory === "fish" ? 7 : 6}>
                       <div className="grid gap-3 sm:grid-cols-4">
                         <input value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Name" />
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <input value={form.price || 0} type="number" onChange={(e) => setForm({ ...form, price: +e.target.value })} className="flex-1 rounded-lg border border-border px-3 py-2 text-sm outline-none" placeholder="Price" />
                           <label className="flex cursor-pointer items-center gap-1.5 shrink-0">
                             <input type="checkbox" checked={!!form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} className="h-3.5 w-3.5 accent-brand-fresh" />
@@ -500,7 +500,7 @@ export default function AdminProductsPage() {
                               <div key={i} className="flex items-center gap-1">
                                 <input value={url} onChange={(e) => { const imgs = [...(form.images || [])]; imgs[i] = e.target.value; setForm({ ...form, images: imgs }); }} className="flex-1 rounded border border-border px-2 py-1 text-xs outline-none" placeholder="Additional image URL" />
                                 {url && <img src={url} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />}
-                                <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="shrink-0 text-brand-red"><X className="h-3 w-3" /></button>
+                                <button type="button" onClick={() => { setForm({ ...form, images: (form.images || []).filter((_, j) => j !== i) }); }} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-brand-red"><X className="h-3 w-3" /></button>
                               </div>
                             ))}
                           </div>
@@ -511,7 +511,7 @@ export default function AdminProductsPage() {
                           {(form.weightPrices || []).map((wp, i) => (
                             <div key={i} className="flex gap-1 items-center">
                               <input value={wp.weight} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], weight: e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Wt" />
-                              <span className="text-muted text-xs">â‚¹</span>
+                              <span className="text-muted text-xs">₹</span>
                               <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Sell" />
                             </div>
                           ))}
@@ -523,7 +523,7 @@ export default function AdminProductsPage() {
                             return (
                               <div key={i} className="flex gap-1 items-center">
                                 <span className="text-[10px] text-orange-500 font-medium shrink-0">Cost</span>
-                                <span className="text-muted text-xs">â‚¹</span>
+                                <span className="text-muted text-xs">₹</span>
                                 <input
                                   type="number"
                                   value={bp?.price || ""}
@@ -629,10 +629,10 @@ export default function AdminProductsPage() {
                         )}
                       </td>
                     )}
-                    <td className="px-4 py-3">â‚¹{p.price}</td>
+                    <td className="px-4 py-3">₹{p.price}</td>
                     <td className="px-4 py-3">
                       {p.buyingPrices?.[0]?.price ? (
-                        <span className="text-orange-500">â‚¹{p.buyingPrices[0].price}</span>
+                        <span className="text-orange-500">₹{p.buyingPrices[0].price}</span>
                       ) : (
                         <span className="text-muted/50">â€”</span>
                       )}

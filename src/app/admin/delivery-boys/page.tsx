@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Trash2, Loader2, Pencil } from "lucide-react";
+import { Plus, Trash2, Loader2, Pencil, X } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/components/ui/toaster";
@@ -113,7 +113,7 @@ export default function AdminDeliveryBoysPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold">Delivery Boys</h2>
           <p className="text-sm text-muted">{deliveryBoys.length} registered{!isAdmin && " · read-only"}</p>
@@ -197,25 +197,30 @@ export default function AdminDeliveryBoysPage() {
         </table>
       </div>
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditing(null)}>
-          <div className="mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="mb-4 font-bold">Edit Delivery Boy</h3>
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-2 backdrop-blur-sm sm:items-center sm:p-4" onClick={() => setEditing(null)}>
+          <div className="my-auto w-full max-w-md rounded-2xl bg-surface p-5 shadow-2xl sm:p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="font-bold">Edit Delivery Boy</h3>
+              <button onClick={() => setEditing(null)} aria-label="Close" className="-mr-1 shrink-0 rounded-lg p-2 text-muted hover:bg-white/8">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
             <div className="space-y-3">
               <input placeholder="Name *" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-              <input placeholder="Phone *" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-              <input placeholder="Email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Phone *" inputMode="tel" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <input placeholder="Email" type="email" inputMode="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
               <input placeholder="Service Area" value={editForm.area} onChange={(e) => setEditForm({ ...editForm, area: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-              <input placeholder="Max Active Orders" type="number" min="1" value={editForm.maxActiveOrders} onChange={(e) => setEditForm({ ...editForm, maxActiveOrders: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} className="h-4 w-4 accent-brand-fresh" />
+              <input placeholder="Max Active Orders" type="number" min="1" inputMode="numeric" value={editForm.maxActiveOrders} onChange={(e) => setEditForm({ ...editForm, maxActiveOrders: e.target.value })} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand-fresh/40" />
+              <label className="flex min-h-9 items-center gap-2 text-sm">
+                <input type="checkbox" checked={editForm.isActive} onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })} className="h-5 w-5 accent-brand-fresh" />
                 Active
               </label>
             </div>
-            <div className="mt-5 flex gap-2">
-              <button onClick={saveEditFn} disabled={saving} className="rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim disabled:opacity-50">
+            <div className="mt-5 flex flex-wrap gap-2">
+              <button onClick={saveEditFn} disabled={saving} className="min-h-10 flex-1 rounded-xl bg-brand-fresh px-5 py-2 text-sm font-bold text-white hover:bg-brand-fresh-dim disabled:opacity-50 sm:flex-none">
                 {saving ? "Saving..." : "Save"}
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
+              <button onClick={() => setEditing(null)} className="min-h-10 flex-1 rounded-xl border border-border px-5 py-2 text-sm font-medium text-muted hover:bg-surface sm:flex-none">Cancel</button>
             </div>
           </div>
         </div>

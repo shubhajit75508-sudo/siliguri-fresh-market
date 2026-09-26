@@ -360,9 +360,9 @@ export default function CustomersPage() {
                         <Phone className="h-3 w-3" />
                         <span>{c.phone || "No phone"}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-muted">
-                        <span className="text-[10px]">@</span>
-                        <span className="truncate">{c.email || "No email"}</span>
+                      <div className="flex min-w-0 items-center gap-2 text-muted">
+                        <span className="shrink-0 text-[10px]">@</span>
+                        <span className="min-w-0 truncate">{c.email || "No email"}</span>
                       </div>
                     </div>
 

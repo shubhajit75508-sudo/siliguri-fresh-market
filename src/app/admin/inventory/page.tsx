@@ -153,7 +153,7 @@ export default function AdminInventoryPage() {
               className="w-full rounded-xl border border-border bg-white py-2 pl-9 pr-8 text-sm outline-none focus:border-[#2D7D3A]/50"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground">
+              <button onClick={() => setSearch("")} className="absolute right-1 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-muted hover:text-foreground">
                 <X className="h-4 w-4" />
               </button>
             )}
@@ -225,10 +225,10 @@ export default function AdminInventoryPage() {
                 <tr key={p.id} className="border-b border-border last:border-0 hover:bg-surface/50">
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
-                  <td className="px-4 py-3">â‚¹{p.price}</td>
+                  <td className="px-4 py-3">₹{p.price}</td>
                   <td className="px-4 py-3">
                     {p.buyingPrices?.[0]?.price ? (
-                      <span className="text-orange-600">â‚¹{p.buyingPrices[0].price}</span>
+                      <span className="text-orange-600">₹{p.buyingPrices[0].price}</span>
                     ) : (
                       <span className="text-muted/50">â€”</span>
                     )}
@@ -249,19 +249,22 @@ export default function AdminInventoryPage() {
                         );
                       }}
                       onBlur={() => updateStock(p.id, p.stock ?? 0)}
-                      className="w-20 rounded-lg border border-border px-3 py-1.5 text-center text-sm font-semibold outline-none focus:border-[#2D7D3A]/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="h-9 w-20 rounded-lg border border-border px-3 text-center text-sm font-semibold outline-none focus:border-[#2D7D3A]/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </td>
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => toggleStock(p.id, p.inStock)}
-                      className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
+                      role="switch"
+                      aria-checked={p.inStock}
+                      aria-label={`Stock for ${p.name}`}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${
                         p.inStock ? "bg-green-500" : "bg-red-300"
                       } cursor-pointer`}
                     >
                       <span
-                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
-                          p.inStock ? "translate-x-6" : "translate-x-1"
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform ${
+                          p.inStock ? "translate-x-7" : "translate-x-1"
                         }`}
                       />
                     </button>

@@ -626,13 +626,13 @@ export default function AnalyticsPage() {
             </Card>
 
             <Card title="Payment method" hint="Revenue and profit by how the customer paid">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {(["cod", "upi"] as const).map((m) => {
                   const p = data.paymentMix[m];
                   return (
-                    <div key={m} className="rounded-lg border p-4">
+                    <div key={m} className="min-w-0 rounded-lg border p-4">
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted">{m === "cod" ? "Cash on delivery" : "UPI"}</p>
-                      <p className="mt-1.5 text-xl font-bold tabular-nums">{fmt(p.revenue)}</p>
+                      <p className="mt-1.5 truncate text-lg font-bold tabular-nums sm:text-xl">{fmt(p.revenue)}</p>
                       <p className="text-xs text-muted">{p.count} orders · {fmt(p.profit)} profit</p>
                       <div className="mt-2">
                         <MiniBar value={p.revenue} max={Math.max(data.paymentMix.cod.revenue, data.paymentMix.upi.revenue, 1)} tone={m === "upi" ? "blue" : "brand"} />
@@ -913,7 +913,13 @@ export default function AnalyticsPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.hour} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
-                    <XAxis dataKey="hour" tick={AXIS} tickFormatter={(h: number) => `${h}`} interval={1} />
+                    <XAxis
+                  dataKey="hour"
+                  tick={AXIS}
+                  tickFormatter={(h: number) => `${h}`}
+                  interval={window.innerWidth < 640 ? "preserveStartEnd" : 1}
+                  minTickGap={2}
+                />
                     <YAxis tick={AXIS} allowDecimals={false} />
                     <Tooltip labelFormatter={(h) => `${h}:00 – ${h}:59`} formatter={(v) => Number(v)} />
                     <Line type="stepAfter" dataKey="orders" stroke={C_REVENUE} strokeWidth={2} dot={false} name="orders" />

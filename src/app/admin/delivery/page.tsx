@@ -287,17 +287,17 @@ export default function DeliveryPage() {
                     </div>
                   </div>
                   <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl bg-white/40 p-2.5">
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Today</p>
-                      <p className="text-sm font-bold tabular-nums text-brand-fresh">{formatPrice(s.todayCollected)}</p>
+                      <p className="truncate text-xs font-bold tabular-nums text-brand-fresh sm:text-sm">{formatPrice(s.todayCollected)}</p>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Week</p>
-                      <p className="text-sm font-bold tabular-nums text-brand-blue">{formatPrice(s.weekCollected)}</p>
+                      <p className="truncate text-xs font-bold tabular-nums text-brand-blue sm:text-sm">{formatPrice(s.weekCollected)}</p>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">Month</p>
-                      <p className="text-sm font-bold tabular-nums">{formatPrice(s.monthCollected)}</p>
+                      <p className="truncate text-xs font-bold tabular-nums sm:text-sm">{formatPrice(s.monthCollected)}</p>
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between rounded-xl bg-brand-fresh/5 px-3 py-2.5">
@@ -328,10 +328,10 @@ export default function DeliveryPage() {
             {boyLocations.map((b) => {
               const mins = b.updatedAt ? Math.round((Date.now() - new Date(b.updatedAt).getTime()) / 60000) : null;
               return (
-                <div key={b.orderId} className="flex items-center justify-between rounded-xl border bg-surface p-3 shadow-sm">
-                  <div>
-                    <p className="text-sm font-medium">{b.boyName}</p>
-                    <p className="text-xs text-muted">{b.orderId}</p>
+                <div key={b.orderId} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-xl border bg-surface p-3 shadow-sm">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{b.boyName}</p>
+                    <p className="truncate text-xs text-muted">{b.orderId}</p>
                     {mins !== null && (
                       <p className="text-[10px] text-muted/60 mt-0.5 flex items-center gap-1">
                         <Clock className="h-3 w-3" /> Updated {mins < 1 ? "just now" : `${mins} min ago`}
@@ -339,13 +339,14 @@ export default function DeliveryPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted">
-                    <MapPin className="h-3 w-3" />
-                    {b.lat.toFixed(4)}, {b.lng.toFixed(4)}
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="tabular-nums">{b.lat.toFixed(4)}, {b.lng.toFixed(4)}</span>
                     <a
                       href={`https://www.google.com/maps?q=${b.lat},${b.lng}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-1 text-brand-blue hover:underline"
+                      aria-label={`Open map for ${b.boyName}`}
+                      className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-lg text-brand-blue hover:underline"
                     >
                       <Navigation className="h-3 w-3" />
                     </a>
@@ -390,8 +391,8 @@ export default function DeliveryPage() {
             }
             return (
               <div key={o.id} className="rounded-xl border bg-surface p-4 shadow-sm">
-                <div className="flex items-start justify-between">
-                  <div>
+                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-bold">{o.id}</p>
                       <Badge variant={o.deliveryStatus === "assigned" ? "blue" : o.deliveryStatus === "accepted" ? "orange" : "fresh"}>
@@ -403,26 +404,26 @@ export default function DeliveryPage() {
                         </Badge>
                       )}
                     </div>
-                    <p className="mt-1 text-sm text-muted">{o.customerName} · {o.customerPhone}</p>
-                    <p className="mt-1 text-xs text-brand-blue flex items-center gap-1">
-                      <Truck className="h-3 w-3" /> Assigned: {boyNameFor(o.deliveryBoyId)}
+                    <p className="mt-1 break-words text-sm text-muted">{o.customerName} · {o.customerPhone}</p>
+                    <p className="mt-1 flex flex-wrap items-center gap-1 text-xs text-brand-blue">
+                      <Truck className="h-3 w-3 shrink-0" /> <span className="min-w-0 break-words">Assigned: {boyNameFor(o.deliveryBoyId)}</span>
                     </p>
                     {location && (
-                      <p className="mt-1 text-xs text-brand-fresh flex items-center gap-1">
-                        <MapPin className="h-3 w-3" /> {location.boyName} — {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                      <p className="mt-1 flex flex-wrap items-center gap-1 text-xs text-brand-fresh">
+                        <MapPin className="h-3 w-3 shrink-0" /> <span className="min-w-0 break-words tabular-nums">{location.boyName} — {location.lat.toFixed(4)}, {location.lng.toFixed(4)}</span>
                       </p>
                     )}
                   </div>
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     <p className="text-sm font-bold">{formatPrice(o.total)}</p>
                     {distanceText && (
                       <p className="text-[10px] text-muted mt-0.5">{distanceText} away</p>
                     )}
                   </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-xs text-muted">
-                  <MapPin className="h-3 w-3" />
-                  {o.address.line1}, {o.address.city} — {o.address.pincode}
+                <div className="mt-2 flex items-start gap-2 text-xs text-muted">
+                  <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+                  <span className="min-w-0 break-words">{o.address.line1}, {o.address.city} — {o.address.pincode}</span>
                 </div>
                 {assignment && (
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted">

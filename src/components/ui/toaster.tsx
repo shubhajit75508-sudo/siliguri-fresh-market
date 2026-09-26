@@ -36,7 +36,7 @@ export function Toaster() {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+    <div className="pointer-events-none fixed left-4 right-4 top-4 z-[100] flex flex-col items-stretch gap-2 sm:left-auto sm:items-end">
       <AnimatePresence>
         {toasts.map((toast) => {
           const Icon = icons[toast.type];
@@ -46,11 +46,15 @@ export function Toaster() {
               initial={{ opacity: 0, x: 50, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 50, scale: 0.9 }}
-              className={`pointer-events-auto flex items-center gap-3 rounded-xl border px-4 py-3 glass-card ${colors[toast.type]}`}
+              className={`glass-card pointer-events-auto flex max-w-full items-start gap-3 rounded-xl border px-4 py-3 sm:max-w-sm ${colors[toast.type]}`}
             >
-              <Icon className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium text-foreground">{toast.message}</span>
-              <button onClick={() => remove(toast.id)} className="ml-2 opacity-60 hover:opacity-100">
+              <Icon className="mt-0.5 h-5 w-5 shrink-0" />
+              <span className="min-w-0 flex-1 break-words text-sm font-medium text-foreground">{toast.message}</span>
+              <button
+                onClick={() => remove(toast.id)}
+                aria-label="Dismiss notification"
+                className="-mr-1 shrink-0 rounded-lg p-1 opacity-60 hover:opacity-100"
+              >
                 <X className="h-4 w-4" />
               </button>
             </motion.div>
