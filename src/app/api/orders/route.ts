@@ -18,6 +18,7 @@ interface ProductRow {
   price?: number | string | null;
   weight?: string | null;
   weight_prices?: { weight: string; price: number }[] | null;
+  buying_prices?: { weight: string; price: number }[] | null;
   unit?: string | null;
 }
 
@@ -76,17 +77,32 @@ export async function POST(req: NextRequest) {
   const productIds = rawItems.map((i) => i?.product?.id).filter(Boolean);
   let products: ProductRow[] = [];
   if (productIds.length) {
-    const { data } = await supabaseAdmin
+    const withCost = await supabaseAdmin
       .from("products")
-      .select("id, price, weight, weight_prices, unit")
+      .select("id, price, weight, weight_prices, buying_prices, unit")
       .in("id", productIds);
-    products = (data ?? []) as ProductRow[];
+    if (withCost.error) {
+      // buying_prices may not exist yet (profit_analytics_migration.sql not applied).
+      // Cost snapshotting is a nice-to-have — never block checkout for it.
+      console.error("[orders] buying_prices unavailable, retrying without:", withCost.error.message);
+      const noCost = await supabaseAdmin
+        .from("products")
+        .select("id, price, weight, weight_prices, unit")
+        .in("id", productIds);
+      if (noCost.error) {
+        return NextResponse.json({ error: "Could not load products" }, { status: 500 });
+      }
+      products = (noCost.data ?? []) as ProductRow[];
+    } else {
+      products = (withCost.data ?? []) as ProductRow[];
+    }
   }
-  const priceById = new Map<string, { price: number; weightPrices?: { weight: string; price: number }[] }>();
+  const priceById = new Map<string, { price: number; weightPrices?: { weight: string; price: number }[]; buyingPrices?: { weight: string; price: number }[] }>();
   for (const p of products) {
     priceById.set(String(p.id), {
       price: Number(p.price) || 0,
       weightPrices: Array.isArray(p.weight_prices) ? p.weight_prices : undefined,
+      buyingPrices: Array.isArray(p.buying_prices) ? p.buying_prices : undefined,
     });
   }
 
@@ -105,6 +121,18 @@ export async function POST(req: NextRequest) {
     const unitPrice = known?.weightPrices
       ? (known.weightPrices.find((w) => w.weight.toLowerCase() === weight.toLowerCase())?.price ?? price * getWeightMultiplier(weight))
       : price * getWeightMultiplier(weight);
+    // Snapshot the cost price onto the line so historical profit stays accurate
+    // even after the product's buying price is later changed. See src/lib/analytics.ts.
+    const bps = known?.buyingPrices;
+    const exactBuy = bps?.find((w) => w.weight.toLowerCase() === weight.toLowerCase());
+    let unitCost: number | undefined;
+    if (exactBuy) unitCost = exactBuy.price;
+    else if (bps && bps.length) {
+      const cheapest = bps.reduce((m, w) => ((w.price < m.price ? w : m)), bps[0]);
+      const ref = getWeightMultiplier(cheapest.weight) || 1;
+      const want = getWeightMultiplier(weight) || 1;
+      unitCost = Math.round(cheapest.price * (want / ref) * 100) / 100;
+    }
     subtotal += unitPrice * quantity;
     serverItems.push({
       product: { id: productId, name: item?.product?.name ?? "", price, image: item?.product?.image ?? "", weightPrices: known?.weightPrices },
@@ -113,6 +141,7 @@ export async function POST(req: NextRequest) {
       selectedCut: item?.selectedCut ?? undefined,
       selectedCleaning: item?.selectedCleaning ?? undefined,
       unitPrice,
+      ...(unitCost != null ? { unitCost } : {}),
     });
   }
 

@@ -1,8 +1,8 @@
-import { supabase } from "./client";
+﻿import { supabase } from "./client";
 import type { Product, CategoryInfo, Order, Coupon, User, CartItem, Address, DeliveryStatus } from "@/types";
 import type { NotificationItem } from "@/store/notification-store";
 
-interface ProductRow {
+export interface ProductRow {
   id: string;
   slug: string;
   name: string;
@@ -36,6 +36,46 @@ interface ProductRow {
   weight_prices?: { weight: string; price: number }[] | null;
   buying_prices?: { weight: string; price: number }[] | null;
 }
+
+/**
+ * Columns safe to send to any client. `buying_prices` (our cost price) is
+ * deliberately excluded â€” it must never reach the storefront. Admin screens load
+ * cost data through the admin-gated `/api/admin/products` route instead.
+ * Use `select("*")` only from a server-side service-role client.
+ */
+const PUBLIC_PRODUCT_COLUMNS = [
+  "id",
+  "slug",
+  "name",
+  "description",
+  "category",
+  "price",
+  "original_price",
+  "discount",
+  "image",
+  "images",
+  "unit",
+  "stock",
+  "weight",
+  "cuts",
+  "cleaning_options",
+  "freshness_score",
+  "delivery_eta",
+  "rating",
+  "review_count",
+  "in_stock",
+  "is_flash_deal",
+  "is_trending",
+  "tags",
+  "nutrition",
+  "source",
+  "species",
+  "river",
+  "origin",
+  "catch_date",
+  "subcategory",
+  "weight_prices",
+].join(",");
 
 interface CategoryRow {
   slug: string;
@@ -135,6 +175,15 @@ function seededCount(seed: string): number {
   return 85 + (hashStr(seed + "c") % 850);
 }
 
+/**
+ * Maps a product row for ADMIN use. Unlike `mapProduct` this keeps `buyingPrices`
+ * (cost price), so it must only ever be called with rows returned by an
+ * admin-gated endpoint — never by a public/catalog query.
+ */
+export function mapProductWithCosts(row: ProductRow): Product {
+  return { ...mapProduct(row), buyingPrices: row.buying_prices ?? undefined };
+}
+
 function mapProduct(row: ProductRow): Product {
   return {
     id: row.id,
@@ -168,57 +217,58 @@ function mapProduct(row: ProductRow): Product {
     catchDate: row.catch_date ?? undefined,
     subcategory: row.subcategory ?? [],
     weightPrices: row.weight_prices ?? undefined,
-    buyingPrices: row.buying_prices ?? undefined,
+    // buyingPrices is intentionally NOT mapped here — public/catalog queries do not
+    // select it, and cost data must stay behind the admin API.
   };
 }
 
 export async function fetchAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .order("name");
   if (error) throw error;
-  return (data ?? []).map((row) => mapProduct(row as ProductRow));
+  return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function fetchProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase!
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("slug", slug)
     .single();
   if (error) return null;
-  return data ? mapProduct(data as ProductRow) : null;
+  return data ? mapProduct(data as unknown as ProductRow) : null;
 }
 
 export async function fetchProductsByCategory(category: string): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("category", category)
     .order("name");
   if (error) throw error;
-  return (data ?? []).map((row) => mapProduct(row as ProductRow));
+  return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function fetchFlashDeals(): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("is_flash_deal", true)
     .eq("in_stock", true);
   if (error) throw error;
-  return (data ?? []).map((row) => mapProduct(row as ProductRow));
+  return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function fetchTrendingProducts(): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("is_trending", true)
     .eq("in_stock", true);
   if (error) throw error;
-  return (data ?? []).map((row) => mapProduct(row as ProductRow));
+  return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function searchProductsByQuery(query: string): Promise<Product[]> {
@@ -226,14 +276,14 @@ export async function searchProductsByQuery(query: string): Promise<Product[]> {
   const q = `%${escaped}%`;
   const { data, error } = await supabase!
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .or(
       `name.ilike.${q},category.ilike.${q},species.ilike.${q},description.ilike.${q},source.ilike.${q},tags::text.ilike.${q},subcategory::text.ilike.${q}`
     )
     .eq("in_stock", true)
     .limit(50);
   if (error) throw error;
-  return (data ?? []).map((row) => mapProduct(row as ProductRow));
+  return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function fetchCategories(): Promise<CategoryInfo[]> {

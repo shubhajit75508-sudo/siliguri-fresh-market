@@ -133,6 +133,27 @@ export async function getAllProducts(): Promise<Product[]> {
   return mergeWithAdmin(mock.products);
 }
 
+/**
+ * Admin-only catalog load that includes cost prices (`buyingPrices`).
+ * Cost data is not exposed by public/catalog queries, so admin screens must go
+ * through the staff-gated `/api/admin/products` route. Falls back to the
+ * cost-free catalog if the request fails.
+ */
+export async function getAllProductsWithCosts(): Promise<Product[]> {
+  if (isSupabaseConfigured()) {
+    try {
+      const res = await fetch("/api/admin/products");
+      if (res.ok) {
+        const json = (await res.json()) as { products?: db.ProductRow[] };
+        if (Array.isArray(json.products)) return json.products.map(db.mapProductWithCosts);
+      }
+    } catch {
+      /* fall through to the cost-free catalog */
+    }
+  }
+  return getAllProducts();
+}
+
 export async function getCategories(): Promise<CategoryInfo[]> {
   if (isSupabaseConfigured()) {
     try { return await db.fetchCategories(); } catch {}

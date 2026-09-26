@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useMemo } from "react";
 import { Package, Search, X } from "lucide-react";
 import { useToast } from "@/components/ui/toaster";
-import { getAllProducts } from "@/lib/data";
+import { getAllProductsWithCosts } from "@/lib/data";
 import { useAdminStore } from "@/store/admin-store";
 import type { Product, Category } from "@/types";
 
@@ -44,7 +44,7 @@ export default function AdminInventoryPage() {
     const load = async () => {
       if (supabaseAvailable) {
         try {
-          const all = await getAllProducts();
+          const all = await getAllProductsWithCosts();
           if (!cancelled) {
             setProducts(all);
             // Keep the admin store in sync with the full DB catalog. The store
@@ -75,7 +75,7 @@ export default function AdminInventoryPage() {
   }, [products, catFilter, stockFilter, search]);
 
   const update = async (id: string, data: Partial<Product>) => {
-    // Optimistic update — both local list and the admin store cache so every
+    // Optimistic update â€” both local list and the admin store cache so every
     // page (shop, inventory) stays in sync even before the DB responds.
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } : p)));
     useAdminStore.getState().updateProduct(id, data);
@@ -89,9 +89,9 @@ export default function AdminInventoryPage() {
       if (!res.ok) throw new Error(`Save failed (${res.status})`);
     } catch (e) {
       console.error("Inventory save failed:", e);
-      toast.add(`Couldn't save "${data.stock !== undefined ? "stock" : "status"}" — refresh and try again`, "error");
+      toast.add(`Couldn't save "${data.stock !== undefined ? "stock" : "status"}" â€” refresh and try again`, "error");
       // Reload authoritative state from the DB so the UI doesn't stay wrong.
-      getAllProducts().then(setProducts).catch(() => {});
+      getAllProductsWithCosts().then(setProducts).catch(() => {});
     }
   };
 
@@ -225,12 +225,12 @@ export default function AdminInventoryPage() {
                 <tr key={p.id} className="border-b border-border last:border-0 hover:bg-surface/50">
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 capitalize text-muted">{p.category}</td>
-                  <td className="px-4 py-3">₹{p.price}</td>
+                  <td className="px-4 py-3">â‚¹{p.price}</td>
                   <td className="px-4 py-3">
                     {p.buyingPrices?.[0]?.price ? (
-                      <span className="text-orange-600">₹{p.buyingPrices[0].price}</span>
+                      <span className="text-orange-600">â‚¹{p.buyingPrices[0].price}</span>
                     ) : (
-                      <span className="text-muted/50">—</span>
+                      <span className="text-muted/50">â€”</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-center">

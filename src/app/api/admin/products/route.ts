@@ -21,6 +21,29 @@ async function checkAuth(req: NextRequest) {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
+/**
+ * Admin-only catalog read that INCLUDES `buying_prices` (cost price).
+ * Public/catalog queries deliberately omit that column, so this is the only way
+ * the cost price leaves the server — and it is staff-gated.
+ */
+export async function GET(req: NextRequest) {
+  const unauthorized = await checkAuth(req);
+  if (unauthorized) return unauthorized;
+
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
+
+  const { data, error } = await supabaseAdmin
+    .from("products")
+    .select("*")
+    .order("name");
+  if (error) {
+    console.error("[admin/products] GET failed:", error.message);
+    return NextResponse.json({ error: "Could not load products" }, { status: 500 });
+  }
+  return NextResponse.json({ products: data ?? [] });
+}
+
 export async function POST(req: NextRequest) {
   const unauthorized = await checkAuth(req);
   if (unauthorized) return unauthorized;

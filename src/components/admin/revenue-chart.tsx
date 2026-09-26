@@ -15,13 +15,23 @@ export function RevenueChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/analytics")
-      .then((r) => r.json())
+    const ac = new AbortController();
+    // Same canonical endpoint as the analytics page, so the dashboard chart and
+    // the analytics screen can never report different revenue.
+    const to = new Date();
+    const from = new Date();
+    from.setDate(from.getDate() - 29);
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    fetch(`/api/admin/growth?from=${iso(from)}&to=${iso(to)}`, { signal: ac.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((json) => {
-        if (json.dailyRevenue) setData(json.dailyRevenue);
+        if (Array.isArray(json?.daily)) {
+          setData(json.daily.map((d: DailyData) => ({ date: d.date, revenue: d.revenue, orderCount: d.orderCount })));
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+    return () => ac.abort();
   }, []);
 
   return (

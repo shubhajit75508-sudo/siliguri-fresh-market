@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Pencil, Plus, Trash2, Save, X, PackageOpen, Zap } from "lucide-react";
 import { useAdminStore } from "@/store/admin-store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllProducts } from "@/lib/data";
+import { getAllProductsWithCosts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import { FISH_SUBCATEGORIES } from "@/types";
@@ -26,7 +26,7 @@ export default function AdminProductsPage() {
 
   const { data: liveProducts } = useQuery({
     queryKey: ["products", "all"],
-    queryFn: getAllProducts,
+    queryFn: getAllProductsWithCosts,
     enabled: supabaseAvailable,
   });
 
@@ -318,7 +318,7 @@ export default function AdminProductsPage() {
                     }}
                     className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-brand-fresh/40"
                   />
-                  <span className="text-muted text-sm">₹</span>
+                  <span className="text-muted text-sm">â‚¹</span>
                   <input
                     placeholder="Price"
                     type="number"
@@ -344,7 +344,7 @@ export default function AdminProductsPage() {
               ))}
             </div>
             {(form.weightPrices || []).length === 0 && (
-              <p className="text-xs text-muted mt-1">Add weight options above. First weight's price becomes the default.</p>
+              <p className="text-xs text-muted mt-1">Add weight options above. First weight&apos;s price becomes the default.</p>
             )}
             {(form.weightPrices || []).length >= 1 && (form.weightPrices || [])[0].weight && (form.weightPrices || [])[0].price > 0 && (
               <button
@@ -364,7 +364,7 @@ export default function AdminProductsPage() {
                 }}
                 className="mt-2 text-[11px] font-bold text-[#4A8FE7] hover:underline"
               >
-                ⚡ Auto-generate 2× and 4× options
+                âš¡ Auto-generate 2Ã— and 4Ã— options
               </button>
             )}
           </div>
@@ -399,7 +399,7 @@ export default function AdminProductsPage() {
                     }}
                     className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-orange-500/40"
                   />
-                  <span className="text-muted text-sm">₹</span>
+                  <span className="text-muted text-sm">â‚¹</span>
                   <input
                     placeholder="Cost"
                     type="number"
@@ -511,7 +511,7 @@ export default function AdminProductsPage() {
                           {(form.weightPrices || []).map((wp, i) => (
                             <div key={i} className="flex gap-1 items-center">
                               <input value={wp.weight} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], weight: e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Wt" />
-                              <span className="text-muted text-xs">₹</span>
+                              <span className="text-muted text-xs">â‚¹</span>
                               <input type="number" value={wp.price || ""} onChange={(e) => { const wps = [...(form.weightPrices || [])]; wps[i] = { ...wps[i], price: +e.target.value }; setForm({ ...form, weightPrices: wps }); }} className="w-16 rounded-lg border border-border px-2 py-1.5 text-xs outline-none" placeholder="Sell" />
                             </div>
                           ))}
@@ -523,7 +523,7 @@ export default function AdminProductsPage() {
                             return (
                               <div key={i} className="flex gap-1 items-center">
                                 <span className="text-[10px] text-orange-500 font-medium shrink-0">Cost</span>
-                                <span className="text-muted text-xs">₹</span>
+                                <span className="text-muted text-xs">â‚¹</span>
                                 <input
                                   type="number"
                                   value={bp?.price || ""}
@@ -629,15 +629,15 @@ export default function AdminProductsPage() {
                         )}
                       </td>
                     )}
-                    <td className="px-4 py-3">₹{p.price}</td>
+                    <td className="px-4 py-3">â‚¹{p.price}</td>
                     <td className="px-4 py-3">
                       {p.buyingPrices?.[0]?.price ? (
-                        <span className="text-orange-500">₹{p.buyingPrices[0].price}</span>
+                        <span className="text-orange-500">â‚¹{p.buyingPrices[0].price}</span>
                       ) : (
-                        <span className="text-muted/50">—</span>
+                        <span className="text-muted/50">â€”</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">{p.discount ? `${p.discount}%` : "—"}</td>
+                    <td className="px-4 py-3">{p.discount ? `${p.discount}%` : "â€”"}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-1">
                         <button onClick={() => openEdit(p)} className="rounded-lg p-2 text-muted hover:bg-surface"><Pencil className="h-4 w-4" /></button>
