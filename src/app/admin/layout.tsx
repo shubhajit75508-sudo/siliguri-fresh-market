@@ -18,28 +18,68 @@ import {
   X,
   LogOut,
   Route,
+  ChevronRight,
+  Zap,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useAdminStore } from "@/store/admin-store";
 import { useAuthStore } from "@/store/auth-store";
 import { MANAGER_ACCESS } from "@/lib/manager-access";
+import "./admin-theme.css";
 
+/**
+ * Nav is grouped so the console reads as a few clear jobs rather than a flat
+ * list of 13 items. `accent` marks the handful that are the daily drivers.
+ */
 const adminLinks = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/orders", icon: ShoppingCart, label: "Orders" },
-  { href: "/admin/products", icon: Package, label: "Products" },
-  { href: "/admin/inventory", icon: Warehouse, label: "Inventory" },
-  { href: "/admin/customers", icon: Users, label: "Customers" },
-  { href: "/admin/delivery", icon: Truck, label: "Delivery" },
-  { href: "/admin/routes", icon: Route, label: "Route Planner" },
-  { href: "/admin/delivery-boys", icon: Users, label: "Delivery Boys" },
-  { href: "/admin/earnings", icon: IndianRupee, label: "Earnings" },
-  { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
-  { href: "/admin/coupons", icon: Tag, label: "Coupons" },
-  { href: "/admin/notifications", icon: Bell, label: "Notifications" },
-  { href: "/admin/settings", icon: Settings, label: "Settings" },
+  { section: "Overview", items: [
+    { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/admin/analytics", icon: BarChart3, label: "Analytics", accent: true },
+  ]},
+  { section: "Sales", items: [
+    { href: "/admin/orders", icon: ShoppingCart, label: "Orders", accent: true },
+    { href: "/admin/products", icon: Package, label: "Products" },
+    { href: "/admin/inventory", icon: Warehouse, label: "Inventory" },
+    { href: "/admin/coupons", icon: Tag, label: "Coupons" },
+  ]},
+  { section: "People", items: [
+    { href: "/admin/customers", icon: Users, label: "Customers" },
+  ]},
+  { section: "Delivery", items: [
+    { href: "/admin/delivery", icon: Truck, label: "Delivery Board", accent: true },
+    { href: "/admin/routes", icon: Route, label: "Route Planner" },
+    { href: "/admin/delivery-boys", icon: Users, label: "Delivery Boys" },
+  ]},
+  { section: "Finance", items: [
+    { href: "/admin/earnings", icon: IndianRupee, label: "Earnings" },
+  ]},
+  { section: "System", items: [
+    { href: "/admin/notifications", icon: Bell, label: "Notifications" },
+    { href: "/admin/settings", icon: Settings, label: "Settings" },
+  ]},
 ];
+
+/** Phone tab bar: the four screens that get opened during a delivery day. */
+const QUICK_PATHS = [
+  { href: "/admin", icon: LayoutDashboard, label: "Home" },
+  { href: "/admin/orders", icon: ShoppingCart, label: "Orders" },
+  { href: "/admin/delivery", icon: Truck, label: "Delivery" },
+  { href: "/admin/analytics", icon: BarChart3, label: "Stats" },
+];
+
+const isLinkActive = (href: string, pathname: string) =>
+  href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
+/**
+ * zustand's persist middleware never attaches `api.persist` when storage is
+ * unavailable, so on the server `useAdminStore.persist` is undefined. Probe
+ * defensively — this also runs during SSR.
+ */
+function storesHydrated(): boolean {
+  if (typeof window === "undefined") return false;
+  return useAdminStore.persist?.hasHydrated() === true && useAuthStore.persist?.hasHydrated() === true;
+}
 
 // Manager portal is limited to day-to-day ops: orders, delivery board, route
 // planning, and now products + inventory management. It deliberately excludes
@@ -60,36 +100,32 @@ export default function AdminLayout({
 
   const role = currentUser?.role;
   const isStaff = role === "admin" || role === "manager";
-  const links = role === "manager"
-    ? adminLinks.filter((l) => MANAGER_ACCESS.has(l.href))
-    : adminLinks;
+  const allLinks = adminLinks.flatMap((g) => g.items);
+  const visible = (href: string) => (role === "manager" ? MANAGER_ACCESS.has(href) : true);
+  const groups = adminLinks
+    .map((g) => ({ ...g, items: g.items.filter((l) => visible(l.href)) }))
+    .filter((g) => g.items.length > 0);
 
   // Manager is denied access to the dashboard and any page outside their scope.
   const managerBanned =
     role === "manager" && (pathname === "/admin" || !MANAGER_ACCESS.has(pathname));
 
+  const current = allLinks.find((l) => isLinkActive(l.href, pathname));
+
   // Wait for persisted stores to rehydrate before checking auth,
   // otherwise the layout redirects to login before state loads.
-  const [storesReady, setStoresReady] = useState(false);
+  // Read lazily so an already-hydrated store never triggers a second render pass.
+  const [storesReady, setStoresReady] = useState(storesHydrated);
 
   useEffect(() => {
-    useAdminStore.persist.rehydrate();
-    useAuthStore.persist.rehydrate();
-    const unsub1 = useAdminStore.persist.onFinishHydration(() => {
-      if (useAdminStore.persist.hasHydrated() && useAuthStore.persist.hasHydrated()) {
-        setStoresReady(true);
-      }
-    });
-    const unsub2 = useAuthStore.persist.onFinishHydration(() => {
-      if (useAdminStore.persist.hasHydrated() && useAuthStore.persist.hasHydrated()) {
-        setStoresReady(true);
-      }
-    });
-    // Fallback if already hydrated
-    if (useAdminStore.persist.hasHydrated() && useAuthStore.persist.hasHydrated()) {
-      setStoresReady(true);
-    }
-    return () => { unsub1(); unsub2(); };
+    useAdminStore.persist?.rehydrate();
+    useAuthStore.persist?.rehydrate();
+    const markReady = () => {
+      if (storesHydrated()) setStoresReady(true);
+    };
+    const unsub1 = useAdminStore.persist?.onFinishHydration(markReady);
+    const unsub2 = useAuthStore.persist?.onFinishHydration(markReady);
+    return () => { unsub1?.(); unsub2?.(); };
   }, []);
 
   useEffect(() => {
@@ -103,100 +139,188 @@ export default function AdminLayout({
     checked.current = true;
   }, [isLoggedIn, currentUser, pathname, router, storesReady, isStaff, managerBanned]);
 
+  // Lock body scroll while the drawer covers the screen.
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [sidebarOpen]);
+
   if (!storesReady) {
-    return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Loading...</p></div>;
+    return (
+      <div className="admin-theme adm-root flex min-h-screen items-center justify-center">
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          <span className="adm-live" />
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Establishing link</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isLoggedIn || !isStaff) {
-    if (pathname === "/admin/login") return <>{children}</>;
-    return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Redirecting...</p></div>;
+    if (pathname === "/admin/login") {
+      return <div className="admin-theme adm-root min-h-screen">{children}</div>;
+    }
+    return (
+      <div className="admin-theme adm-root flex min-h-screen items-center justify-center">
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          <span className="adm-live" />
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Redirecting</p>
+        </div>
+      </div>
+    );
   }
 
   if (managerBanned) {
-    return <div className="flex min-h-screen items-center justify-center bg-white/5"><p className="text-sm text-muted">Redirecting...</p></div>;
+    return (
+      <div className="admin-theme adm-root flex min-h-screen items-center justify-center">
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          <span className="adm-live" />
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Redirecting</p>
+        </div>
+      </div>
+    );
   }
 
+  const signOut = () => {
+    logout();
+    authLogout();
+    document.cookie = "sfm-auth-session=; path=/; max-age=0";
+    router.push("/auth/login");
+  };
+
   return (
-    <div className="flex min-h-screen bg-white/5">
-      {/* Sidebar */}
+    <div className="admin-theme adm-root flex min-h-screen text-foreground">
+      {/* ── Drawer / sidebar ─────────────────────────────────────────────── */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 transform bg-surface border-r border-white/10 transition-transform lg:translate-x-0 lg:static",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed inset-y-0 left-0 z-50 flex w-[268px] flex-col border-r adm-hairline transition-transform duration-300 ease-out lg:translate-x-0 lg:static",
+          "bg-[#0a0b0e]/95 backdrop-blur-xl",
+          sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         )}
+        aria-label="Admin navigation"
       >
-        <div className="flex h-16 items-center gap-2 border-b px-6">
-          <img src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={32} height={32} className="rounded-lg" />
-          <div>
-            <p className="text-sm font-extrabold text-foreground">SFM Admin</p>
-            <p className="text-[10px] text-muted">{role === "manager" ? "Manager" : "Dashboard"}</p>
+        {/* Brand */}
+        <div className="flex h-16 shrink-0 items-center gap-3 border-b adm-hairline px-4">
+          <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#ff7a1a] to-[#ff9a3c] text-black shadow-[0_0_20px_-4px_rgba(255,122,26,0.7)]">
+            <Zap className="h-[18px] w-[18px]" strokeWidth={2.5} />
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-[13px] font-extrabold tracking-tight">SFM Control</p>
+            <p className="adm-eyebrow truncate">{role === "manager" ? "Manager" : "Admin"}</p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto lg:hidden"
+            className="adm-tile ml-auto h-9 w-9 lg:hidden"
+            aria-label="Close navigation"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
-        <nav className="space-y-1 p-4">
-          {links.map((link) => {
-            const Icon = link.icon;
-            const isActive =
-              link.href === "/admin"
-                ? pathname === "/admin"
-                : pathname.startsWith(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setSidebarOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-brand-dark text-white"
-                    : "text-muted hover:bg-white/8"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {link.label}
-              </Link>
-            );
-          })}
+
+        {/* Nav */}
+        <nav className="no-scrollbar flex-1 space-y-5 overflow-y-auto px-3 py-4">
+          {groups.map((group) => (
+            <div key={group.section}>
+              <p className="adm-nav-section">{group.section}</p>
+              <div className="space-y-0.5">
+                {group.items.map((link) => {
+                  const Icon = link.icon;
+                  const active = isLinkActive(link.href, pathname);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setSidebarOpen(false)}
+                      data-active={active}
+                      className="adm-nav-link"
+                    >
+                      <Icon className="adm-nav-icon h-4 w-4" />
+                      <span className="truncate">{link.label}</span>
+                      {link.accent && !active ? (
+                        <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-[#ff7a1a]/70" />
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-4">
-          <button
-            onClick={() => { logout(); authLogout(); document.cookie = "sfm-auth-session=; path=/; max-age=0"; router.push("/auth/login"); }}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-white/8"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
+
+        {/* Sign out */}
+        <div className="shrink-0 border-t adm-hairline p-3">
+          <button onClick={signOut} className="adm-nav-link w-full text-[#f87171] hover:bg-[#ef4444]/10">
+            <LogOut className="adm-nav-icon h-4 w-4 text-[#f87171]" />
+            <span>Sign out</span>
           </button>
         </div>
       </aside>
 
+      {/* Scrim */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          aria-hidden
         />
       )}
 
-      {/* Main */}
-      <div className="flex-1">
-        <header className="flex h-16 items-center gap-3 border-b bg-surface px-4 sm:px-6">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
+      {/* ── Main column ──────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b adm-hairline bg-[#0a0b0e]/85 px-3 backdrop-blur-xl sm:h-16 sm:gap-3 sm:px-5">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="adm-tile h-10 w-10 shrink-0"
+            aria-label="Open navigation"
+          >
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="truncate text-lg font-bold text-foreground">Admin Panel</h1>
-          <Link
-            href="/"
-            className="ml-auto shrink-0 text-sm text-brand-blue hover:underline"
-          >
-            ← Back to Store
-          </Link>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <span className="adm-eyebrow hidden sm:inline">Console</span>
+              <ChevronRight className="hidden h-3 w-3 shrink-0 text-[#7d8794] sm:block" />
+              <h1 className="truncate text-sm font-bold sm:text-base">{current?.label ?? "Admin"}</h1>
+            </div>
+            <p className="truncate text-[11px] text-muted sm:hidden">{role === "manager" ? "Manager" : "Administrator"}</p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="hidden items-center gap-2 rounded-full border adm-hairline bg-white/[0.03] px-3 py-1.5 md:inline-flex">
+              <span className="adm-live" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#98a2b0]">Live</span>
+            </span>
+            <Link
+              href="/"
+              className="flex h-10 items-center gap-1.5 rounded-xl border adm-hairline bg-white/[0.03] px-3 text-[11px] font-semibold text-[#98a2b0] transition-colors hover:border-[#ff7a1a]/50 hover:text-[#ff7a1a] sm:px-3.5 sm:text-xs"
+            >
+              <ChevronRight className="h-3.5 w-3.5 rotate-180" />
+              <span className="hidden sm:inline">Store</span>
+            </Link>
+          </div>
         </header>
-        <main className="p-4 sm:p-6">{children}</main>
+
+        <main className="adm-main flex-1 px-3 py-4 sm:px-5 sm:py-6">{children}</main>
       </div>
+
+      {/* ── Phone tab bar ─────────────────────────────────────────────────── */}
+      <nav className="adm-tabbar lg:hidden" aria-label="Quick navigation">
+        {QUICK_PATHS.filter((q) => visible(q.href)).map((q) => {
+          const Icon = q.icon;
+          const active = isLinkActive(q.href, pathname);
+          return (
+            <Link
+              key={q.href}
+              href={q.href}
+              data-active={active}
+              className="adm-tabbar-link"
+            >
+              <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.5 : 2} />
+              <span>{q.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }

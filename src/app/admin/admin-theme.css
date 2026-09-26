@@ -1,0 +1,473 @@
+/* ============================================================================
+   ADMIN THEME — "Siliguri Freshmart Control"
+   Black / orange / grey. Futuristic, mobile-first, admin-only.
+
+   How this works: the storefront sets its palette in globals.css as CSS custom
+   properties, and Tailwind v4 compiles utilities to var() references
+   (e.g. `.bg-surface{background-color:var(--surface)}`,
+   `.bg-emerald-100{background-color:var(--color-emerald-100)}`).
+   Re-declaring those variables inside `.admin-theme` therefore re-skins every
+   existing admin page without touching a single component — the store keeps its
+   light green theme, and the admin console gets this dark one.
+
+   Imported only by src/app/admin/layout.tsx.
+   ========================================================================= */
+
+.admin-theme {
+  color-scheme: dark;
+
+  /* ── Surfaces: warm-tinted blacks, lightest panel last ──────────────────── */
+  --bg-base: #07080a;
+  --surface: #0e1014;
+  --surface-2: #14171d;
+  --color-bg: #07080a;
+  --color-surface: #0e1014;
+  --color-surface-alt: #14171d;
+
+  /* ── Borders: thin, cool grey, never pure black ─────────────────────────── */
+  --border: #23272f;
+  --border-light: #1a1d23;
+  --color-border: #23272f;
+
+  /* ── Type ───────────────────────────────────────────────────────────────── */
+  --foreground: #f3f5f8;
+  --color-text-primary: #f3f5f8;
+  --muted: #98a2b0;
+  --muted-light: #7d8794;
+  --color-text-secondary: #98a2b0;
+  --color-text-on-primary: #0a0a0a;
+
+  /* ── Brand: orange is the only accent that acts as a surface ────────────── */
+  --brand-dark: #ff7a1a;
+  --brand-orange: #ff7a1a;
+  --brand-fresh: #22c55e;
+  --brand-fresh-dim: #16a34a;
+  --brand-gold: #ffb020;
+  --brand-gold-light: #ffc94d;
+  --brand-black: #05060700;
+  --brand-blue: #4a8fe7;
+  --brand-red: #ef4444;
+  --brand-purple: #a78bfa;
+  --color-primary: #ff7a1a;
+  --color-primary-dark: #e2600a;
+  --color-primary-light: #1f1408;
+  --color-accent: #ff7a1a;
+  --color-accent-dark: #e2600a;
+
+  /* ── Semantic: tuned for a black background ─────────────────────────────── */
+  --color-success: #22c55e;
+  --color-success-bg: rgba(34, 197, 94, 0.12);
+  --color-success-text: #4ade80;
+  --color-warning: #ffb020;
+  --color-warning-bg: rgba(255, 176, 32, 0.12);
+  --color-warning-text: #fbbf24;
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+  --color-danger-text: #f87171;
+  --accent: #ff7a1a;
+  --accent-dim: #e2600a;
+  --danger: #ef4444;
+  --warning: #ffb020;
+
+  /* ── Depth: black shadows + a single warm glow ──────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.7);
+  --shadow-md: 0 10px 30px -12px rgba(0, 0, 0, 0.9);
+  --shadow-lg: 0 28px 70px -24px rgba(0, 0, 0, 0.95);
+  --shadow-glow: 0 0 0 1px rgba(255, 122, 26, 0.28), 0 0 36px -10px rgba(255, 122, 26, 0.45);
+  --accent-glow: rgba(255, 122, 26, 0.3);
+
+  /* ── Chrome ─────────────────────────────────────────────────────────────── */
+  --adm-orange: #ff7a1a;
+  --adm-orange-soft: #ff9a3c;
+  --adm-panel: #0e1014;
+  --adm-panel-2: #14171d;
+  --adm-line: #23272f;
+  --adm-line-soft: #1a1d23;
+  --adm-dim: #98a2b0;
+  /* 4.5:1+ on the sidebar/panel blacks — used for 10px labels, so it cannot be
+     as dim as it looks on a light background. */
+  --adm-faint: #7d8794;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   SURFACES — solid light utilities that must become dark panels.
+   Scoped selector beats Tailwind's single-class rule on specificity.
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-theme .bg-white { background-color: var(--adm-panel); }
+.admin-theme .bg-white\/90 { background-color: rgba(14, 16, 20, 0.94); }
+.admin-theme .bg-white\/40 { background-color: rgba(255, 255, 255, 0.04); }
+.admin-theme .bg-white\/30 { background-color: rgba(255, 255, 255, 0.03); }
+
+/* `text-muted-light` has no Tailwind colour mapping, so it is a no-op on the
+   storefront — kept that way on purpose. Admin pages do use it, so give it the
+   dark-theme value here instead of adding a global token. */
+.admin-theme .text-muted-light { color: var(--adm-faint); }
+.admin-theme .border-white\/20 { border-color: #2e333c; }
+.admin-theme .border-white\/10 { border-color: var(--adm-line); }
+.admin-theme .border-black\/5 { border-color: var(--adm-line); }
+
+/* Neutral greys used for chips/dividers */
+.admin-theme .bg-gray-200 { background-color: #1b1f26; }
+.admin-theme .bg-gray-300 { background-color: #23272f; }
+.admin-theme .border-gray-300 { border-color: #2e333c; }
+.admin-theme .text-gray-300 { color: #d5dae1; }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   TINT BACKGROUNDS — `-50` was a pale wash on white; now a dim glow on black.
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-theme .bg-red-50,
+.admin-theme .bg-green-50,
+.admin-theme .bg-blue-50,
+.admin-theme .bg-amber-50,
+.admin-theme .bg-orange-50,
+.admin-theme .bg-emerald-50,
+.admin-theme .bg-cyan-50,
+.admin-theme .bg-pink-50,
+.admin-theme .bg-purple-50,
+.admin-theme .bg-rose-50 {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* `-100` was a saturated chip; keep the hue, drop the brightness. */
+.admin-theme .bg-red-100 { background-color: rgba(239, 68, 68, 0.2); }
+.admin-theme .bg-green-100 { background-color: rgba(34, 197, 94, 0.2); }
+.admin-theme .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.2); }
+.admin-theme .bg-blue-100 { background-color: rgba(74, 143, 231, 0.2); }
+.admin-theme .bg-cyan-100 { background-color: rgba(34, 211, 238, 0.18); }
+.admin-theme .bg-pink-100 { background-color: rgba(236, 72, 153, 0.2); }
+.admin-theme .bg-purple-100 { background-color: rgba(167, 139, 250, 0.2); }
+.admin-theme .bg-orange-100 { background-color: rgba(255, 122, 26, 0.2); }
+.admin-theme .bg-amber-100 { background-color: rgba(255, 176, 32, 0.2); }
+.admin-theme .bg-red-200 { background-color: rgba(239, 68, 68, 0.3); }
+.admin-theme .bg-red-300 { background-color: rgba(239, 68, 68, 0.42); }
+.admin-theme .bg-red-400 { background-color: #b91c1c; }
+.admin-theme .bg-green-200 { background-color: rgba(34, 197, 94, 0.3); }
+.admin-theme .bg-green-500 { background-color: #16a34a; }
+.admin-theme .bg-amber-400 { background-color: #d97706; }
+.admin-theme .bg-amber-500 { background-color: #ffb020; }
+.admin-theme .bg-cyan-500 { background-color: #0891b2; }
+.admin-theme .bg-orange-500 { background-color: var(--adm-orange); }
+.admin-theme .bg-blue-500 { background-color: #2563eb; }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   TEXT — 600/700/800 shades were chosen for white paper and go muddy on black.
+   Lift them so status stays instantly readable.
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-theme .text-red-500 { color: #ef4444; }
+.admin-theme .text-red-600 { color: #f87171; }
+.admin-theme .text-red-700 { color: #fca5a5; }
+.admin-theme .text-green-600 { color: #4ade80; }
+.admin-theme .text-green-700 { color: #86efac; }
+.admin-theme .text-emerald-600 { color: #34d399; }
+.admin-theme .text-amber-600 { color: #fbbf24; }
+.admin-theme .text-amber-700 { color: #fcd34d; }
+.admin-theme .text-amber-800 { color: #fde68a; }
+.admin-theme .text-amber-700\/90 { color: rgba(252, 211, 77, 0.9); }
+.admin-theme .text-orange-500 { color: var(--adm-orange); }
+.admin-theme .text-orange-600 { color: #fb923c; }
+.admin-theme .text-orange-700 { color: #fdba74; }
+.admin-theme .text-blue-600 { color: #60a5fa; }
+.admin-theme .text-blue-700 { color: #93c5fd; }
+.admin-theme .text-cyan-400 { color: #22d3ee; }
+.admin-theme .text-cyan-600 { color: #22d3ee; }
+.admin-theme .text-pink-600 { color: #f472b6; }
+.admin-theme .text-purple-600 { color: #a78bfa; }
+.admin-theme .text-purple-700 { color: #c4b5fd; }
+.admin-theme .text-rose-600 { color: #fb7185; }
+
+/* Store-green literals → orange, so brand chrome matches the console.
+   WhatsApp's #25D366 is left alone: it is a recognisable brand, not a theme hue. */
+.admin-theme .bg-\[\#2D7D3A\] { background-color: var(--adm-orange); }
+.admin-theme .text-\[\#2D7D3A\] { color: var(--adm-orange); }
+.admin-theme .border-\[\#2D7D3A\] { border-color: var(--adm-orange); }
+.admin-theme .bg-\[\#23682E\] { background-color: #e2600a; }
+.admin-theme .text-\[\#4A8FE7\] { color: #60a5fa; }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   GLOBAL COMPONENT CLASSES — re-pointed at the dark palette, scoped to admin.
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-theme .card-white {
+  background: var(--adm-panel);
+  border: 1px solid var(--adm-line);
+  border-radius: 16px;
+}
+
+.admin-theme .btn-primary {
+  background: linear-gradient(135deg, var(--adm-orange) 0%, #ff9a3c 100%);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 100px;
+  font-weight: 700;
+  box-shadow: 0 4px 18px -4px rgba(255, 122, 26, 0.5);
+  transition: all 0.2s ease;
+}
+.admin-theme .btn-primary:hover {
+  background: linear-gradient(135deg, #ff8c3a 0%, #ffab5c 100%);
+  box-shadow: 0 8px 26px -6px rgba(255, 122, 26, 0.65);
+  transform: translateY(-1px);
+}
+.admin-theme .btn-primary:active { transform: scale(0.98); }
+
+.admin-theme .btn-secondary {
+  background: var(--adm-panel-2);
+  border: 1px solid var(--adm-line);
+  color: var(--foreground);
+  border-radius: 100px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.admin-theme .btn-secondary:hover {
+  background: #1a1e25;
+  border-color: var(--adm-orange);
+  color: var(--adm-orange-soft);
+}
+
+.admin-theme .skeleton {
+  background: linear-gradient(90deg, #14171d 25%, #1f232b 50%, #14171d 75%);
+  background-size: 200% 100%;
+}
+
+.admin-theme .section-title { color: var(--foreground); }
+
+.admin-theme .stepper-dot.pending {
+  background: #1a1d23;
+  color: var(--adm-dim);
+}
+.admin-theme .stepper-line.pending { background: var(--adm-line); }
+.admin-theme .stepper-dot.active { border-color: var(--adm-orange); color: var(--adm-orange); }
+.admin-theme .stepper-dot.done { background: var(--adm-orange); }
+.admin-theme .stepper-line.done { background: var(--adm-orange); }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   CONSOLE CHROME — classes used by the admin shell.
+   ─────────────────────────────────────────────────────────────────────────── */
+.adm-root {
+  background:
+    radial-gradient(900px 520px at 12% -8%, rgba(255, 122, 26, 0.09), transparent 62%),
+    radial-gradient(760px 460px at 96% 4%, rgba(255, 122, 26, 0.05), transparent 58%),
+    #07080a;
+  background-attachment: fixed;
+}
+
+/* Faint engineering grid, so large empty areas read as a console not a void. */
+.adm-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%);
+}
+
+.adm-panel {
+  background: linear-gradient(180deg, rgba(20, 23, 29, 0.92) 0%, rgba(14, 16, 20, 0.92) 100%);
+  border: 1px solid var(--adm-line);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Active nav item: orange rail + warm glow, reads clearly at a glance. */
+.adm-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 12px;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--adm-dim);
+  transition: color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+.adm-nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.045);
+}
+.adm-nav-link[data-active="true"] {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(255, 122, 26, 0.2), rgba(255, 122, 26, 0.04));
+  box-shadow: inset 0 0 0 1px rgba(255, 122, 26, 0.32);
+}
+.adm-nav-link[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: -0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 3px 3px 0;
+  background: var(--adm-orange);
+  box-shadow: 0 0 12px 1px rgba(255, 122, 26, 0.8);
+}
+.adm-nav-link[data-active="true"] .adm-nav-icon { color: var(--adm-orange); }
+
+.adm-nav-icon { flex-shrink: 0; transition: color 0.18s ease; }
+
+.adm-nav-section {
+  padding: 0.75rem 0.75rem 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--adm-faint);
+}
+
+/* Icon tile used by the nav and quick actions. */
+.adm-tile {
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--adm-line-soft);
+  color: var(--adm-dim);
+  transition: all 0.18s ease;
+}
+.adm-tile:hover {
+  color: var(--adm-orange);
+  border-color: rgba(255, 122, 26, 0.4);
+  background: rgba(255, 122, 26, 0.1);
+}
+
+.adm-eyebrow {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--adm-faint);
+}
+
+/* Numbers line up column-to-column in any table or stat block. */
+.adm-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.adm-hairline { border-color: var(--adm-line); }
+
+.adm-divider {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(90deg, transparent, var(--adm-line) 18%, var(--adm-line) 82%, transparent);
+}
+
+/* Orange dot used for "live" state. */
+.adm-live {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--adm-orange);
+  box-shadow: 0 0 0 0 rgba(255, 122, 26, 0.6);
+  animation: adm-pulse 2.2s ease-out infinite;
+}
+@keyframes adm-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 122, 26, 0.55); }
+  70% { box-shadow: 0 0 0 7px rgba(255, 122, 26, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 122, 26, 0); }
+}
+
+/* Bottom tab bar: only on phones, and it never covers page content. */
+.adm-tabbar {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .adm-tabbar {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    background: rgba(9, 10, 13, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--adm-line);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .adm-tabbar-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0.5rem 0.25rem 0.6rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--adm-faint);
+    /* Comfortable tap target on glass. */
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s ease;
+  }
+  .adm-tabbar-link[data-active="true"] { color: var(--adm-orange); }
+}
+
+/* Reserve room for the tab bar + safe area. */
+@media (max-width: 1023px) {
+  .adm-main { padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   INPUTS / TABLES / FORM CONTROLS
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-theme input,
+.admin-theme select,
+.admin-theme textarea {
+  color-scheme: dark;
+}
+.admin-theme input::placeholder,
+.admin-theme textarea::placeholder { color: var(--adm-faint); }
+
+.admin-theme input:focus,
+.admin-theme select:focus,
+.admin-theme textarea:focus {
+  outline: none;
+  border-color: var(--adm-orange);
+  box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.18);
+}
+
+/* Native dropdown lists render with the OS palette. */
+.admin-theme option { background-color: #14171d; color: #f3f5f8; }
+
+.admin-theme table { border-color: var(--adm-line); }
+
+.admin-theme ::-webkit-scrollbar { width: 10px; height: 10px; }
+.admin-theme ::-webkit-scrollbar-track { background: #0a0b0e; }
+.admin-theme ::-webkit-scrollbar-thumb {
+  background: #262b34;
+  border-radius: 999px;
+  border: 2px solid #0a0b0e;
+}
+.admin-theme ::-webkit-scrollbar-thumb:hover { background: #3a414d; }
+
+.admin-theme ::selection {
+  background: rgba(255, 122, 26, 0.32);
+  color: #fff;
+}
+
+/* Consistent orange focus ring for anything keyboard-navigable. */
+.admin-theme :focus-visible {
+  outline: 2px solid var(--adm-orange);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-theme *,
+  .admin-theme *::before,
+  .admin-theme *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

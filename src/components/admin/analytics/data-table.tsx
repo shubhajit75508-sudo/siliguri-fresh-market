@@ -15,6 +15,8 @@ export type Column<T> = {
   align?: "left" | "right" | "center";
   className?: string;
   headerClassName?: string;
+  /** Hide this column in the stacked phone layout to keep cards readable. */
+  hideOnMobile?: boolean;
 };
 
 type Props<T> = {
@@ -110,12 +112,19 @@ export function DataTable<T>({
   const alignCls = (a?: "left" | "right" | "center") =>
     a === "right" ? "text-right" : a === "center" ? "text-center" : "text-left";
 
+  const SortIcon = ({ col }: { col: Column<T> }) =>
+    sort?.key === col.key ? (
+      sort.dir === "asc" ? <ArrowUp className="h-3 w-3 text-[#ff7a1a]" /> : <ArrowDown className="h-3 w-3 text-[#ff7a1a]" />
+    ) : (
+      <ArrowUpDown className="h-3 w-3 opacity-30" />
+    );
+
   return (
-    <div className="rounded-xl border bg-surface shadow-sm">
-      <div className="flex flex-wrap items-center gap-3 border-b p-4">
+    <div className="adm-panel overflow-hidden">
+      <div className="flex flex-wrap items-center gap-2 border-b adm-hairline p-3 sm:gap-3 sm:p-4">
         {searchable && (
-          <div className="relative min-w-[180px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <div className="relative min-w-0 flex-1 basis-full sm:basis-auto">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6a737f]" />
             <input
               value={query}
               onChange={(e) => {
@@ -124,97 +133,121 @@ export function DataTable<T>({
               }}
               placeholder={searchPlaceholder}
               aria-label={searchPlaceholder}
-              className="w-full rounded-lg border bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-brand-fresh"
+              className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-2.5 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-[#6a737f] focus:border-[#ff7a1a] sm:py-2"
             />
           </div>
         )}
-        <span className="text-xs text-muted">
-          {sorted.length} {sorted.length === 1 ? "row" : "rows"}
-          {query && rows.length !== sorted.length ? ` (filtered from ${rows.length})` : ""}
-        </span>
-        {exportName && (
-          <button
-            onClick={downloadCsv}
-            className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium hover:bg-brand-fresh/5"
-          >
-            <Download className="h-3.5 w-3.5" /> Export CSV
-          </button>
-        )}
+        <div className="flex flex-1 items-center justify-between gap-2 sm:flex-none">
+          <span className="adm-num text-[11px] text-[#98a2b0] sm:text-xs">
+            {sorted.length} {sorted.length === 1 ? "row" : "rows"}
+            {query && rows.length !== sorted.length ? ` of ${rows.length}` : ""}
+          </span>
+          {exportName && (
+            <button
+              onClick={downloadCsv}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-2 text-[11px] font-semibold text-[#98a2b0] transition-colors hover:border-[#ff7a1a]/50 hover:text-[#ff7a1a]"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Export CSV</span>
+              <span className="sm:hidden">CSV</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {sorted.length === 0 ? (
-        <p className="p-8 text-center text-sm text-muted">{query ? "No rows match your search." : emptyMessage}</p>
+        <p className="p-10 text-center text-sm text-[#98a2b0]">
+          {query ? "No rows match your search." : emptyMessage}
+        </p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <caption className="sr-only">{caption}</caption>
-            <thead>
-              <tr className="border-b bg-muted/30">
-                {columns.map((c) => (
-                  <th
-                    key={c.key}
-                    scope="col"
-                    aria-sort={sort?.key === c.key ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
-                    className={`whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted ${alignCls(c.align)} ${c.headerClassName ?? ""}`}
-                  >
-                    {c.sortValue ? (
-                      <button
-                        onClick={() => toggleSort(c.key)}
-                        className="inline-flex items-center gap-1 hover:text-foreground"
-                      >
-                        {c.header}
-                        {sort?.key === c.key ? (
-                          sort.dir === "asc" ? (
-                            <ArrowUp className="h-3 w-3" />
-                          ) : (
-                            <ArrowDown className="h-3 w-3" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="h-3 w-3 opacity-40" />
-                        )}
-                      </button>
-                    ) : (
-                      c.header
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {view.map((r) => (
-                <tr key={rowKey(r)} className="border-b last:border-0 hover:bg-muted/20">
+        <>
+          {/* One table serves both layouts: on phones each row stacks into a card
+              (display:block) and every cell shows its own column label. Keeping a
+              single <table> means the totals <tfoot> stays valid at every width. */}
+          <div className="no-scrollbar overflow-x-auto">
+            <table className="w-full text-sm">
+              <caption className="sr-only">{caption}</caption>
+              <thead className="hidden md:table-header-group">
+                <tr className="border-b adm-hairline bg-[#0f1116]">
                   {columns.map((c) => (
-                    <td key={c.key} className={`px-4 py-3 ${alignCls(c.align)} ${c.className ?? ""}`}>
-                      {c.render(r)}
-                    </td>
+                    <th
+                      key={c.key}
+                      scope="col"
+                      aria-sort={sort?.key === c.key ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+                      className={`whitespace-nowrap px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#7d8794] ${alignCls(c.align)} ${c.headerClassName ?? ""}`}
+                    >
+                      {c.sortValue ? (
+                        <button
+                          onClick={() => toggleSort(c.key)}
+                          className="inline-flex items-center gap-1.5 transition-colors hover:text-[#ff7a1a]"
+                        >
+                          {c.header}
+                          <SortIcon col={c} />
+                        </button>
+                      ) : (
+                        c.header
+                      )}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-            {footer && <tfoot className="border-t-2 bg-muted/20 font-semibold">{footer}</tfoot>}
-          </table>
-        </div>
+              </thead>
+              <tbody className="block md:table-row-group">
+                {view.map((r) => (
+                  <tr
+                    key={rowKey(r)}
+                    className="block border-b border-white/[0.06] transition-colors last:border-0 hover:bg-[#ff7a1a]/[0.04] md:table-row md:border-b"
+                  >
+                    {columns.map((c, i) => (
+                      <td
+                        key={c.key}
+                        className={`flex items-start justify-between gap-4 px-3.5 py-2 md:table-cell md:px-4 md:py-3 ${
+                          c.hideOnMobile ? "hidden md:table-cell" : ""
+                        } ${alignCls(c.align)} ${c.className ?? ""}`}
+                      >
+                        <span className="adm-eyebrow shrink-0 pt-0.5 md:hidden">{c.header}</span>
+                        <span
+                          className={`min-w-0 text-right text-[13px] md:text-inherit ${
+                            i === 0 ? "font-semibold text-foreground md:font-normal" : "text-[#c9cfd8] md:font-normal"
+                          }`}
+                        >
+                          {c.render(r)}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+              {footer && (
+                <tfoot className="block border-t-2 border-[#ff7a1a]/30 bg-white/[0.03] font-semibold md:table-footer-group">
+                  {footer}
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </>
       )}
 
       {pageCount > 1 && (
-        <div className="flex items-center justify-between border-t p-3">
-          <p className="text-xs text-muted">
-            Page {safePage} of {pageCount}
+        <div className="flex items-center justify-between gap-2 border-t adm-hairline p-3">
+          <p className="adm-num text-[11px] text-[#98a2b0] sm:text-xs">
+            Page {safePage} / {pageCount}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage <= 1}
-              className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs disabled:opacity-40"
+              aria-label="Previous page"
+              className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-xs font-medium transition-colors hover:border-[#ff7a1a]/50 disabled:opacity-35 sm:px-3"
             >
-              <ChevronLeft className="h-3.5 w-3.5" /> Prev
+              <ChevronLeft className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Prev</span>
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
               disabled={safePage >= pageCount}
-              className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs disabled:opacity-40"
+              aria-label="Next page"
+              className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-xs font-medium transition-colors hover:border-[#ff7a1a]/50 disabled:opacity-35 sm:px-3"
             >
-              Next <ChevronRight className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Next</span> <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
