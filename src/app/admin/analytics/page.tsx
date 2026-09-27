@@ -108,18 +108,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 const catLabel = (c: string) => CATEGORY_LABELS[c] ?? c.replace(/_/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
 
-/* Series colours live in JS because they encode a value, so the admin theme only
-   owns the static palette. Orange leads, then semantic accents that stay legible
-   on a near-black background. */
-const C_REVENUE = "#ff7a1a";
-const C_PROFIT = "#4ade80";
-const C_COST = "#f87171";
-const C_AVG = "#22d3ee";
-const C_NEW = "#a78bfa";
-const C_REPEAT = "#fbbf24";
-const PIE_COLORS = [C_REVENUE, "#ff9a3c", C_PROFIT, C_AVG, C_NEW, C_REPEAT, C_COST, "#f472b6", "#64748b", "#c4b5fd", "#84cc16", "#38bdf8"];
-const GRID = "rgba(255,255,255,0.05)";
-const AXIS = { fontSize: 10, fill: "#7d8794" };
+const PIE_COLORS = ["#2D7D3A", "#2563eb", "#E2574C", "#F59E0B", "#8B5CF6", "#06B6D4", "#EC4899", "#10B981", "#F97316", "#64748B", "#a855f7", "#84cc16"];
+const GRID = "#E0E6E1";
+const AXIS = { fontSize: 10, fill: "#6B7B6B" };
 
 const TABS = [
   { id: "overview", label: "Overview" },
@@ -137,10 +128,10 @@ const isTab = (v: string | null): v is Tab => !!v && TABS.some((t) => t.id === v
 
 function Card({ title, hint, children, action }: { title: string; hint?: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <section className="adm-panel p-4 sm:p-5">
+    <section className="rounded-xl border bg-surface p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="text-[15px] font-bold">{title}</h3>
+          <h3 className="font-bold">{title}</h3>
           {hint && <p className="mt-0.5 text-xs text-muted">{hint}</p>}
         </div>
         {action}
@@ -151,20 +142,11 @@ function Card({ title, hint, children, action }: { title: string; hint?: string;
 }
 
 function Delta({ value, suffix = "" }: { value: number | null; suffix?: string }) {
-  if (value === null) return <span className="text-[11px] text-muted-light">no prior data</span>;
+  if (value === null) return <span className="text-xs text-muted">no prior data</span>;
   const up = value >= 0;
-  const flat = Math.abs(value) < 0.05;
   return (
-    <span
-      className={`adm-num inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${
-        flat
-          ? "bg-white/5 text-[#98a2b0]"
-          : up
-            ? "bg-emerald-600/12 text-emerald-600"
-            : "bg-red-500/12 text-red-600"
-      }`}
-    >
-      {flat ? null : up ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${up ? "text-emerald-600" : "text-red-600"}`}>
+      {up ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
       {pctLabel(value)}
       {suffix}
     </span>
@@ -178,19 +160,15 @@ function KpiCard({
 }) {
   const Icon = icon;
   return (
-    <div className="adm-panel relative overflow-hidden p-4 transition-colors hover:border-[#ff7a1a]/40 sm:p-5">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-[#ff7a1a]/10 blur-2xl"
-      />
-      <div className={`relative mb-3 inline-flex rounded-xl p-2.5 ${color}`}>
+    <div className="rounded-xl border bg-surface p-5 shadow-sm">
+      <div className={`mb-3 inline-flex rounded-lg p-2.5 ${color}`}>
         <Icon className="h-5 w-5" />
       </div>
-      <p className="adm-num relative text-2xl font-extrabold tracking-tight">{value}</p>
-      <p className="relative mt-0.5 text-xs text-muted">{label}</p>
-      <div className="relative mt-1.5 flex flex-wrap items-center gap-2">
+      <p className="text-2xl font-bold tabular-nums">{value}</p>
+      <p className="mt-0.5 text-xs text-muted">{label}</p>
+      <div className="mt-1 flex flex-wrap items-center gap-2">
         {delta !== undefined && <Delta value={delta} />}
-        {sub && <span className="text-[11px] text-muted-light">{sub}</span>}
+        {sub && <span className="text-[11px] text-muted/80">{sub}</span>}
       </div>
     </div>
   );
@@ -542,21 +520,15 @@ export default function AnalyticsPage() {
       )}
 
       {/* ── tabs ── */}
-      <div
-        role="tablist"
-        aria-label="Analytics sections"
-        className="no-scrollbar -mx-3 flex gap-1 overflow-x-auto px-3 sm:mx-0 sm:flex-wrap sm:px-0"
-      >
+      <div role="tablist" aria-label="Analytics sections" className="flex flex-wrap gap-1 rounded-xl border bg-surface p-1 shadow-sm">
         {TABS.map((t) => (
           <button
             key={t.id}
             role="tab"
             aria-selected={tab === t.id}
             onClick={() => onTab(t.id)}
-            className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
-              tab === t.id
-                ? "border-[#ff7a1a]/50 bg-[#ff7a1a]/15 text-[#ff9a3c] shadow-[0_0_20px_-8px_rgba(255,122,26,0.7)]"
-                : "border-white/5 bg-white/[0.02] text-muted hover:border-white/15 hover:text-foreground"
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              tab === t.id ? "bg-brand-fresh text-white" : "text-muted hover:bg-brand-fresh/5"
             }`}
           >
             {t.label}
@@ -580,10 +552,10 @@ export default function AnalyticsPage() {
                 <AreaChart data={trendChart} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C_REVENUE} stopOpacity={0.35} /><stop offset="95%" stopColor={C_REVENUE} stopOpacity={0} />
+                      <stop offset="5%" stopColor="#2D7D3A" stopOpacity={0.5} /><stop offset="95%" stopColor="#2D7D3A" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gProf" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C_PROFIT} stopOpacity={0.3} /><stop offset="95%" stopColor={C_PROFIT} stopOpacity={0} />
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.5} /><stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
@@ -591,9 +563,9 @@ export default function AnalyticsPage() {
                   <YAxis tick={AXIS} tickFormatter={(v: number) => "₹" + (v >= 1000 ? Math.round(v / 1000) + "k" : v)} />
                   <Tooltip formatter={(v) => fmt(Number(v))} labelFormatter={(l) => String(l)} />
                   <Legend />
-                  <Area type="monotone" dataKey="revenue" stroke={C_REVENUE} strokeWidth={2} fill="url(#gRev)" name="Revenue" />
-                  <Area type="monotone" dataKey="profit" stroke={C_PROFIT} strokeWidth={2} fill="url(#gProf)" name="Profit" />
-                  <Line type="monotone" dataKey="avg7" stroke={C_AVG} strokeWidth={2} strokeDasharray="4 3" dot={false} name="7-day avg revenue" />
+                  <Area type="monotone" dataKey="revenue" stroke="#2D7D3A" strokeWidth={2} fill="url(#gRev)" name="Revenue" />
+                  <Area type="monotone" dataKey="profit" stroke="#2563eb" strokeWidth={2} fill="url(#gProf)" name="Profit" />
+                  <Line type="monotone" dataKey="avg7" stroke="#F59E0B" strokeWidth={2} strokeDasharray="4 3" dot={false} name="7-day avg revenue" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -626,13 +598,13 @@ export default function AnalyticsPage() {
             </Card>
 
             <Card title="Payment method" hint="Revenue and profit by how the customer paid">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-4">
                 {(["cod", "upi"] as const).map((m) => {
                   const p = data.paymentMix[m];
                   return (
-                    <div key={m} className="min-w-0 rounded-lg border p-4">
+                    <div key={m} className="rounded-lg border p-4">
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted">{m === "cod" ? "Cash on delivery" : "UPI"}</p>
-                      <p className="mt-1.5 truncate text-lg font-bold tabular-nums sm:text-xl">{fmt(p.revenue)}</p>
+                      <p className="mt-1.5 text-xl font-bold tabular-nums">{fmt(p.revenue)}</p>
                       <p className="text-xs text-muted">{p.count} orders · {fmt(p.profit)} profit</p>
                       <div className="mt-2">
                         <MiniBar value={p.revenue} max={Math.max(data.paymentMix.cod.revenue, data.paymentMix.upi.revenue, 1)} tone={m === "upi" ? "blue" : "brand"} />
@@ -715,9 +687,9 @@ export default function AnalyticsPage() {
                   <YAxis tick={AXIS} tickFormatter={(v: number) => "₹" + (v >= 1000 ? Math.round(v / 1000) + "k" : v)} />
                   <Tooltip formatter={(v) => fmt(Number(v))} />
                   <Legend />
-                  <Bar dataKey="revenue" fill={C_REVENUE} radius={[3, 3, 0, 0]} name="Revenue" />
-                  <Bar dataKey="cost" fill={C_COST} radius={[3, 3, 0, 0]} name="Cost" />
-                  <Bar dataKey="profit" fill={C_PROFIT} radius={[3, 3, 0, 0]} name="Profit" />
+                  <Bar dataKey="revenue" fill="#2D7D3A" radius={[3, 3, 0, 0]} name="Revenue" />
+                  <Bar dataKey="cost" fill="#F59E0B" radius={[3, 3, 0, 0]} name="Cost" />
+                  <Bar dataKey="profit" fill="#2563eb" radius={[3, 3, 0, 0]} name="Profit" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -821,8 +793,8 @@ export default function AnalyticsPage() {
                   <YAxis tick={AXIS} allowDecimals={false} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="newCustomers" stackId="a" fill={C_NEW} name="New customers" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="repeatOrders" stackId="a" fill={C_REPEAT} name="Returning orders" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="newCustomers" stackId="a" fill="#2563eb" name="New customers" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="repeatOrders" stackId="a" fill="#8B5CF6" name="Returning orders" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -902,7 +874,7 @@ export default function AnalyticsPage() {
                     <XAxis dataKey="short" tick={AXIS} />
                     <YAxis tick={AXIS} allowDecimals={false} />
                     <Tooltip formatter={(v, n) => (n === "orders" ? Number(v) : fmt(Number(v)))} />
-                    <Bar dataKey="orders" fill={C_REVENUE} radius={[4, 4, 0, 0]} name="orders" />
+                    <Bar dataKey="orders" fill="#2D7D3A" radius={[4, 4, 0, 0]} name="orders" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -913,16 +885,10 @@ export default function AnalyticsPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.hour} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
-                    <XAxis
-                  dataKey="hour"
-                  tick={AXIS}
-                  tickFormatter={(h: number) => `${h}`}
-                  interval={window.innerWidth < 640 ? "preserveStartEnd" : 1}
-                  minTickGap={2}
-                />
+                    <XAxis dataKey="hour" tick={AXIS} tickFormatter={(h: number) => `${h}`} interval={1} />
                     <YAxis tick={AXIS} allowDecimals={false} />
                     <Tooltip labelFormatter={(h) => `${h}:00 – ${h}:59`} formatter={(v) => Number(v)} />
-                    <Line type="stepAfter" dataKey="orders" stroke={C_REVENUE} strokeWidth={2} dot={false} name="orders" />
+                    <Line type="stepAfter" dataKey="orders" stroke="#2563eb" strokeWidth={2} dot={false} name="orders" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -949,8 +915,8 @@ export default function AnalyticsPage() {
                   <YAxis tick={AXIS} allowDecimals={false} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="orders" fill={C_REPEAT} radius={[4, 4, 0, 0]} name="Orders" />
-                  <Bar dataKey="revenue" fill={C_REVENUE} radius={[4, 4, 0, 0]} name="Revenue" />
+                  <Bar dataKey="orders" fill="#06B6D4" radius={[4, 4, 0, 0]} name="Orders" />
+                  <Bar dataKey="revenue" fill="#2D7D3A" radius={[4, 4, 0, 0]} name="Revenue" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
