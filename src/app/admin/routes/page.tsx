@@ -171,7 +171,7 @@ export default function RoutePlannerPage() {
 
   const mapMarkers = useMemo(() => {
     const markers: { position: [number, number]; icon: "boy" | "customer" | "store" | "order" | "active"; label?: string }[] = [
-      { position: HUB, icon: "store", label: "Hub — NJP Gate Bazar" },
+      { position: HUB, icon: "store", label: "Hub — MCQF+GFQ, Siliguri" },
     ];
     const loc = boyLocations[selectedBoyId];
     if (boy && loc) {
@@ -371,7 +371,7 @@ export default function RoutePlannerPage() {
               <ol className="space-y-1.5">
                 <li className="flex items-center gap-2 text-xs text-muted">
                   <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[9px] font-bold">0</span>
-                  Start — {boyLocations[selectedBoyId] ? (boy?.name ?? "Partner") : "Hub (NJP Gate Bazar)"}
+                  Start — {boyLocations[selectedBoyId] ? (boy?.name ?? "Partner") : "Hub (MCQF+GFQ, Siliguri)"}
                 </li>
                 {stops.map((o, i) => (
                   <li key={o.id} className="flex items-center gap-2 text-xs">

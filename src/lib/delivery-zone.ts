@@ -1,8 +1,8 @@
-export const DELIVERY_ZONE_LABEL = "NJP Gate Bazar, Siliguri";
+export const DELIVERY_ZONE_LABEL = "MCQF+GFQ, Siliguri";
 
 export const STORE_LOCATION = {
-  lat: Number(process.env.DELIVERY_STORE_LAT) || 26.692365,
-  lng: Number(process.env.DELIVERY_STORE_LNG) || 88.42275,
+  lat: Number(process.env.DELIVERY_STORE_LAT) || 26.688844,
+  lng: Number(process.env.DELIVERY_STORE_LNG) || 88.423625,
 };
 
 export const DELIVERY_RADIUS_KM = Number(process.env.DELIVERY_RADIUS_KM) || 20;
@@ -16,10 +16,10 @@ export interface DeliveryTier {
 }
 
 export const DELIVERY_TIERS: DeliveryTier[] = [
-  { maxKm: 4, eta: "45-60 min", minOrder: 0, deliveryFee: 0, label: "Within 4 km" },
-  { maxKm: 8, eta: "1-1.5 hrs", minOrder: 0, deliveryFee: 0, label: "4-8 km" },
-  { maxKm: 15, eta: "2-3 hrs", minOrder: 1499, deliveryFee: 79, label: "8-15 km" },
-  { maxKm: 20, eta: "3-4 hrs", minOrder: 1999, deliveryFee: 99, label: "15-20 km" },
+  { maxKm: 4, eta: "1-2 hrs", minOrder: 0, deliveryFee: 0, label: "Within 4 km" },
+  { maxKm: 8, eta: "1-2 hrs", minOrder: 0, deliveryFee: 0, label: "4-8 km" },
+  { maxKm: 16, eta: "11 AM - 3 PM", minOrder: 1499, deliveryFee: 79, label: "8-16 km" },
+  { maxKm: 20, eta: "11 AM - 3 PM", minOrder: 1999, deliveryFee: 100, label: "16-20 km" },
 ];
 
 export interface DeliverySlot {
@@ -34,16 +34,16 @@ export const DELIVERY_SLOTS: DeliverySlot[] = [
   {
     id: "morning",
     label: "Morning Slot",
-    description: "Order before 9 AM",
-    orderBefore: "9:00 AM",
-    deliveryWindow: "9:00 AM - 12:00 PM",
+    description: "Order before 11 AM",
+    orderBefore: "11:00 AM",
+    deliveryWindow: "11:00 AM - 1:00 PM",
   },
   {
     id: "afternoon",
     label: "Afternoon Slot",
-    description: "Order before 12 PM",
-    orderBefore: "12:00 PM",
-    deliveryWindow: "12:00 PM - 4:00 PM",
+    description: "Order before 2 PM",
+    orderBefore: "2:00 PM",
+    deliveryWindow: "2:00 PM - 3:00 PM",
   },
 ];
 

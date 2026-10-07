@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -68,7 +68,7 @@ function OrderSuccessContent() {
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">On the Way</p>
-                <p className="text-xs text-muted">Delivered within 45 min – 2 hrs (depending on distance)</p>
+                <p className="text-xs text-muted">Within 8 km in 1-2 hrs, beyond that in your 11 AM - 1 PM or 2 PM - 3 PM slot</p>
               </div>
             </div>
           </div>

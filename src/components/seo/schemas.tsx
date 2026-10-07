@@ -80,8 +80,8 @@ export function LocalBusinessSchema() {
           },
           geo: {
             "@type": "GeoCoordinates",
-            latitude: 26.692365,
-            longitude: 88.42275,
+            latitude: 26.688844,
+            longitude: 88.423625,
           },
           url: "https://www.siligurifreshmart.com",
           priceRange: "?50-?500",
@@ -91,7 +91,7 @@ export function LocalBusinessSchema() {
             { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "07:00", closes: "15:00" },
           ],
           areaServed: [
-            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.692365, longitude: 88.42275 } },
+            { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.688844, longitude: 88.423625 } },
           ],
           hasMenu: "https://www.siligurifreshmart.com/category/fish",
           sameAs: [],

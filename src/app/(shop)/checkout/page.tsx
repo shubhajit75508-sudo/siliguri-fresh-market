@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -95,11 +95,11 @@ export default function CheckoutPage() {
   const pinnedDistance = location ? distanceFromStore(location.lat, location.lng) : null;
   const pinnedInZone = !!location && pinnedDistance !== null && isWithinDeliveryZone(location.lat, location.lng);
 
-  // Slot auto-assigned by distance: 8-15km → Morning, 15-20km → Afternoon, ≤8km → none
+  // Slot auto-assigned by distance: 8-16km → Morning, 16-20km → Afternoon, ≤8km → none
   const deliverySlot: DeliverySlot | null = pinnedDistance !== null && pinnedDistance > 8
-    ? pinnedDistance <= 15
-      ? DELIVERY_SLOTS[0] // Morning: 9 AM–12 PM
-      : DELIVERY_SLOTS[1] // Afternoon: 12 PM–4 PM
+    ? pinnedDistance <= 16
+      ? DELIVERY_SLOTS[0] // Morning: 11 AM–1 PM
+      : DELIVERY_SLOTS[1] // Afternoon: 2 PM–3 PM
     : null;
 
   // Sync distance to cart store for delivery fee calculation
@@ -251,7 +251,7 @@ export default function CheckoutPage() {
     const zoneLng = Number(location?.lng ?? selectedAddress?.lng);
     const hasCoords = Number.isFinite(zoneLat) && Number.isFinite(zoneLng) && zoneLat !== 0 && zoneLng !== 0;
     if (hasCoords && !isWithinDeliveryZone(zoneLat, zoneLng)) {
-      toast.add(`Sorry, we deliver within ${DELIVERY_RADIUS_KM} km of our hub at NJP Gate Bazar, Siliguri`, "error");
+      toast.add(`Sorry, we deliver within ${DELIVERY_RADIUS_KM} km of our hub at MCQF+GFQ, Siliguri`, "error");
       pinRef.current?.scrollIntoView({ behavior: "smooth" });
       return;
     }
@@ -649,7 +649,7 @@ export default function CheckoutPage() {
                   <h2 className="text-sm font-bold text-foreground">
                     Pin Your Location <span className="text-brand-red text-xs">*</span>
                   </h2>
-                  <p className="text-[10px] text-muted">Required — we deliver within {DELIVERY_RADIUS_KM} km of NJP Gate Bazar</p>
+                  <p className="text-[10px] text-muted">Required — we deliver within {DELIVERY_RADIUS_KM} km of MCQF+GFQ, Siliguri</p>
                 </div>
                 {!location && !hasSavedCoords && <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 px-2 py-1 rounded-full">Required</span>}
                 {hasSavedCoords && !location && <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-[#2D7D3A]/10 text-[#2D7D3A] px-2 py-1 rounded-full">Using Saved GPS</span>}
@@ -785,7 +785,7 @@ export default function CheckoutPage() {
                         ? "bg-blue-200 text-blue-700"
                         : "bg-amber-200 text-amber-700"
                     }`}>
-                      {deliverySlot.id === "morning" ? "8-15 km" : "15-20 km"}
+                      {deliverySlot.id === "morning" ? "8-16 km" : "16-20 km"}
                     </span>
                   </div>
                   <p className={`text-[11px] mt-1 font-semibold ${
@@ -795,7 +795,7 @@ export default function CheckoutPage() {
                   </p>
                 </div>
                 <p className="text-[10px] text-muted text-center mt-2">
-                  Your slot is automatically assigned based on your distance from NJP Gate Bazar
+                  Your slot is automatically assigned based on your distance from MCQF+GFQ, Siliguri
                 </p>
               </div>
             </div>

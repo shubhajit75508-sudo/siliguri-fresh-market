@@ -162,7 +162,7 @@ export function ProductClient({ product }: { product: Product }) {
             )}
             {/* bottom pill strip */}
             <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-xl bg-white/80 px-3 py-2 backdrop-blur-md ring-1 ring-black/5">
-              <span className="text-[10px] font-bold text-foreground"><Truck className="mr-1 inline h-3 w-3 text-brand-fresh" />Delivered today by 4 PM</span>
+                <span className="text-[10px] font-bold text-foreground"><Truck className="mr-1 inline h-3 w-3 text-brand-fresh" />Delivered today by 3 PM</span>
               <span className="text-[10px] font-bold text-brand-fresh"><BadgeCheck className="mr-1 inline h-3 w-3" />Market Fresh</span>
             </div>
           </div>
@@ -385,8 +385,8 @@ export function ProductClient({ product }: { product: Product }) {
           {available && (
             <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl border border-border bg-surface-2 p-3 text-center">
               {[
-                { t: "Order", d: "Before 4 PM" },
-                { t: "Packed", d: product.deliveryEta ? `${product.deliveryEta}-60 min` : "45-60 min" },
+                { t: "Order", d: "Before 2 PM" },
+                { t: "Packed", d: product.deliveryEta ? `${product.deliveryEta}-60 min` : "1-2 hrs" },
                 { t: "At your door", d: "Same day" },
               ].map((s, i) => (
                 <div key={s.t} className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Fragment } from "react";
 import Link from "next/link";
@@ -36,7 +36,7 @@ export function HeroSection() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#2D7D3A] shadow-[0_0_8px_#2D7D3A]" />
               </span>
               <span className="text-[10px] font-bold tracking-wide text-[#2D7D3A] sm:text-[12px]">
-                Live · Delivering in 45–60 min
+                Live · Delivering in 1–2 hrs
               </span>
             </span>
 

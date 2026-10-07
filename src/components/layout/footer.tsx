@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 
 const links = {
@@ -41,17 +41,17 @@ export function Footer() {
               </div>
             </div>
             <p className="mt-5 max-w-[320px] text-[14px] leading-relaxed text-muted">
-              From market to your home — in minutes, every day. We deliver within 20 km of our hub at NJP Gate Bazar, Siliguri.
+              From market to your home — in minutes, every day. We deliver within 20 km of our hub at MCQF+GFQ, Siliguri.
             </p>
             <div className="mt-4 space-y-1 text-[12px] text-muted">
-              <p>📍 NJP Gate Bazar, Siliguri, West Bengal 734001</p>
+              <p>📍 MCQF+GFQ, Siliguri, West Bengal 734001</p>
               <p>📞 +91 7029908278 · +91 96354 80453 · +91 62959 53287</p>
               <p>📧 siligurifreshmart@gmail.com</p>
               <p>⏰ Open daily 9:00 AM – 4:00 PM</p>
             </div>
             <div className="mt-3 text-[11px] text-muted leading-relaxed">
-              <p>🚚 Within 4 km: 45–60 min · 4–8 km: 1–1.5 hrs · 8–15 km: 2–3 hrs</p>
-              <p>🚚 8–15 km: 1.5–2 hrs · 15–20 km: 2–3 hrs</p>
+              <p>🚚 Within 8 km: 1–2 hrs · 8–16 km: ₹79 (11 AM – 1 PM slot)</p>
+              <p>🚚 16–20 km: ₹100 (2 PM – 3 PM slot)</p>
             </div>
             <div className="mt-4 flex flex-wrap gap-1.5">
               {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Champasari","Sukna","Burdwan Road","Sevoke Road"].map((area) => (
@@ -78,7 +78,7 @@ export function Footer() {
 
         <div className="mt-3 border-t border-border/80 pt-2 text-center text-[12px] text-muted">
           <p className="mb-1">💳 We accept: UPI · Cards · Netbanking · Cash on Delivery</p>
-          © 2026 Siliguri Freshmart · NJP Gate Bazar, Siliguri, West Bengal 734001
+          © 2026 Siliguri Freshmart · MCQF+GFQ, Siliguri, West Bengal 734001
         </div>
       </div>
     </footer>

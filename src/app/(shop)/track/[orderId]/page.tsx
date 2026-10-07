@@ -14,6 +14,7 @@ import { ReturnPolicyBanner, ReturnRequestModal, isWithinReplacementWindow, getR
 import { useOrderStore } from "@/store/order-store";
 import { useToast } from "@/components/ui/toaster";
 import { getItemLineTotal } from "@/lib/utils";
+import { distanceFromStore, STORE_LOCATION, DELIVERY_SLOTS } from "@/lib/delivery-zone";
 import dynamic from "next/dynamic";
 import { downloadInvoice } from "@/lib/invoice";
 import { PushToggle } from "@/components/push/push-toggle";
@@ -205,9 +206,13 @@ export default function TrackOrderPage({
     ? [order.address.lat, order.address.lng] as [number, number]
     : null;
 
+  // Distance from the hub (Plus Code MCQF+GFQ) — drives the delivery-timing reminder.
+  const orderDistanceKm = customerLoc ? distanceFromStore(customerLoc[0], customerLoc[1]) : null;
+  const isWithinEightKm = orderDistanceKm !== null && orderDistanceKm <= 8;
+
   const mapCenter: [number, number] = boyLocation
     ? [boyLocation.lat, boyLocation.lng] as unknown as [number, number]
-    : customerLoc ?? [26.692365, 88.42275];
+    : customerLoc ?? [STORE_LOCATION.lat, STORE_LOCATION.lng];
 
   if (loading) {
     return (
@@ -301,10 +306,54 @@ export default function TrackOrderPage({
             )}
           </div>
         )}
-        {!isOutForDelivery && !isDelivered && (
-          <p className="mt-1 text-sm text-muted">Estimated delivery: 45 min — 2 hrs</p>
-        )}
       </div>
+
+      {/* Post-order reminder: prep time + distance-based delivery timing */}
+      {!isOutForDelivery && !isDelivered && order.status !== "cancelled" && (
+        <div className="mt-4 rounded-2xl border border-[#2D7D3A]/15 bg-[#2D7D3A]/5 px-4 py-3.5">
+          <div className="flex items-start gap-2.5">
+            <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#2D7D3A]/10">
+              <Clock className="h-4 w-4 text-[#2D7D3A]" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[13px] font-extrabold text-[#2D7D3A]">
+                Preparing your order — 15 to 30 min
+              </p>
+              <p className="mt-0.5 text-[11px] leading-relaxed text-muted">
+                {isWithinEightKm
+                  ? `Your address is ${(orderDistanceKm ?? 0).toFixed(1)} km from our hub (MCQF+GFQ, Siliguri), so delivery takes about 1–2 hours.`
+                  : "Delivery timing depends on your distance from our hub (MCQF+GFQ, Siliguri). Within 8 km it takes 1–2 hours."}
+              </p>
+            </div>
+          </div>
+
+          {!isWithinEightKm && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {DELIVERY_SLOTS.map((slot, i) => (
+                <div
+                  key={slot.id}
+                  className="flex items-center gap-2 rounded-xl border border-[#2D7D3A]/15 bg-white px-3 py-2.5"
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#2D7D3A]/10 text-[10px] font-extrabold text-[#2D7D3A]">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[12px] font-extrabold leading-tight text-foreground">
+                      {slot.deliveryWindow}
+                    </p>
+                    <p className="text-[10px] text-muted">{slot.label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {!isWithinEightKm && (
+            <p className="mt-2 text-[10px] text-muted-light">
+              Two slots are available for your location — we will confirm one when your order is dispatched.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Cancel Order — only allowed until picked up (not after out_for_delivery) */}
       {order.status !== "out_for_delivery" && order.status !== "delivered" && order.status !== "cancelled" && (

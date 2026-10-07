@@ -1,15 +1,15 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Shipping & Delivery Policy | Siliguri Freshmart",
   description:
-    "Siliguri Freshmart delivery policy: NJP Gate Bazar hub, 20 km delivery area, delivery slots, distance-based time and fees, mandatory GPS location.",
+    "Siliguri Freshmart delivery policy: MCQF+GFQ, Siliguri hub, 20 km delivery area, delivery slots, distance-based time and fees, mandatory GPS location.",
   keywords:
-    "Siliguri Freshmart shipping, delivery policy, Siliguri home delivery, NJP Gate Bazar delivery, Siliguri grocery delivery rules, delivery slots",
+    "Siliguri Freshmart shipping, delivery policy, Siliguri home delivery, MCQF+GFQ, Siliguri delivery, Siliguri grocery delivery rules, delivery slots",
   openGraph: {
     title: "Shipping & Delivery Policy | Siliguri Freshmart",
     description:
-      "Learn how Siliguri Freshmart delivers across 20 km from NJP Gate Bazar: two daily delivery slots, distance-based fees, and mandatory GPS location.",
+      "Learn how Siliguri Freshmart delivers across 20 km from MCQF+GFQ, Siliguri: two daily delivery slots, distance-based fees, and mandatory GPS location.",
     url: "https://www.siligurifreshmart.com/policies/shipping",
     siteName: "Siliguri Freshmart",
   },
@@ -25,7 +25,7 @@ const faqSchema = {
       name: "How does the delivery slot system work?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Your delivery slot is automatically assigned based on your distance from our hub at NJP Gate Bazar. If you are 8–15 km away, you are assigned the Morning Slot (order before 9 AM, delivered 9 AM – 12 PM). If you are 15–20 km away, you are assigned the Afternoon Slot (order before 12 PM, delivered 12 PM – 4 PM). If you are within 8 km, no slot is needed — your order is delivered directly within 10–60 minutes.",
+        text: "Your delivery slot is automatically assigned based on your distance from our hub at MCQF+GFQ, Siliguri. If you are 8–16 km away, you are assigned the Morning Slot (order before 11 AM, delivered 11 AM – 1 PM). If you are 16–20 km away, you are assigned the Afternoon Slot (order before 2 PM, delivered 2 PM – 3 PM). If you are within 8 km, no slot is needed — your order is delivered directly within 1–2 hours.",
       },
     },
     {
@@ -33,7 +33,7 @@ const faqSchema = {
       name: "How far does Siliguri Freshmart deliver?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "We deliver within 20 km of our hub at NJP Gate Bazar, Siliguri. This covers most of Siliguri city including Sevoke Road, Matigara, Bagdogra, Pradhan Nagar, and surrounding areas.",
+        text: "We deliver within 20 km of our hub at MCQF+GFQ, Siliguri. This covers most of Siliguri city including Sevoke Road, Matigara, Bagdogra, Pradhan Nagar, and surrounding areas.",
       },
     },
     {
@@ -41,7 +41,7 @@ const faqSchema = {
       name: "Is there a delivery fee?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Within 4 km, delivery is free with no minimum order. Within 8 km, delivery is free — orders under ₹99 pay ₹59, orders under ₹299 pay ₹40, and ₹299+ are free. For 8–15 km, there is a ₹79 delivery fee unless your order is ₹1,499 or more. For 15–20 km, the fee is ₹99 unless your order is ₹1,999 or more.",
+        text: "Within 4 km, delivery is free with no minimum order. Within 8 km, delivery is free — orders under ₹99 pay ₹59, orders under ₹299 pay ₹40, and ₹299+ are free. For 8–16 km, there is a ₹79 delivery fee unless your order is ₹1,499 or more. For 16–20 km, the fee is ₹100 unless your order is ₹1,999 or more.",
       },
     },
     {
@@ -49,7 +49,7 @@ const faqSchema = {
       name: "What is the minimum order for delivery?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Within 8 km, there is no minimum order. For 8–15 km, the minimum order is ₹1,499. For 15–20 km, the minimum is ₹1,999. If your order is below the minimum, a small delivery fee applies instead.",
+        text: "Within 8 km, there is no minimum order. For 8–16 km, the minimum order is ₹1,499. For 16–20 km, the minimum is ₹1,999. If your order is below the minimum, a small delivery fee applies instead.",
       },
     },
     {
@@ -57,7 +57,7 @@ const faqSchema = {
       name: "What are the delivery slots?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "We have two daily delivery slots, assigned automatically by distance. Morning Slot (8–15 km): order before 9 AM for delivery between 9 AM and 12 PM. Afternoon Slot (15–20 km): order before 12 PM for delivery between 12 PM and 4 PM. Within 8 km, no slot is needed — delivery arrives within 10–60 minutes directly.",
+        text: "We have two daily delivery slots, assigned automatically by distance. Morning Slot (8–16 km): order before 11 AM for delivery between 11 AM and 1 PM. Afternoon Slot (16–20 km): order before 2 PM for delivery between 2 PM and 3 PM. Within 8 km, no slot is needed — delivery arrives within 1–2 hours directly.",
       },
     },
     {
@@ -81,7 +81,7 @@ const faqSchema = {
       name: "When are delivery slots available?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Both slots run daily, Monday to Sunday. Morning Slot (8–15 km): order before 9 AM, delivered 9 AM–12 PM. Afternoon Slot (15–20 km): order before 12 PM, delivered 12 PM–4 PM. Within 8 km: no slot needed, direct delivery within 10–60 minutes.",
+        text: "Both slots run daily, Monday to Sunday. Morning Slot (8–16 km): order before 11 AM, delivered 11 AM–1 PM. Afternoon Slot (16–20 km): order before 2 PM, delivered 2 PM–3 PM. Within 8 km: no slot needed, direct delivery within 1–2 hours.",
       },
     },
   ],
@@ -113,7 +113,7 @@ export default function ShippingPolicyPage() {
           {/* Hub Card */}
           <div className="mb-8 rounded-2xl bg-card border border-border p-6">
             <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Our Hub</p>
-            <p className="text-lg font-bold text-foreground">NJP Gate Bazar, Siliguri</p>
+            <p className="text-lg font-bold text-foreground">MCQF+GFQ, Siliguri</p>
             <p className="text-sm text-muted mt-1">All deliveries are dispatched from this location. Delivery times and fees are calculated based on your distance from this hub.</p>
           </div>
 
@@ -126,20 +126,20 @@ export default function ShippingPolicyPage() {
             <div className="grid gap-4 sm:grid-cols-2 mb-4">
               <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
                 <p className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">Morning Slot</p>
-                <p className="text-sm font-bold text-foreground">8–15 km from hub</p>
-                <p className="text-sm text-blue-700 mt-1">Order before 9 AM → Delivered <strong>9 AM – 12 PM</strong></p>
+                <p className="text-sm font-bold text-foreground">8–16 km from hub</p>
+                <p className="text-sm text-blue-700 mt-1">Order before 11 AM → Delivered <strong>11 AM – 1 PM</strong></p>
                 <p className="text-xs text-blue-600 mt-2">₹79 delivery fee if order is under ₹1,499. Free at ₹1,499+.</p>
               </div>
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-2">Afternoon Slot</p>
-                <p className="text-sm font-bold text-foreground">15–20 km from hub</p>
-                <p className="text-sm text-amber-700 mt-1">Order before 12 PM → Delivered <strong>12 PM – 4 PM</strong></p>
-                <p className="text-xs text-amber-600 mt-2">₹99 delivery fee if order is under ₹1,999. Free at ₹1,999+.</p>
+                <p className="text-sm font-bold text-foreground">16–20 km from hub</p>
+                <p className="text-sm text-amber-700 mt-1">Order before 2 PM → Delivered <strong>2 PM – 3 PM</strong></p>
+                <p className="text-xs text-amber-600 mt-2">₹100 delivery fee if order is under ₹1,999. Free at ₹1,999+.</p>
               </div>
             </div>
             <div className="rounded-2xl bg-surface-2 border border-border p-4 text-sm text-muted">
               <p className="font-semibold text-foreground mb-1">Within 8 km? No slot needed.</p>
-              <p>Orders within 8 km of NJP Gate Bazar are delivered directly within10–60 minutes. No time slot selection required — your order is dispatched as soon as it&apos;s packed.</p>
+              <p>Orders within 8 km of MCQF+GFQ, Siliguri are delivered directly within 1–2 hours. No time slot selection required — your order is dispatched as soon as it&apos;s packed.</p>
             </div>
             <p className="text-sm text-muted leading-relaxed mt-4">
               Both slots run daily, Monday to Sunday. Orders placed outside slot cutoff times are automatically assigned to the <strong>next available slot</strong>.
@@ -150,7 +150,7 @@ export default function ShippingPolicyPage() {
           <section className="mb-8">
             <h2 className="mb-3 text-xl font-bold text-foreground">Delivery Area &amp; Fees</h2>
             <p className="text-sm text-muted leading-relaxed mb-4">
-              We currently deliver within <strong>20 km</strong> of our hub at NJP Gate Bazar, Siliguri.
+              We currently deliver within <strong>20 km</strong> of our hub at MCQF+GFQ, Siliguri.
               Delivery times and charges depend on your exact distance from the hub.
             </p>
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -165,10 +165,10 @@ export default function ShippingPolicyPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    <tr><td className="px-5 py-3 text-sm font-medium">Within 4 km</td><td className="px-5 py-3 text-sm">45–60 min</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">4–8 km</td><td className="px-5 py-3 text-sm">1–1.5 hrs</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">8–15 km</td><td className="px-5 py-3 text-sm">2–3 hrs</td><td className="px-5 py-3 text-sm">₹1,499</td><td className="px-5 py-3 text-sm">₹79 (free at ₹1,499+)</td></tr>
-                    <tr><td className="px-5 py-3 text-sm font-medium">15–20 km</td><td className="px-5 py-3 text-sm">3–4 hrs</td><td className="px-5 py-3 text-sm">₹1,999</td><td className="px-5 py-3 text-sm">₹99 (free at ₹1,999+)</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">Within 4 km</td><td className="px-5 py-3 text-sm">1–2 hrs</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">4–8 km</td><td className="px-5 py-3 text-sm">1–2 hrs</td><td className="px-5 py-3 text-sm">None</td><td className="px-5 py-3 text-sm">Free</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">8–16 km</td><td className="px-5 py-3 text-sm">11 AM – 3 PM</td><td className="px-5 py-3 text-sm">₹1,499</td><td className="px-5 py-3 text-sm">₹79 (free at ₹1,499+)</td></tr>
+                    <tr><td className="px-5 py-3 text-sm font-medium">16–20 km</td><td className="px-5 py-3 text-sm">11 AM – 3 PM</td><td className="px-5 py-3 text-sm">₹1,999</td><td className="px-5 py-3 text-sm">₹100 (free at ₹1,999+)</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -212,7 +212,7 @@ export default function ShippingPolicyPage() {
               {[
                 { step: 1, title: "Browse & Add to Cart", text: "Add fresh fish, chicken, or groceries to your cart." },
                 { step: 2, title: "Pin Your Location", text: "Tap 'Detect Location' on the checkout page. Your GPS is used to calculate delivery distance, time, and fees." },
-                { step: 3, title: "Choose Delivery Slot", text: "Pick Morning (9 AM–12 PM) or Afternoon (12 PM–4 PM) delivery window." },
+                { step: 3, title: "Choose Delivery Slot", text: "Pick Morning (11 AM–1 PM) or Afternoon (2 PM–3 PM) delivery window." },
                 { step: 4, title: "Choose Payment", text: "Pay via UPI or Cash on Delivery. No hidden charges — what you see is what you pay." },
                 { step: 5, title: "Fresh Delivery", text: "Your order is hand-packed and delivered to your door within your chosen time slot." },
               ].map(({ step, title, text }) => (
@@ -242,8 +242,8 @@ export default function ShippingPolicyPage() {
           <section className="mb-8">
             <h2 className="mb-3 text-xl font-bold text-foreground">Delivery Hours</h2>
             <p className="text-sm text-muted leading-relaxed">
-              We deliver daily from <strong>9:00 AM to 4:00 PM</strong>. Two delivery slots run every day:
-              Morning (9 AM–12 PM) and Afternoon (12 PM–4 PM). Order cutoff times are 9 AM and 12 PM respectively.
+              We deliver daily from <strong>11:00 AM to 3:00 PM</strong>. Two delivery slots run every day:
+              Morning (11 AM–1 PM) and Afternoon (2 PM–3 PM). Order cutoff times are 11 AM and 2 PM respectively.
             </p>
           </section>
         </div>

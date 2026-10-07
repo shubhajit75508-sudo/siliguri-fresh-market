@@ -69,7 +69,7 @@ export function FishSpeciesClient({ slug }: { slug: string }) {
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
-              <Clock className="h-3.5 w-3.5" /> 45–60 min delivery
+              <Clock className="h-3.5 w-3.5" /> 1–2 hrs delivery
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
               <Truck className="h-3.5 w-3.5" /> Free above ₹299

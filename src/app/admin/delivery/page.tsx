@@ -184,7 +184,7 @@ export default function DeliveryPage() {
 
   const mapCenter: [number, number] = boyLocations.length > 0
     ? [boyLocations[0].lat, boyLocations[0].lng]
-    : [26.692365, 88.42275];
+    : [26.688844, 88.423625];
 
   return (
     <div>

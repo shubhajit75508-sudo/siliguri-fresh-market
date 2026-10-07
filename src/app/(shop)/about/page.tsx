@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { MapPin, Phone, Clock, Truck, Star, Shield, Leaf, Users, Heart } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -83,7 +83,7 @@ export default function AboutPage() {
             <p className="mt-0.5 text-xs font-semibold text-[#2D7D3A]">Co-Founder &bull; Online &amp; Technology</p>
             <p className="mt-2 text-[13px] text-muted leading-relaxed">
               Handles everything digital — the website, payments, customer experience, delivery tracking,
-              and the technology that makes 45–60 minute delivery possible. Grew up visiting Siliguri&apos;s
+              and the technology that makes 1–2 hour delivery possible. Grew up visiting Siliguri&apos;s
               fish markets and wanted to bring that freshness to every doorstep through technology.
             </p>
           </div>
@@ -112,7 +112,7 @@ export default function AboutPage() {
         <div className="grid gap-3 sm:grid-cols-2">
           {[
             { icon: Leaf, title: "100% Fresh", desc: "Sourced every morning from Siliguri's local markets. Never frozen, never stored." },
-            { icon: Truck, title: "30-Minute Delivery", desc: "Order before 4 PM and get it delivered the same day (9 AM – 4 PM), fresh to your door." },
+            { icon: Truck, title: "Same-Day Delivery", desc: "Order before 11 AM or 2 PM and get it delivered the same day (11 AM – 3 PM), fresh to your door." },
             { icon: Shield, title: "Freshness Guarantee", desc: "Not satisfied? Free replacement within 3 hours. No questions asked." },
             { icon: Users, title: "Community First", desc: "We hire locally, source locally, and deliver to our own neighbours." },
           ].map((item) => {

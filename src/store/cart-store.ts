@@ -162,7 +162,7 @@ export const useCartStore = create<CartState>()(
         getEta: () => {
           const distance = get().distance;
           if (distance !== null) return getEtaForDistance(distance);
-          return "45-60 min";
+          return "1-2 hrs";
         },
 
         getTotal: () => {
