@@ -17,7 +17,10 @@ import Link from "next/link";
 import { Package } from "lucide-react";
 
 function SectionRenderer({ category, title, subtitle }: { category: string; title: string; subtitle: string }) {
-  const { data: products = [] } = useProductsByCategory(category);
+  // The home page only ever renders four cards per section, so ask for four
+  // — the server prefetches exactly this key, which is what puts real products
+  // into the prerendered HTML instead of leaving skeletons behind.
+  const { data: products = [] } = useProductsByCategory(category, 4);
 
   if (!products.length) return null;
 
@@ -64,21 +67,11 @@ export function HomeClient() {
   const hydrated = useHydrated();
   const { data: allCategories = [] } = useCategories();
   const sections = settings?.sections ?? [];
+  // Custom sections only exist in this browser's localStorage, so they are
+  // applied after hydration. Server and hydration renders both see the default
+  // empty list, which keeps them identical for every real visitor (only an
+  // admin on their own device ever sees the auto-sections swap).
   const enabledSections = hydrated ? sections.filter((s) => s.enabled) : [];
-
-  if (!hydrated) {
-    return (
-      <div className="py-6 space-y-8">
-        <div className="skeleton h-[460px] rounded-[32px]" />
-        <div className="skeleton h-32 rounded-2xl" />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="skeleton h-64 rounded-2xl" />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   const rendered = new Set<string>();
   const enabledCategories = new Set(enabledSections.map((s) => s.category));

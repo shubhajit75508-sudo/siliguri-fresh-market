@@ -21,19 +21,26 @@ function mergeWithAdmin(products: Product[]): Product[] {
   return [...products, ...extraAdmin];
 }
 
-export async function getProductsByCategory(category: string): Promise<Product[]> {
+export async function getProductsByCategory(
+  category: string,
+  limit?: number
+): Promise<Product[]> {
   if (isSupabaseConfigured()) {
     try {
-      return await db.fetchProductsByCategory(category);
+      return await db.fetchProductsByCategory(category, limit);
     } catch {
       // fall through to mock when DB unavailable
     }
   }
   const mockProducts = mock.getProductsByCategory(category);
   const admin = getAdminProducts().filter((p) => p.category === category);
-  if (!admin.length) return mockProducts;
-  const productIds = new Set(mockProducts.map((p) => p.id));
-  return [...mockProducts, ...admin.filter((p) => !productIds.has(p.id))];
+  const merged = !admin.length
+    ? mockProducts
+    : [
+        ...mockProducts,
+        ...admin.filter((p) => !mockProducts.some((m) => m.id === p.id)),
+      ];
+  return limit ? merged.slice(0, limit) : merged;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -56,10 +63,17 @@ export async function getFlashDeals(): Promise<Product[]> {
 
   if (isSupabaseConfigured()) {
     try {
-      const res = await fetch("/api/products/flash-deals", { cache: "no-store" });
-      if (res.ok) {
-        const dbProducts: Product[] = await res.json();
-        products = [...products, ...dbProducts];
+      // Relative URLs only resolve in a browser. During prerendering there is
+      // no origin, so query Supabase directly — this is what lets the home
+      // page bake real flash deals into its static HTML instead of shells.
+      if (typeof window === "undefined") {
+        products = [...products, ...(await db.fetchFlashDeals())];
+      } else {
+        const res = await fetch("/api/products/flash-deals", { cache: "no-store" });
+        if (res.ok) {
+          const dbProducts: Product[] = await res.json();
+          products = [...products, ...dbProducts];
+        }
       }
     } catch {
       // API failed

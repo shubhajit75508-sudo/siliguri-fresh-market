@@ -241,32 +241,41 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   return data ? mapProduct(data as unknown as ProductRow) : null;
 }
 
-export async function fetchProductsByCategory(category: string): Promise<Product[]> {
-  const { data, error } = await supabase!
+export async function fetchProductsByCategory(
+  category: string,
+  limit?: number
+): Promise<Product[]> {
+  let query = supabase!
     .from("products")
     .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("category", category)
     .order("name");
+  if (limit) query = query.limit(limit);
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
-export async function fetchFlashDeals(): Promise<Product[]> {
+export async function fetchFlashDeals(limit = 24): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
     .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("is_flash_deal", true)
-    .eq("in_stock", true);
+    .eq("in_stock", true)
+    .order("name")
+    .limit(limit);
   if (error) throw error;
   return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
-export async function fetchTrendingProducts(): Promise<Product[]> {
+export async function fetchTrendingProducts(limit = 24): Promise<Product[]> {
   const { data, error } = await supabase!
     .from("products")
     .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("is_trending", true)
-    .eq("in_stock", true);
+    .eq("in_stock", true)
+    .order("name")
+    .limit(limit);
   if (error) throw error;
   return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }

@@ -26,7 +26,12 @@ export function MetaPixel() {
     <>
       <Script
         id="meta-pixel"
-        strategy="afterInteractive"
+        // lazyOnload: tracking must survive, but fbevents.js parsing
+        // competes with hydration for main-thread time on low-end devices.
+        // Deferring it to after the page has settled removes that contention
+        // without losing the PageView event. The <noscript> pixel below still
+        // covers users with JS disabled.
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `
 !function(f,b,e,v,n,t,s)
