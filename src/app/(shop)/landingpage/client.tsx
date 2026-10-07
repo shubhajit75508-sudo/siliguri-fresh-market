@@ -47,12 +47,12 @@ const LOGO = "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/What
 const catIcons = [Fish, Beef, Beef, Leaf, Apple, Egg];
 const catHrefs = ["/fish", "/category/chicken", "/category/mutton", "/category/vegetables", "/category/fruits", "/category/dairy"];
 const catImgs = [
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_1_m5fhyp.jpg",
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.55_PM_dgzy7a.jpg",
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.54_PM_2_g2jpax.jpg",
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.55_PM_1_nd29bh.jpg",
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.55_PM_2_rva3oy.jpg",
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216120/WhatsApp_Image_2026-06-23_at_5.21.56_PM_d2fdtk.jpg",
+  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791389062/WhatsApp_Image_2026-06-23_at_5.21.54_PM_1_hpcd6b.jpg",
+  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791389062/WhatsApp_Image_2026-06-23_at_5.21.55_PM_lny2lx.jpg",
+  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791389061/WhatsApp_Image_2026-06-23_at_5.21.54_PM_2_ymirsb.jpg",
+  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791389062/WhatsApp_Image_2026-06-23_at_5.21.55_PM_1_rd8uo4.jpg",
+  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791389062/WhatsApp_Image_2026-06-23_at_5.21.55_PM_2_kyvgce.jpg",
+  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791389062/WhatsApp_Image_2026-06-23_at_5.21.56_PM_v02m7t.jpg",
 ];
 const catColors = ["#0EA5E9", "#F97316", "#DC2626", "#16A34A", "#E11D48", "#CA8A04"];
 const featGradients = ["from-blue-500 to-cyan-400", "from-green-500 to-emerald-400", "from-purple-500 to-pink-400", "from-orange-500 to-red-400"];
