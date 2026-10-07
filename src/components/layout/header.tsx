@@ -23,7 +23,7 @@ export function Header() {
         {/* Desktop */}
         <div className="hidden h-[68px] items-center gap-6 lg:flex">
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-fresh/20">            <Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={40} height={40} className="h-10 w-10 object-contain rounded-xl" /></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-fresh/20">            <Image src="https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png" alt="SFM" width={40} height={40} className="h-10 w-10 object-contain rounded-xl" /></div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold text-foreground leading-tight">Siliguri</span>
               <span className="text-[10px] font-bold text-brand-fresh uppercase tracking-wider leading-tight">Freshmart</span>
@@ -96,7 +96,7 @@ export function Header() {
           <div className="flex h-12 items-center gap-2.5">
             <Link href="/" className="flex min-w-0 items-center gap-2.5">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/15 ring-1 ring-white/25">
-                <Image src="https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg" alt="SFM" width={40} height={40} className="h-9 w-9 object-contain" />
+                <Image src="https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png" alt="SFM" width={40} height={40} className="h-9 w-9 object-contain" />
               </div>
               <div className="min-w-0 leading-none">
                 <div className="truncate text-[15px] font-extrabold text-white tracking-tight">Siliguri</div>

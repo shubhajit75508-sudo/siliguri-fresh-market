@@ -33,7 +33,7 @@ export function OrganizationSchema() {
           "@type": "Organization",
           name: "Siliguri Freshmart",
           url: "https://www.siligurifreshmart.com",
-          logo: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
+          logo: "https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png",
           description: "Premium fresh fish, chicken, mutton, vegetables & essentials delivered to your doorstep in Siliguri.",
           address: {
             "@type": "PostalAddress",
@@ -67,7 +67,7 @@ export function LocalBusinessSchema() {
           "@type": "GroceryStore",
           "@id": "https://www.siligurifreshmart.com/#localbusiness",
           name: "Siliguri Freshmart",
-          image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg",
+          image: "https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png",
           telephone: "+91 7029908278",
           email: "siligurifreshmart@gmail.com",
           address: {

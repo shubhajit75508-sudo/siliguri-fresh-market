@@ -42,7 +42,7 @@ import {
 import { useEffect, useState } from "react";
 import { getTranslation, Lang } from "@/lib/i18n/landing-translations";
 
-const LOGO = "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782216119/WhatsApp_Image_2026-06-23_at_5.21.54_PM_mfd9v2.jpg";
+const LOGO = "https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png";
 
 const catIcons = [Fish, Beef, Beef, Leaf, Apple, Egg];
 const catHrefs = ["/fish", "/category/chicken", "/category/mutton", "/category/vegetables", "/category/fruits", "/category/dairy"];
