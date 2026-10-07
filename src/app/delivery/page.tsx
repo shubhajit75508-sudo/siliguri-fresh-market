@@ -5,14 +5,14 @@ import { useOrderStore } from "@/store/order-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice, getItemUnitPrice } from "@/lib/utils";
-import { calcDistance, formatDistance } from "@/lib/geo";
+import { calcDistance, formatDistance, HUB_COORDS } from "@/lib/geo";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import LiveMap from "@/components/maps/LiveMap";
 import { useToast } from "@/components/ui/toaster";
 import type { DeliveryAssignment } from "@/types";
 import {
   Navigation, MapPin, Phone, Package, CheckCircle, Truck, ShoppingBag, Radio, Loader2, LocateFixed,
-  ImageIcon, ClipboardList, Wallet, Banknote, QrCode, X, IndianRupee, XCircle,
+  ImageIcon, ClipboardList, Wallet, Banknote, QrCode, X, IndianRupee, XCircle, Route, ChevronDown,
 } from "lucide-react";
 
 // UPI QR shown to the customer so they can scan & pay at the door.
@@ -393,6 +393,7 @@ export default function DeliveryDashboard() {
   const [cancelFor, setCancelFor] = useState<DeliveryAssignment | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
+  const [showRoute, setShowRoute] = useState(true);
 
   const active = useMemo(() => {
     const now = Date.now();
@@ -404,6 +405,73 @@ export default function DeliveryDashboard() {
     });
   }, [assignments, boy?.id]);
   const activeOrderIds = useMemo(() => active.map((a) => a.orderId), [active]);
+
+  // ── My route: nearest-stop-first ordering of THIS boy's assignments ──
+  const AVG_SPEED_KMPH = 20;
+  const routeOrigin = currentPosition ?? HUB_COORDS;
+
+  const routeStops = useMemo(() => {
+    const remaining = active
+      .map((a) => {
+        const lat = a.address.lat;
+        const lng = a.address.lng;
+        if (typeof lat !== "number" || typeof lng !== "number") return null;
+        return { a, pos: [lat, lng] as [number, number] };
+      })
+      .filter((s): s is { a: DeliveryAssignment; pos: [number, number] } => s !== null);
+    if (remaining.length === 0) return [] as { a: DeliveryAssignment; pos: [number, number] }[];
+
+    const ordered: { a: DeliveryAssignment; pos: [number, number] }[] = [];
+    let cur: [number, number] = routeOrigin;
+    while (remaining.length > 0) {
+      let bestIdx = 0;
+      let bestD = Infinity;
+      for (let i = 0; i < remaining.length; i++) {
+        const d = calcDistance(cur[0], cur[1], remaining[i].pos[0], remaining[i].pos[1]);
+        if (d < bestD) {
+          bestD = d;
+          bestIdx = i;
+        }
+      }
+      const [next] = remaining.splice(bestIdx, 1);
+      ordered.push(next);
+      cur = next.pos;
+    }
+    return ordered;
+  }, [active, routeOrigin]);
+
+  const routeStats = useMemo(() => {
+    if (routeStops.length === 0) return null;
+    const points: [number, number][] = [routeOrigin];
+    for (const s of routeStops) points.push(s.pos);
+    const legs: number[] = [];
+    let totalKm = 0;
+    for (let i = 1; i < points.length; i++) {
+      const d = calcDistance(points[i - 1][0], points[i - 1][1], points[i][0], points[i][1]);
+      legs.push(d);
+      totalKm += d;
+    }
+    const minutes = Math.max(3, Math.round((totalKm / AVG_SPEED_KMPH) * 60));
+    return { totalKm, legs, minutes };
+  }, [routeStops, routeOrigin]);
+
+  const routeMarkers = useMemo(() => {
+    const markers: { position: [number, number]; icon: "boy" | "store" | "active"; label?: string }[] = [
+      { position: HUB_COORDS, icon: "store", label: "Hub — MCQF+GFQ, Siliguri" },
+    ];
+    if (currentPosition) markers.push({ position: currentPosition, icon: "boy", label: "You (live GPS)" });
+    routeStops.forEach((s, i) => {
+      markers.push({ position: s.pos, icon: "active", label: `Stop ${i + 1} — ${s.a.orderId}` });
+    });
+    return markers;
+  }, [currentPosition, routeStops]);
+
+  const routePolyline = useMemo(() => {
+    if (routeStops.length === 0) return [];
+    const points: [number, number][] = [routeOrigin];
+    for (const s of routeStops) points.push(s.pos);
+    return [{ points, color: "#FF7A00" }];
+  }, [routeStops, routeOrigin]);
 
   // ── Load assigned deliveries + poll for new assignments ──
   useEffect(() => {
@@ -644,6 +712,87 @@ export default function DeliveryDashboard() {
       </div>
       {gpsError && (
         <p className="text-[10px] text-brand-red bg-brand-red/5 rounded-lg px-3 py-2">{gpsError}</p>
+      )}
+
+      {/* My Route — only this boy's own assignments, nearest stop first */}
+      {routeStats && (
+        <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+          <button
+            onClick={() => setShowRoute((v) => !v)}
+            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+            aria-expanded={showRoute}
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10">
+                <Route className="h-4 w-4 text-brand-orange" />
+              </span>
+              <span className="min-w-0">
+                <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+                  My Route
+                  <span className="rounded-full bg-brand-orange/10 px-1.5 py-0.5 text-[10px] font-bold text-brand-orange">
+                    {routeStops.length} stop{routeStops.length > 1 ? "s" : ""}
+                  </span>
+                </span>
+                <span className="block truncate text-[10px] text-muted">
+                  {formatDistance(routeStats.totalKm)} total · ~{routeStats.minutes} min · nearest stop first
+                </span>
+              </span>
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 shrink-0 text-muted transition-transform ${showRoute ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {showRoute && (
+            <div className="border-t border-border/70">
+              <div className="relative">
+                <LiveMap
+                  center={routeOrigin}
+                  zoom={12}
+                  markers={routeMarkers}
+                  polylines={routePolyline}
+                  className="h-[260px] w-full"
+                />
+                <div className="pointer-events-none absolute bottom-3 left-3 z-[1000] rounded-xl bg-white/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
+                  {formatDistance(routeStats.totalKm)}
+                  <span className="font-bold text-brand-orange"> · {routeStats.minutes} min</span>
+                </div>
+              </div>
+
+              <ol className="space-y-1.5 p-3">
+                <li className="flex items-center gap-2 text-[11px] text-muted">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[9px] font-bold ring-1 ring-border">
+                    0
+                  </span>
+                  <span className="min-w-0 flex-1 truncate">
+                    Start — {currentPosition ? "Your location" : "Hub (MCQF+GFQ, Siliguri)"}
+                  </span>
+                </li>
+                {routeStops.map((s, i) => (
+                  <li key={s.a.id} className="flex items-center gap-2 text-[11px]">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-orange text-[9px] font-bold text-white">
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-foreground">
+                      {s.a.customerName}
+                      <span className="text-muted"> · {s.a.address.area || s.a.address.line1}</span>
+                    </span>
+                    <span className="shrink-0 text-muted">{formatDistance(routeStats.legs[i])}</span>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${s.pos[0]},${s.pos[1]}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue transition-colors hover:bg-brand-blue/20"
+                      aria-label={`Navigate to stop ${i + 1}`}
+                    >
+                      <Navigation className="h-3 w-3" />
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Deliveries */}

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Share2, BadgeCheck, Zap, PackageCheck } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, Star, Flame, Truck, Clock, Shield, Leaf, MapPin, Share2, BadgeCheck, Zap, PackageCheck, ChevronDown } from "lucide-react";
 import type { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
@@ -19,6 +19,7 @@ export function ProductClient({ product }: { product: Product }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const addToCart = useCartStore((s) => s.addItem);
   const { wishlist, toggleWishlist } = useUserStore();
 
@@ -47,6 +48,8 @@ export function ProductClient({ product }: { product: Product }) {
   const available = product.inStock && stockQty > 0;
 
   const allImages = [product.image, ...(product.images || [])];
+  const hasOptions =
+    weights.length > 1 || (product.cuts?.length ?? 0) > 0 || (product.cleaningOptions?.length ?? 0) > 0;
 
   const handleAdd = useCallback(() => {
     addToCart(product, qty, { weight: displayWeight, cut: selectedCut, cleaning: selectedClean });
@@ -100,7 +103,7 @@ export function ProductClient({ product }: { product: Product }) {
   );
 
   return (
-    <div className="pb-[340px] lg:pb-0">
+    <div className="pb-[190px] lg:pb-0">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       {/* Breadcrumb + actions */}
@@ -441,130 +444,148 @@ export function ProductClient({ product }: { product: Product }) {
         </div>
       </div>
 
-      {/* ── Sticky Mobile Buy Panel (always expanded, no dropdown) ── */}
+      {/* ── Sticky Mobile Buy Bar (compact, options collapsible) ── */}
       {available && (
         <div className="fixed inset-x-0 bottom-[76px] z-40 lg:hidden">
-          <div className="mx-3 mb-1 overflow-hidden rounded-2xl border border-border bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgba(16,45,20,0.18)]">
-            {/* Top row: thumb + price + qty stepper + Add */}
-            <div className="flex items-center gap-2.5 p-2.5">
-              <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-surface-2 ring-1 ring-border">
-                <Image src={allImages[0]} alt={product.name} width={44} height={44} className="h-full w-full object-cover" />
+          <div className="mx-2 mb-2 overflow-hidden rounded-2xl border border-border bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgba(16,45,20,0.18)]">
+            {/* Options: weight, cut, cleaning — collapsed by default */}
+            {showOptions && (
+              <div className="max-h-[30vh] overflow-y-auto border-b border-border/70 bg-gradient-to-b from-surface/60 to-white p-3 no-scrollbar">
+                {/* Weight */}
+                <div>
+                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Select Weight</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {weights.map((w) => (
+                      <button
+                        key={w}
+                        onClick={() => setSelectedWeight(w)}
+                        className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition-all ${
+                          displayWeight === w
+                            ? "border-[#2D7D3A] bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/30"
+                            : "border-border bg-white text-muted hover:border-[#2D7D3A]/50"
+                        }`}
+                      >
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cut Options */}
+                {product.cuts && product.cuts.length > 0 && (
+                  <div className="mt-3">
+                    <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Cut Preference</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {product.cuts.map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setSelectedCut(c === selectedCut ? "" : c)}
+                          className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition-all ${
+                            selectedCut === c
+                              ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
+                              : "border-border bg-white text-muted hover:border-brand-fresh/50"
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                      {selectedCut && (
+                        <button onClick={() => setSelectedCut("")} className="text-[10px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Cleaning Options */}
+                {product.cleaningOptions && product.cleaningOptions.length > 0 && (
+                  <div className="mt-3">
+                    <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Cleaning</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {product.cleaningOptions.map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setSelectedClean(c === selectedClean ? "" : c)}
+                          className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition-all ${
+                            selectedClean === c
+                              ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
+                              : "border-border bg-white text-muted hover:border-brand-fresh/50"
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                      {selectedClean && (
+                        <button onClick={() => setSelectedClean("")} className="text-[10px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
+            )}
+
+            {/* Row 1: price + weight chip + qty stepper */}
+            <div className="flex items-center gap-2 px-3 pt-2.5">
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-sm font-extrabold tabular-nums text-foreground">{formatPrice(displayPrice * qty)}</span>
+                <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                  <span className="text-[17px] font-extrabold leading-none tabular-nums text-foreground">
+                    {formatPrice(displayPrice * qty)}
+                  </span>
                   {displayOriginal && displayOriginal > displayPrice && (
-                    <span className="text-[10px] text-muted-light line-through">{formatPrice(displayOriginal)}</span>
+                    <span className="text-[11px] font-medium leading-none text-muted-light line-through">
+                      {formatPrice(displayOriginal * qty)}
+                    </span>
+                  )}
+                  {savings > 0 && (
+                    <span className="rounded-full bg-[#E7F6EA] px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-brand-fresh">
+                      SAVE {formatPrice(savings * qty)}
+                    </span>
                   )}
                 </div>
-                <p className={`text-[10px] font-bold ${savings > 0 ? "text-brand-fresh" : "text-muted"}`}>
-                  {savings > 0 ? `Save ${formatPrice(savings * qty)}` : "Verified Seller"}
+                <p className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-muted">
+                  <BadgeCheck className="h-3 w-3 shrink-0 text-brand-fresh" /> Verified Seller
+                  <span className="text-muted-light">·</span> {displayWeight}
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-1.5">
-                <div className="flex h-10 shrink-0 items-center rounded-xl border border-border bg-surface-2">
-                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="flex h-full w-8 items-center justify-center text-base font-bold text-muted active:scale-90" aria-label="Decrease quantity">−</button>
-                  <span className="w-6 text-center text-[13px] font-bold tabular-nums text-foreground">{qty}</span>
-                  <button onClick={() => setQty(qty + 1)} className="flex h-full w-8 items-center justify-center text-base font-bold text-muted active:scale-90" aria-label="Increase quantity">+</button>
-                </div>
+
+              <div className="flex h-9 shrink-0 items-center rounded-xl border border-border bg-surface-2">
+                <button onClick={() => setQty(Math.max(1, qty - 1))} className="flex h-full w-8 items-center justify-center text-base font-bold text-muted active:scale-90" aria-label="Decrease quantity">−</button>
+                <span className="w-5 text-center text-[13px] font-bold tabular-nums text-foreground">{qty}</span>
+                <button onClick={() => setQty(qty + 1)} className="flex h-full w-8 items-center justify-center text-base font-bold text-muted active:scale-90" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+
+            {/* Row 2: options toggle + Add to Cart + Buy Now */}
+            <div className="flex items-center gap-2 p-2.5 pt-2">
+              {hasOptions && (
                 <button
-                  onClick={handleAdd}
-                  aria-label="Add to cart"
-                  className="flex h-10 items-center justify-center gap-1 rounded-xl bg-gradient-to-b from-[#2E9B3F] to-[#23682E] px-3.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#2D7D3A]/30 transition-all hover:brightness-105 active:scale-[0.97]"
+                  onClick={() => setShowOptions((v) => !v)}
+                  className={`flex h-10 shrink-0 items-center gap-1 rounded-xl border px-2.5 text-[11px] font-bold transition-all ${
+                    showOptions
+                      ? "border-[#2D7D3A] bg-[#2D7D3A]/10 text-[#2D7D3A]"
+                      : "border-border bg-surface-2 text-muted hover:text-foreground"
+                  }`}
                 >
-                  {justAdded ? <PackageCheck className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-                  {justAdded ? "Added" : "Add"}
+                  <span className="max-w-[70px] truncate">{displayWeight}</span>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showOptions ? "rotate-180" : ""}`} />
                 </button>
-              </div>
-            </div>
-
-            {/* Options: weight, cut, cleaning — always visible */}
-            <div className="max-h-[30vh] overflow-y-auto border-t border-border/70 bg-gradient-to-b from-surface/60 to-white p-3 pt-2 no-scrollbar">
-              {/* Weight */}
-              <div>
-                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Select Weight</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {weights.map((w) => (
-                    <button
-                      key={w}
-                      onClick={() => setSelectedWeight(w)}
-                      className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-all ${
-                        displayWeight === w
-                          ? "border-[#2D7D3A] bg-[#2D7D3A] text-white shadow-md shadow-[#2D7D3A]/30"
-                          : "border-border bg-white text-muted hover:border-[#2D7D3A]/50"
-                      }`}
-                    >
-                      {w}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cut Options */}
-              {product.cuts && product.cuts.length > 0 && (
-                <div className="mt-2.5">
-                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Cut Preference</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.cuts.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => setSelectedCut(c === selectedCut ? "" : c)}
-                        className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-all ${
-                          selectedCut === c
-                            ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
-                            : "border-border bg-white text-muted hover:border-brand-fresh/50"
-                        }`}
-                      >
-                        {c}
-                      </button>
-                    ))}
-                    {selectedCut && (
-                      <button onClick={() => setSelectedCut("")} className="text-[10px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
-                    )}
-                  </div>
-                </div>
               )}
 
-              {/* Cleaning Options */}
-              {product.cleaningOptions && product.cleaningOptions.length > 0 && (
-                <div className="mt-2.5">
-                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">Cleaning</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.cleaningOptions.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => setSelectedClean(c === selectedClean ? "" : c)}
-                        className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-all ${
-                          selectedClean === c
-                            ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
-                            : "border-border bg-white text-muted hover:border-brand-fresh/50"
-                        }`}
-                      >
-                        {c}
-                      </button>
-                    ))}
-                    {selectedClean && (
-                      <button onClick={() => setSelectedClean("")} className="text-[10px] font-semibold text-muted underline underline-offset-2 hover:text-foreground">Clear</button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+              <button
+                onClick={handleAdd}
+                aria-label="Add to cart"
+                className={`flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl border text-xs font-extrabold uppercase tracking-wide transition-all active:scale-[0.97] ${
+                  justAdded
+                    ? "border-brand-fresh bg-brand-fresh text-white shadow-md shadow-[#2D7D3A]/30"
+                    : "border-[#2D7D3A]/30 bg-white text-[#23682E] hover:bg-[#E7F6EA]"
+                }`}
+              >
+                {justAdded ? <PackageCheck className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+                {justAdded ? "Added" : "Add"}
+              </button>
 
-            {/* Bottom row: total + Buy Now */}
-            <div className="flex items-center justify-between gap-3 border-t border-border/70 bg-white p-2.5">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-wide text-muted">Total ({qty} item{qty > 1 ? "s" : ""})</p>
-                <p className="text-[15px] font-extrabold tabular-nums text-foreground leading-tight">
-                  {formatPrice(displayPrice * qty)}
-                  {displayOriginal && displayOriginal > displayPrice && (
-                    <span className="ml-1.5 text-[10px] font-medium text-muted-light line-through align-middle">{formatPrice(displayOriginal * qty)}</span>
-                  )}
-                </p>
-              </div>
               <button
                 onClick={handleBuyNow}
-                className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border-2 border-[#F5A623] bg-[#FFF6E5] px-5 text-sm font-extrabold uppercase tracking-wide text-[#8A5C06] transition-all hover:bg-[#FFEDC6] active:scale-[0.97]"
+                className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-b from-[#2E9B3F] to-[#23682E] px-3 text-xs font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#2D7D3A]/30 transition-all hover:brightness-105 active:scale-[0.97]"
               >
                 <ArrowLeft className="h-4 w-4 rotate-180" /> Buy Now
               </button>
