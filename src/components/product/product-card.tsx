@@ -10,6 +10,7 @@ import { useUserStore } from "@/store/user-store";
 import { useToast } from "@/components/ui/toaster";
 import { RestockNotifyButton } from "@/components/product/restock-notify-button";
 import { formatPrice, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight, cn } from "@/lib/utils";
+import { BLUR_DATA_URL } from "@/lib/image";
 import { fbq } from "@/components/analytics/meta-pixel";
 import type { Product } from "@/types";
 
@@ -108,7 +109,7 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
     return (
       <div className="product-card flex gap-3 p-3">
         <Link href={`/product/${product.slug}`} className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-2xl bg-white/5">
-          <Image src={product.image} alt={product.name} fill sizes="80px" className="object-cover product-img" />
+          <Image src={product.image} alt={product.name} fill sizes="80px" placeholder="blur" blurDataURL={BLUR_DATA_URL} className="object-cover product-img" />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <Link href={`/product/${product.slug}`} className="block min-w-0">
@@ -147,6 +148,8 @@ export function ProductCard({ product, variant = "default", badge }: ProductCard
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
+            placeholder="blur"
+            blurDataURL={BLUR_DATA_URL}
             className="object-cover product-img"
           />
 

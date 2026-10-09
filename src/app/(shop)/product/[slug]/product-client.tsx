@@ -9,6 +9,7 @@ import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
 import { formatPrice, getWeightMultiplier, getAvailableWeights, getPriceForWeight, getOriginalPriceForWeight } from "@/lib/utils";
 import { RestockNotifyButton } from "@/components/product/restock-notify-button";
+import { RecentlyViewedRail, BuyAgainRail } from "@/components/product/product-rail";
 import { fbq } from "@/components/analytics/meta-pixel";
 
 export function ProductClient({ product }: { product: Product }) {
@@ -22,6 +23,11 @@ export function ProductClient({ product }: { product: Product }) {
   const [showOptions, setShowOptions] = useState(false);
   const addToCart = useCartStore((s) => s.addItem);
   const { wishlist, toggleWishlist } = useUserStore();
+  const addRecentlyViewedProduct = useUserStore((s) => s.addRecentlyViewedProduct);
+
+  useEffect(() => {
+    if (product?.id) addRecentlyViewedProduct(product);
+  }, [product, addRecentlyViewedProduct]);
 
   useEffect(() => {
     fbq("ViewContent", {
@@ -443,6 +449,9 @@ export function ProductClient({ product }: { product: Product }) {
           </div>
         </div>
       </div>
+
+      <RecentlyViewedRail excludeId={product.id} />
+      <BuyAgainRail />
 
       {/* ── Sticky Mobile Buy Bar (compact, options collapsible) ── */}
       {available && (

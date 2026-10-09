@@ -11,6 +11,7 @@ import { FAQSection } from "@/components/home/faq-section";
 import { ReviewsSection } from "@/components/home/reviews-section";
 import { Testimonials } from "@/components/home/testimonials";
 import { FreshnessBanner } from "@/components/home/freshness-banner";
+import { RecentlyViewedRail, BuyAgainRail } from "@/components/product/product-rail";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { Reveal } from "@/components/ui/reveal";
 import Link from "next/link";
@@ -104,6 +105,8 @@ export function HomeClient() {
         </Link>
       </Reveal>
       <FlashDealsSection />
+      <BuyAgainRail autoLoad />
+      <RecentlyViewedRail />
 
       {enabledSections.map((sec) => {
         const key = `${sec.category}-${sec.title}`;

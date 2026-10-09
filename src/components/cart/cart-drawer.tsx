@@ -42,6 +42,15 @@ export function CartDrawer() {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeCart();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, closeCart]);
+
   const badge = (cat: string) => {
     if (["fish", "chicken", "mutton", "pork", "seafood"].includes(cat)) return { label: "FRESH", cls: "fresh" };
     if (["fruits", "vegetables"].includes(cat)) return { label: "ORGANIC", cls: "organic" };
@@ -98,6 +107,9 @@ export function CartDrawer() {
             dragConstraints={{ left: 0, right: 120 }}
             dragElastic={0.12}
             onDragEnd={(_, info) => { if (info.offset.x > 100) closeCart(); }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping cart"
             className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-white shadow-2xl border-l border-border"
           >
             {/* Header */}

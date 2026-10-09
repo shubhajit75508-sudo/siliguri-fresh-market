@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/", icon: Home, label: "Home" },
-  { href: "/search", icon: LayoutGrid, label: "Browse" },
+  { href: "/search", icon: LayoutGrid, label: "Categories" },
   { href: "/account/wishlist", icon: Heart, label: "Wishlist" },
   { href: "/account", icon: User, label: "Account" },
 ];

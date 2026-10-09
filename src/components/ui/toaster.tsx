@@ -36,7 +36,7 @@ export function Toaster() {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+    <div role="status" aria-live="polite" className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
       <AnimatePresence>
         {toasts.map((toast) => {
           const Icon = icons[toast.type];
@@ -50,7 +50,7 @@ export function Toaster() {
             >
               <Icon className="h-5 w-5 shrink-0" />
               <span className="text-sm font-medium text-foreground">{toast.message}</span>
-              <button onClick={() => remove(toast.id)} className="ml-2 opacity-60 hover:opacity-100">
+              <button onClick={() => remove(toast.id)} aria-label="Dismiss notification" className="ml-2 opacity-60 hover:opacity-100">
                 <X className="h-4 w-4" />
               </button>
             </motion.div>

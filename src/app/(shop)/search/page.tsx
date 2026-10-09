@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoriesSection } from "@/components/home/categories-section";
 import { FadeIn } from "@/components/animations/motion-wrapper";
+import { ProductGridSkeleton } from "@/components/ui/skeleton";
 import { useSearchProducts, useTrendingProducts, useProducts } from "@/lib/hooks/use-products";
 import { fbq } from "@/components/analytics/meta-pixel";
 
@@ -74,7 +75,7 @@ function SearchResults() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="py-6 text-muted text-sm">Loading products...</div>}>
+    <Suspense fallback={<div className="py-6"><ProductGridSkeleton count={8} /></div>}>
       <SearchResults />
     </Suspense>
   );

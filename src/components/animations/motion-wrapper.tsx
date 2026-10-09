@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface FadeInProps extends HTMLMotionProps<"div"> {
@@ -15,6 +15,7 @@ export function FadeIn({
   className,
   ...props
 }: FadeInProps) {
+  const reduce = useReducedMotion();
   const directions = {
     up: { y: 24 },
     down: { y: -24 },
@@ -25,8 +26,8 @@ export function FadeIn({
 
   return (
     <motion.div
-      initial={{ opacity: 0, ...directions[direction] }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      initial={reduce ? { opacity: 1 } : { opacity: 0, ...directions[direction] }}
+      whileInView={reduce ? undefined : { opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={cn(className)}
@@ -110,9 +111,10 @@ export function FloatingElement({
   children: React.ReactNode;
   className?: string;
 }) {
+  const reduce = useReducedMotion();
   return (
     <motion.div
-      animate={{ y: [0, -8, 0] }}
+      animate={reduce ? undefined : { y: [0, -8, 0] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       className={className}
     >

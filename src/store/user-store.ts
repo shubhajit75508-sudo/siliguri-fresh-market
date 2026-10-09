@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import type { Address, User } from "@/types";
+import type { Address, Product, User } from "@/types";
 
 interface UserState {
   user: User | null;
   addresses: Address[];
   recentlyViewed: string[];
+  recentlyViewedProducts: Product[];
   searchHistory: string[];
   wishlist: string[];
   deliveryPincode: string;
@@ -17,6 +18,7 @@ interface UserState {
   deleteAddress: (id: string) => void;
   setDefaultAddress: (id: string) => void;
   addToRecentlyViewed: (productId: string) => void;
+  addRecentlyViewedProduct: (product: Product) => void;
   addToSearchHistory: (query: string) => void;
   clearSearchHistory: () => void;
   toggleWishlist: (productId: string) => void;
@@ -32,6 +34,7 @@ export const useUserStore = create<UserState>()(
         user: null,
         addresses: [],
         recentlyViewed: [],
+        recentlyViewedProducts: [],
         searchHistory: [],
         wishlist: [],
         deliveryPincode: "",
@@ -62,6 +65,14 @@ export const useUserStore = create<UserState>()(
             recentlyViewed: [
               productId,
               ...state.recentlyViewed.filter((id) => id !== productId),
+            ].slice(0, 10),
+          })),
+
+        addRecentlyViewedProduct: (product) =>
+          set((state) => ({
+            recentlyViewedProducts: [
+              product,
+              ...state.recentlyViewedProducts.filter((p) => p.id !== product.id),
             ].slice(0, 10),
           })),
 
