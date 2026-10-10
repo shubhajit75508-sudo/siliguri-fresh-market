@@ -280,19 +280,82 @@ export async function fetchTrendingProducts(limit = 24): Promise<Product[]> {
   return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
 }
 
+const SEARCH_FIELDS = [
+  "name",
+  "category",
+  "species",
+  "description",
+  "source",
+  "tags::text",
+  "subcategory::text",
+] as const;
+
+// Columns guaranteed to exist even if the schema drifted: keep search alive
+// when the broad multi-column filter fails.
+const SEARCH_FALLBACK_FIELDS = ["name", "description", "category"] as const;
+
 export async function searchProductsByQuery(query: string): Promise<Product[]> {
-  const escaped = query.toLowerCase().replace(/%/g, "\\%").replace(/_/g, "\\_");
-  const q = `%${escaped}%`;
-  const { data, error } = await supabase!
-    .from("products")
-    .select(PUBLIC_PRODUCT_COLUMNS)
-    .or(
-      `name.ilike.${q},category.ilike.${q},species.ilike.${q},description.ilike.${q},source.ilike.${q},tags::text.ilike.${q},subcategory::text.ilike.${q}`
-    )
-    .eq("in_stock", true)
-    .limit(50);
-  if (error) throw error;
-  return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
+  // Break the query into up to four words and strip punctuation/wildcards so
+  // nothing user-typed can break the PostgREST filter syntax. Non-ASCII
+  // letters (Bengali, Hindi) are kept.
+  const terms = query
+    .toLowerCase()
+    .normalize("NFC")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 4);
+  if (terms.length === 0) return [];
+
+  const buildOr = (fields: readonly string[]) =>
+    terms.map((t) => `or(${fields.map((f) => `${f}.ilike.%${t}%`).join(",")})`);
+
+  const run = async (filter: string) => {
+    const { data, error } = await supabase!
+      .from("products")
+      .select(PUBLIC_PRODUCT_COLUMNS)
+      .or(filter)
+      .eq("in_stock", true)
+      .limit(50);
+    if (error) throw error;
+    return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
+  };
+
+  // Every term must appear somewhere. Single term -> OR across all fields.
+  // Multiple terms -> (t1 in any field) AND (t2 in any field), via nested
+  // PostgREST boolean filters.
+  const pushResults = async (fields: readonly string[]) => {
+    const groups = buildOr(fields);
+    const filter = groups.length === 1 ? groups[0] : `and(${groups.join(",")})`;
+    return run(filter);
+  };
+
+  const attempts: Array<() => Promise<Product[]>> = [
+    () => pushResults(SEARCH_FIELDS),
+    () => pushResults(SEARCH_FALLBACK_FIELDS),
+    // Last resort: plain substring on the name, exactly like the original
+    // pre-split behavior — guaranteed valid on any PostgREST version.
+    async () => {
+      const { data, error } = await supabase!
+        .from("products")
+        .select(PUBLIC_PRODUCT_COLUMNS)
+        .ilike("name", `%${terms.join(" ")}%`)
+        .eq("in_stock", true)
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []).map((row) => mapProduct(row as unknown as ProductRow));
+    },
+  ];
+
+  let lastError: unknown = null;
+  for (const attempt of attempts) {
+    try {
+      return await attempt();
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError;
 }
 
 export async function fetchCategories(): Promise<CategoryInfo[]> {
