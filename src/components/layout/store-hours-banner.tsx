@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 import { getStoreStatus } from "@/lib/store-hours";
+import { useCartStore } from "@/store/cart-store";
 
 export function StoreHoursBanner() {
-  const [status, setStatus] = useState(getStoreStatus);
+  const [now, setNow] = useState(() => new Date());
+  const distance = useCartStore((s) => s.distance);
+  const status = getStoreStatus(now, distance !== null && distance > 8);
 
   useEffect(() => {
-    const id = setInterval(() => setStatus(getStoreStatus()), 60_000);
+    const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
 

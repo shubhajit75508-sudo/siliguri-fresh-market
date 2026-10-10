@@ -34,11 +34,12 @@ export function CartDrawer() {
   const minOrder = getMinOrder();
   const minOrderShortfall = minOrder > 0 && subtotal < minOrder ? minOrder - subtotal : 0;
 
-  const [storeStatus, setStoreStatus] = useState(getStoreStatus);
+  const [now, setNow] = useState(() => new Date());
   const [weightNoticeDismissed, setWeightNoticeDismissed] = useState(false);
+  const storeStatus = getStoreStatus(now, distance !== null && distance > 8);
 
   useEffect(() => {
-    const id = setInterval(() => setStoreStatus(getStoreStatus()), 60_000);
+    const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
 
