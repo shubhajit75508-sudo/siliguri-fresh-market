@@ -88,7 +88,7 @@ export function LocalBusinessSchema() {
           paymentAccepted: "Cash, UPI (Google Pay, PhonePe, Paytm)",
           servesCuisine: ["Fresh Fish", "Chicken", "Mutton", "Pork", "Seafood", "Vegetables", "Fruits", "Dairy", "Groceries"],
           openingHoursSpecification: [
-            { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "07:00", closes: "15:00" },
+            { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens: "09:00", closes: "16:00" },
           ],
           areaServed: [
             { "@type": "City", name: "Siliguri", geo: { "@type": "GeoCoordinates", latitude: 26.688844, longitude: 88.423625 } },

@@ -1,36 +1,38 @@
 ﻿# Siliguri Freshmart
 
-> Premium fresh fish, chicken, mutton, vegetables and essentials delivered to your doorstep in Siliguri in 30 minutes. Free delivery above ₹299.
+> Premium fresh fish, chicken, mutton, vegetables and essentials delivered to your doorstep in Siliguri. Same-day delivery, free above ₹299.
 
 ## About
-Siliguri Freshmart is a quick-commerce grocery delivery service based in Siliguri, West Bengal, India. We deliver fresh fish, chicken, mutton, pork, seafood, vegetables, fruits, dairy and daily essentials within 30 minutes.
+Siliguri Freshmart is an online fresh fish and meat delivery service based in Siliguri, West Bengal, India. We deliver fresh fish, chicken, mutton, pork, seafood, vegetables, fruits, dairy and daily essentials. Everything is sourced fresh each morning from Siliguri's local markets, packed in insulated bags and delivered directly to your doorstep — no middlemen, no frozen storage.
 
 ## Categories
-- [Fresh Fish](https://www.siligurifreshmart.com/category/fish): Rohu, Katla, Pabda, Bhetki, Tangra and more — daily fresh from local markets
+- [Fresh Fish](https://www.siligurifreshmart.com/category/fish): Rohu, Katla, Hilsa, Prawns, Pabda, Tangra and more — daily fresh from local markets
 - [Chicken](https://www.siligurifreshmart.com/category/chicken): Farm-fresh broiler and country chicken, cut to order
 - [Mutton](https://www.siligurifreshmart.com/category/mutton): Premium goat mutton, curry cut and keema
-- [Vegetables](https://www.siligurifreshmart.com/category/vegetables): Seasonal and organic vegetables
+- [Vegetables](https://www.siligurifreshmart.com/category/vegetables): Seasonal and farm-fresh vegetables
 - [Fruits](https://www.siligurifreshmart.com/category/fruits): Fresh seasonal fruits
 - [Dairy & Eggs](https://www.siligurifreshmart.com/category/dairy): Milk, curd, paneer, eggs
 - [Groceries](https://www.siligurifreshmart.com/category/groceries): Rice, dal, oil, spices and daily essentials
+- [Durga Puja Special](https://www.siligurifreshmart.com/durgapuja): Fresh fish and meat delivery for Durga Puja (Shashthi to Dashami)
 
 ## Delivery Info
-- Delivery time: 30 minutes
-- Delivery area: Within Siliguri city limits
-- Free delivery on orders above ₹299
-- Delivery fee: ₹59 (below ₹99), ₹40 (₹99-₹298), Free (₹299+)
-- Payment: Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm)
+- Same-day delivery across a 20 km radius of our hub at MCQF+GFQ, Siliguri
+- Delivery time by distance: within 4 km ~1 hour; within 8 km 1–2 hours; 8–16 km Morning Slot (order before 11 AM, delivered 11 AM–1 PM); 16–20 km Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM)
+- Free delivery on orders above ₹299 (within 8 km); no minimum within 4 km
+- Delivery fee: ₹59 (below ₹99 within 8 km), ₹40 (₹99–₹298), Free (₹299+); 8–16 km ₹79 below ₹1,499; 16–20 km ₹100 below ₹1,999
+- GPS location required at checkout to calculate distance, time and fees
+- Payment: Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), cards, netbanking
 
 ## Contact
-- Phone: +91 7029908278
+- Phone/WhatsApp: +91 7029908278 (also +91 96354 80453, +91 62959 53287)
 - Email: siligurifreshmart@gmail.com
 - Website: https://www.siligurifreshmart.com
 
 ## Store Hours
-Open daily: 6:00 AM – 3:00 PM IST
+Open daily: 9:00 AM – 4:00 PM IST
 
 ## Help
 - [FAQ](https://www.siligurifreshmart.com/#faq): Common questions answered
 - [Shipping Policy](https://www.siligurifreshmart.com/policies/shipping): Delivery details
-- [Return Policy](https://www.siligurifreshmart.com/policies/returns): 2-hour replacement window
+- [Return Policy](https://www.siligurifreshmart.com/policies/returns): Replacement window
 - [Terms](https://www.siligurifreshmart.com/policies/terms): Terms and conditions

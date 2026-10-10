@@ -11,6 +11,7 @@ import { FAQSection } from "@/components/home/faq-section";
 import { ReviewsSection } from "@/components/home/reviews-section";
 import { Testimonials } from "@/components/home/testimonials";
 import { FreshnessBanner } from "@/components/home/freshness-banner";
+import { FestivalBanner } from "@/components/home/festival-banner";
 import { RecentlyViewedRail, BuyAgainRail } from "@/components/product/product-rail";
 import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { Reveal } from "@/components/ui/reveal";
@@ -82,6 +83,7 @@ export function HomeClient() {
       <CategoriesSection />
       <HeroSection />
       <FreshnessBanner />
+      <FestivalBanner />
       <CategoriesGrid />
       <Reveal y={16}>
         <Link
