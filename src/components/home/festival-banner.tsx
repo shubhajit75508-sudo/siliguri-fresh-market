@@ -26,10 +26,10 @@ export function FestivalBanner() {
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold text-[#7A4A00] sm:text-base">
-          Pujo Special 2026 — Fresh Fish & Meat for Durga Puja
+          Pujo Special 2026 — Fruits, Bhog Essentials & More
         </p>
         <p className="text-xs text-[#A0721B]">
-          Shashthi to Dashami (17–21 Oct) · Same-day delivery at your pandal doorstep
+          Shashthi to Dashami (17–21 Oct) · Anjali fruits, bhog vegetables & same-day home delivery
         </p>
       </div>
       <span className="whitespace-nowrap rounded-full bg-[#7A4A00] px-3 py-1.5 text-xs font-bold text-white">

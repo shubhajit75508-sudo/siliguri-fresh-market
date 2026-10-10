@@ -18,6 +18,7 @@ import {
   Salad,
   ArrowRight,
   CheckCircle2,
+  Apple,
 } from "lucide-react";
 import { DURGA_PUJA_SEO } from "@/lib/durgapuja-seo";
 import { DELIVERY_ZONES } from "@/lib/zones";
@@ -28,71 +29,80 @@ const PUJA_DAYS = [
     day: "Shashthi",
     date: "Sat, 17 Oct",
     label: "Bodhon & Amontron",
-    desc: "The puja formally begins. Fresh hilsa and prawns for the festive dinner when guests arrive.",
+    desc: "The puja formally begins. Fresh apples, bananas & pomegranates for the evening offering.",
   },
   {
     day: "Saptami",
     date: "Sun, 18 Oct",
     label: "Kola Bou Snan & Nabapatrika",
-    desc: "The banana bride is bathed. Bhog favourites like khichuri start early — stock up on vegetables and fritters.",
+    desc: "The banana bride is bathed. Stock up on vegetables & ghee for the first bhog-khichuri.",
   },
   {
     day: "Ashtami",
     date: "Mon, 19 Oct",
     label: "Anjali & Kumor Bhog",
-    desc: "The biggest day. Order mutton or chicken the night before for the family spread after anjali.",
+    desc: "The biggest day — anjali in the morning, Kumor Bhog at noon. Fruits for anjali, essentials for khichuri.",
   },
   {
     day: "Navami",
     date: "Tue, 20 Oct",
     label: "Maha Navami",
-    desc: "Another full day of bhog and get-togethers. Fresh rohu, katla and prawns keep every thali special.",
+    desc: "Another full day of bhog & get-togethers. Fresh vegetables, coconut & dairy for every kitchen.",
   },
   {
     day: "Dashami",
     date: "Wed, 21 Oct",
     label: "Sindoor Khela & Visarjan",
-    desc: "Goodbye to Maa. A light, fresh fish jhol with the family before the visarjan rush.",
+    desc: "Goodbye to Maa. Fresh fruits for prasad before the visarjan procession.",
   },
 ];
 
-const STAPLES = [
+const PUJA_ESSENTIALS = [
   {
-    name: "Fresh Fish",
-    href: "/fish",
-    icon: Fish,
-    note: "Hilsa, Rohu, Katla, Prawns — scaled, gutted & cut to order for the pujo thali",
-  },
-  {
-    name: "Chicken",
-    href: "/category/chicken",
-    icon: Drumstick,
-    note: "Broiler & farm-fresh — the star of Ashtami and Navami family bhog",
-  },
-  {
-    name: "Mutton",
-    href: "/category/mutton",
-    icon: Beef,
-    note: "Premium cuts slow-cooked to perfection for the puja feast",
-  },
-  {
-    name: "Dairy & Eggs",
-    href: "/category/dairy",
-    icon: Milk,
-    note: "Eggs, paneer & dairy essentials for the puja breakfast table",
+    name: "Fresh Fruits",
+    href: "/category/fruits",
+    icon: Apple,
+    note: "For anjali & prasad — apples, bananas, pomegranates & seasonal fruits",
   },
   {
     name: "Vegetables",
     href: "/category/vegetables",
     icon: Salad,
-    note: "Farm-fresh veggies for bhog khichuri, bhaja & family lunches",
+    note: "Farm-fresh for bhog khichuri, bhaja & the festive kitchen",
+  },
+  {
+    name: "Dairy & Essentials",
+    href: "/category/dairy",
+    icon: Milk,
+    note: "Ghee, milk, curd, eggs & pantry staples for the pujo kitchen",
+  },
+];
+
+const HOME_MEALS = [
+  {
+    name: "Fresh Fish",
+    href: "/fish",
+    icon: Fish,
+    note: "Available for households whose home cooking follows its own tradition",
+  },
+  {
+    name: "Chicken",
+    href: "/category/chicken",
+    icon: Drumstick,
+    note: "Available separately for families that cook at home during pujo",
+  },
+  {
+    name: "Mutton",
+    href: "/category/mutton",
+    icon: Beef,
+    note: "Premium cuts, available for the home table if that is your custom",
   },
 ];
 
 const BENEFITS = [
-  "Sourced fresh every morning from Siliguri's local markets",
+  "Fresh fruits for anjali & prasad, delivered before the arati",
+  "Vegetables, ghee & staples for bhog and the festive kitchen",
   "Free delivery above ₹299 · Same-day doorstep delivery",
-  "Your choice of cut & cleaning — just like the market",
   "Order online, by WhatsApp or just pick up the phone",
 ];
 
@@ -146,6 +156,9 @@ export function DurgaPujaClient() {
 
           <div className="mt-5 flex flex-wrap items-center gap-2.5">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
+              <Apple className="h-3.5 w-3.5" /> Anjali-fresh fruits
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
               <Clock className="h-3.5 w-3.5" /> 1–2 hrs delivery
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white">
@@ -196,17 +209,23 @@ export function DurgaPujaClient() {
       <div className="mb-8 rounded-2xl border border-[#2D7D3A]/20 bg-gradient-to-r from-[#EAF4EC] to-[#FDF6E7] p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-extrabold text-foreground">Ready for Pujo? Stock your kitchen today.</p>
+            <p className="text-sm font-extrabold text-foreground">Ready for Pujo? Plan your essentials today.</p>
             <p className="text-xs text-muted mt-0.5">
-              Same-day delivery across Siliguri · Free above ₹299 · Cut to your liking.
+              Fresh fruits for anjali · bhog essentials · Same-day delivery across Siliguri · Free above ₹299
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/fish"
+              href="/category/fruits"
               className="inline-flex items-center gap-1.5 rounded-xl bg-[#2D7D3A] px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#23682E] active:scale-[0.97]"
             >
-              <Fish className="h-4 w-4" /> Shop Fish
+              <Apple className="h-4 w-4" /> Shop Fruits
+            </Link>
+            <Link
+              href="/category/vegetables"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#2D7D3A]/10 px-4 py-2.5 text-sm font-bold text-[#2D7D3A] transition-all hover:bg-[#2D7D3A]/20 active:scale-[0.97]"
+            >
+              Bhog Vegetables
             </Link>
             <Link
               href="https://wa.me/917029908278?text=Hi!%20I%27d%20like%20to%20plan%20my%20Durga%20Puja%20order."
@@ -226,20 +245,50 @@ export function DurgaPujaClient() {
         </div>
       </div>
 
-      {/* Puja staples */}
+      {/* Puja essentials */}
       <div className="mb-8">
-        <h2 className="text-lg font-extrabold text-foreground mb-1">Pujo Staples</h2>
+        <h2 className="text-lg font-extrabold text-foreground mb-1">Pujo Essentials</h2>
         <p className="text-xs text-muted mb-4">
-          Everything you need for bhog, anjali and the family feast — stocked fresh through 17–21 October.
+          For anjali, prasad & bhog — stocked fresh through 17–21 October.
         </p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {STAPLES.map((s) => (
+          {PUJA_ESSENTIALS.map((s) => (
             <Link
               key={s.name}
               href={s.href}
               className="group flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 transition-all hover:border-[#2D7D3A]/40 hover:shadow-md active:scale-[0.98]"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#2D7D3A] text-white">
+                <s.icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-foreground group-hover:text-[#2D7D3A]">
+                  {s.name}
+                </p>
+                <p className="mt-0.5 text-xs text-muted leading-relaxed">{s.note}</p>
+              </div>
+              <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-[#2D7D3A]" />
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Home meals — respectful, optional */}
+      <div className="mb-8">
+        <h2 className="text-base font-extrabold text-foreground mb-1">Also available for your home table</h2>
+        <p className="text-xs text-muted mb-4 max-w-2xl">
+          Customs differ from family to family, and many households keep the pujo days sattvik. We simply make
+          these available for families whose home cooking follows its own tradition during the puja — the choice
+          is entirely yours.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {HOME_MEALS.map((s) => (
+            <Link
+              key={s.name}
+              href={s.href}
+              className="group flex items-start gap-3 rounded-2xl border border-dashed border-border bg-transparent p-4 transition-all hover:border-[#2D7D3A]/40 hover:shadow-md active:scale-[0.98]"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#2D7D3A]/10 text-[#2D7D3A]">
                 <s.icon className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
@@ -275,7 +324,7 @@ export function DurgaPujaClient() {
             <Phone className="h-4 w-4 mt-0.5 text-[#2D7D3A]" />
             <div>
               <p className="font-semibold text-foreground">Need Help?</p>
-              <p className="text-xs text-muted">Call +91 7029908278 for custom cuts & bulk pujo orders</p>
+              <p className="text-xs text-muted">Call +91 7029908278 for bulk & committee pujo orders</p>
             </div>
           </div>
         </div>
@@ -284,9 +333,11 @@ export function DurgaPujaClient() {
       {/* Content section */}
       <div className="mb-8 rounded-2xl border border-border bg-surface p-6">
         <h2 className="text-base font-extrabold text-foreground mb-3">{seo.contentHeading}</h2>
-        <p className="text-sm text-muted leading-relaxed">{seo.content}</p>
+        {seo.content.split("\n\n").map((para, i) => (
+          <p key={i} className="text-sm text-muted leading-relaxed mb-3 last:mb-0">{para}</p>
+        ))}
         <div className="mt-4 flex flex-wrap gap-2">
-          {["Hilsa", "Rohu", "Katla", "Prawns", "Chicken", "Mutton"].map((item) => (
+          {["Banana", "Apple", "Pomegranate", "Seasonal Fruits", "Bhog Vegetables", "Ghee & Coconut"].map((item) => (
             <span
               key={item}
               className="rounded-full border border-[#2D7D3A]/20 bg-[#2D7D3A]/5 px-3 py-1 text-xs font-medium text-[#2D7D3A]"
@@ -327,7 +378,7 @@ export function DurgaPujaClient() {
           We Deliver Pujo Orders Across Siliguri
         </h2>
         <p className="text-xs text-muted mb-4">
-          Fresh fish & puja essentials delivered to all these areas:
+          Puja essentials & fresh daily needs delivered to all these areas:
         </p>
         <div className="flex flex-wrap gap-2">
           {DELIVERY_ZONES.map((zone) => (
@@ -349,12 +400,12 @@ export function DurgaPujaClient() {
           Shubho Durgotsav 2026 — from Siliguri Freshmart
         </p>
         <p className="mx-auto mt-1 max-w-md text-xs text-white/70">
-          Order before 11 AM and your fish, chicken or mutton reaches your door the same day.
+          Order before 11 AM and your puja essentials reach your door the same day.
           শুভ দুর্গাপুজো!
         </p>
         <div className="mt-4 flex justify-center gap-2">
           <Link
-            href="/category/chicken"
+            href="/category/fruits"
             className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-[#1E3A2F] transition-all hover:bg-[#F4B942] active:scale-[0.97]"
           >
             Shop Puja Essentials <ArrowRight className="h-4 w-4" />

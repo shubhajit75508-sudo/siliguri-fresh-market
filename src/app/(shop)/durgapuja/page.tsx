@@ -91,7 +91,7 @@ export default function DurgaPujaPage() {
             },
             about: {
               "@type": "Thing",
-              name: "Same-day fresh fish and meat delivery for Durga Puja in Siliguri",
+              name: "Same-day delivery of puja essentials and fresh home needs for Durga Puja in Siliguri",
             },
           }),
         }}
