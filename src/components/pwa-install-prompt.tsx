@@ -22,12 +22,21 @@ export function PWAInstallPrompt() {
   const [dismissed, setDismissed] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isPwa, setIsPwa] = useState(false);
 
   useEffect(() => {
     if (sessionStorage.getItem(DISMISS_KEY)) {
       setDismissed(true);
       return;
     }
+
+    // Already running as an installed app (PWA/TWA) — no store/install prompts needed.
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia("(display-mode: minimal-ui)").matches ||
+      ("standalone" in window.navigator && (window.navigator as { standalone?: boolean }).standalone === true);
+    setIsPwa(standalone);
+    if (standalone) return;
 
     const ua = window.navigator.userAgent;
     setIsIOS(/iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
@@ -50,7 +59,7 @@ export function PWAInstallPrompt() {
     };
   }, []);
 
-  if (dismissed || !visible) return null;
+  if (dismissed || !visible || isPwa) return null;
 
   const handleDismiss = () => {
     sessionStorage.setItem(DISMISS_KEY, "1");

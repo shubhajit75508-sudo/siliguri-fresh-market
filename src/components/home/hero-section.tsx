@@ -69,17 +69,15 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="hidden md:block">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F7FAF8]">
-              <Image
-                src={image}
-                alt="Fresh fish, chicken and vegetables from Siliguri Freshmart"
-                fill
-                priority
-                sizes="(min-width: 1024px) 40vw, 36vw"
-                className="object-cover"
-              />
-            </div>
+          <div className="relative mx-auto mt-5 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-[#F7FAF8] md:mt-0 md:aspect-[4/3]">
+            <Image
+              src={image}
+              alt="Fresh fish, chicken and vegetables from Siliguri Freshmart"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
           </div>
         </div>
 
