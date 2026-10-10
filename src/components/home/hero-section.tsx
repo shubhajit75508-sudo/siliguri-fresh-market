@@ -14,7 +14,7 @@ const trustStats = [
 ];
 
 const DEFAULT_IMAGE =
-  "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782317544/file_0000000086c471fd894712adc4d3fa68_vadejf.png";
+  "https://res.cloudinary.com/izk8f1t5/image/upload/v1791670947/WhatsApp_Image_2026-07-01_at_3.12.19_PM.jpg";
 
 export function HeroSection() {
   const { settings } = useAdminStore();

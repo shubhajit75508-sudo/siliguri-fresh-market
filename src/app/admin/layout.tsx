@@ -126,7 +126,7 @@ export default function AdminLayout({
         )}
       >
         <div className="flex h-16 items-center gap-2 border-b px-6">
-          <img src="https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png" alt="SFM" width={32} height={32} className="rounded-lg" />
+          <img src="https://res.cloudinary.com/izk8f1t5/image/upload/v1791670897/WhatsApp_Image_2026-06-23_at_5.21.54_PM.jpg" alt="SFM" width={32} height={32} className="rounded-lg" />
           <div>
             <p className="text-sm font-extrabold text-foreground">SFM Admin</p>
             <p className="text-[10px] text-muted">{role === "manager" ? "Manager" : "Dashboard"}</p>

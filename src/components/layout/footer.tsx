@@ -34,7 +34,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3">
-              <Image src="https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain rounded-xl" loading="lazy" />
+              <Image src="https://res.cloudinary.com/izk8f1t5/image/upload/v1791670897/WhatsApp_Image_2026-06-23_at_5.21.54_PM.jpg" alt="SFM" width={48} height={48} className="h-12 w-12 object-contain rounded-xl" loading="lazy" />
               <div>
                 <p className="text-[16px] font-bold">Siliguri Freshmart</p>
                 <p className="text-[12px] font-medium text-brand-fresh-dim">Freshmart</p>

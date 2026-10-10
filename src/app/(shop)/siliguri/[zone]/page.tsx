@@ -56,7 +56,7 @@ export default async function ZonePage({ params }: Props) {
             "@id": `https://www.siligurifreshmart.com/siliguri/${zone.slug}#localbusiness`,
             name: "Siliguri Freshmart",
             description: zone.description,
-            image: "https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png",
+            image: "https://res.cloudinary.com/izk8f1t5/image/upload/v1791670897/WhatsApp_Image_2026-06-23_at_5.21.54_PM.jpg",
             telephone: "+91 7029908278",
             email: "siligurifreshmart@gmail.com",
             address: {

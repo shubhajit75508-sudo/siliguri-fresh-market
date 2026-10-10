@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Leaf, Truck, ShieldCheck, Clock } from "lucide-react";
 
 const logo =
-  "https://res.cloudinary.com/dz0rkctza/image/upload/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png";
+  "https://res.cloudinary.com/izk8f1t5/image/upload/v1791670897/WhatsApp_Image_2026-06-23_at_5.21.54_PM.jpg";
 
 const trust = [
   { icon: Clock, text: "Delivery in 30–60 min" },

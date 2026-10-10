@@ -7,7 +7,7 @@ export function SplashLoading() {
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-[#F5F8F5]">
       <div className="relative">
         <Image
-          src="https://res.cloudinary.com/dz0rkctza/image/upload/w_192,h_192,c_fill/v1791393836/3b2d1af4-43d0-4321-b046-17a71da08594.png"
+          src="https://res.cloudinary.com/izk8f1t5/image/upload/w_192,h_192,c_fill/v1791670897/WhatsApp_Image_2026-06-23_at_5.21.54_PM.jpg"
           alt="Freshmart"
           width={80}
           height={80}
