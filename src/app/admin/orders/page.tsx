@@ -85,6 +85,11 @@ export default function AdminOrdersPage() {
 
   const isOutForDelivery = (o: typeof orders[number]) =>
     o.status === "out_for_delivery" || (o.status === "received" && !!o.deliveryBoyId);
+  const canReassign = (o: typeof orders[number]) =>
+    !!o.deliveryBoyId &&
+    o.deliveryStatus === "assigned" &&
+    o.status !== "delivered" &&
+    o.status !== "cancelled";
   const filtered = activeTab === "all"
     ? orders
     : activeTab === "out_for_delivery"
@@ -498,6 +503,11 @@ export default function AdminOrdersPage() {
                       )}
                       {isOutForDelivery(order) && order.status !== "delivered" && (
                         <>
+                          {canReassign(order) && (
+                            <Button variant="default" size="sm" onClick={() => setAssignModal(order)}>
+                              <RotateCcw className="mr-1 h-3 w-3" /> Reassign
+                            </Button>
+                          )}
                           <Button variant="default" size="sm" onClick={() => updateStatus(order.id, "delivered")}>
                             <CheckCircle className="mr-1 h-3 w-3" /> Delivered
                           </Button>
@@ -685,6 +695,11 @@ export default function AdminOrdersPage() {
               )}
               {isOutForDelivery(selectedOrder) && selectedOrder.status !== "delivered" && (
                 <>
+                  {canReassign(selectedOrder) && (
+                    <Button variant="default" onClick={() => { setAssignModal(selectedOrder); setSelectedOrder(null); }}>
+                      <RotateCcw className="mr-1 h-3 w-3" /> Reassign Delivery
+                    </Button>
+                  )}
                   <Button variant="default" onClick={() => { updateStatus(selectedOrder.id, "delivered"); setSelectedOrder(null); }}>
                     <CheckCircle className="mr-1 h-3 w-3" /> Mark Delivered
                   </Button>
@@ -756,11 +771,11 @@ export default function AdminOrdersPage() {
 }
 
 function AssignModal({ order, onAssign, onClose }: {
-  order: { id: string };
+  order: { id: string; deliveryBoyId?: string | null };
   onAssign: (boyId: string, boyName: string, boyEmail?: string) => void;
   onClose: () => void;
 }) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(order.deliveryBoyId ?? null);
     const deliveryBoys = useDeliveryStore((s) => s.deliveryBoys);
     const boys = deliveryBoys.map((b) => ({ id: b.id, name: b.name, phone: b.phone ?? "", area: b.area || "", isActive: true, email: b.email }));
 
@@ -774,10 +789,13 @@ function AssignModal({ order, onAssign, onClose }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="mx-4 max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold">Assign Delivery</h3>
+          <h3 className="text-lg font-bold">{order.deliveryBoyId ? "Reassign Delivery" : "Assign Delivery"}</h3>
           <button onClick={onClose} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
         </div>
         <p className="mt-2 text-sm text-muted">Order: {order.id}</p>
+        {order.deliveryBoyId && (
+          <p className="mt-1 text-[11px] text-muted">The partner has not accepted yet — you can reassign to someone else.</p>
+        )}
         {allBoys.length === 0 ? (
           <p className="mt-4 text-sm text-muted">No delivery boys available. Add one in Delivery Boys section.</p>
         ) : (
@@ -794,7 +812,7 @@ function AssignModal({ order, onAssign, onClose }: {
         <div className="mt-6 flex gap-3">
           <Button variant="default" disabled={!selected}
             onClick={() => { const boy = allBoys.find((b) => b.id === selected); if (boy) onAssign(boy.id, boy.name, boy.email); }}>
-            Assign
+            {order.deliveryBoyId ? "Reassign" : "Assign"}
           </Button>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
         </div>

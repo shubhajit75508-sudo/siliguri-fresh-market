@@ -70,8 +70,7 @@ export default function ManualOrderModal({ products, onClose, onSaved }: ManualO
     line1.trim().length > 0;
 
   const addItem = (p: Product) => {
-    const weights = p.weightPrices?.map((w) => w.weight) ?? getAvailableWeights(p.price, p.category, p.weight, p.weightPrices);
-    const w = weights[0];
+    const w = getAvailableWeights(p.price, p.category, p.weight, p.weightPrices)[0];
     setItems((prev) => [...prev, { product: p, quantity: 1, selectedWeight: w, unitPrice: getPriceForWeight(p.price, w, p.weightPrices) }]);
   };
 
@@ -256,7 +255,7 @@ export default function ManualOrderModal({ products, onClose, onSaved }: ManualO
           {items.length > 0 && (
             <div className="mt-3 space-y-2">
               {items.map((it, idx) => {
-                const weights = it.product.weightPrices?.map((w) => w.weight) ?? getAvailableWeights(it.product.price, it.product.category, it.product.weight, it.product.weightPrices);
+                const weights = getAvailableWeights(it.product.price, it.product.category, it.product.weight, it.product.weightPrices);
                 return (
                   <div key={idx} className="rounded-xl border border-border bg-white/5 p-3">
                     <div className="flex items-start justify-between gap-2">
@@ -281,8 +280,8 @@ export default function ManualOrderModal({ products, onClose, onSaved }: ManualO
                         onChange={(e) => updateItem(idx, { selectedWeight: e.target.value || undefined, unitPrice: getPriceForWeight(it.product.price, e.target.value || undefined, it.product.weightPrices) })}
                         className="rounded-lg border border-border bg-surface px-2 py-1 text-xs outline-none"
                       >
-                        {(it.product.weightPrices?.length ? it.product.weightPrices.map((w) => w.weight) : weights).map((w) => (
-                          <option key={w} value={w}>{w}{it.product.weightPrices ? ` · ${formatPrice(getPriceForWeight(it.product.price, w, it.product.weightPrices))}` : ""}</option>
+                        {weights.map((w) => (
+                          <option key={w} value={w}>{w}{it.product.weightPrices && it.product.weightPrices.length > 0 ? ` · ${formatPrice(getPriceForWeight(it.product.price, w, it.product.weightPrices))}` : ""}</option>
                         ))}
                       </select>
                       {it.product.cuts && it.product.cuts.length > 0 && (
