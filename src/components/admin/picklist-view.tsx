@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, ClipboardList, Layers, List, Package, Truck } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, ChevronRight, ClipboardList, Layers, List, Package, RotateCcw, Truck } from "lucide-react";
 import { formatPrice, getItemUnitPrice } from "@/lib/utils";
 import { useToast } from "@/components/ui/toaster";
 import type { Order, CartItem } from "@/types";
@@ -24,10 +24,22 @@ type GroupRow = {
 const itemKey = (it: CartItem) =>
   [it.product.id, it.selectedWeight ?? "", it.selectedCut ?? "", it.selectedCleaning ?? ""].join("|");
 
+const PREPARED_KEY = "sfm-to-pack-prepared";
+
+function loadPrepared(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    return new Set(JSON.parse(window.localStorage.getItem(PREPARED_KEY) ?? "[]") as string[]);
+  } catch {
+    return new Set();
+  }
+}
+
 export default function PicklistView({ orders, onBack }: PicklistViewProps) {
   const toast = useToast();
   const [mode, setMode] = useState<"product" | "order">("product");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [prepared, setPrepared] = useState<Set<string>>(loadPrepared);
 
   const unassigned = useMemo(
     () => orders.filter((o) => o.status === "received" && !o.deliveryBoyId),
@@ -72,6 +84,32 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
     });
   };
 
+  const togglePrepared = (key: string) => {
+    setPrepared((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      try {
+        window.localStorage.setItem(PREPARED_KEY, JSON.stringify([...next]));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
+
+  const resetPrepared = () => {
+    setPrepared(new Set());
+    try {
+      window.localStorage.setItem(PREPARED_KEY, "[]");
+    } catch {
+      /* ignore */
+    }
+    toast.add("Prepared ticks cleared");
+  };
+
+  const packedCount = grouped.filter((g) => prepared.has(g.key)).length;
+
   const qtyForOrder = (row: GroupRow, orderId: string) => {
     const o = unassigned.find((x) => x.id === orderId);
     if (!o) return 0;
@@ -81,7 +119,7 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
   const copyText = () => {
     const lines = grouped.map(
       (g, idx) =>
-        `${idx + 1}. ${g.quantity} × ${g.product.name}${g.weight ? ` (${g.weight})` : ""}${g.cut ? ` [${g.cut}]` : ""}${g.cleaning ? ` [${g.cleaning}]` : ""}`
+        `${idx + 1}. ${g.quantity} × ${g.product.name}${g.weight ? ` (${g.weight})` : ""}${g.cut ? ` [${g.cut}]` : ""}${g.cleaning ? ` [${g.cleaning}]` : ""}${prepared.has(g.key) ? " ✓" : ""}`
     );
     const text = [
       `TO PACK — ${unassigned.length} unassigned order(s), ${totalItems} items`,
@@ -119,7 +157,7 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
           </div>
           <div>
             <p className="text-sm font-bold">To Pack — all items before delivery partners pick up</p>
-            <p className="text-[11px] text-muted">{unassigned.length} unassigned orders · {grouped.length} unique product lines · {totalItems} items</p>
+            <p className="text-[11px] text-muted">{unassigned.length} unassigned orders · {grouped.length} lines · {totalItems} items · {packedCount === grouped.length ? "all packed" : `${packedCount} packed`}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -140,6 +178,11 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
           <button onClick={copyText} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted hover:bg-white/5" title="Copy pick list">
             <ClipboardList className="h-3.5 w-3.5" /> Copy list
           </button>
+          {packedCount > 0 && (
+            <button onClick={resetPrepared} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted hover:bg-white/5" title="Clear all prepared ticks">
+              <RotateCcw className="h-3.5 w-3.5" /> Reset
+            </button>
+          )}
           <button onClick={onBack} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted hover:bg-white/5">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Orders
           </button>
@@ -152,24 +195,34 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
             const isOpen = expanded.has(row.key);
             return (
               <div key={row.key} className="overflow-hidden rounded-xl border border-border bg-surface">
-                <button onClick={() => toggleExpand(row.key)} className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-white/5">
-                  {row.product.image ? (
-                    <img src={row.product.image} alt="" className="h-9 w-9 shrink-0 rounded-lg object-cover" />
-                  ) : (
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5"><Package className="h-4 w-4 text-muted" /></div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{row.product.name}</p>
-                    <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                      {row.weight && <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-fresh">{row.weight}</span>}
-                      {row.cut && <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-blue">{row.cut}</span>}
-                      {row.cleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-purple">{row.cleaning}</span>}
-                      <span className="text-[10px] text-muted">in {row.orderIds.length} order{row.orderIds.length > 1 ? "s" : ""}</span>
+                <div className="flex items-center gap-3 px-3 py-2.5">
+                  <button
+                    onClick={() => togglePrepared(row.key)}
+                    title={prepared.has(row.key) ? "Unmark as prepared" : "Mark as prepared"}
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors ${prepared.has(row.key) ? "border-brand-fresh bg-brand-fresh text-white" : "border-border text-transparent hover:border-brand-fresh/60"}`}
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => toggleExpand(row.key)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                    {row.product.image ? (
+                      <img src={row.product.image} alt="" className={`h-9 w-9 shrink-0 rounded-lg object-cover ${prepared.has(row.key) ? "opacity-50" : ""}`} />
+                    ) : (
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5"><Package className="h-4 w-4 text-muted" /></div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className={`truncate text-sm font-medium ${prepared.has(row.key) ? "text-muted line-through" : ""}`}>{row.product.name}</p>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                        {row.weight && <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-fresh">{row.weight}</span>}
+                        {row.cut && <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-blue">{row.cut}</span>}
+                        {row.cleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-purple">{row.cleaning}</span>}
+                        {prepared.has(row.key) && <span className="rounded bg-brand-fresh/15 px-1.5 py-0.5 text-[10px] font-bold text-brand-fresh">prepared</span>}
+                        <span className="text-[10px] text-muted">in {row.orderIds.length} order{row.orderIds.length > 1 ? "s" : ""}</span>
+                      </div>
                     </div>
-                  </div>
-                  <span className="shrink-0 text-base font-extrabold text-brand-fresh">{row.quantity}</span>
-                  {isOpen ? <ChevronDown className="h-4 w-4 shrink-0 text-muted" /> : <ChevronRight className="h-4 w-4 shrink-0 text-muted" />}
-                </button>
+                    <span className={`shrink-0 text-base font-extrabold ${prepared.has(row.key) ? "text-muted" : "text-brand-fresh"}`}>{row.quantity}</span>
+                    {isOpen ? <ChevronDown className="h-4 w-4 shrink-0 text-muted" /> : <ChevronRight className="h-4 w-4 shrink-0 text-muted" />}
+                  </button>
+                </div>
                 {isOpen && (
                   <div className="space-y-1.5 border-t border-border bg-white/5 px-3 py-2.5">
                     {row.orderIds.map((orderId) => {
@@ -178,6 +231,7 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
                       return (
                         <div key={orderId} className="flex flex-wrap items-center justify-between gap-2 text-xs">
                           <div className="flex min-w-0 items-center gap-2">
+                            {prepared.has(row.key) && <Check className="h-3 w-3 shrink-0 text-brand-fresh" />}
                             <span className="truncate font-mono font-semibold text-brand-fresh">{orderId}</span>
                             <span className="truncate text-muted">{o.customerName} · {o.address.area || o.address.line1}</span>
                           </div>
@@ -207,24 +261,35 @@ export default function PicklistView({ orders, onBack }: PicklistViewProps) {
                 </div>
               </div>
               <div className="mt-3 space-y-1.5">
-                {o.items.map((it, idx) => (
-                  <div key={idx} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs">
-                    <div className="flex min-w-0 items-center gap-2">
-                      {it.product.image ? (
-                        <img src={it.product.image} alt="" className="h-7 w-7 shrink-0 rounded object-cover" />
-                      ) : (
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-surface"><Package className="h-3.5 w-3.5 text-muted" /></div>
-                      )}
-                      <span className="truncate font-medium">{it.product.name}</span>
+                {o.items.map((it, idx) => {
+                  const done = prepared.has(itemKey(it));
+                  return (
+                    <div key={idx} className={`flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs ${done ? "opacity-60" : ""}`}>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <button
+                          onClick={() => togglePrepared(itemKey(it))}
+                          title={done ? "Unmark as prepared" : "Mark as prepared"}
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${done ? "border-brand-fresh bg-brand-fresh text-white" : "border-border text-transparent hover:border-brand-fresh/60"}`}
+                        >
+                          <Check className="h-3 w-3" />
+                        </button>
+                        {it.product.image ? (
+                          <img src={it.product.image} alt="" className="h-7 w-7 shrink-0 rounded object-cover" />
+                        ) : (
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-surface"><Package className="h-3.5 w-3.5 text-muted" /></div>
+                        )}
+                        <span className={`truncate font-medium ${done ? "text-muted line-through" : ""}`}>{it.product.name}</span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        {it.selectedWeight && <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 font-semibold text-brand-fresh">{it.selectedWeight}</span>}
+                        {it.selectedCut && <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 font-semibold text-brand-blue">{it.selectedCut}</span>}
+                        {it.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 font-semibold text-brand-purple">{it.selectedCleaning}</span>}
+                        {done && <span className="rounded bg-brand-fresh/15 px-1.5 py-0.5 font-bold text-brand-fresh">prepared</span>}
+                        <span className="font-bold">{it.quantity} × {formatPrice(getItemUnitPrice(it))}</span>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      {it.selectedWeight && <span className="rounded bg-brand-fresh/10 px-1.5 py-0.5 font-semibold text-brand-fresh">{it.selectedWeight}</span>}
-                      {it.selectedCut && <span className="rounded bg-brand-blue/10 px-1.5 py-0.5 font-semibold text-brand-blue">{it.selectedCut}</span>}
-                      {it.selectedCleaning && <span className="rounded bg-brand-purple/10 px-1.5 py-0.5 font-semibold text-brand-purple">{it.selectedCleaning}</span>}
-                      <span className="font-bold">{it.quantity} × {formatPrice(getItemUnitPrice(it))}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
