@@ -50,3 +50,13 @@ export function loadConfirmedOrders(): Set<string> {
 export function persistConfirmedOrders(set: Set<string>): void {
   writeSet(CONFIRMED_KEY, set);
 }
+
+const PACKED_KEY = "sfm-packed-orders";
+
+export function loadPackedOrders(): Set<string> {
+  return readSet(PACKED_KEY);
+}
+
+export function persistPackedOrders(set: Set<string>): void {
+  writeSet(PACKED_KEY, set);
+}

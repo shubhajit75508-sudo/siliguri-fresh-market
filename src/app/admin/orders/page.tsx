@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
 import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus, Check, Star } from "lucide-react";
 import dynamic from "next/dynamic";
-import { loadRegularPhones, persistRegularPhones, loadConfirmedOrders, persistConfirmedOrders, normalizePhone, telHref } from "@/lib/regular-customers";
+import { loadRegularPhones, persistRegularPhones, loadConfirmedOrders, persistConfirmedOrders, loadPackedOrders, persistPackedOrders, normalizePhone, telHref } from "@/lib/regular-customers";
 
 const ManualOrderModal = dynamic(() => import("@/components/admin/manual-order-modal"), { ssr: false });
 const PicklistView = dynamic(() => import("@/components/admin/picklist-view"), { ssr: false });
@@ -56,6 +56,7 @@ export default function AdminOrdersPage() {
   const [confirmOrder, setConfirmOrder] = useState<typeof orders[number] | null>(null);
   const [regulars, setRegulars] = useState<Set<string>>(() => loadRegularPhones());
   const [confirmedOrders, setConfirmedOrders] = useState<Set<string>>(() => loadConfirmedOrders());
+  const [packedOrders, setPackedOrders] = useState<Set<string>>(() => loadPackedOrders());
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<string>("");
   const [bulkConfirm, setBulkConfirm] = useState(false);
@@ -114,6 +115,16 @@ export default function AdminOrdersPage() {
       if (next.has(id)) next.delete(id);
       else next.add(id);
       persistConfirmedOrders(next);
+      return next;
+    });
+  };
+
+  const togglePacked = (id: string) => {
+    setPackedOrders((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      persistPackedOrders(next);
       return next;
     });
   };
@@ -530,17 +541,32 @@ export default function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       {order.status === "received" && (
-                        <button
-                          onClick={() => setConfirmOrder(order)}
-                          title="Call the customer, then confirm the order"
-                          className={`inline-flex h-7 items-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors ${
-                            confirmedOrders.has(order.id)
-                              ? "border-brand-fresh bg-brand-fresh text-white"
-                              : "border-border text-muted hover:border-brand-fresh/60 hover:text-foreground"
-                          }`}
-                        >
-                          <Check className="h-3.5 w-3.5" /> {confirmedOrders.has(order.id) ? "Confirmed" : "Confirm"}
-                        </button>
+                        <>
+                          <button
+                            onClick={() => setConfirmOrder(order)}
+                            title="Call the customer, then confirm the order"
+                            className={`inline-flex h-7 items-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors ${
+                              confirmedOrders.has(order.id)
+                                ? "border-brand-fresh bg-brand-fresh text-white"
+                                : "border-border text-muted hover:border-brand-fresh/60 hover:text-foreground"
+                            }`}
+                          >
+                            <Check className="h-3.5 w-3.5" /> {confirmedOrders.has(order.id) ? "Confirmed" : "Confirm"}
+                          </button>
+                          {confirmedOrders.has(order.id) && (
+                            <button
+                              onClick={() => togglePacked(order.id)}
+                              title={packedOrders.has(order.id) ? "Unmark packed" : "Tick after you have packed it"}
+                              className={`inline-flex h-7 items-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors ${
+                                packedOrders.has(order.id)
+                                  ? "border-brand-fresh bg-brand-fresh text-white"
+                                  : "border-border text-muted hover:border-brand-fresh/60 hover:text-foreground"
+                              }`}
+                            >
+                              {packedOrders.has(order.id) ? <Check className="h-3.5 w-3.5" /> : <Package className="h-3.5 w-3.5" />} Packed
+                            </button>
+                          )}
+                        </>
                       )}
                       <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
                         <Eye className="h-4 w-4 text-muted" />
@@ -845,6 +871,20 @@ export default function AdminOrdersPage() {
               <CheckCircle className={`h-4 w-4 ${confirmedOrders.has(confirmOrder.id) ? "text-brand-fresh" : "text-muted"}`} />
               {confirmedOrders.has(confirmOrder.id) ? "Confirmed on call ✓" : "Tap when call done & confirmed"}
             </button>
+
+            {confirmedOrders.has(confirmOrder.id) && (
+              <button
+                onClick={() => togglePacked(confirmOrder.id)}
+                className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                  packedOrders.has(confirmOrder.id)
+                    ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh"
+                    : "border-border hover:bg-white/5"
+                }`}
+              >
+                {packedOrders.has(confirmOrder.id) ? <CheckCircle className="h-4 w-4 text-brand-fresh" /> : <Package className={`h-4 w-4 ${packedOrders.has(confirmOrder.id) ? "text-brand-fresh" : "text-muted"}`} />}
+                {packedOrders.has(confirmOrder.id) ? "Packed & ready ✓" : "Tick after you have packed it"}
+              </button>
+            )}
 
             <div className="mt-3 space-y-2">
               <a
