@@ -11,8 +11,9 @@ import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus, Check, ChevronDown, Star } from "lucide-react";
 import dynamic from "next/dynamic";
+import { loadRegularPhones, persistRegularPhones, loadConfirmedOrders, persistConfirmedOrders, normalizePhone, telHref } from "@/lib/regular-customers";
 
 const ManualOrderModal = dynamic(() => import("@/components/admin/manual-order-modal"), { ssr: false });
 const PicklistView = dynamic(() => import("@/components/admin/picklist-view"), { ssr: false });
@@ -52,6 +53,9 @@ export default function AdminOrdersPage() {
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
   const [showManualOrder, setShowManualOrder] = useState(false);
   const [showPicklist, setShowPicklist] = useState(false);
+  const [confirmMenuFor, setConfirmMenuFor] = useState<string | null>(null);
+  const [regulars, setRegulars] = useState<Set<string>>(() => loadRegularPhones());
+  const [confirmedOrders, setConfirmedOrders] = useState<Set<string>>(() => loadConfirmedOrders());
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<string>("");
   const [bulkConfirm, setBulkConfirm] = useState(false);
@@ -92,6 +96,27 @@ export default function AdminOrdersPage() {
     o.deliveryStatus === "assigned" &&
     o.status !== "delivered" &&
     o.status !== "cancelled";
+
+  const toggleRegular = (phone: string) => {
+    setRegulars((prev) => {
+      const next = new Set(prev);
+      const norm = normalizePhone(phone);
+      if (next.has(norm)) next.delete(norm);
+      else next.add(norm);
+      persistRegularPhones(next);
+      return next;
+    });
+  };
+
+  const toggleConfirmed = (id: string) => {
+    setConfirmedOrders((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      persistConfirmedOrders(next);
+      return next;
+    });
+  };
   const filtered = activeTab === "all"
     ? orders
     : activeTab === "out_for_delivery"
@@ -438,6 +463,11 @@ export default function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <p className="font-medium">{order.customerName}</p>
                     <p className="text-xs text-muted">{order.customerPhone}</p>
+                    {regulars.has(normalizePhone(order.customerPhone)) && (
+                      <p className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-bold text-amber-500">
+                        <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" /> Regular
+                      </p>
+                    )}
                   </td>
                   <td className="px-4 py-3">{order.items.reduce((n, i) => n + i.quantity, 0)} items</td>
                   <td className="px-4 py-3 font-medium">{formatPrice(order.total)}</td>
@@ -499,6 +529,51 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
+                      {order.status === "received" && (
+                        <div className="relative flex">
+                          <button
+                            onClick={() => toggleConfirmed(order.id)}
+                            title={confirmedOrders.has(order.id) ? "Unmark confirmation" : "Tick when you have confirmed on call"}
+                            className={`flex h-7 w-7 items-center justify-center rounded-l-lg border transition-colors ${confirmedOrders.has(order.id) ? "border-brand-fresh bg-brand-fresh text-white" : "border-border text-transparent hover:border-brand-fresh/60"}`}
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setConfirmMenuFor(confirmMenuFor === order.id ? null : order.id)}
+                            title="After the call: cancel, call again or mark regular"
+                            className="flex h-7 items-center rounded-r-lg border border-l-0 border-border px-1.5 hover:bg-white/8"
+                          >
+                            <ChevronDown className="h-3.5 w-3.5 text-muted" />
+                          </button>
+                          {confirmMenuFor === order.id && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setConfirmMenuFor(null)} />
+                              <div className="absolute right-0 top-9 z-50 w-56 overflow-hidden rounded-xl border border-border bg-surface shadow-2xl">
+                                <a
+                                  href={telHref(order.customerPhone)}
+                                  onClick={() => setConfirmMenuFor(null)}
+                                  className="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold hover:bg-white/5"
+                                >
+                                  <Phone className="h-3.5 w-3.5 text-brand-blue" /> Call {order.customerPhone}
+                                </a>
+                                <button
+                                  onClick={() => toggleRegular(order.customerPhone)}
+                                  className={`flex w-full items-center gap-2 px-3 py-2.5 text-xs font-semibold hover:bg-white/5 ${regulars.has(normalizePhone(order.customerPhone)) ? "text-amber-500" : ""}`}
+                                >
+                                  <Star className={`h-3.5 w-3.5 ${regulars.has(normalizePhone(order.customerPhone)) ? "fill-amber-400 text-amber-400" : "text-muted"}`} />
+                                  {regulars.has(normalizePhone(order.customerPhone)) ? "Remove from regular customers" : "Mark as regular customer"}
+                                </button>
+                                <button
+                                  onClick={() => { setConfirmMenuFor(null); setConfirmCancel(order.id); }}
+                                  className="flex w-full items-center gap-2 border-t border-border px-3 py-2.5 text-xs font-semibold text-brand-red hover:bg-brand-red/5"
+                                >
+                                  <XCircle className="h-3.5 w-3.5" /> Cancel order
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
                       <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
                         <Eye className="h-4 w-4 text-muted" />
                       </button>

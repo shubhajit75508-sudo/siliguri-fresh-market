@@ -21,6 +21,7 @@ import {
   CreditCard,
   ChevronRight,
 } from "lucide-react";
+import { loadRegularPhones, persistRegularPhones } from "@/lib/regular-customers";
 
 const DEFAULT_MSG =
   "🐟 Today's Freshness, Delivered to Your Door.\n\nFresh Fish • Chicken • Prawns\n⏰ Save your time. Order from home.\n\n🛒 siligurifreshmart.com\n📞 7029908278";
@@ -99,6 +100,7 @@ export default function CustomersPage() {
   const [copiedNumbers, setCopiedNumbers] = useState(false);
   const [copiedMsg, setCopiedMsg] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [regulars, setRegulars] = useState<Set<string>>(() => loadRegularPhones());
 
   useEffect(() => {
     loadOrders();
@@ -117,6 +119,17 @@ export default function CustomersPage() {
       controller.abort();
     };
   }, []);
+
+  const toggleRegular = (phone: string) => {
+    setRegulars((prev) => {
+      const next = new Set(prev);
+      const norm = normalizePhone(phone);
+      if (next.has(norm)) next.delete(norm);
+      else next.add(norm);
+      persistRegularPhones(next);
+      return next;
+    });
+  };
 
   const customers = useMemo(() => {
     const byPhone = new Map<string, CustomerDetail>();
@@ -339,6 +352,11 @@ export default function CustomersPage() {
                           <Phone className="h-2.5 w-2.5" /> WA
                         </span>
                       )}
+                      {regulars.has(normalizePhone(c.phone)) && (
+                        <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-400/15 px-1.5 py-0.5 text-[9px] font-bold text-amber-500">
+                          <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" /> Regular
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted">
                       <span>{c.orderCount} order{c.orderCount !== 1 ? "s" : ""}</span>
@@ -364,6 +382,20 @@ export default function CustomersPage() {
                         <span className="text-[10px]">@</span>
                         <span className="truncate">{c.email || "No email"}</span>
                       </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => toggleRegular(c.phone)}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                          regulars.has(normalizePhone(c.phone))
+                            ? "bg-amber-400/15 text-amber-500"
+                            : "border border-border text-muted hover:bg-white/5"
+                        }`}
+                      >
+                        <Star className={`h-3.5 w-3.5 ${regulars.has(normalizePhone(c.phone)) ? "fill-amber-400 text-amber-400" : ""}`} />
+                        {regulars.has(normalizePhone(c.phone)) ? "Regular customer" : "Mark as regular"}
+                      </button>
                     </div>
 
                     {/* Dates */}
