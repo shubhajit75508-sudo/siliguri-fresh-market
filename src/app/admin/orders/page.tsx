@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import type { Product } from "@/types";
-import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus, Check, ChevronDown, Star } from "lucide-react";
+import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus, Check, Star } from "lucide-react";
 import dynamic from "next/dynamic";
 import { loadRegularPhones, persistRegularPhones, loadConfirmedOrders, persistConfirmedOrders, normalizePhone, telHref } from "@/lib/regular-customers";
 
@@ -53,7 +53,7 @@ export default function AdminOrdersPage() {
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
   const [showManualOrder, setShowManualOrder] = useState(false);
   const [showPicklist, setShowPicklist] = useState(false);
-  const [confirmMenuFor, setConfirmMenuFor] = useState<string | null>(null);
+  const [confirmOrder, setConfirmOrder] = useState<typeof orders[number] | null>(null);
   const [regulars, setRegulars] = useState<Set<string>>(() => loadRegularPhones());
   const [confirmedOrders, setConfirmedOrders] = useState<Set<string>>(() => loadConfirmedOrders());
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -530,49 +530,17 @@ export default function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       {order.status === "received" && (
-                        <div className="relative flex">
-                          <button
-                            onClick={() => toggleConfirmed(order.id)}
-                            title={confirmedOrders.has(order.id) ? "Unmark confirmation" : "Tick when you have confirmed on call"}
-                            className={`flex h-7 w-7 items-center justify-center rounded-l-lg border transition-colors ${confirmedOrders.has(order.id) ? "border-brand-fresh bg-brand-fresh text-white" : "border-border text-transparent hover:border-brand-fresh/60"}`}
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setConfirmMenuFor(confirmMenuFor === order.id ? null : order.id)}
-                            title="After the call: cancel, call again or mark regular"
-                            className="flex h-7 items-center rounded-r-lg border border-l-0 border-border px-1.5 hover:bg-white/8"
-                          >
-                            <ChevronDown className="h-3.5 w-3.5 text-muted" />
-                          </button>
-                          {confirmMenuFor === order.id && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setConfirmMenuFor(null)} />
-                              <div className="absolute right-0 top-9 z-50 w-56 overflow-hidden rounded-xl border border-border bg-surface shadow-2xl">
-                                <a
-                                  href={telHref(order.customerPhone)}
-                                  onClick={() => setConfirmMenuFor(null)}
-                                  className="flex items-center gap-2 px-3 py-2.5 text-xs font-semibold hover:bg-white/5"
-                                >
-                                  <Phone className="h-3.5 w-3.5 text-brand-blue" /> Call {order.customerPhone}
-                                </a>
-                                <button
-                                  onClick={() => toggleRegular(order.customerPhone)}
-                                  className={`flex w-full items-center gap-2 px-3 py-2.5 text-xs font-semibold hover:bg-white/5 ${regulars.has(normalizePhone(order.customerPhone)) ? "text-amber-500" : ""}`}
-                                >
-                                  <Star className={`h-3.5 w-3.5 ${regulars.has(normalizePhone(order.customerPhone)) ? "fill-amber-400 text-amber-400" : "text-muted"}`} />
-                                  {regulars.has(normalizePhone(order.customerPhone)) ? "Remove from regular customers" : "Mark as regular customer"}
-                                </button>
-                                <button
-                                  onClick={() => { setConfirmMenuFor(null); setConfirmCancel(order.id); }}
-                                  className="flex w-full items-center gap-2 border-t border-border px-3 py-2.5 text-xs font-semibold text-brand-red hover:bg-brand-red/5"
-                                >
-                                  <XCircle className="h-3.5 w-3.5" /> Cancel order
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                        <button
+                          onClick={() => setConfirmOrder(order)}
+                          title="Call the customer, then confirm the order"
+                          className={`inline-flex h-7 items-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors ${
+                            confirmedOrders.has(order.id)
+                              ? "border-brand-fresh bg-brand-fresh text-white"
+                              : "border-border text-muted hover:border-brand-fresh/60 hover:text-foreground"
+                          }`}
+                        >
+                          <Check className="h-3.5 w-3.5" /> {confirmedOrders.has(order.id) ? "Confirmed" : "Confirm"}
+                        </button>
                       )}
                       <button onClick={() => setSelectedOrder(order)} className="rounded-lg p-1.5 hover:bg-white/8" title="View details">
                         <Eye className="h-4 w-4 text-muted" />
@@ -851,6 +819,61 @@ export default function AdminOrdersPage() {
           onSaved={() => loadOrders()}
           onClose={() => setShowManualOrder(false)}
         />
+      )}
+
+      {confirmOrder && (
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmOrder(null)}>
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold">Order Confirmation</h3>
+              <button onClick={() => setConfirmOrder(null)} className="rounded-lg p-1 hover:bg-white/8"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="mt-3 rounded-xl bg-white/5 p-3">
+              <p className="font-mono text-xs font-semibold text-brand-fresh">{confirmOrder.id}</p>
+              <p className="mt-1 text-sm font-medium">{confirmOrder.customerName}</p>
+              <p className="text-xs text-muted">{confirmOrder.customerPhone} · {confirmOrder.address.area || confirmOrder.address.line1}</p>
+            </div>
+
+            <button
+              onClick={() => toggleConfirmed(confirmOrder.id)}
+              className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                confirmedOrders.has(confirmOrder.id)
+                  ? "border-brand-fresh bg-brand-fresh/10 text-brand-fresh"
+                  : "border-border hover:bg-white/5"
+              }`}
+            >
+              <CheckCircle className={`h-4 w-4 ${confirmedOrders.has(confirmOrder.id) ? "text-brand-fresh" : "text-muted"}`} />
+              {confirmedOrders.has(confirmOrder.id) ? "Confirmed on call ✓" : "Tap when call done & confirmed"}
+            </button>
+
+            <div className="mt-3 space-y-2">
+              <a
+                href={telHref(confirmOrder.customerPhone)}
+                onClick={() => setConfirmOrder(null)}
+                className="flex items-center gap-2.5 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-white/5"
+              >
+                <Phone className="h-4 w-4 text-brand-blue" /> Call {confirmOrder.customerPhone}
+              </a>
+              <button
+                onClick={() => toggleRegular(confirmOrder.customerPhone)}
+                className={`flex w-full items-center gap-2.5 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-white/5 ${regulars.has(normalizePhone(confirmOrder.customerPhone)) ? "text-amber-500" : ""}`}
+              >
+                <Star className={`h-4 w-4 ${regulars.has(normalizePhone(confirmOrder.customerPhone)) ? "fill-amber-400 text-amber-400" : "text-muted"}`} />
+                {regulars.has(normalizePhone(confirmOrder.customerPhone)) ? "Regular customer — remove" : "Regular customer"}
+              </button>
+              <button
+                onClick={() => { setConfirmOrder(null); setConfirmCancel(confirmOrder.id); }}
+                className="flex w-full items-center gap-2.5 rounded-xl border border-brand-red/30 px-4 py-3 text-sm font-semibold text-brand-red hover:bg-brand-red/5"
+              >
+                <XCircle className="h-4 w-4" /> Cancel order
+              </button>
+            </div>
+
+            <button onClick={() => setConfirmOrder(null)} className="mt-3 w-full rounded-full border border-border py-2.5 text-sm font-semibold text-muted hover:bg-white/5">
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
