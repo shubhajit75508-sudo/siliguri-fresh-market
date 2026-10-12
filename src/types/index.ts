@@ -13,14 +13,14 @@ export type Category =
 
 export const FISH_SUBCATEGORIES = [
   { value: "unassigned", label: "Unassigned" },
-  { value: "river", label: "River Fish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg" },
-  { value: "sea", label: "Sea Fish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782547794/624897963_18299845189302273_3065151457949707008_n_fhsj2h.jpg" },
-  { value: "hilsa", label: "Hilsa / Ilish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782379196/Hilsa_fish_ilish_fish_bangladesh_nubluu.jpg" },
-  { value: "prawns", label: "Prawns", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299706/Picsart_26-06-24_11-07-31-212_ch3bu4.jpg" },
+  { value: "river", label: "River Fish", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821363/11744906013.jpg" },
+  { value: "sea", label: "Sea Fish", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821199/Bluefin-tuna-waters-Japan.webp" },
+  { value: "hilsa", label: "Hilsa / Ilish", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821243/Hilsha-Fish.jpg" },
+  { value: "prawns", label: "Prawns", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821288/Nisla-prawns-online.webp" },
   { value: "crabs", label: "Crabs", image: "https://res.cloudinary.com/len0ck43/image/upload/v1790013833/crabss.jpg" },
-  { value: "small", label: "Small Fish", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412359/Boroli-Fish-North-Bengal_izgder.jpg" },
-  { value: "exotic", label: "Exotic", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299698/images_5_bmhxij.jpg" },
-  { value: "other", label: "Other", image: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782558152/IMG-20260627-WA0133_pgiyga.jpg" },
+  { value: "small", label: "Small Fish", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821151/background-small-fish-caught-river-crucian-carp-57148744.webp" },
+  { value: "exotic", label: "Exotic", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821432/frozenlobster1.webp" },
+  { value: "other", label: "Other", image: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821499/Hilsha_fish_Head_pair_2_9985bd4c-bdae-4b79-b506-ec1ed1a06cab_533x.webp" },
 ] as const;
 
 export type FishSubcategory = typeof FISH_SUBCATEGORIES[number]["value"];

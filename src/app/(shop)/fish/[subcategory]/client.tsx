@@ -13,14 +13,14 @@ import { DELIVERY_ZONES } from "@/lib/zones";
 import { FAQSchema } from "@/components/seo/schemas";
 
 const SUBCAT_IMAGES: Record<string, string> = {
-  river: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412357/images_30_ptxsmz.jpg",
-  sea: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782547794/624897963_18299845189302273_3065151457949707008_n_fhsj2h.jpg",
-  hilsa: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782379196/Hilsa_fish_ilish_fish_bangladesh_nubluu.jpg",
-  prawns: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299706/Picsart_26-06-24_11-07-31-212_ch3bu4.jpg",
+  river: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821363/11744906013.jpg",
+  sea: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821199/Bluefin-tuna-waters-Japan.webp",
+  hilsa: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821243/Hilsha-Fish.jpg",
+  prawns: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821288/Nisla-prawns-online.webp",
   crabs: "https://res.cloudinary.com/len0ck43/image/upload/v1790013833/crabss.jpg",
-  small: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782412359/Boroli-Fish-North-Bengal_izgder.jpg",
-  exotic: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782299698/images_5_bmhxij.jpg",
-  other: "https://res.cloudinary.com/dc5fh5afb/image/upload/v1782558152/IMG-20260627-WA0133_pgiyga.jpg",
+  small: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821151/background-small-fish-caught-river-crucian-carp-57148744.webp",
+  exotic: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821432/frozenlobster1.webp",
+  other: "https://res.cloudinary.com/cgkwt25u/image/upload/v1791821499/Hilsha_fish_Head_pair_2_9985bd4c-bdae-4b79-b506-ec1ed1a06cab_533x.webp",
 };
 
 export function FishSubcatClient({ slug }: { slug: string }) {
