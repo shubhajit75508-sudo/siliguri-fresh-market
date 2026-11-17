@@ -6,6 +6,7 @@ import { Truck, LogOut, Package, History } from "lucide-react";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
+import { isPageVisible } from "@/lib/page-visible";
 import { useEffect, useState } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { DeliveryAssignment } from "@/types";
@@ -135,8 +136,10 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
         .subscribe();
     }
 
-    // Polling fallback (15s) for when Realtime isn't enabled yet
-    const interval = setInterval(fetchAssignments, 15000);
+    // Polling fallback (30s) for when Realtime isn't enabled yet
+    const interval = setInterval(() => {
+      if (isPageVisible()) fetchAssignments();
+    }, 30000);
 
     return () => {
       clearInterval(interval);

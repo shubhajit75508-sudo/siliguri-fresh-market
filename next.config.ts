@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   images: {
+    // Cloudinary does the resizing/AVIF/WebP work on its own CDN, so Vercel's
+    // billed image optimizer (`/_next/image`) is bypassed entirely.
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "*.supabase.co" },

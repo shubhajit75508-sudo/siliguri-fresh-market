@@ -15,6 +15,7 @@ import { useOrderStore } from "@/store/order-store";
 import { useToast } from "@/components/ui/toaster";
 import { getItemLineTotal } from "@/lib/utils";
 import { distanceFromStore, STORE_LOCATION, DELIVERY_SLOTS } from "@/lib/delivery-zone";
+import { isPageVisible } from "@/lib/page-visible";
 import dynamic from "next/dynamic";
 import { downloadInvoice } from "@/lib/invoice";
 import { PushToggle } from "@/components/push/push-toggle";
@@ -187,7 +188,9 @@ export default function TrackOrderPage({
     };
 
     fetchLocation();
-    const interval = setInterval(fetchLocation, 10000);
+    const interval = setInterval(() => {
+      if (isPageVisible()) fetchLocation();
+    }, 20000);
     return () => clearInterval(interval);
   }, [order, orderId]);
 

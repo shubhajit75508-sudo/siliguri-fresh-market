@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/utils";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
 import { calcDistance } from "@/lib/geo";
+import { isPageVisible } from "@/lib/page-visible";
 import dynamic from "next/dynamic";
 
 const LiveMap = dynamic(() => import("@/components/maps/LiveMap"), { ssr: false });
@@ -30,7 +31,9 @@ export default function DeliveryPage() {
   useEffect(() => { loadOrders(); }, [loadOrders]);
   useEffect(() => {
     if (!loaded) return;
-    const interval = setInterval(loadOrders, 30000);
+    const interval = setInterval(() => {
+      if (isPageVisible()) loadOrders();
+    }, 60000);
     return () => clearInterval(interval);
   }, [loaded, loadOrders]);
 
@@ -160,7 +163,9 @@ export default function DeliveryPage() {
     };
 
     fetchLocations();
-    const interval = setInterval(fetchLocations, 15000);
+    const interval = setInterval(() => {
+      if (isPageVisible()) fetchLocations();
+    }, 30000);
     return () => clearInterval(interval);
   }, [activeDeliveries.length, deliveryBoys]);
 

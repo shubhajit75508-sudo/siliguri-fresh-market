@@ -14,6 +14,7 @@ import type { Product } from "@/types";
 import { Eye, X, RotateCcw, Truck, Loader2, CheckCircle, XCircle, MapPin, Phone, User, Package, ImageIcon, Download, Filter, AlertTriangle, Plus, Check, Star } from "lucide-react";
 import dynamic from "next/dynamic";
 import { loadRegularPhones, persistRegularPhones, loadConfirmedOrders, persistConfirmedOrders, loadPackedOrders, persistPackedOrders, normalizePhone, telHref } from "@/lib/regular-customers";
+import { isPageVisible } from "@/lib/page-visible";
 
 const ManualOrderModal = dynamic(() => import("@/components/admin/manual-order-modal"), { ssr: false });
 const PicklistView = dynamic(() => import("@/components/admin/picklist-view"), { ssr: false });
@@ -86,7 +87,11 @@ export default function AdminOrdersPage() {
   useEffect(() => { useDeliveryStore.getState().loadBoys(); }, []);
   useEffect(() => {
     if (!loaded) return;
-    const interval = setInterval(loadOrders, 30000);
+    // Pause when the tab is hidden and poll half as often — this page is
+    // usually left open all day and every poll is a serverless invocation.
+    const interval = setInterval(() => {
+      if (isPageVisible()) loadOrders();
+    }, 60000);
     return () => clearInterval(interval);
   }, [loaded, loadOrders]);
 

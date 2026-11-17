@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice, getItemUnitPrice } from "@/lib/utils";
 import { calcDistance, formatDistance, HUB_COORDS } from "@/lib/geo";
+import { isPageVisible } from "@/lib/page-visible";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import LiveMap from "@/components/maps/LiveMap";
 import { useToast } from "@/components/ui/toaster";
@@ -483,8 +484,10 @@ export default function DeliveryDashboard() {
     };
     load();
     const interval = setInterval(() => {
-      if (useDeliveryStore.getState().boy) useDeliveryStore.getState().loadAssignments();
-    }, 30000);
+      if (isPageVisible() && useDeliveryStore.getState().boy) {
+        useDeliveryStore.getState().loadAssignments();
+      }
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 

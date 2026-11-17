@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { calcDistance, formatDistance, formatOrderTime, timeAgo, HUB_COORDS } from "@/lib/geo";
+import { isPageVisible } from "@/lib/page-visible";
 import { useOrderStore } from "@/store/order-store";
 import { useDeliveryStore } from "@/store/delivery-store";
 import dynamic from "next/dynamic";
@@ -49,7 +50,9 @@ export default function RoutePlannerPage() {
   useEffect(() => { loadOrders(); }, [loadOrders]);
   useEffect(() => {
     if (!loaded) return;
-    const interval = setInterval(loadOrders, 30000);
+    const interval = setInterval(() => {
+      if (isPageVisible()) loadOrders();
+    }, 60000);
     return () => clearInterval(interval);
   }, [loaded, loadOrders]);
 
