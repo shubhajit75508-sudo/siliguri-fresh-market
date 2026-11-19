@@ -205,12 +205,15 @@ export async function POST(req: NextRequest) {
   // Only use columns guaranteed to exist in the live DB.
   // - Original migration columns: id, user_id, items, total, status, address_snapshot, payment_method, payment_status, delivery_boy_id, delivery_status, return_requested, return_approved, eta, customer_name, customer_phone, customer_email, created_at
   // - delivery_code: added by delivery_code_migration.sql (APPLIED)
-  // NOT included (column may not exist): subtotal, delivery_fee, discount, payment_id, delivery_slot, delivery_window
+  // - delivery_fee: exists in the live DB (verified) — write it so admin/analytics
+  //   don't fall back to the 0 default. It is still mirrored in address_snapshot.
+  // NOT included (column may not exist): subtotal, discount, payment_id, delivery_slot, delivery_window
   const orderData: Record<string, unknown> = {
     id: body.id,
     user_id: body.user_id ?? null,
     items: serverItems,
     total,
+    delivery_fee: deliveryFee,
     status: body.status ?? "received",
     delivery_status: body.delivery_status ?? "pending",
     payment_method: paymentMethod,

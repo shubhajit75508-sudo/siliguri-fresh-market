@@ -16,10 +16,10 @@ Siliguri Freshmart is an online fresh fish and meat delivery service based in Si
 - [Durga Puja Special](https://www.siligurifreshmart.com/durgapuja): Fresh fish and meat delivery for Durga Puja (Shashthi to Dashami)
 
 ## Delivery Info
-- Same-day delivery across a 20 km radius of our hub at MCQF+GFQ, Siliguri
-- Delivery time by distance: within 4 km ~1 hour; within 8 km 1–2 hours; 8–16 km Morning Slot (order before 11 AM, delivered 11 AM–1 PM); 16–20 km Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM)
+- Same-day delivery across a 25 km radius of our hub at MCQF+GFQ, Siliguri
+- Delivery time by distance: within 4 km ~1 hour; within 8 km 1–2 hours; 8–16 km Morning Slot (order before 11 AM, delivered 11 AM–1 PM); 16–25 km Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM)
 - Free delivery on orders above ₹299 (within 8 km); no minimum within 4 km
-- Delivery fee: ₹59 (below ₹99 within 8 km), ₹40 (₹99–₹298), Free (₹299+); 8–16 km ₹79 below ₹1,499; 16–20 km ₹100 below ₹1,999
+- Delivery fee: ₹59 (below ₹99 within 8 km), ₹40 (₹99–₹298), Free (₹299+); 8–12 km ₹79 below ₹1,199; 12–16 km ₹99 below ₹1,499; 16–20 km ₹200 below ₹1,999; 20–25 km ₹500 below ₹2,999
 - GPS location required at checkout to calculate distance, time and fees
 - Payment: Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), cards, netbanking
 

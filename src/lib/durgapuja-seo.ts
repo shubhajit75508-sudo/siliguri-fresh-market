@@ -49,7 +49,7 @@ export const DURGA_PUJA_SEO: DurgaPujaSEO = {
   content:
     "Durga Puja is Siliguri's biggest festival — over 800 pandals and lakhs of families host bhog, anjali and get-togethers. Fresh fruits are offered at anjali and prasad, vegetables go into the bhog khichuri and bhaja, and dairy completes the festive kitchen. From Maha Shashthi (17 Oct) to Vijaya Dashami (21 Oct) we keep these puja essentials fully stocked every day, sourced fresh each morning from Siliguri's local markets and delivered to your doorstep the same day.\n\nWe understand that food traditions differ from family to family — many households keep their pujo sattvik and avoid non-veg during the days of worship. That is entirely your call. So we present fish, chicken and mutton separately for families whose home cooking follows its own custom during the puja, nothing more, nothing less. Whatever your pujo table needs, order before 11 AM for the Morning Slot (11 AM – 1 PM) and your kitchen is ready before the puja beckons.",
   deliveryInfo:
-    "Same-day puja delivery across Siliguri. Within 8 km arrives in 1–2 hours; 8–16 km in the 11 AM – 1 PM Morning Slot (order before 11 AM); 16–20 km in the 2 PM – 3 PM Afternoon Slot (order before 2 PM).",
+    "Same-day puja delivery across Siliguri. Within 8 km arrives in 1–2 hours; 8–16 km in the 11 AM – 1 PM Morning Slot (order before 11 AM); 16–25 km in the 2 PM – 3 PM Afternoon Slot (order before 2 PM).",
   startDate: "2026-10-17",
   endDate: "2026-10-21",
   faq: [

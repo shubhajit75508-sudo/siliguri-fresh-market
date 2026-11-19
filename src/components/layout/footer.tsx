@@ -41,7 +41,7 @@ export function Footer() {
               </div>
             </div>
             <p className="mt-5 max-w-[320px] text-[14px] leading-relaxed text-muted">
-              From market to your home — in minutes, every day. We deliver within 20 km of our hub at MCQF+GFQ, Siliguri.
+              From market to your home — in minutes, every day. We deliver within 25 km of our hub at MCQF+GFQ, Siliguri.
             </p>
             <div className="mt-4 space-y-1 text-[12px] text-muted">
               <p>📍 MCQF+GFQ, Siliguri, West Bengal 734001</p>
@@ -50,8 +50,8 @@ export function Footer() {
               <p>⏰ Open daily 9:00 AM – 4:00 PM</p>
             </div>
             <div className="mt-3 text-[11px] text-muted leading-relaxed">
-              <p>🚚 Within 8 km: 1–2 hrs · 8–16 km: ₹79 (11 AM – 1 PM slot)</p>
-              <p>🚚 16–20 km: ₹100 (2 PM – 3 PM slot)</p>
+              <p>🚚 Within 8 km: free · 8–12 km: ₹79 · 12–16 km: ₹99 (11 AM – 1 PM)</p>
+              <p>🚚 16–20 km: ₹200 · 20–25 km: ₹500 (2 PM – 3 PM slot)</p>
             </div>
             <div className="mt-4 flex flex-wrap gap-1.5">
               {["Hakimpara","Pradhan Nagar","Matigara","Bagdogra","Champasari","Sukna","Burdwan Road","Sevoke Road"].map((area) => (

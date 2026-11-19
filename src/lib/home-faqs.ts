@@ -5,23 +5,23 @@ export const homeFaqs = [
   },
   {
     q: "Does Siliguri Freshmart deliver same-day?",
-    a: "Yes! We deliver same-day across two daily windows: Morning Slot (order before 11 AM, delivered 11 AM–1 PM) and Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM). Delivery time also depends on your distance from our hub at MCQF+GFQ, Siliguri — within 8 km takes 1–2 hours, 8–16 km takes the Morning or Afternoon slot (₹79 fee under ₹1,499), and 16–20 km takes the Afternoon slot (₹100 fee under ₹1,999).",
+    a: "Yes! We deliver same-day across two daily windows: Morning Slot (order before 11 AM, delivered 11 AM–1 PM) and Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM). Delivery time also depends on your distance from our hub at MCQF+GFQ, Siliguri — within 8 km takes 1–2 hours, 8–12 km takes the Morning slot (₹79 fee under ₹1,199), 12–16 km takes the Morning slot (₹99 fee under ₹1,499), 16–20 km takes the Afternoon slot (₹200 fee under ₹1,999), and 20–25 km takes the Afternoon slot (₹500 fee under ₹2,999).",
   },
   {
     q: "How do the delivery slots work?",
-    a: "Your slot is automatically assigned based on your distance from our hub at MCQF+GFQ, Siliguri. If you are 8–16 km away, you get the Morning Slot (order before 11 AM, delivered 11 AM–1 PM). If you are 16–20 km away, you get the Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM). Within 8 km, no slot is needed — delivery arrives directly within 1–2 hours.",
+    a: "Your slot is automatically assigned based on your distance from our hub at MCQF+GFQ, Siliguri. If you are 8–16 km away, you get the Morning Slot (order before 11 AM, delivered 11 AM–1 PM). If you are 16–25 km away, you get the Afternoon Slot (order before 2 PM, delivered 2 PM–3 PM). Within 8 km, no slot is needed — delivery arrives directly within 1–2 hours.",
   },
   {
     q: "What areas does Siliguri Freshmart cover?",
-    a: "Siliguri Freshmart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 20 km radius of our hub at MCQF+GFQ, Siliguri. Delivery times vary by distance — within 8 km takes 1–2 hours, while 8–20 km is delivered in one of two daily slots (11 AM–1 PM or 2 PM–3 PM).",
+    a: "Siliguri Freshmart delivers across Siliguri including Hakimpara, Pradhan Nagar, Matigara, Bagdogra, Shantipara, Bhaktinagar, Champasari, Sukna, Burdwan Road and surrounding areas within a 25 km radius of our hub at MCQF+GFQ, Siliguri. Delivery times vary by distance — within 8 km takes 1–2 hours, while 8–25 km is delivered in one of two daily slots (11 AM–1 PM or 2 PM–3 PM).",
   },
   {
     q: "What is the minimum order and delivery fee?",
-    a: "Within 4 km, delivery is free with no minimum order. Within 8 km, there is no minimum — orders under ₹99 pay ₹59, under ₹299 pay ₹40, and ₹299+ are free. For 8–16 km, the minimum order is ₹1,499 (₹79 delivery fee otherwise). For 16–20 km, the minimum is ₹1,999 (₹100 fee otherwise). GPS location is required at checkout so we can calculate the correct distance, time, and fees.",
+    a: "Within 4 km, delivery is free with no minimum order. Within 8 km, there is no minimum — orders under ₹99 pay ₹59, under ₹299 pay ₹40, and ₹299+ are free. For 8–12 km, free delivery starts at ₹1,199 (₹79 fee below that). For 12–16 km, it starts at ₹1,499 (₹99 fee). For 16–20 km, it starts at ₹1,999 (₹200 fee). For 20–25 km, it starts at ₹2,999 (₹500 fee). GPS location is required at checkout so we can calculate the correct distance, time, and fees.",
   },
   {
     q: "Why do you need my GPS location?",
-    a: "GPS location is mandatory to calculate your exact delivery distance from our hub at MCQF+GFQ, Siliguri, determine the correct delivery time, and check whether your address falls within our 20 km delivery area. If your phone struggles with GPS, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278, +91 96354 80453, or +91 62959 53287.",
+    a: "GPS location is mandatory to calculate your exact delivery distance from our hub at MCQF+GFQ, Siliguri, determine the correct delivery time, and check whether your address falls within our 25 km delivery area. If your phone struggles with GPS, you can always order via WhatsApp at +91 7029908278 or call us at +91 7029908278, +91 96354 80453, or +91 62959 53287.",
   },
   {
     q: "How is freshness guaranteed?",

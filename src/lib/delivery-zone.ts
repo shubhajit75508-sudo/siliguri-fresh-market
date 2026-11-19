@@ -5,7 +5,7 @@ export const STORE_LOCATION = {
   lng: Number(process.env.DELIVERY_STORE_LNG) || 88.423625,
 };
 
-export const DELIVERY_RADIUS_KM = Number(process.env.DELIVERY_RADIUS_KM) || 20;
+export const DELIVERY_RADIUS_KM = Number(process.env.DELIVERY_RADIUS_KM) || 25;
 
 export interface DeliveryTier {
   maxKm: number;
@@ -18,8 +18,10 @@ export interface DeliveryTier {
 export const DELIVERY_TIERS: DeliveryTier[] = [
   { maxKm: 4, eta: "1-2 hrs", minOrder: 0, deliveryFee: 0, label: "Within 4 km" },
   { maxKm: 8, eta: "1-2 hrs", minOrder: 0, deliveryFee: 0, label: "4-8 km" },
-  { maxKm: 16, eta: "11 AM - 3 PM", minOrder: 1499, deliveryFee: 79, label: "8-16 km" },
-  { maxKm: 20, eta: "11 AM - 3 PM", minOrder: 1999, deliveryFee: 100, label: "16-20 km" },
+  { maxKm: 12, eta: "11 AM - 1 PM", minOrder: 1199, deliveryFee: 79, label: "8-12 km" },
+  { maxKm: 16, eta: "11 AM - 1 PM", minOrder: 1499, deliveryFee: 99, label: "12-16 km" },
+  { maxKm: 20, eta: "2 PM - 3 PM", minOrder: 1999, deliveryFee: 200, label: "16-20 km" },
+  { maxKm: 25, eta: "2 PM - 3 PM", minOrder: 2999, deliveryFee: 500, label: "20-25 km" },
 ];
 
 export interface DeliverySlot {

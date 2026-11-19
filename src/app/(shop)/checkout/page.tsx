@@ -90,12 +90,18 @@ export default function CheckoutPage() {
       : selectedAddress
     : undefined;
 
-  // If the customer's GPS comes through after the checkout screen rendered,
-  // it just upgrades the zone check — no dialog blocks the order.
-  const pinnedDistance = location ? distanceFromStore(location.lat, location.lng) : null;
-  const pinnedInZone = !!location && pinnedDistance !== null && isWithinDeliveryZone(location.lat, location.lng);
+  // Distance must match what the server charges: live GPS wins, otherwise fall
+  // back to the selected address's saved coords (the same ones the order API
+  // reads). Without this, an address with saved GPS but no live fix showed the
+  // flat fallback fee while the server applied the distance tier.
+  const regionLat = Number(location?.lat ?? selectedAddress?.lat);
+  const regionLng = Number(location?.lng ?? selectedAddress?.lng);
+  const hasRegionCoords =
+    Number.isFinite(regionLat) && Number.isFinite(regionLng) && regionLat !== 0 && regionLng !== 0;
+  const pinnedDistance = hasRegionCoords ? distanceFromStore(regionLat, regionLng) : null;
+  const pinnedInZone = pinnedDistance !== null && pinnedDistance <= DELIVERY_RADIUS_KM;
 
-  // Slot auto-assigned by distance: 8-16km → Morning, 16-20km → Afternoon, ≤8km → none
+  // Slot auto-assigned by distance: 8-16km → Morning, 16-25km → Afternoon, ≤8km → none
   const deliverySlot: DeliverySlot | null = pinnedDistance !== null && pinnedDistance > 8
     ? pinnedDistance <= 16
       ? DELIVERY_SLOTS[0] // Morning: 11 AM–1 PM
@@ -459,7 +465,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-              {["Secure Checkout","100% Fresh","20 km Delivery Area"].map((t) => (
+              {["Secure Checkout","100% Fresh","25 km Delivery Area"].map((t) => (
                 <span key={t} className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1">
                   {t === "Secure Checkout" ? <Lock className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}{t}
                 </span>
@@ -785,7 +791,7 @@ export default function CheckoutPage() {
                         ? "bg-blue-200 text-blue-700"
                         : "bg-amber-200 text-amber-700"
                     }`}>
-                      {deliverySlot.id === "morning" ? "8-16 km" : "16-20 km"}
+                      {deliverySlot.id === "morning" ? "8-16 km" : "16-25 km"}
                     </span>
                   </div>
                   <p className={`text-[11px] mt-1 font-semibold ${
@@ -904,7 +910,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex items-center justify-center gap-4 mt-4 flex-wrap mb-4">
-              {["Secure Checkout","100% Fresh","20 km Delivery Area"].map((t) => (
+              {["Secure Checkout","100% Fresh","25 km Delivery Area"].map((t) => (
                 <span key={t} className="text-[10px] font-semibold text-muted tracking-wider flex items-center gap-1">
                   {t === "Secure Checkout" ? <Lock className="h-3 w-3" /> : t === "100% Fresh" ? <Leaf className="h-3 w-3" /> : <Truck className="h-3 w-3" />}{t}
                 </span>

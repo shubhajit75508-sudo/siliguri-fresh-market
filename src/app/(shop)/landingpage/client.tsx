@@ -967,7 +967,7 @@ export default function LandingClient() {
                       </td>
                     </tr>
 
-                    {/* Row 5 — 16-20 km */}
+                    {/* Row 5 — 16-25 km */}
                     <tr className="hover:bg-muted/20 transition-colors">
                       <td className="px-5 py-4">
                         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200">
