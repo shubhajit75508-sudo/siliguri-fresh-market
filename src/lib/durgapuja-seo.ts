@@ -66,7 +66,7 @@ export const DURGA_PUJA_SEO: DurgaPujaSEO = {
     {
       question: "Do you deliver during Durga Puja in Siliguri?",
       answer:
-        "Yes, we deliver every day from 9 AM – 4 PM through the puja. Within 8 km of our hub at MCQF+GFQ your order arrives in 1–2 hours. Beyond 8 km, orders placed before 11 AM are delivered in the 11 AM – 1 PM Morning Slot, and before 2 PM in the 2 PM – 3 PM Afternoon Slot.",
+        "Yes, we deliver every day from 9 AM – 3 PM through the puja. Within 8 km of our hub at MCQF+GFQ your order arrives in 1–2 hours. Beyond 8 km, orders placed before 11 AM are delivered in the 11 AM – 1 PM Morning Slot, and before 2 PM in the 2 PM – 3 PM Afternoon Slot.",
     },
     {
       question: "Do you deliver to pandal areas and puja committees in Siliguri?",

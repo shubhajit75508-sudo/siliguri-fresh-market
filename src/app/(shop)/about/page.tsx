@@ -174,7 +174,7 @@ export default function AboutPage() {
             <div className="space-y-3">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Business Hours</p>
-                <p className="font-semibold text-foreground">Open daily 9:00 AM - 4:00 PM</p>
+                <p className="font-semibold text-foreground">Open daily 9:00 AM - 3:00 PM</p>
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Categories</p>

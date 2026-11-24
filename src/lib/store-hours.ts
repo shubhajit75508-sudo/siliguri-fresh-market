@@ -1,5 +1,12 @@
 export const STORE_OPEN_HOUR = 9;
-export const STORE_CLOSE_HOUR = 16;
+export const STORE_CLOSE_HOUR = 15;
+
+/** 9 → "9:00 AM", 15 → "3:00 PM" */
+function formatHour(hour: number): string {
+  const suffix = hour >= 12 ? "PM" : "AM";
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:00 ${suffix}`;
+}
 
 export type StoreStatus = {
   isOpen: boolean;
@@ -9,7 +16,7 @@ export type StoreStatus = {
 
 export function getStoreStatus(now: Date = new Date(), far = false): StoreStatus {
   const h = now.getHours();
-  const openUntil = `Open daily ${STORE_OPEN_HOUR}:00 AM – ${STORE_CLOSE_HOUR}:00 PM`;
+  const openUntil = `Open daily ${formatHour(STORE_OPEN_HOUR)} – ${formatHour(STORE_CLOSE_HOUR)}`;
   if (h >= STORE_OPEN_HOUR && h < STORE_CLOSE_HOUR) {
     return {
       isOpen: true,

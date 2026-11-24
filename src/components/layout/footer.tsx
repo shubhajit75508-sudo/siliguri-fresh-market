@@ -47,7 +47,7 @@ export function Footer() {
               <p>📍 MCQF+GFQ, Siliguri, West Bengal 734001</p>
               <p>📞 +91 7029908278 · +91 96354 80453 · +91 62959 53287</p>
               <p>📧 siligurifreshmart@gmail.com</p>
-              <p>⏰ Open daily 9:00 AM – 4:00 PM</p>
+              <p>⏰ Open daily 9:00 AM – 3:00 PM</p>
             </div>
             <div className="mt-3 text-[11px] text-muted leading-relaxed">
               <p>🚚 Within 8 km: free · 8–12 km: ₹79 · 12–16 km: ₹99 (11 AM – 1 PM)</p>

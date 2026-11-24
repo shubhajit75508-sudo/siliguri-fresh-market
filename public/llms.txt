@@ -29,7 +29,7 @@ Siliguri Freshmart is an online fresh fish and meat delivery service based in Si
 - Website: https://www.siligurifreshmart.com
 
 ## Store Hours
-Open daily: 9:00 AM – 4:00 PM IST
+Open daily: 9:00 AM – 3:00 PM IST
 
 ## Help
 - [FAQ](https://www.siligurifreshmart.com/#faq): Common questions answered
